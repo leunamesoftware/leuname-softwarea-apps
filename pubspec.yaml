@@ -1,0 +1,42 @@
+name: leuplace
+description: "LeuPlace - Marketplace local de compra e venda por localizacao"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Firebase
+  firebase_core: ^4.2.0
+  firebase_auth: ^6.1.0
+  cloud_firestore: ^6.1.1
+  cloud_functions: ^6.1.0
+  google_sign_in: ^7.2.0
+
+  # Navegação
+  go_router: ^16.2.4
+
+  # Estado
+  flutter_riverpod: ^2.6.1
+
+  # Identidade visual (tipografia Poppins)
+  google_fonts: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

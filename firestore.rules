@@ -1,0 +1,104 @@
+rules_version = '2';
+
+// Regras de segurança do LeuPlace — Fase 1 (fundação e permissões).
+// Cada fase seguinte pode refinar as regras da sua própria coleção, mas não
+// deve afrouxar o controle de acesso já definido aqui sem necessidade.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---- users ----
+    // Qualquer usuário autenticado pode ler perfis (nome/foto/reputação
+    // pública). Só o próprio usuário edita seus dados, e apenas o admin pode
+    // alterar o campo `role` (evita auto-promoção a administrador).
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) &&
+        (!('role' in request.resource.data) ||
+          request.resource.data.role == resource.data.role) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ---- categories / subcategories ----
+    // Leitura pública (necessária para montar a busca antes do login).
+    // Escrita restrita ao painel administrativo.
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /subcategories/{subcategoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---- products ----
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if isSignedIn() &&
+        (resource.data.sellerId == request.auth.uid || isAdmin());
+    }
+
+    // ---- sales ----
+    // Histórico de vendas: só quem participou (ou o admin) enxerga.
+    // Depois de criado, não é editável pelo cliente — integridade do
+    // programa de recompensas (Fase 10).
+    match /sales/{saleId} {
+      allow read: if isSignedIn() &&
+        (resource.data.sellerId == request.auth.uid ||
+          resource.data.buyerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- chats ----
+    match /chats/{chatId} {
+      allow read, update: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants;
+      allow delete: if isAdmin();
+    }
+
+    // ---- messages ----
+    match /messages/{messageId} {
+      allow read, create: if isSignedIn() &&
+        request.auth.uid in get(/databases/$(database)/documents/chats/$(resource == null ? request.resource.data.chatId : resource.data.chatId)).data.participants;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- favorites ----
+    match /favorites/{favoriteId} {
+      allow read, write: if isSignedIn() &&
+        (resource == null ? request.resource.data.userId : resource.data.userId) == request.auth.uid;
+    }
+
+    // ---- reports ----
+    match /reports/{reportId} {
+      allow create: if isSignedIn() && request.resource.data.reporterId == request.auth.uid;
+      allow read: if isSignedIn() &&
+        (resource.data.reporterId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // ---- settings ----
+    // Configurações globais (preço do anúncio, validade, recompensas):
+    // leitura liberada para o app calcular regras, escrita só pelo admin.
+    match /settings/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
