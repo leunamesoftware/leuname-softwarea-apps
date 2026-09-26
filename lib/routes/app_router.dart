@@ -5,9 +5,11 @@ import '../features/auth/auth_providers.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/auth/welcome_screen.dart';
+import '../features/categories/categories_screen.dart';
 import '../features/chat/chat_list_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/products/create_product_screen.dart';
+import '../features/products/product_detail_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/splash/splash_screen.dart';
@@ -59,6 +61,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.register,
         builder: (_, _) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.categories,
+        builder: (_, _) => const CategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/produto/:id',
+        builder: (_, state) =>
+            ProductDetailScreen(productId: state.pathParameters['id']!),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(

@@ -70,10 +70,16 @@ class ProductModel {
     );
   }
 
+  /// Título em minúsculas, salvo junto do documento para permitir busca por
+  /// prefixo no Firestore (`titleLower >= termo && titleLower <= termo+`),
+  /// já que o Firestore não tem busca textual nativa.
+  String get titleLower => title.toLowerCase();
+
   Map<String, dynamic> toMap() {
     return {
       'sellerId': sellerId,
       'title': title,
+      'titleLower': titleLower,
       'description': description,
       'price': price,
       'imageUrls': imageUrls,

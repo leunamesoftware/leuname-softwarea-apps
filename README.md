@@ -33,10 +33,10 @@ não conectar acidentalmente a um projeto inexistente.
    Isso substitui `lib/firebase_options.dart` pelos valores reais e gera os
    arquivos nativos (`google-services.json` / `GoogleService-Info.plist`),
    além de ajustar o Gradle do Android automaticamente.
-5. Publique as regras de segurança do Firestore (`firestore.rules`, já
-   incluídas neste repositório):
+5. Publique as regras e os índices do Firestore (`firestore.rules` e
+   `firestore.indexes.json`, já incluídos neste repositório):
    ```bash
-   firebase deploy --only firestore:rules
+   firebase deploy --only firestore:rules,firestore:indexes
    ```
 6. Rode o app:
    ```bash

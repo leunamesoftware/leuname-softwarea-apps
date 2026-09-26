@@ -46,3 +46,12 @@ final currentUserProfileProvider = StreamProvider<UserModel?>((ref) {
 final isAdminProvider = Provider<bool>((ref) {
   return ref.watch(currentUserProfileProvider).value?.isAdmin ?? false;
 });
+
+/// Perfil público de qualquer usuário (ex.: dados do vendedor na tela de
+/// produto), buscado uma única vez por uid.
+final userProfileProvider = FutureProvider.family<UserModel?, String>((
+  ref,
+  uid,
+) {
+  return ref.watch(userRepositoryProvider).getProfile(uid);
+});

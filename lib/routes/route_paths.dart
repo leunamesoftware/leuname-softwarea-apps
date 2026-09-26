@@ -10,4 +10,7 @@ abstract final class RoutePaths {
   static const String createProduct = '/anunciar';
   static const String chat = '/chat';
   static const String profile = '/profile';
+
+  static const String categories = '/categories';
+  static String productDetail(String id) => '/produto/$id';
 }
