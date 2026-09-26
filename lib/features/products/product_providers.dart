@@ -4,6 +4,7 @@ import '../../core/services/firebase_instances.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/models/product_model.dart';
 import '../../data/repositories/product_repository.dart';
+import '../auth/auth_providers.dart';
 
 final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((
   ref,
@@ -26,6 +27,12 @@ final productDetailProvider = StreamProvider.family<ProductModel?, String>((
   productId,
 ) {
   return ref.watch(productRepositoryProvider).watchById(productId);
+});
+
+final myProductsProvider = StreamProvider<List<ProductModel>>((ref) {
+  final uid = ref.watch(authStateChangesProvider).value?.uid;
+  if (uid == null) return Stream.value(const []);
+  return ref.watch(productRepositoryProvider).watchMyProducts(uid);
 });
 
 final productsByCategoryProvider =

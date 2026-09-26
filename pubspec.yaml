@@ -19,6 +19,10 @@ dependencies:
   cloud_firestore: ^6.1.1
   cloud_functions: ^6.1.0
   google_sign_in: ^7.2.0
+  firebase_storage: ^13.0.5
+
+  # Mídia
+  image_picker: ^1.1.2
 
   # Navegação
   go_router: ^16.2.4
@@ -28,6 +32,9 @@ dependencies:
 
   # Identidade visual (tipografia Poppins)
   google_fonts: ^6.3.2
+
+  # Formatação de datas
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

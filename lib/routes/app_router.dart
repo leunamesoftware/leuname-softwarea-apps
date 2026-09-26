@@ -6,9 +6,12 @@ import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/auth/welcome_screen.dart';
 import '../features/categories/categories_screen.dart';
+import '../features/chat/chat_detail_screen.dart';
 import '../features/chat/chat_list_screen.dart';
+import '../features/credits/credits_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/products/create_product_screen.dart';
+import '../features/products/my_products_screen.dart';
 import '../features/products/product_detail_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/search/search_screen.dart';
@@ -71,6 +74,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) =>
             ProductDetailScreen(productId: state.pathParameters['id']!),
       ),
+      GoRoute(
+        path: '/chat/:id',
+        builder: (_, state) =>
+            ChatDetailScreen(chatId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: RoutePaths.createProduct,
+        builder: (_, _) => const CreateProductScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.credits,
+        builder: (_, _) => const CreditsScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(
           currentIndex: navigationShell.currentIndex,
@@ -100,8 +116,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: RoutePaths.createProduct,
-                builder: (_, _) => const CreateProductScreen(),
+                path: RoutePaths.myProducts,
+                builder: (_, _) => const MyProductsScreen(),
               ),
             ],
           ),

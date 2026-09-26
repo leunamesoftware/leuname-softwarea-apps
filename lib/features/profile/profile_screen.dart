@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../routes/route_paths.dart';
 import '../auth/auth_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -47,9 +49,16 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.location_on_outlined,
             label: 'Minha localização',
           ),
-          const _ProfileMenuItem(
+          _ProfileMenuItem(
             icon: Icons.inventory_2_outlined,
             label: 'Meus anúncios',
+            onTap: () => context.go(RoutePaths.myProducts),
+          ),
+          _ProfileMenuItem(
+            icon: Icons.confirmation_number_outlined,
+            label:
+                'Créditos de anúncio${profile != null ? ' (${profile.adCredits})' : ''}',
+            onTap: () => context.push(RoutePaths.credits),
           ),
           const _ProfileMenuItem(
             icon: Icons.favorite_border,
@@ -78,10 +87,11 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileMenuItem extends StatelessWidget {
-  const _ProfileMenuItem({required this.icon, required this.label});
+  const _ProfileMenuItem({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +100,11 @@ class _ProfileMenuItem extends StatelessWidget {
       leading: Icon(icon, color: AppColors.textDark),
       title: Text(label, style: AppTextStyles.bodyRegular),
       trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-      onTap: () =>
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('$label — em breve.'))),
+      onTap:
+          onTap ??
+          () =>
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('$label — em breve.'))),
     );
   }
 }

@@ -1,0 +1,33 @@
+rules_version = '2';
+
+// Regras de segurança do Firebase Storage — Fase 7 (fotos do chat).
+// Cada fase que passa a usar Storage (ex.: fotos de anúncio na Fase 5) deve
+// adicionar sua própria seção aqui, sem afrouxar o que já existe.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Fotos trocadas no chat: só quem participa da conversa pode enviar ou
+    // ver. Limite de 10MB e apenas imagens, para evitar abuso.
+    function isChatParticipant(chatId) {
+      return request.auth != null &&
+        request.auth.uid in firestore.get(/databases/(default)/documents/chats/$(chatId)).data.participants;
+    }
+
+    match /chat_images/{chatId}/{fileName} {
+      allow read: if isChatParticipant(chatId);
+      allow write: if isChatParticipant(chatId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // Fotos de anúncio (Fase 5): públicas para leitura (aparecem na busca de
+    // qualquer pessoa, logada ou não); só o próprio vendedor escreve nas
+    // suas.
+    match /product_images/{sellerId}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == sellerId &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+  }
+}

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../data/models/product_model.dart';
 import '../../data/models/product_status.dart';
+import '../../routes/route_paths.dart';
 import '../auth/auth_providers.dart';
+import '../chat/chat_providers.dart';
 import 'product_providers.dart';
 
 /// Tela de detalhe do anúncio (Fase 4/5). A ação principal é "Conversar":
@@ -139,9 +143,7 @@ class ProductDetailScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton.icon(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Chat chega na Fase 7.')),
-                    ),
+                    onPressed: () => _openChat(context, ref, product),
                     icon: const Icon(Icons.chat_bubble_outline),
                     label: const Text('Conversar com o vendedor'),
                   ),
@@ -150,6 +152,32 @@ class ProductDetailScreen extends ConsumerWidget {
         orElse: () => null,
       ),
     );
+  }
+
+  Future<void> _openChat(
+    BuildContext context,
+    WidgetRef ref,
+    ProductModel product,
+  ) async {
+    final myUid = ref.read(authStateChangesProvider).value?.uid;
+    if (myUid == null) return;
+
+    if (myUid == product.sellerId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Este é o seu próprio anúncio.')),
+      );
+      return;
+    }
+
+    final chatId = await ref
+        .read(chatRepositoryProvider)
+        .findOrCreateChat(
+          productId: product.id,
+          buyerId: myUid,
+          sellerId: product.sellerId,
+        );
+
+    if (context.mounted) context.push(RoutePaths.chatDetail(chatId));
   }
 
   String _formatPrice(double price) {

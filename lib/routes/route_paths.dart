@@ -7,10 +7,16 @@ abstract final class RoutePaths {
 
   static const String home = '/home';
   static const String search = '/search';
-  static const String createProduct = '/anunciar';
+
+  /// Aba "Anunciar" da navegação principal: mostra "Meus anúncios".
+  static const String myProducts = '/anunciar';
+
   static const String chat = '/chat';
   static const String profile = '/profile';
 
   static const String categories = '/categories';
+  static const String createProduct = '/anunciar/novo';
+  static const String credits = '/creditos';
   static String productDetail(String id) => '/produto/$id';
+  static String chatDetail(String id) => '/chat/$id';
 }

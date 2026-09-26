@@ -18,12 +18,33 @@ class ProductRepository {
     return _dataSource.watchByCategory(categoryId).map(_mapDocs);
   }
 
+  /// Publica o anúncio consumindo 1 crédito do vendedor. Lança [StateError]
+  /// quando não há créditos disponíveis.
+  Future<void> publish(ProductModel product) {
+    return _dataSource.publishWithCredit(
+      sellerId: product.sellerId,
+      productData: product.toMap(),
+    );
+  }
+
   Stream<ProductModel?> watchById(String id) {
     return _dataSource.watchById(id).map((doc) {
       if (!doc.exists) return null;
       return ProductModel.fromMap(doc.id, doc.data()!);
     });
   }
+
+  Stream<List<ProductModel>> watchMyProducts(String sellerId) {
+    return _dataSource.watchBySeller(sellerId).map(_mapDocs);
+  }
+
+  Future<void> pause(String productId) =>
+      _dataSource.updateStatus(productId, 'paused');
+
+  Future<void> activate(String productId) =>
+      _dataSource.updateStatus(productId, 'active');
+
+  Future<void> delete(String productId) => _dataSource.delete(productId);
 
   Stream<List<ProductModel>> searchByTitle(String query) {
     if (query.trim().isEmpty) return watchActiveProducts();

@@ -21,6 +21,22 @@ class ProductRemoteDataSource {
     return _collection.doc(id).snapshots();
   }
 
+  /// Todos os anúncios do vendedor (qualquer status) — tela "Meus anúncios".
+  Stream<QuerySnapshot<Map<String, dynamic>>> watchBySeller(String sellerId) {
+    return _collection
+        .where('sellerId', isEqualTo: sellerId)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+  }
+
+  Future<void> updateStatus(String productId, String status) {
+    return _collection.doc(productId).update({'status': status});
+  }
+
+  Future<void> delete(String productId) {
+    return _collection.doc(productId).delete();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> watchActiveProducts({
     int limit = 30,
   }) {
@@ -41,6 +57,35 @@ class ProductRemoteDataSource {
         .orderBy('createdAt', descending: true)
         .limit(limit)
         .snapshots();
+  }
+
+  /// Cria o anúncio e desconta 1 crédito do vendedor numa única transação —
+  /// ou os dois acontecem, ou nenhum. Reforçado do lado do servidor pelas
+  /// regras do Firestore (`products` exige `adCredits > 0` para criar).
+  Future<void> publishWithCredit({
+    required String sellerId,
+    required Map<String, dynamic> productData,
+  }) {
+    final userRef = _firestore.collection(FirestorePaths.users).doc(sellerId);
+    final productRef = _collection.doc();
+
+    return _firestore.runTransaction((transaction) async {
+      final userSnap = await transaction.get(userRef);
+      final credits = (userSnap.data()?['adCredits'] as num?)?.toInt() ?? 0;
+      if (credits <= 0) {
+        throw StateError('Você não tem créditos de anúncio disponíveis.');
+      }
+      transaction.update(userRef, {'adCredits': credits - 1});
+      transaction.set(productRef, productData);
+
+      final historyRef = userRef.collection('credit_transactions').doc();
+      transaction.set(historyRef, {
+        'type': 'usage',
+        'amount': -1,
+        'description': 'Criação de anúncio: ${productData['title']}',
+        'createdAt': Timestamp.now(),
+      });
+    });
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> watchByTitlePrefix(
