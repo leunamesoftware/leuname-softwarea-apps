@@ -10,31 +10,25 @@ opera tudo na Cloudflare — então o Firestore/Firebase Auth/Storage foram
 substituídos por esta API (Workers) + D1 + R2, mantendo as mesmas telas do
 app (só a camada que fala com o banco mudou).
 
-## Configuração inicial (feita UMA VEZ, manualmente, fora da esteira)
+## Status
 
-Isso precisa da conta Cloudflare de quem administra o LeuName Softwares —
-por segurança, não é algo que a esteira automática faz sozinha na primeira
-vez:
+✅ Banco D1 `leuplace-db` criado, com todas as tabelas e as 12 categorias
+já cadastradas.
+✅ Bucket R2 `leuplace-files` criado.
+⬜ Segredo do JWT ainda não configurado.
+⬜ Primeiro deploy do Worker ainda não feito.
+
+## O que falta (uma vez só, manual)
 
 ```bash
 cd cloudflare
 npm install
 
-# 1. Cria o banco D1 dedicado ao LeuPlace (separado de qualquer outro projeto)
-npx wrangler d1 create leuplace-db
-# copie o "database_id" retornado para wrangler.toml (campo database_id)
-
-# 2. Cria o bucket de arquivos
-npx wrangler r2 bucket create leuplace-files
-
-# 3. Aplica o schema (migrations/)
-npx wrangler d1 migrations apply leuplace-db --remote
-
-# 4. Define o segredo do JWT (autenticação)
+# Define o segredo do JWT (autenticação) — gere um valor aleatório longo,
+# ex.: openssl rand -base64 48
 npx wrangler secret put JWT_SECRET
-# (gere um valor aleatório longo, ex.: openssl rand -base64 48)
 
-# 5. Primeiro deploy manual (depois disso, a esteira assume)
+# Primeiro deploy manual (depois disso, a esteira assume)
 npx wrangler deploy
 ```
 
