@@ -1,0 +1,24 @@
+name = "leuplace-api"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Passo único de configuração (feito uma vez, fora da esteira, por quem tem
+# acesso à conta Cloudflare):
+#   1. wrangler d1 create leuplace-db
+#   2. Copiar o "database_id" retornado para o lugar de SUBSTITUIR_DEPOIS
+#   3. wrangler d1 migrations apply leuplace-db --remote
+#   4. wrangler r2 bucket create leuplace-files
+# A partir daí, a esteira (GitHub Actions) só faz deploy do código —
+# nunca cria/apaga recursos da conta sozinha.
+[[d1_databases]]
+binding = "DB"
+database_name = "leuplace-db"
+database_id = "SUBSTITUIR_DEPOIS"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "leuplace-files"
+
+[vars]
+ENVIRONMENT = "production"
