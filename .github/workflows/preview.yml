@@ -1,13 +1,14 @@
-name: Publicar prévia (Cloudflare Pages)
+name: Publicar prévia (GitHub Pages)
 
-# Builda a prévia visual (sem backend, dados de demonstração) e publica no
-# Cloudflare Pages a cada push na branch principal. Gera um link que
-# atualiza sozinho a cada mudança de código.
+# Builda a prévia visual do app (sem backend, dados de demonstração) e
+# publica automaticamente no GitHub Pages a cada push na branch principal.
+# Gera um link que atualiza sozinho a cada mudança de código.
 #
-# Configuração necessária (uma vez só), em Settings > Secrets and variables
-# > Actions deste repositório:
-#   CLOUDFLARE_API_TOKEN   - token com permissão "Cloudflare Pages: Edit"
-#   CLOUDFLARE_ACCOUNT_ID  - ID da conta Cloudflare (aparece no dashboard)
+# Não usa nenhuma senha/token externo — só precisa ligar o GitHub Pages
+# uma vez em: Settings > Pages > Build and deployment > Source: "GitHub Actions".
+#
+# Isto é só uma prévia visual para acompanhar o desenvolvimento. A
+# publicação de verdade (produção, Cloudflare, loja) é feita à parte.
 
 on:
   push:
@@ -17,9 +18,21 @@ on:
       - 'claude/**'
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   preview:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,11 +42,13 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build web -t lib/main_demo.dart --release --base-href /
+      - run: flutter build web -t lib/main_demo.dart --release --base-href /leuname-softwarea-apps/
 
-      - name: Publicar no Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build/web --project-name=leuplace-preview
+          path: build/web
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
