@@ -182,7 +182,7 @@ class ProductDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     ProductModel product,
   ) async {
-    final myUid = ref.read(authStateChangesProvider).value?.uid;
+    final myUid = ref.read(currentUidProvider);
     if (myUid == null) return;
 
     if (myUid == product.sellerId) {

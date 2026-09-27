@@ -12,10 +12,12 @@ import '../../core/constants/firestore_paths.dart';
 class ProductRemoteDataSource {
   ProductRemoteDataSource(this._firestore);
 
-  final FirebaseFirestore _firestore;
+  /// Nulo apenas na prévia de demonstração (sem backend real) — [FakeProductRepository]
+  /// sobrescreve todo método que o usaria, então nunca é lido de verdade.
+  final FirebaseFirestore? _firestore;
 
   CollectionReference<Map<String, dynamic>> get _collection =>
-      _firestore.collection(FirestorePaths.products);
+      _firestore!.collection(FirestorePaths.products);
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> watchById(String id) {
     return _collection.doc(id).snapshots();
@@ -66,7 +68,7 @@ class ProductRemoteDataSource {
     required String sellerId,
     required Map<String, dynamic> productData,
   }) {
-    final userRef = _firestore.collection(FirestorePaths.users).doc(sellerId);
+    final userRef = _firestore!.collection(FirestorePaths.users).doc(sellerId);
     final productRef = _collection.doc();
 
     return _firestore.runTransaction((transaction) async {

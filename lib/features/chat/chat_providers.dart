@@ -18,7 +18,7 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
 /// Conversas do usuário autenticado (comprador ou vendedor), mais recentes
 /// primeiro.
 final myChatsProvider = StreamProvider<List<ChatModel>>((ref) {
-  final uid = ref.watch(authStateChangesProvider).value?.uid;
+  final uid = ref.watch(currentUidProvider);
   if (uid == null) return Stream.value(const []);
   return ref.watch(chatRepositoryProvider).watchChatsForUser(uid);
 });

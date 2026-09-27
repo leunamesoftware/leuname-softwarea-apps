@@ -17,7 +17,7 @@ final creditRepositoryProvider = Provider<CreditRepository>((ref) {
 final creditHistoryProvider = StreamProvider<List<CreditTransactionModel>>((
   ref,
 ) {
-  final uid = ref.watch(authStateChangesProvider).value?.uid;
+  final uid = ref.watch(currentUidProvider);
   if (uid == null) return Stream.value(const []);
   return ref.watch(creditRepositoryProvider).watchHistory(uid);
 });

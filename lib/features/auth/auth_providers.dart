@@ -35,9 +35,16 @@ final authStateChangesProvider = StreamProvider<User?>((ref) {
   return ref.watch(authRepositoryProvider).authStateChanges;
 });
 
+/// Uid do usuário autenticado, sem acoplar o resto do app ao tipo `User` do
+/// Firebase — facilita trocar de backend (ou usar dados falsos numa prévia)
+/// sem tocar nas telas.
+final currentUidProvider = Provider<String?>((ref) {
+  return ref.watch(authStateChangesProvider).value?.uid;
+});
+
 /// Perfil (com papel/permissões) do usuário atualmente autenticado.
 final currentUserProfileProvider = StreamProvider<UserModel?>((ref) {
-  final uid = ref.watch(authStateChangesProvider).value?.uid;
+  final uid = ref.watch(currentUidProvider);
   if (uid == null) return Stream.value(null);
   return ref.watch(userRepositoryProvider).watchProfile(uid);
 });

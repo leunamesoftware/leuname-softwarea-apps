@@ -6,15 +6,16 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthRemoteDataSource {
   AuthRemoteDataSource(this._firebaseAuth, this._googleSignIn);
 
-  final FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
+  /// Nulos apenas na prévia de demonstração — [FakeAuthRepository] nunca lê.
+  final FirebaseAuth? _firebaseAuth;
+  final GoogleSignIn? _googleSignIn;
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<User?> get authStateChanges => _firebaseAuth!.authStateChanges();
 
-  User? get currentUser => _firebaseAuth.currentUser;
+  User? get currentUser => _firebaseAuth!.currentUser;
 
   Future<User?> createUserWithEmail(String email, String password) async {
-    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+    final credential = await _firebaseAuth!.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -22,7 +23,7 @@ class AuthRemoteDataSource {
   }
 
   Future<User?> signInWithEmail(String email, String password) async {
-    final credential = await _firebaseAuth.signInWithEmailAndPassword(
+    final credential = await _firebaseAuth!.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -30,12 +31,14 @@ class AuthRemoteDataSource {
   }
 
   Future<User?> signInWithGoogle() async {
-    final googleUser = await _googleSignIn.authenticate();
+    final googleUser = await _googleSignIn!.authenticate();
     final googleAuth = googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
       idToken: googleAuth.idToken,
     );
-    final userCredential = await _firebaseAuth.signInWithCredential(credential);
+    final userCredential = await _firebaseAuth!.signInWithCredential(
+      credential,
+    );
     return userCredential.user;
   }
 
@@ -46,7 +49,7 @@ class AuthRemoteDataSource {
     required void Function(String verificationId) onCodeSent,
     required void Function(FirebaseAuthException error) onError,
   }) {
-    return _firebaseAuth.verifyPhoneNumber(
+    return _firebaseAuth!.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (credential) async {
         await _firebaseAuth.signInWithCredential(credential);
@@ -65,16 +68,18 @@ class AuthRemoteDataSource {
       verificationId: verificationId,
       smsCode: smsCode,
     );
-    final userCredential = await _firebaseAuth.signInWithCredential(credential);
+    final userCredential = await _firebaseAuth!.signInWithCredential(
+      credential,
+    );
     return userCredential.user;
   }
 
   Future<void> updateDisplayName(String name) async {
-    await _firebaseAuth.currentUser?.updateDisplayName(name);
+    await _firebaseAuth!.currentUser?.updateDisplayName(name);
   }
 
   Future<void> signOut() async {
-    await _googleSignIn.signOut();
-    await _firebaseAuth.signOut();
+    await _googleSignIn!.signOut();
+    await _firebaseAuth!.signOut();
   }
 }

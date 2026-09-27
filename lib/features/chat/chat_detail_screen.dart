@@ -41,7 +41,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     );
     if (picked == null) return;
 
-    final myUid = ref.read(authStateChangesProvider).value?.uid;
+    final myUid = ref.read(currentUidProvider);
     if (myUid == null) return;
 
     setState(() => _sendingImage = true);
@@ -82,7 +82,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       return;
     }
 
-    final myUid = ref.read(authStateChangesProvider).value?.uid;
+    final myUid = ref.read(currentUidProvider);
     if (myUid == null) return;
 
     _controller.clear();
@@ -95,7 +95,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   Widget build(BuildContext context) {
     final chatAsync = ref.watch(chatDetailProvider(widget.chatId));
     final messagesAsync = ref.watch(chatMessagesProvider(widget.chatId));
-    final myUid = ref.watch(authStateChangesProvider).value?.uid;
+    final myUid = ref.watch(currentUidProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Conversa')),

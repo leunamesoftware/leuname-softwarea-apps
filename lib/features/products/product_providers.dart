@@ -30,7 +30,7 @@ final productDetailProvider = StreamProvider.family<ProductModel?, String>((
 });
 
 final myProductsProvider = StreamProvider<List<ProductModel>>((ref) {
-  final uid = ref.watch(authStateChangesProvider).value?.uid;
+  final uid = ref.watch(currentUidProvider);
   if (uid == null) return Stream.value(const []);
   return ref.watch(productRepositoryProvider).watchMyProducts(uid);
 });

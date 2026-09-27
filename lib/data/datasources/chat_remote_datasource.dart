@@ -6,13 +6,14 @@ import '../../core/constants/firestore_paths.dart';
 class ChatRemoteDataSource {
   ChatRemoteDataSource(this._firestore);
 
-  final FirebaseFirestore _firestore;
+  /// Nulo apenas na prévia de demonstração — [FakeChatRepository] nunca lê.
+  final FirebaseFirestore? _firestore;
 
   CollectionReference<Map<String, dynamic>> get _chats =>
-      _firestore.collection(FirestorePaths.chats);
+      _firestore!.collection(FirestorePaths.chats);
 
   CollectionReference<Map<String, dynamic>> get _messages =>
-      _firestore.collection(FirestorePaths.messages);
+      _firestore!.collection(FirestorePaths.messages);
 
   Stream<QuerySnapshot<Map<String, dynamic>>> watchChatsForUser(String uid) {
     return _chats.where('participants', arrayContains: uid).snapshots();

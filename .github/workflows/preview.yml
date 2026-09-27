@@ -1,0 +1,39 @@
+name: Publicar prévia (Cloudflare Pages)
+
+# Builda a prévia visual (sem backend, dados de demonstração) e publica no
+# Cloudflare Pages a cada push na branch principal. Gera um link que
+# atualiza sozinho a cada mudança de código.
+#
+# Configuração necessária (uma vez só), em Settings > Secrets and variables
+# > Actions deste repositório:
+#   CLOUDFLARE_API_TOKEN   - token com permissão "Cloudflare Pages: Edit"
+#   CLOUDFLARE_ACCOUNT_ID  - ID da conta Cloudflare (aparece no dashboard)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'claude/**'
+  workflow_dispatch: {}
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+
+      - run: flutter build web -t lib/main_demo.dart --release --base-href /
+
+      - name: Publicar no Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy build/web --project-name=leuplace-preview

@@ -74,7 +74,7 @@ class _CreateProductScreenState extends ConsumerState<CreateProductScreen> {
       return;
     }
 
-    final myUid = ref.read(authStateChangesProvider).value?.uid;
+    final myUid = ref.read(currentUidProvider);
     if (myUid == null) return;
 
     setState(() => _publishing = true);
