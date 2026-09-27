@@ -115,6 +115,29 @@ class ProductDetailScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          product.deliveryOption ==
+                                  DeliveryOption.deliversInRegion
+                              ? Icons.local_shipping_outlined
+                              : Icons.storefront_outlined,
+                          size: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          product.deliveryOption ==
+                                  DeliveryOption.deliversInRegion
+                              ? 'Vendedor entrega em ${product.region}'
+                              : 'Retirada no local com o vendedor',
+                          style: AppTextStyles.bodyRegular.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                     const Divider(height: 32),
                     Text('Descrição', style: AppTextStyles.titleSemiBold),
                     const SizedBox(height: 8),

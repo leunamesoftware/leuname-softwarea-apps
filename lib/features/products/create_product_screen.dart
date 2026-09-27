@@ -36,6 +36,7 @@ class _CreateProductScreenState extends ConsumerState<CreateProductScreen> {
   final List<File> _images = [];
   String? _categoryId;
   ProductCondition _condition = ProductCondition.novo;
+  DeliveryOption _deliveryOption = DeliveryOption.pickupOnly;
   int _quantity = 1;
   bool _publishing = false;
 
@@ -101,6 +102,7 @@ class _CreateProductScreenState extends ConsumerState<CreateProductScreen> {
         condition: _condition,
         quantity: _quantity,
         status: ProductStatus.active,
+        deliveryOption: _deliveryOption,
         state: 'RJ',
         city: ref.read(currentLocationLabelProvider),
         region: ref.read(currentRegionLabelProvider),
@@ -309,7 +311,35 @@ class _CreateProductScreenState extends ConsumerState<CreateProductScreen> {
               ),
               const SizedBox(height: 20),
 
-              const _SectionLabel(number: 8, label: 'Descrição do produto'),
+              const _SectionLabel(number: 8, label: 'Entrega'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _ConditionButton(
+                      label: 'Retirada no local',
+                      selected: _deliveryOption == DeliveryOption.pickupOnly,
+                      onTap: () => setState(
+                        () => _deliveryOption = DeliveryOption.pickupOnly,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _ConditionButton(
+                      label: 'Entrego em $region',
+                      selected:
+                          _deliveryOption == DeliveryOption.deliversInRegion,
+                      onTap: () => setState(
+                        () => _deliveryOption = DeliveryOption.deliversInRegion,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              const _SectionLabel(number: 9, label: 'Descrição do produto'),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _descriptionController,

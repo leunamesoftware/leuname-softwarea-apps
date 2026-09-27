@@ -17,6 +17,7 @@ class ProductModel {
   final ProductCondition condition;
   final int quantity;
   final ProductStatus status;
+  final DeliveryOption deliveryOption;
 
   // Localização (estrutura preparada para a Fase 3)
   final String state;
@@ -38,6 +39,7 @@ class ProductModel {
     this.condition = ProductCondition.usado,
     this.quantity = 1,
     this.status = ProductStatus.active,
+    this.deliveryOption = DeliveryOption.pickupOnly,
     required this.state,
     required this.city,
     required this.region,
@@ -62,6 +64,9 @@ class ProductModel {
       condition: ProductCondition.fromString(map['condition'] as String?),
       quantity: (map['quantity'] as num?)?.toInt() ?? 1,
       status: ProductStatus.fromString(map['status'] as String?),
+      deliveryOption: DeliveryOption.fromString(
+        map['deliveryOption'] as String?,
+      ),
       state: map['state'] as String? ?? '',
       city: map['city'] as String? ?? '',
       region: map['region'] as String? ?? '',
@@ -88,6 +93,7 @@ class ProductModel {
       'condition': condition.name,
       'quantity': quantity,
       'status': status.name,
+      'deliveryOption': deliveryOption.name,
       'state': state,
       'city': city,
       'region': region,
