@@ -49,6 +49,15 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
     val resultReady = _resultReady.receiveAsFlow()
 
     private val walk = WalkAnnouncer()
+
+    init {
+        // Para quem não enxerga: ao abrir a câmera, já começa a descrever sozinho.
+        viewModelScope.launch {
+            if (c.settings.current().usageType == com.leuname.lerguie.core.settings.UsageType.BLIND_LOW_VISION &&
+                _state.value.find == null
+            ) _state.update { it.copy(autoDescribe = true) }
+        }
+    }
     @Volatile private var analyzing = false
     @Volatile private var lastAnalysisAt = 0L
     @Volatile private var cloudBusy = false
@@ -73,6 +82,7 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
         lastCloudText = null
         lastCloudAt = 0L
         _state.update { it.copy(find = item, mode = VisionMode.WALK, lastAuto = null) }
+        c.speaker.speak(LanguagePacks.current().findingStart(item), "walk")
     }
 
     fun setTorch(on: Boolean) = _state.update { it.copy(torch = on) }
@@ -91,8 +101,11 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
         viewModelScope.launch {
             val mode = _state.value.mode.let { if (it == VisionMode.WALK) VisionMode.ENVIRONMENT else it }
             val known = async { c.memory.recognize(bitmap) }
+            val written = async { c.textReader.read(bitmap) }
             val result = c.sceneDescriber.describe(bitmap, mode)
-            val session = SeeSession(bitmap, mode, result, known.await())
+            val text = (written.await() as? com.leuname.lerguie.ai.ocr.OcrResult.Success)?.fullText
+                ?.replace(Regex("\\s+"), " ")?.trim()?.takeIf { it.length >= 3 }
+            val session = SeeSession(bitmap, mode, result, known.await(), text)
             if (result is VisionResult.Success || session.known != null) {
                 val pack = LanguagePacks.current()
                 val text = session.spokenText(pack, "")

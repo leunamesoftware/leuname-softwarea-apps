@@ -36,6 +36,8 @@ class SettingsRepository(private val context: Context) {
         val autoInterval = intPreferencesKey("auto_interval")
         val useCloudAi = booleanPreferencesKey("use_cloud_ai")
         val saveHistory = booleanPreferencesKey("save_history")
+        val onboarded = booleanPreferencesKey("onboarded")
+        val announceButtons = booleanPreferencesKey("announce_buttons")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { fromPrefs(it) }
@@ -61,6 +63,8 @@ class SettingsRepository(private val context: Context) {
             autoDescribeIntervalSec = p[Keys.autoInterval] ?: d.autoDescribeIntervalSec,
             useCloudAi = p[Keys.useCloudAi] ?: d.useCloudAi,
             saveHistory = p[Keys.saveHistory] ?: d.saveHistory,
+            onboarded = p[Keys.onboarded] ?: d.onboarded,
+            announceButtons = p[Keys.announceButtons] ?: d.announceButtons,
         )
     }
 
@@ -86,6 +90,8 @@ class SettingsRepository(private val context: Context) {
             p[Keys.autoInterval] = s.autoDescribeIntervalSec
             p[Keys.useCloudAi] = s.useCloudAi
             p[Keys.saveHistory] = s.saveHistory
+            p[Keys.onboarded] = s.onboarded
+            p[Keys.announceButtons] = s.announceButtons
         }
     }
 

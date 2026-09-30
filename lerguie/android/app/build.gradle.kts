@@ -34,14 +34,24 @@ android {
         applicationId = "com.leuname.lerguie"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        // No CI o número da versão vem do número da execução (atualizações de teste crescentes).
+        val buildNumber = (project.findProperty("lerguie.versionCode") as String?)?.toIntOrNull() ?: 1
+        versionCode = buildNumber
+        versionName = "1.0.$buildNumber"
+        buildConfigField("boolean", "UPDATE_CHECK", "false")
         buildConfigField("String", "API_BASE_URL", "\"${apiUrl.trimEnd('/')}\"")
         resourceConfigurations += listOf("pt-rBR", "pt")
     }
 
     val storeFilePath = signingValue("storeFile", "LERGUIE_KEYSTORE_FILE")
     signingConfigs {
+        // Chave SÓ para APKs de teste (atualizações instaláveis por cima). Nunca usar na Play Store.
+        create("beta") {
+            storeFile = file("teste.keystore")
+            storePassword = "lerguie-teste"
+            keyAlias = "lerguie-teste"
+            keyPassword = "lerguie-teste"
+        }
         if (storeFilePath != null) {
             create("release") {
                 storeFile = file(storeFilePath)
@@ -60,11 +70,12 @@ android {
             if (storeFilePath != null) signingConfig = signingConfigs.getByName("release")
         }
         // APK de TESTE para instalar direto no celular: otimizado como o release (menor e
-        // mais rápido), mas assinado com a chave de depuração. Nunca enviar à Play Store.
-        create("teste") {
+        // mais rápido), assinado com a chave de teste e com atualização automática pelo GitHub.
+        create("beta") {
             initWith(getByName("release"))
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("beta")
             matchingFallbacks += "release"
+            buildConfigField("boolean", "UPDATE_CHECK", "true")
         }
     }
 

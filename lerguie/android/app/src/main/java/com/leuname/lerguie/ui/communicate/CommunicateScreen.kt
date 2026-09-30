@@ -67,6 +67,7 @@ import com.leuname.lerguie.R
 import com.leuname.lerguie.ai.libras.ModuleStatus
 import com.leuname.lerguie.core.settings.AppSettings
 import com.leuname.lerguie.core.settings.DisplayPreference
+import com.leuname.lerguie.core.settings.UsageType
 import com.leuname.lerguie.core.util.Sharing
 import com.leuname.lerguie.core.voice.VoiceCommand
 import com.leuname.lerguie.ui.appContainer
@@ -121,6 +122,7 @@ fun CommunicateScreen(nav: NavHostController) {
             Modifier.fillMaxSize().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            val mePanel: @Composable () -> Unit = {
             // ---------- Eu me comunico ----------
             Panel(Icons.Filled.PanTool, LocalBrand.current.readGradient.first(), stringResource(R.string.comm_me_title), stringResource(R.string.comm_me_desc)) {
                 ModeSelector(
@@ -162,6 +164,8 @@ fun CommunicateScreen(nav: NavHostController) {
                 }
             }
 
+            }
+            val otherPanel: @Composable () -> Unit = {
             // ---------- Entendo a resposta ----------
             Panel(Icons.Filled.RecordVoiceOver, LocalBrand.current.listenGradient.first(), stringResource(R.string.comm_other_title), stringResource(R.string.comm_other_desc)) {
                 HoldToTalkButton(
@@ -199,6 +203,14 @@ fun CommunicateScreen(nav: NavHostController) {
                         BigButton(stringResource(R.string.fullscreen), Icons.Filled.Fullscreen, { fullscreen = reply }, Modifier.weight(1f), ButtonKind.TONAL, vertical = true)
                     }
                 }
+            }
+
+            }
+            // Surdo que fala: o principal é entender a resposta, então vem primeiro.
+            if (settings.usageType == UsageType.DEAF_SPEAKING) {
+                otherPanel(); mePanel()
+            } else {
+                mePanel(); otherPanel()
             }
 
             // ---------- Conversa ----------

@@ -30,7 +30,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.leuname.lerguie.R
 import com.leuname.lerguie.core.voice.VoiceCommand
+import com.leuname.lerguie.ui.ask.AskHelpScreen
 import com.leuname.lerguie.ui.communicate.CommunicateScreen
+import com.leuname.lerguie.ui.onboarding.OnboardingScreen
 import com.leuname.lerguie.ui.history.HistoryScreen
 import com.leuname.lerguie.ui.home.HomeScreen
 import com.leuname.lerguie.ui.listen.ListenScreen
@@ -54,6 +56,9 @@ object Routes {
     const val COMMUNICATE = "communicate"
     const val SETTINGS = "settings"
     const val MEMORY = "memory"
+    const val ONBOARDING = "onboarding"
+    const val ASK = "ask?item={item}"
+    fun ask(item: String) = "ask?item=" + android.net.Uri.encode(item)
     const val TEACH = "memory/teach"
     const val HISTORY = "history?favorites={favorites}"
     fun history(favorites: Boolean) = "history?favorites=$favorites"
@@ -93,7 +98,7 @@ fun NavHostController.handleVoiceNavigation(command: VoiceCommand): Boolean {
 }
 
 @Composable
-fun LerguieNavHost(nav: NavHostController = rememberNavController()) {
+fun LerguieNavHost(startOnboarding: Boolean = false, nav: NavHostController = rememberNavController()) {
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
     val favoritesArg = entry?.arguments?.getBoolean("favorites") ?: false
@@ -126,7 +131,12 @@ fun LerguieNavHost(nav: NavHostController = rememberNavController()) {
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            NavHost(navController = nav, startDestination = Routes.HOME) {
+            NavHost(navController = nav, startDestination = if (startOnboarding) Routes.ONBOARDING else Routes.HOME) {
+                composable(Routes.ONBOARDING) { OnboardingScreen(nav) }
+                composable(
+                    Routes.ASK,
+                    arguments = listOf(navArgument("item") { type = NavType.StringType; defaultValue = "" }),
+                ) { e -> AskHelpScreen(nav, e.arguments?.getString("item").orEmpty()) }
                 composable(Routes.HOME) { HomeScreen(nav) }
                 composable(
                     Routes.SEE,

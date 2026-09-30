@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.leuname.lerguie.R
+import com.leuname.lerguie.ui.theme.LocalAnnouncer
 import com.leuname.lerguie.ui.theme.LocalBrand
 import com.leuname.lerguie.ui.theme.LocalUiPrefs
 
@@ -55,6 +56,7 @@ fun BigButton(
     val brand = LocalBrand.current
     val scheme = MaterialTheme.colorScheme
     val shape = RoundedCornerShape(18.dp)
+    val announce = LocalAnnouncer.current
     val (bg, fg) = when (kind) {
         ButtonKind.PRIMARY -> Brush.horizontalGradient(brand.actionGradient) to
             (if (brand.highContrast) Color.Black else Color.White)
@@ -75,7 +77,7 @@ fun BigButton(
             .clip(shape)
             .background(bg, shape)
             .then(if (brand.highContrast) Modifier.border(2.dp, Color.White, shape) else Modifier)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = { announce(text); onClick() })
             .semantics { if (accessibilityLabel != null) contentDescription = accessibilityLabel }
             .padding(horizontal = 12.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center,

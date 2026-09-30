@@ -231,6 +231,29 @@
     <string name="assistant_listening">Ouvindo… solte quando terminar</string>
     <string name="comm_hold_other">Segure enquanto a outra pessoa fala</string>
     <string name="find_active">Procurando: %1$s. Aponte a câmera para frente e vire devagar; eu aviso quando encontrar.</string>
+    <string name="usage_cannot_read">Não sei ler (tudo por voz)</string>
+    <string name="usage_adapts">O Lerguie se adapta ao perfil: voz, leitura automática, ordem das funções e vibração.</string>
+    <string name="announce_buttons">Falar o nome dos botões</string>
+    <string name="announce_buttons_desc">Ao tocar, o Lerguie fala o nome do botão (útil para quem não lê).</string>
+    <string name="onboarding_title">Como você vai usar o Lerguie?</string>
+    <string name="onboarding_hold">Segure e diga: sou cego, sou surdo, não falo ou não sei ler</string>
+    <string name="onboarding_spoken">Bem-vindo ao Lerguie, o mundo com você. Para começar, segure o botão grande no alto da tela e diga, por exemplo: sou cego, sou surdo, não falo, ou não sei ler. Depois solte o botão.</string>
+    <string name="onboarding_not_understood">Não entendi. Segure o botão e diga: sou cego, sou surdo, não falo ou não sei ler.</string>
+    <string name="onboarding_ready">Pronto. Perfil escolhido: %1$s. Na tela inicial, segure o botão grande no alto e diga o que você precisa, por exemplo: o que estou vendo, ou quero um leite.</string>
+    <string name="ask_title">Procurar: %1$s</string>
+    <string name="ask_intro">Procurar %1$s. Toque na metade de cima da tela para eu perguntar a alguém por perto. Toque na metade de baixo para eu procurar com a câmera.</string>
+    <string name="ask_someone">Perguntar a alguém por perto</string>
+    <string name="ask_again">Perguntar de novo</string>
+    <string name="ask_camera">Procurar %1$s com a câmera</string>
+    <string name="ask_listening">Ouvindo a resposta da pessoa…</string>
+    <string name="ask_after_answer">Quando chegar lá, toque na metade de baixo da tela para eu procurar com a câmera</string>
+    <string name="ask_no_answer">Não ouvi a resposta. Toque na metade de cima para perguntar de novo.</string>
+    <string name="section_written">O que está escrito</string>
+    <string name="tap_to_describe">Toque na imagem para descrever o que está na frente: o que é, a cor e o que está escrito</string>
+    <string name="tap_to_read">Toque na imagem para ler o texto</string>
+    <string name="update_available">Nova versão do Lerguie disponível.</string>
+    <string name="update_now">Atualizar agora</string>
+    <string name="update_downloading">Baixando… %1$d%%</string>
     <string-array name="quick_phrases">
         <item>Onde fica o banheiro?</item>
         <item>Quanto custa?</item>

@@ -1,5 +1,6 @@
 package com.leuname.lerguie.i18n
 
+import com.leuname.lerguie.core.settings.UsageType
 import com.leuname.lerguie.core.voice.VoiceCommand
 
 /** Pacote de idioma Português (Brasil) — idioma padrão e fallback. */
@@ -57,6 +58,16 @@ object PtBrLanguagePack : LanguagePack {
     override val fillerWords = setOf("o", "a", "os", "as", "um", "uma", "uns", "umas", "de", "do", "da", "ao", "aos", "para", "pra", "pro", "no", "na", "meu", "minha", "chego", "ate")
     override fun findingStart(item: String) = "Procurando $item. Aponte a câmera para frente e vire devagar. Eu aviso quando encontrar."
     override fun found(text: String) = "Encontrei: $text"
+    override fun writtenText(text: String) = "Está escrito: $text"
+    override fun askQuestion(item: String) = "Olá, com licença. Estou procurando $item. Pode me dizer onde fica? Por favor, fale perto do celular."
+    override fun theyAnswered(text: String) = "A pessoa disse: $text"
+    override val profileWords = listOf(
+        UsageType.CANNOT_READ to listOf("nao sei ler", "nao leio", "ler nao"),
+        UsageType.DEAF_NONSPEAKING to listOf("surdo e mudo", "surda e muda", "nao falo", "mudo", "muda"),
+        UsageType.DEAF_SPEAKING to listOf("surdo", "surda", "nao escuto", "nao ouco"),
+        UsageType.BLIND_LOW_VISION to listOf("cego", "cega", "nao enxergo", "nao vejo", "baixa visao", "enxergo pouco"),
+        UsageType.HEARING to listOf("normal", "enxergo e ouco", "ajudante", "familiar"),
+    )
     override fun navigatingStart(place: String) = "Abrindo a navegação a pé até $place. As instruções de rua serão faladas pelo Google Maps. Volte ao Lerguie no modo Caminhar para eu avisar os obstáculos."
 
     override val voiceCommands: List<Pair<VoiceCommand, List<String>>> = listOf(

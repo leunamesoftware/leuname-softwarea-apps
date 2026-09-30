@@ -59,6 +59,9 @@ data class UiPrefs(val largeButtons: Boolean = true, val autoRead: Boolean = tru
 val LocalBrand = staticCompositionLocalOf { brandFor(highContrast = false) }
 val LocalUiPrefs = staticCompositionLocalOf { UiPrefs() }
 
+/** Fala o nome de um botão ao tocar (ativo só no perfil "não sei ler"). */
+val LocalAnnouncer = staticCompositionLocalOf<(String) -> Unit> { {} }
+
 private fun brandFor(highContrast: Boolean): Brand = if (highContrast) {
     val y = Color(0xFFFFD600)
     Brand(

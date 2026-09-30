@@ -92,9 +92,9 @@ fun SeeResultScreen(nav: NavHostController) {
     }
 
     fun save() {
-        if (result !is VisionResult.Success && known == null) return
+        if (result !is VisionResult.Success && known == null && session.writtenText == null) return
         scope.launch {
-            val title = known?.name ?: SceneSpeech.headline((result as VisionResult.Success).scene)
+            val title = known?.name ?: (result as? VisionResult.Success)?.scene?.let { SceneSpeech.headline(it) } ?: session.writtenText.orEmpty().take(80)
             session.historyId = container.history.saveFavorite(
                 session.historyId, HistoryCategory.DESCRIPTION, title, fullText, session.image,
             )
@@ -128,6 +128,11 @@ fun SeeResultScreen(nav: NavHostController) {
                 val t = if (known.level == MatchLevel.SURE) pack.knownSure(known.name) else pack.knownLikely(known.name)
                 ResultSection(Icons.Filled.School, Palette.Orange, stringResource(R.string.section_known), t, highlighted = true) {
                     SpeakButton(t, speaker.speakingId == "known", { container.speaker.speak(t, "known") }, { container.speaker.stop() })
+                }
+            }
+            session.writtenText?.let { t ->
+                ResultSection(Icons.AutoMirrored.Filled.Notes, Palette.Violet, stringResource(R.string.section_written), t) {
+                    SpeakButton(t, speaker.speakingId == "written", { container.speaker.speak(t, "written") }, { container.speaker.stop() })
                 }
             }
             when (result) {
@@ -164,13 +169,13 @@ fun SeeResultScreen(nav: NavHostController) {
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                 }
-                else -> if (known == null) InfoBanner(fullText, warning = true)
+                else -> if (known == null && session.writtenText == null) InfoBanner(fullText, warning = true)
             }
         }
         Column(Modifier.navigationBarsPadding().padding(16.dp)) {
             ActionGrid(
                     { m -> BigButton(stringResource(R.string.take_another), Icons.Filled.CameraAlt, { nav.popBackStack() }, m) },
-                    { m -> BigButton(stringResource(if (saved) R.string.saved else R.string.save), Icons.Filled.Favorite, { save() }, m, enabled = (result is VisionResult.Success || known != null) && !saved) },
+                    { m -> BigButton(stringResource(if (saved) R.string.saved else R.string.save), Icons.Filled.Favorite, { save() }, m, enabled = (result is VisionResult.Success || known != null || session.writtenText != null) && !saved) },
                     { m -> BigButton(shareTitle, Icons.Filled.Share, { Sharing.shareText(context, fullText, shareTitle) }, m) },
                     { m -> BigButton(stringResource(R.string.listen_again), Icons.AutoMirrored.Filled.VolumeUp, { speakAll() }, m, ButtonKind.PRIMARY) },
             )

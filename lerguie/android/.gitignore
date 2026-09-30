@@ -10,3 +10,4 @@ captures/
 *.keystore
 keystore.properties
 app/src/main/assets/models/
+!app/teste.keystore

@@ -98,10 +98,12 @@ fun SettingsScreen(nav: NavHostController) {
                         UsageType.BLIND_LOW_VISION to stringResource(R.string.usage_blind),
                         UsageType.DEAF_NONSPEAKING to stringResource(R.string.usage_deaf_nonspeaking),
                         UsageType.DEAF_SPEAKING to stringResource(R.string.usage_deaf_speaking),
+                        UsageType.CANNOT_READ to stringResource(R.string.usage_cannot_read),
                         UsageType.HEARING to stringResource(R.string.usage_hearing),
                     ),
                     s.usageType,
-                ) { u -> update { it.copy(usageType = u) } }
+                ) { u -> update { it.withProfile(u) } }
+                Text(stringResource(R.string.usage_adapts), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
             }
 
             Section(stringResource(R.string.settings_display)) {
@@ -137,6 +139,7 @@ fun SettingsScreen(nav: NavHostController) {
                 ) { t -> update { it.copy(themeMode = t) } }
                 ToggleRow(stringResource(R.string.vibration), stringResource(R.string.vibration_desc), s.vibration) { v -> update { it.copy(vibration = v) } }
                 ToggleRow(stringResource(R.string.auto_read), stringResource(R.string.auto_read_desc), s.autoRead) { v -> update { it.copy(autoRead = v) } }
+                ToggleRow(stringResource(R.string.announce_buttons), stringResource(R.string.announce_buttons_desc), s.announceButtons) { v -> update { it.copy(announceButtons = v) } }
             }
 
             Section(stringResource(R.string.settings_voice)) {

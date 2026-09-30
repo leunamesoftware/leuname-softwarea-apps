@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -129,6 +132,15 @@ private fun SeeCameraContent(nav: NavHostController, hint: String, find: String)
         ) {
             CameraPreview(controller, Modifier.fillMaxSize())
             FrameCorners()
+            // Toque em qualquer lugar da imagem para descrever (o que é, cor e o que está escrito).
+            val tapLabel = stringResource(R.string.tap_to_describe)
+            Box(
+                Modifier.fillMaxSize().clickable(onClickLabel = tapLabel) {
+                    scope.launch {
+                        runCatching { controller.capture(context) }.onSuccess { vm.analyze(it) }.onFailure { vm.captureFailed() }
+                    }
+                }.semantics { contentDescription = tapLabel },
+            )
             CameraHint(state.lastAuto ?: hint, Modifier.align(Alignment.TopStart).padding(12.dp))
             if (state.busy) {
                 Surface(Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f), shape = RoundedCornerShape(24.dp)) {

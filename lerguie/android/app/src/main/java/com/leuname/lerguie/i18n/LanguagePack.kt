@@ -39,6 +39,12 @@ interface LanguagePack {
     fun findingStart(item: String): String
     fun navigatingStart(place: String): String
     fun found(text: String): String
+    fun writtenText(text: String): String
+    /** Pergunta falada em voz alta para alguém por perto. */
+    fun askQuestion(item: String): String
+    fun theyAnswered(text: String): String
+    /** Palavras que indicam cada perfil, para escolher por voz na primeira vez. */
+    val profileWords: List<Pair<com.leuname.lerguie.core.settings.UsageType, List<String>>>
 
     fun sure(thing: Term): String
     fun likely(thing: Term): String

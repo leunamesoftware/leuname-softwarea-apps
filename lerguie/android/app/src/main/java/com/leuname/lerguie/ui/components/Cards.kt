@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.leuname.lerguie.ui.theme.LocalAnnouncer
 import com.leuname.lerguie.ui.theme.LocalBrand
 import com.leuname.lerguie.ui.theme.Palette
 
@@ -52,13 +53,14 @@ fun FeatureCard(
 ) {
     val brand = LocalBrand.current
     val shape = RoundedCornerShape(24.dp)
+    val announce = LocalAnnouncer.current
     Box(
         modifier = modifier
             .heightIn(min = 170.dp)
             .clip(shape)
             .background(Brush.linearGradient(gradient), shape)
             .then(if (brand.highContrast) Modifier.border(3.dp, brand.accent, shape) else Modifier)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(role = Role.Button, onClick = { announce(title); onClick() })
             .semantics(mergeDescendants = true) { contentDescription = "$title. $subtitle" }
             .padding(16.dp),
     ) {

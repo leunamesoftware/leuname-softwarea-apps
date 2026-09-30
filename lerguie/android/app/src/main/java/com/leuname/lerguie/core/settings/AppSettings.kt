@@ -1,6 +1,6 @@
 package com.leuname.lerguie.core.settings
 
-enum class UsageType { BLIND_LOW_VISION, DEAF_NONSPEAKING, DEAF_SPEAKING, HEARING }
+enum class UsageType { BLIND_LOW_VISION, DEAF_NONSPEAKING, DEAF_SPEAKING, CANNOT_READ, HEARING }
 
 enum class DisplayPreference { TEXT, LIBRAS, BOTH }
 
@@ -26,7 +26,28 @@ data class AppSettings(
     val autoDescribeIntervalSec: Int = 5,
     val useCloudAi: Boolean = true,
     val saveHistory: Boolean = false,
+    /** Primeira escolha de perfil já feita. */
+    val onboarded: Boolean = false,
+    /** Fala o nome do botão ao tocar (para quem não lê). */
+    val announceButtons: Boolean = false,
 ) {
+    /** Quem precisa ouvir tudo (não enxerga ou não lê). */
+    val voiceFirst: Boolean get() = usageType == UsageType.BLIND_LOW_VISION || usageType == UsageType.CANNOT_READ
+    val deaf: Boolean get() = usageType == UsageType.DEAF_NONSPEAKING || usageType == UsageType.DEAF_SPEAKING
+
+    /** Ajustes recomendados para cada perfil (a pessoa pode mudar depois em Ajustes). */
+    fun withProfile(u: UsageType): AppSettings = when (u) {
+        UsageType.BLIND_LOW_VISION -> copy(usageType = u, autoRead = true, speakReplies = true, readingGuidance = true,
+            largeButtons = true, vibration = true, announceButtons = false, displayPreference = DisplayPreference.TEXT)
+        UsageType.CANNOT_READ -> copy(usageType = u, autoRead = true, speakReplies = true, readingGuidance = false,
+            largeButtons = true, announceButtons = true, displayPreference = DisplayPreference.TEXT)
+        UsageType.DEAF_NONSPEAKING -> copy(usageType = u, autoRead = false, speakReplies = false, vibration = true,
+            announceButtons = false, textScale = maxOf(textScale, 1.2f), displayPreference = DisplayPreference.BOTH)
+        UsageType.DEAF_SPEAKING -> copy(usageType = u, autoRead = false, speakReplies = false, vibration = true,
+            announceButtons = false, textScale = maxOf(textScale, 1.2f))
+        UsageType.HEARING -> copy(usageType = u, announceButtons = false)
+    }.copy(onboarded = true)
+
     companion object {
         const val MIN_TEXT_SCALE = 0.8f
         const val MAX_TEXT_SCALE = 2f

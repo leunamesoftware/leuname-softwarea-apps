@@ -118,8 +118,8 @@ fun rememberVoiceAssistant(nav: NavHostController): VoiceAssistant {
             VoiceCommand.FIND -> {
                 val item = parsed.argument.orEmpty()
                 container.haptics.play(HapticEvent.CONFIRM)
-                container.speaker.speak(pack.findingStart(item))
-                nav.navigate(Routes.see(find = item))
+                // Perguntar a alguém ou procurar com a câmera (tela dividida em duas metades).
+                nav.navigate(Routes.ask(item))
             }
             VoiceCommand.NAVIGATE -> {
                 val place = parsed.argument.orEmpty()

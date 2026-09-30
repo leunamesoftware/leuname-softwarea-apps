@@ -22,6 +22,7 @@ import com.leuname.lerguie.core.plans.EntitlementRepository
 import com.leuname.lerguie.core.plans.Feature
 import com.leuname.lerguie.core.settings.SettingsRepository
 import com.leuname.lerguie.core.speech.Speaker
+import com.leuname.lerguie.core.update.AppUpdater
 import com.leuname.lerguie.core.voice.VoiceCommandBus
 import com.leuname.lerguie.data.db.LerguieDatabase
 import com.leuname.lerguie.data.history.HistoryRepository
@@ -70,6 +71,7 @@ class AppContainer(context: Context) {
     val signPresenter: SignLanguagePresenter = UnavailableSignLanguagePresenter()
 
     val session = SessionStore()
+    val updater = AppUpdater(appContext)
     val voiceCommands = VoiceCommandBus()
 
     init {

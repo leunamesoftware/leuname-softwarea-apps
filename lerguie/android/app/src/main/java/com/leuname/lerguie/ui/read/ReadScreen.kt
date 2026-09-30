@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -133,6 +136,14 @@ private fun ReadCameraContent(nav: NavHostController, initialMode: ReadMode, def
         ) {
             CameraPreview(controller, Modifier.fillMaxSize())
             FrameCorners()
+            val tapLabel = stringResource(R.string.tap_to_read)
+            Box(
+                Modifier.fillMaxSize().clickable(onClickLabel = tapLabel) {
+                    scope.launch {
+                        runCatching { controller.capture(context, maxSide = 2400) }.onSuccess { vm.capture(it) }.onFailure { vm.captureFailed() }
+                    }
+                }.semantics { contentDescription = tapLabel },
+            )
             CameraHint(modeHint, Modifier.align(Alignment.BottomCenter).padding(12.dp))
             if (state.busy) {
                 Surface(Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f), shape = RoundedCornerShape(24.dp)) {

@@ -16,6 +16,8 @@ data class SeeSession(
     val mode: VisionMode,
     val result: VisionResult,
     val known: KnownMatch? = null,
+    /** Texto escrito no objeto (OCR no aparelho), ex.: rótulo, embalagem, papel. */
+    val writtenText: String? = null,
     var historyId: Long? = null,
 ) {
     /** Texto completo falado: alerta, objeto ensinado (se houver) e a descrição. */
@@ -28,9 +30,11 @@ data class SeeSession(
                     if (scene.hazards.isNotEmpty()) add(pack.attention(scene.hazards))
                     knownText?.let { add(it) }
                     add(SceneSpeech.compose(scene.copy(hazards = emptyList()), pack))
+                    writtenText?.let { add(pack.writtenText(it.take(MAX_SPOKEN_TEXT))) }
                 }.joinToString(" ")
             }
-            else -> knownText ?: notRecognized
+            else -> listOfNotNull(knownText, writtenText?.let { pack.writtenText(it.take(MAX_SPOKEN_TEXT)) })
+                .joinToString(" ").ifBlank { notRecognized }
         }
     }
 }
@@ -43,6 +47,8 @@ data class ReadSession(
     val productName: String? = null,
     var historyId: Long? = null,
 )
+
+private const val MAX_SPOKEN_TEXT = 400
 
 /** Resultados em memória entre a tela de câmera e a tela de resultado. Nada é persistido aqui. */
 class SessionStore {
