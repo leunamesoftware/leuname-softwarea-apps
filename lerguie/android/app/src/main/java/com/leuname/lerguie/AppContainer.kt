@@ -12,6 +12,7 @@ import com.leuname.lerguie.ai.libras.UnavailableSignLanguageRecognizer
 import com.leuname.lerguie.ai.ocr.TextReader
 import com.leuname.lerguie.ai.vision.CloudSceneDescriber
 import com.leuname.lerguie.ai.vision.HybridSceneDescriber
+import com.leuname.lerguie.ai.vision.ObjectClassifier
 import com.leuname.lerguie.ai.vision.OnDeviceSceneDescriber
 import com.leuname.lerguie.ai.vision.RealtimeDetector
 import com.leuname.lerguie.core.billing.PlayBillingGateway
@@ -55,7 +56,7 @@ class AppContainer(context: Context) {
 
     val realtimeDetector = RealtimeDetector(appContext)
     val sceneDescriber = HybridSceneDescriber(
-        onDevice = OnDeviceSceneDescriber(realtimeDetector),
+        onDevice = OnDeviceSceneDescriber(realtimeDetector, ObjectClassifier(appContext)),
         cloud = CloudSceneDescriber(api),
         connectivity = connectivity,
         settings = settings,

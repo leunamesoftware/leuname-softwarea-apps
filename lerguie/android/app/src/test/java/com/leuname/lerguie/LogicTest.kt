@@ -106,6 +106,24 @@ class OnDeviceComposerTest {
         assertTrue(SceneSpeech.compose(r.scene, pack).startsWith("Atenção."))
     }
 
+    @Test fun classifierNamesTheObjectPrecisely() {
+        val towel = OnDeviceComposer.compose(emptyList(), emptyList(), ColorName.BLUE, VisionMode.OBJECT, pack,
+            listOf(com.leuname.lerguie.ai.vision.ClassHit(434, 0.82f))) as VisionResult.Success
+        assertEquals("É uma toalha.", towel.scene.identified)
+        val nail = OnDeviceComposer.compose(emptyList(), emptyList(), null, VisionMode.OBJECT, pack,
+            listOf(com.leuname.lerguie.ai.vision.ClassHit(677, 0.75f))) as VisionResult.Success
+        assertEquals("É um prego.", nail.scene.identified)
+        assertTrue(nail.scene.hazards.isNotEmpty())
+        val wardrobe = OnDeviceComposer.compose(emptyList(), emptyList(), null, VisionMode.OBJECT, pack,
+            listOf(com.leuname.lerguie.ai.vision.ClassHit(894, 0.55f))) as VisionResult.Success
+        assertEquals("Parece ser um guarda-roupa.", wardrobe.scene.identified)
+    }
+
+    @Test fun lowClassScoreIsIgnored() {
+        assertEquals(VisionResult.NotRecognized, OnDeviceComposer.compose(emptyList(), emptyList(), null, VisionMode.OBJECT, pack,
+            listOf(com.leuname.lerguie.ai.vision.ClassHit(434, 0.1f))))
+    }
+
     @Test fun knifeIsHazard() {
         val r = OnDeviceComposer.compose(emptyList(), listOf(det("knife", 0.8f, 0.4f, 0.4f, 0.5f, 0.5f)), null, VisionMode.OBJECT, pack) as VisionResult.Success
         assertTrue(r.scene.hazards.any { it.contains("faca") })

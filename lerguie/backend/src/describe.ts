@@ -28,7 +28,7 @@ const SCENE_SCHEMA = {
   },
 } as const;
 
-const SYSTEM_PROMPT = `You describe photos for people who are blind or have low vision, inside the accessibility app Lerguie. The person is holding the phone camera, so "left", "right" and "in front" are relative to the camera. Your words are read aloud by a screen reader, so write short, plain sentences with no markdown.
+export const SYSTEM_PROMPT = `You describe photos for people who are blind or have low vision, inside the accessibility app Lerguie. The person is holding the phone camera, so "left", "right" and "in front" are relative to the camera. Your words are read aloud by a screen reader, so write short, plain sentences with no markdown.
 
 Honesty matters more than completeness: a wrong description can mislead someone who cannot check it. Describe only what is visible. When you are not sure what something is, say so and lower "confidence" instead of guessing. If the image is too dark, blurred or unclear to describe safely, return an empty "identified" and "low" confidence.
 
@@ -43,7 +43,7 @@ Fields:
 
 About people: never identify anyone by name and never guess identity, ethnicity, health, religion or other sensitive traits. You may describe approximate age range, clothing, posture, facial expression and what the person is doing.`;
 
-const MODE_HINT: Record<Mode, string> = {
+export const MODE_HINT: Record<Mode, string> = {
   walk: 'The person is WALKING with the camera pointing ahead. Be very brief: "identified" is one short sentence about the path ahead (e.g. "Corredor livre à frente, porta à direita a cerca de 3 metros."). Mention doors, walls, stairs, curbs, poles, obstacles, people and vehicles with side and approximate distance in meters. Leave description, environment, action and colors empty.',
   object: 'Focus on the main object or animal in the center of the image.',
   person: 'Focus on the people in the image, following the rules about people.',
@@ -51,6 +51,24 @@ const MODE_HINT: Record<Mode, string> = {
 };
 
 export class NotDescribableError extends Error {}
+
+export function targetHint(target?: string): string {
+  return target
+    ? ` The person is looking for this item: "${target}". Start "identified" by saying clearly whether it is visible and exactly where (left/right/center, shelf height, approximate distance). If it is not visible, say so and suggest turning slowly. Never claim it is visible unless you can see it.`
+    : '';
+}
+
+export function normalizeResult(parsed: Partial<SceneResult>): SceneResult {
+  return {
+    identified: String(parsed.identified ?? ''),
+    description: String(parsed.description ?? ''),
+    environment: String(parsed.environment ?? ''),
+    action: String(parsed.action ?? ''),
+    colors: String(parsed.colors ?? ''),
+    hazards: Array.isArray(parsed.hazards) ? parsed.hazards.map(String).filter(Boolean).slice(0, 3) : [],
+    confidence: parsed.confidence && ['high', 'medium', 'low'].includes(parsed.confidence) ? parsed.confidence : 'low',
+  };
+}
 
 export async function describeImage(
   apiKey: string,
@@ -80,9 +98,7 @@ export async function describeImage(
             type: 'text',
             text:
               `${MODE_HINT[mode]} Write every field in this language: ${locale}.` +
-              (target
-                ? ` The person is looking for this item: "${target}". Start "identified" by saying clearly whether it is visible and exactly where (left/right/center, shelf height, approximate distance). If it is not visible, say so and suggest turning slowly. Never claim it is visible unless you can see it.`
-                : ''),
+              targetHint(target),
           },
         ],
       },
@@ -92,14 +108,5 @@ export async function describeImage(
   if (response.stop_reason === 'refusal' || response.stop_reason === 'max_tokens') throw new NotDescribableError(response.stop_reason);
   const text = response.content.find((b) => b.type === 'text');
   if (!text || text.type !== 'text') throw new NotDescribableError('no_text');
-  const parsed = JSON.parse(text.text) as SceneResult;
-  return {
-    identified: String(parsed.identified ?? ''),
-    description: String(parsed.description ?? ''),
-    environment: String(parsed.environment ?? ''),
-    action: String(parsed.action ?? ''),
-    colors: String(parsed.colors ?? ''),
-    hazards: Array.isArray(parsed.hazards) ? parsed.hazards.map(String).slice(0, 3) : [],
-    confidence: ['high', 'medium', 'low'].includes(parsed.confidence) ? parsed.confidence : 'low',
-  };
+  return normalizeResult(JSON.parse(text.text) as SceneResult);
 }

@@ -20,15 +20,22 @@ simple = { limit = 12, period = 60 }
 # binding = "USAGE"
 # id = "COLOQUE_AQUI_O_ID_DO_KV"
 
+# IA grátis da Cloudflare (Workers AI) para descrever imagens.
+[ai]
+binding = "AI"
+
 [vars]
 ENVIRONMENT = "production"
-# Modelo de IA para descrever imagens (pode ser trocado sem nova versão do app).
+# "free" = Workers AI (Gemma 4, grátis na cota diária). "anthropic" = Claude (pago, requer chave).
+AI_PROVIDER = "free"
+FREE_VISION_MODEL = "@cf/google/gemma-4-26b-a4b-it"
+# Usado só se AI_PROVIDER = "anthropic".
 CLAUDE_MODEL = "claude-opus-5-5"
 # Pacote Android (usado na validação de assinaturas do Google Play).
 ANDROID_PACKAGE = "com.leuname.lerguie"
 
 # SEGREDOS (nunca no código) — configure com `npx wrangler secret put NOME`:
-#   ANTHROPIC_API_KEY                   chave da API da Anthropic
+#   ANTHROPIC_API_KEY                   (opcional) chave da Anthropic, só se AI_PROVIDER = "anthropic"
 #   SESSION_SECRET                      texto aleatório longo (assina os tokens do app)
 #   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON    (futuro, assinaturas) JSON da conta de serviço
 #   PLANS_JSON                          (opcional) catálogo de planos; ver src/plans.ts

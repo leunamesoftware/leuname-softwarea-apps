@@ -141,6 +141,8 @@ object PtBrLanguagePack : LanguagePack {
         "Fireworks" to m("fogos de artifício"),
     )
 
+    override fun imagenet(index: Int): Term? = ImageNetPtBr.term(index)
+
     override val cocoLabels: Map<String, Term> = mapOf(
         "person" to f("pessoa"), "bicycle" to f("bicicleta"), "car" to m("carro"), "motorcycle" to f("moto"),
         "airplane" to m("avião"), "bus" to m("ônibus"), "train" to m("trem"), "truck" to m("caminhão"), "boat" to m("barco"),

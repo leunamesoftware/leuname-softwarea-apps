@@ -25,6 +25,7 @@ object OnDeviceComposer {
     private const val MIN_LABEL_CONFIDENCE = 0.7f
     private const val MIN_DETECTION_SCORE = 0.55f
     private const val MIN_HAZARD_SCORE = 0.7f
+    private const val MIN_CLASS_SCORE = 0.3f
     val vehicles = setOf("car", "motorcycle", "bus", "truck", "bicycle", "train")
 
     fun position(box: ObjectBox): Position = when {
@@ -57,6 +58,7 @@ object OnDeviceComposer {
         color: ColorName?,
         mode: VisionMode,
         pack: LanguagePack,
+        classes: List<ClassHit> = emptyList(),
     ): VisionResult {
         val ranked = rank(detections.filter { it.score >= MIN_DETECTION_SCORE && pack.cocoLabels.containsKey(it.label) })
         val dets = if (mode == VisionMode.PERSON) ranked.sortedByDescending { it.label == "person" } else ranked
@@ -66,7 +68,11 @@ object OnDeviceComposer {
             .mapNotNull { hit -> pack.labels[hit.text]?.let { hit to it } }
             .distinctBy { it.second.name }
 
-        if (dets.isEmpty() && translated.isEmpty()) return VisionResult.NotRecognized
+        // Objeto apontado (classificador de 1000 tipos): o nome mais específico possível.
+        val topClass = classes.filter { it.score >= MIN_CLASS_SCORE }.maxByOrNull { it.score }
+            ?.let { hit -> pack.imagenet(hit.index)?.let { hit to it } }
+
+        if (dets.isEmpty() && translated.isEmpty() && topClass == null) return VisionResult.NotRecognized
 
         fun where(d: Detection) = pack.position(position(d.box))
 
@@ -78,11 +84,22 @@ object OnDeviceComposer {
             }
             // Rótulos gerais (sem posição) quase nunca bastam para alertar: só com certeza muito alta.
             translated.forEach { (hit, term) -> if (term.hazard != null && hit.confidence >= 0.92f) add(term.hazard) }
+            topClass?.let { (hit, term) -> if (term.hazard != null && hit.score >= 0.6f) add(term.hazard) }
         }.distinct()
 
         val identified: String
         val confidence: Confidence
-        if (dets.isNotEmpty()) {
+        val classFirst = topClass != null && mode != VisionMode.PERSON &&
+            (dets.isEmpty() || topClass.first.score >= 0.5f || dets.first().label !in vehicles + "person")
+        if (classFirst) {
+            val (hit, term) = topClass!!
+            confidence = when {
+                hit.score >= 0.7f -> Confidence.HIGH
+                hit.score >= 0.5f -> Confidence.MEDIUM
+                else -> Confidence.LOW
+            }
+            identified = if (confidence == Confidence.HIGH) pack.sure(term) else pack.likely(term)
+        } else if (dets.isNotEmpty()) {
             val main = dets.first()
             identified = pack.detectedAt(pack.cocoLabels.getValue(main.label), where(main), proximity(main.box))
             confidence = when {
@@ -101,14 +118,14 @@ object OnDeviceComposer {
         }
 
         val description = buildList {
-            val others = dets.drop(1).take(4).map { d ->
+            val others = (if (classFirst) dets else dets.drop(1)).take(4).map { d ->
                 val t = pack.cocoLabels.getValue(d.label)
                 "${t.withArticle} ${where(d)}"
             }
             if (others.isNotEmpty()) add(pack.alsoAround(others))
-            val detected = dets.map { pack.cocoLabels.getValue(it.label).name }.toSet()
+            val detected = dets.map { pack.cocoLabels.getValue(it.label).name }.toSet() + setOfNotNull(topClass?.second?.name)
             val context = translated.map { it.second.name }.filter { it !in detected }
-                .let { if (dets.isEmpty()) it.drop(1) else it }.take(3)
+                .let { if (dets.isEmpty() && topClass == null) it.drop(1) else it }.take(3)
             if (context.isNotEmpty()) add(pack.alsoSeen(context))
         }.joinToString(" ")
 

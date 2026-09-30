@@ -12,10 +12,13 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 /**
- * Análise 100% no aparelho (offline, sem custo): detector de objetos com posição
- * (pessoa, veículos, móveis…) + rótulos gerais de contexto do ML Kit.
+ * Análise 100% no aparelho (offline, sem custo): classificador de ~1000 objetos,
+ * detector com posição (pessoa, veículos, móveis…) e rótulos de contexto do ML Kit.
  */
-class OnDeviceSceneDescriber(private val detector: RealtimeDetector) : SceneDescriber {
+class OnDeviceSceneDescriber(
+    private val detector: RealtimeDetector,
+    private val classifier: ObjectClassifier,
+) : SceneDescriber {
     private val labeler = ImageLabeling.getClient(
         ImageLabelerOptions.Builder().setConfidenceThreshold(0.5f).build()
     )
@@ -25,7 +28,8 @@ class OnDeviceSceneDescriber(private val detector: RealtimeDetector) : SceneDesc
             val bmp = Bitmaps.scaleDown(image, 720)
             val labels = labeler.process(InputImage.fromBitmap(bmp, 0)).await().map { LabelHit(it.text, it.confidence) }
             val detections = detector.detect(bmp)
-            OnDeviceComposer.compose(labels, detections, ColorNamer.dominantCenterColor(bmp), mode, LanguagePacks.current())
+            val classes = classifier.classify(bmp)
+            OnDeviceComposer.compose(labels, detections, ColorNamer.dominantCenterColor(bmp), mode, LanguagePacks.current(), classes)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

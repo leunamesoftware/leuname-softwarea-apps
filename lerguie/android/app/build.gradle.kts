@@ -106,9 +106,11 @@ android {
 
 // Modelos de IA no aparelho, baixados no build para não versionar binários:
 // - object_detector: EfficientDet-Lite2 (80 classes COCO: pessoa, carro, bicicleta, moto...)
+// - image_classifier: EfficientNet-Lite2 (1000 objetos: toalha, prego, guarda-roupa...)
 // - image_embedder: MobileNetV3 Large (semelhança de imagens para "objetos ensinados")
 val models = mapOf(
     "object_detector.tflite" to "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/int8/latest/efficientdet_lite2.tflite",
+    "image_classifier.tflite" to "https://storage.googleapis.com/mediapipe-models/image_classifier/efficientnet_lite2/int8/latest/efficientnet_lite2.tflite",
     "image_embedder.tflite" to "https://storage.googleapis.com/mediapipe-models/image_embedder/mobilenet_v3_large/float32/latest/mobilenet_v3_large.tflite",
 )
 val modelsDir = layout.projectDirectory.dir("src/main/assets/models")

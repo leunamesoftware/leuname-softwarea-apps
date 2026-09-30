@@ -6,6 +6,7 @@
 //   POST /v1/describe           descrição de imagem por IA (autenticado, com limites)
 //   POST /v1/billing/verify     valida assinatura Google Play e devolve token com o plano
 import { describeImage, NotDescribableError, type Mode } from './describe.ts';
+import { describeImageFree, FREE_MODEL } from './describeFree.ts';
 import type { Env } from './env.ts';
 import { signJwt, verifyJwt, type SessionPayload } from './jwt.ts';
 import { findPlan, loadCatalog } from './plans.ts';
@@ -103,7 +104,12 @@ export default {
         if (!(await consumeDailyQuota(env, session, plan.limits.cloud_descriptions_per_day))) return error(429, 'quota_exceeded');
 
         try {
-          return json(await describeImage(env.ANTHROPIC_API_KEY, env.CLAUDE_MODEL, body.image, mode, locale, target));
+          const useAnthropic = env.AI_PROVIDER === 'anthropic' && !!env.ANTHROPIC_API_KEY;
+          if (!useAnthropic && !env.AI) return error(503, 'ai_not_configured');
+          const result = useAnthropic
+            ? await describeImage(env.ANTHROPIC_API_KEY!, env.CLAUDE_MODEL, body.image, mode, locale, target)
+            : await describeImageFree(env.AI!, env.FREE_VISION_MODEL || FREE_MODEL, body.image, mode, locale, target);
+          return json(result);
         } catch (e) {
           if (e instanceof NotDescribableError) {
             return json({ identified: '', description: '', environment: '', action: '', colors: '', hazards: [], confidence: 'low' });

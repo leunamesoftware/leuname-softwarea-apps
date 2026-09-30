@@ -211,7 +211,8 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
             c.session.lastSpoken = text
         }
         // Visão geral do caminho pela IA (quando há internet), em paralelo e sem travar o local.
-        val cloudGap = if (find != null) 4000L else maxOf(6, intervalSec) * 1000L
+        // Nuvem com cota diária gratuita: consultas espaçadas (procurar item é mais frequente).
+        val cloudGap = if (find != null) 5000L else maxOf(20, intervalSec) * 1000L
         if (!cloudBusy && now - lastCloudAt >= cloudGap) {
             cloudBusy = true
             lastCloudAt = now

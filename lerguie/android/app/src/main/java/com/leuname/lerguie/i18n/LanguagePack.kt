@@ -26,6 +26,8 @@ interface LanguagePack {
     val labels: Map<String, Term>
     /** Nomes das 80 classes COCO do detector em tempo real. */
     val cocoLabels: Map<String, Term>
+    /** Nome da classe [index] do classificador de 1000 objetos (ImageNet). */
+    fun imagenet(index: Int): Term?
     val voiceCommands: List<Pair<VoiceCommand, List<String>>>
     val unreadable: String
     val uncertainPrefix: String
