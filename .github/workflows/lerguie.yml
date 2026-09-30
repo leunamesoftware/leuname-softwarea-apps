@@ -13,7 +13,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write  # publicar o APK de teste em Releases
 
 concurrency:
   group: lerguie-${{ github.ref }}
@@ -56,6 +56,21 @@ jobs:
         with:
           name: lerguie-aab-release
           path: lerguie/android/app/build/outputs/bundle/release/*.aab
+      # Download direto do APK pelo celular: Releases → "Lerguie — versão de teste"
+      - name: Preparar APK de teste
+        run: cp app/build/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/Lerguie-teste.apk"
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: lerguie-teste
+          name: Lerguie — versão de teste
+          prerelease: true
+          make_latest: false
+          body: |
+            APK de teste do Lerguie (atualizado automaticamente a cada mudança).
+            Commit: ${{ github.sha }}
+            No celular: toque em Lerguie-teste.apk, baixe e abra. Se pedir, permita "instalar apps desconhecidos" para o navegador.
+          files: ${{ runner.temp }}/Lerguie-teste.apk
+          overwrite_files: true
 
   backend:
     runs-on: ubuntu-latest
