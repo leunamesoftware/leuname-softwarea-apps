@@ -211,9 +211,10 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
             c.session.lastSpoken = text
         }
         // Visão geral do caminho pela IA (quando há internet), em paralelo e sem travar o local.
-        // Nuvem com cota diária gratuita: consultas espaçadas (procurar item é mais frequente).
+        // Nuvem com cota diária gratuita: consultas espaçadas.
         val cloudGap = if (find != null) 5000L else maxOf(20, intervalSec) * 1000L
-        if (!cloudBusy && now - lastCloudAt >= cloudGap) {
+        // Cota gratuita da nuvem é compartilhada por todos: no Caminhar só consulta ao procurar um item.
+        if (find != null && !cloudBusy && now - lastCloudAt >= cloudGap) {
             cloudBusy = true
             lastCloudAt = now
             viewModelScope.launch {
