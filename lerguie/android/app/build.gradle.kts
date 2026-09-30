@@ -58,6 +58,23 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             if (storeFilePath != null) signingConfig = signingConfigs.getByName("release")
         }
+        // APK de TESTE para instalar direto no celular: otimizado como o release (menor e
+        // mais rápido), mas assinado com a chave de depuração. Nunca enviar à Play Store.
+        create("teste") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += "release"
+        }
+    }
+
+    // Um APK por arquitetura (bem menor). Não afeta o AAB da Play Store.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = false
+        }
     }
 
     compileOptions {

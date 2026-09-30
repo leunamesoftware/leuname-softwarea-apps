@@ -47,7 +47,7 @@ jobs:
           LERGUIE_KEYSTORE_PASSWORD: ${{ secrets.LERGUIE_KEYSTORE_PASSWORD }}
           LERGUIE_KEY_ALIAS: ${{ secrets.LERGUIE_KEY_ALIAS }}
           LERGUIE_KEY_PASSWORD: ${{ secrets.LERGUIE_KEY_PASSWORD }}
-        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug bundleRelease
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug assembleTeste bundleRelease
       - uses: actions/upload-artifact@v4
         with:
           name: lerguie-apk-debug
@@ -56,21 +56,27 @@ jobs:
         with:
           name: lerguie-aab-release
           path: lerguie/android/app/build/outputs/bundle/release/*.aab
-      # Download direto do APK pelo celular: Releases → "Lerguie — versão de teste"
-      - name: Preparar APK de teste
-        run: cp app/build/outputs/apk/debug/app-debug.apk "$RUNNER_TEMP/Lerguie-teste.apk"
+      # Download direto do APK pelo celular (release própria e única por build)
+      - name: Preparar APKs de teste
+        run: |
+          cp app/build/outputs/apk/teste/app-arm64-v8a-teste.apk "$RUNNER_TEMP/Lerguie-teste.apk"
+          cp app/build/outputs/apk/teste/app-armeabi-v7a-teste.apk "$RUNNER_TEMP/Lerguie-teste-celular-antigo.apk"
+          ls -la "$RUNNER_TEMP"/*.apk
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: lerguie-teste
-          name: Lerguie — versão de teste
+          tag_name: lerguie-v1.0.0-teste.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: Lerguie 1.0.0 — teste ${{ github.run_number }}
           prerelease: true
           make_latest: false
           body: |
-            APK de teste do Lerguie (atualizado automaticamente a cada mudança).
-            Commit: ${{ github.sha }}
-            No celular: toque em Lerguie-teste.apk, baixe e abra. Se pedir, permita "instalar apps desconhecidos" para o navegador.
-          files: ${{ runner.temp }}/Lerguie-teste.apk
-          overwrite_files: true
+            APK de teste do Lerguie para instalar direto no celular.
+            • Lerguie-teste.apk → celulares atuais (quase todos)
+            • Lerguie-teste-celular-antigo.apk → só se o primeiro não instalar
+            Se pedir, permita "instalar apps desconhecidos" para o navegador.
+          files: |
+            ${{ runner.temp }}/Lerguie-teste.apk
+            ${{ runner.temp }}/Lerguie-teste-celular-antigo.apk
 
   backend:
     runs-on: ubuntu-latest
