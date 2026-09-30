@@ -1,0 +1,3 @@
+# Copie para .dev.vars (não versionado) para rodar localmente com `npm run dev`.
+ANTHROPIC_API_KEY=coloque-sua-chave-aqui
+SESSION_SECRET=troque-por-um-texto-aleatorio-com-64-caracteres-ou-mais

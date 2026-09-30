@@ -1,5 +1,8 @@
 # LeuPlace
 
+> Este repositório também contém o **LERGUIE** (app de acessibilidade Android + backend) em
+> [`lerguie/`](lerguie/README.md).
+
 Marketplace local de compra e venda por localização, organizado por
 Estado → Cidade → Região/Bairro → Categoria → Produto.
 
