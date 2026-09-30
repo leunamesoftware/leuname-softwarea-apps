@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,9 @@ import com.leuname.lerguie.ai.vision.SceneSpeech
 import com.leuname.lerguie.ai.vision.VisionNotice
 import com.leuname.lerguie.ai.vision.VisionResult
 import com.leuname.lerguie.ai.vision.VisionSource
+import com.leuname.lerguie.ai.memory.MatchLevel
 import com.leuname.lerguie.core.haptics.HapticEvent
+import com.leuname.lerguie.i18n.LanguagePacks
 import com.leuname.lerguie.core.util.Sharing
 import com.leuname.lerguie.core.voice.VoiceCommand
 import com.leuname.lerguie.data.db.HistoryCategory
@@ -78,11 +81,10 @@ fun SeeResultScreen(nav: NavHostController) {
     val shareTitle = stringResource(R.string.share)
 
     val result = session.result
-    val fullText = when (result) {
-        is VisionResult.Success -> SceneSpeech.compose(result.scene)
-        VisionResult.NotRecognized -> notRecognized
-        is VisionResult.Failure -> stringResource(R.string.error_analysis)
-    }
+    val errorText = stringResource(R.string.error_analysis)
+    val pack = LanguagePacks.current()
+    val fullText = session.spokenText(pack, if (result is VisionResult.Failure) errorText else notRecognized)
+    val known = session.known
 
     fun speakAll() {
         container.speaker.speak(fullText, "all")
@@ -90,10 +92,11 @@ fun SeeResultScreen(nav: NavHostController) {
     }
 
     fun save() {
-        if (result !is VisionResult.Success) return
+        if (result !is VisionResult.Success && known == null) return
         scope.launch {
+            val title = known?.name ?: SceneSpeech.headline((result as VisionResult.Success).scene)
             session.historyId = container.history.saveFavorite(
-                session.historyId, HistoryCategory.DESCRIPTION, SceneSpeech.headline(result.scene), fullText, session.image,
+                session.historyId, HistoryCategory.DESCRIPTION, title, fullText, session.image,
             )
             saved = true
             container.haptics.play(HapticEvent.SUCCESS)
@@ -121,6 +124,12 @@ fun SeeResultScreen(nav: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             CapturedImage(session.image)
+            if (known != null) {
+                val t = if (known.level == MatchLevel.SURE) pack.knownSure(known.name) else pack.knownLikely(known.name)
+                ResultSection(Icons.Filled.School, Palette.Orange, stringResource(R.string.section_known), t, highlighted = true) {
+                    SpeakButton(t, speaker.speakingId == "known", { container.speaker.speak(t, "known") }, { container.speaker.stop() })
+                }
+            }
             when (result) {
                 is VisionResult.Success -> {
                     val scene = result.scene
@@ -155,13 +164,13 @@ fun SeeResultScreen(nav: NavHostController) {
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                 }
-                else -> InfoBanner(fullText, warning = true)
+                else -> if (known == null) InfoBanner(fullText, warning = true)
             }
         }
         Column(Modifier.navigationBarsPadding().padding(16.dp)) {
             ActionGrid(
                     { m -> BigButton(stringResource(R.string.take_another), Icons.Filled.CameraAlt, { nav.popBackStack() }, m) },
-                    { m -> BigButton(stringResource(if (saved) R.string.saved else R.string.save), Icons.Filled.Favorite, { save() }, m, enabled = result is VisionResult.Success && !saved) },
+                    { m -> BigButton(stringResource(if (saved) R.string.saved else R.string.save), Icons.Filled.Favorite, { save() }, m, enabled = (result is VisionResult.Success || known != null) && !saved) },
                     { m -> BigButton(shareTitle, Icons.Filled.Share, { Sharing.shareText(context, fullText, shareTitle) }, m) },
                     { m -> BigButton(stringResource(R.string.listen_again), Icons.AutoMirrored.Filled.VolumeUp, { speakAll() }, m, ButtonKind.PRIMARY) },
             )

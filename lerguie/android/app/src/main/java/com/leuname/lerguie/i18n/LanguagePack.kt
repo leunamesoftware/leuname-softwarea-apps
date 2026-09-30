@@ -8,6 +8,8 @@ data class Term(val name: String, val withArticle: String, val hazard: String? =
 
 enum class Position { LEFT, FRONT, RIGHT }
 
+enum class Proximity { NEAR, MEDIUM, FAR }
+
 enum class ColorName { BLACK, WHITE, GRAY, WINE, RED, BROWN, ORANGE, DARK_BROWN, YELLOW, GREEN, LIGHT_BLUE, BLUE, PURPLE, PINK }
 
 /**
@@ -22,23 +24,39 @@ enum class ColorName { BLACK, WHITE, GRAY, WINE, RED, BROWN, ORANGE, DARK_BROWN,
 interface LanguagePack {
     val languageTag: String
     val labels: Map<String, Term>
-    val objectCategories: Map<String, Term>
+    /** Nomes das 80 classes COCO do detector em tempo real. */
+    val cocoLabels: Map<String, Term>
     val voiceCommands: List<Pair<VoiceCommand, List<String>>>
     val unreadable: String
     val uncertainPrefix: String
     val wakeWord: String
+    /** Frases que pedem navegação a pé ("quero ir ao", "me leve para"...), já normalizadas. */
+    val navigatePhrases: List<String>
+    /** Frases que pedem para procurar algo pela câmera ("quero", "procurar"...). */
+    val findPhrases: List<String>
+    /** Artigos/preposições ignorados no início do argumento. */
+    val fillerWords: Set<String>
+    fun findingStart(item: String): String
+    fun navigatingStart(place: String): String
+    fun found(text: String): String
 
     fun sure(thing: Term): String
     fun likely(thing: Term): String
     fun uncertain(text: String): String
     fun attention(hazards: List<String>): String
     fun position(p: Position): String
-    fun personAt(position: String): String
-    fun oneObjectAt(position: String): String
-    fun manyObjects(count: Int): String
     fun alsoSeen(names: List<String>): String
-    fun objectAt(what: String?, position: String, near: Boolean): String
     fun vehicleNear(position: String): String
+    fun proximity(p: Proximity): String
+    /** Frase completa: "Há uma pessoa à sua frente, bem perto." */
+    fun detectedAt(thing: Term, position: String, proximity: Proximity): String
+    /** Frase curta para o modo Caminhar: "Carro à sua direita, bem perto." */
+    fun walkItem(thing: Term, position: String, proximity: Proximity): String
+    fun alsoAround(items: List<String>): String
+    /** Objetos ensinados pelo usuário/ajudante. */
+    fun knownSure(name: String): String
+    fun knownLikely(name: String): String
+    fun knownWalk(name: String): String
     fun dominantColor(color: ColorName): String
     fun colorName(color: ColorName): String
 }

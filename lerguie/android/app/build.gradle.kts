@@ -86,7 +86,33 @@ android {
         compose = true
         buildConfig = true
     }
+    // Modelos .tflite precisam ficar sem compressão para o MediaPipe mapear na memória.
+    androidResources {
+        noCompress += "tflite"
+    }
 }
+
+// Modelos de IA no aparelho, baixados no build para não versionar binários:
+// - object_detector: EfficientDet-Lite2 (80 classes COCO: pessoa, carro, bicicleta, moto...)
+// - image_embedder: MobileNetV3 Large (semelhança de imagens para "objetos ensinados")
+val models = mapOf(
+    "object_detector.tflite" to "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/int8/latest/efficientdet_lite2.tflite",
+    "image_embedder.tflite" to "https://storage.googleapis.com/mediapipe-models/image_embedder/mobilenet_v3_large/float32/latest/mobilenet_v3_large.tflite",
+)
+val modelsDir = layout.projectDirectory.dir("src/main/assets/models")
+val downloadModels by tasks.registering {
+    models.keys.forEach { outputs.file(modelsDir.file(it)) }
+    doLast {
+        models.forEach { (name, url) ->
+            val out = modelsDir.file(name).asFile
+            if (!out.exists()) {
+                out.parentFile.mkdirs()
+                java.net.URI(url).toURL().openStream().use { input -> out.outputStream().use { input.copyTo(it) } }
+            }
+        }
+    }
+}
+tasks.named("preBuild") { dependsOn(downloadModels) }
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
@@ -116,10 +142,10 @@ dependencies {
     implementation(libs.mlkit.text)
     implementation(libs.mlkit.barcode)
     implementation(libs.mlkit.labeling)
-    implementation(libs.mlkit.objects)
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.play.services)
     implementation(libs.serialization.json)
     implementation(libs.billing.ktx)
+    implementation(libs.mediapipe.vision)
     testImplementation(libs.junit)
 }

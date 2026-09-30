@@ -4,6 +4,8 @@ import com.leuname.lerguie.ai.ocr.FramingAdvisor
 import com.leuname.lerguie.ai.ocr.FramingHint
 import com.leuname.lerguie.ai.ocr.NormBox
 import com.leuname.lerguie.ai.vision.ColorNamer
+import com.leuname.lerguie.ai.vision.Detection
+import com.leuname.lerguie.ai.vision.WalkAnnouncer
 import com.leuname.lerguie.ai.vision.Confidence
 import com.leuname.lerguie.ai.vision.LabelHit
 import com.leuname.lerguie.ai.vision.ObjectBox
@@ -42,6 +44,13 @@ class VoiceCommandParserTest {
         assertEquals(VoiceCommand.HISTORY, parse("histórico"))
     }
 
+    @Test fun naturalRequestsWithArgument() {
+        assertEquals(com.leuname.lerguie.core.voice.ParsedCommand(VoiceCommand.FIND, "leite"), VoiceCommandParser.parseFull("Eu quero um leite", PtBrLanguagePack))
+        assertEquals(com.leuname.lerguie.core.voice.ParsedCommand(VoiceCommand.NAVIGATE, "mercado"), VoiceCommandParser.parseFull("Lerguie, quero ir ao mercado", PtBrLanguagePack))
+        assertEquals(com.leuname.lerguie.core.voice.ParsedCommand(VoiceCommand.NAVIGATE, "padaria"), VoiceCommandParser.parseFull("como chego na padaria", PtBrLanguagePack))
+        assertEquals(com.leuname.lerguie.core.voice.ParsedCommand(VoiceCommand.FIND, "banheiro"), VoiceCommandParser.parseFull("onde fica o banheiro?", PtBrLanguagePack))
+    }
+
     @Test fun unknownReturnsNull() {
         assertNull(parse("banana"))
         assertNull(parse("Lerguie"))
@@ -55,6 +64,7 @@ class VoiceCommandParserTest {
 
 class OnDeviceComposerTest {
     private val pack = PtBrLanguagePack
+    private fun det(label: String, score: Float, l: Float, t: Float, r: Float, b: Float) = Detection(label, score, ObjectBox(label, l, t, r, b))
 
     @Test fun nothingDetectedIsNotRecognized() {
         val r = OnDeviceComposer.compose(emptyList(), emptyList(), null, VisionMode.OBJECT, pack)
@@ -66,7 +76,7 @@ class OnDeviceComposerTest {
         assertEquals(VisionResult.NotRecognized, r)
     }
 
-    @Test fun highConfidenceIsAffirmative() {
+    @Test fun highConfidenceLabelIsAffirmative() {
         val r = OnDeviceComposer.compose(listOf(LabelHit("Dog", 0.93f)), emptyList(), null, VisionMode.OBJECT, pack) as VisionResult.Success
         assertEquals("É um cachorro.", r.scene.identified)
         assertEquals(Confidence.HIGH, r.scene.confidence)
@@ -78,21 +88,49 @@ class OnDeviceComposerTest {
         assertTrue(SceneSpeech.headline(r.scene, pack).startsWith("Não tenho certeza"))
     }
 
-    @Test fun hazardAndPositionAreReported() {
-        val box = ObjectBox("Home good", 0.7f, 0.1f, 0.98f, 0.9f)
-        val r = OnDeviceComposer.compose(
-            listOf(LabelHit("Knife", 0.9f)), listOf(box), ColorName.BLUE, VisionMode.OBJECT, pack,
-        ) as VisionResult.Success
-        assertTrue(r.scene.hazards.any { it.contains("faca") })
-        assertTrue(r.scene.description.contains("à sua direita"))
-        assertTrue(SceneSpeech.compose(r.scene, pack).startsWith("Atenção."))
+    @Test fun detectionWithPositionAndProximity() {
+        val r = OnDeviceComposer.compose(emptyList(), listOf(det("person", 0.9f, 0.7f, 0.1f, 0.95f, 0.9f)), ColorName.BLUE, VisionMode.OBJECT, pack) as VisionResult.Success
+        assertEquals("Há uma pessoa à sua direita, bem perto.", r.scene.identified)
         assertEquals("Cor predominante no centro: azul.", r.scene.colors)
     }
 
-    @Test fun nearVehicleRaisesAlert() {
-        val box = ObjectBox(null, 0.1f, 0.1f, 0.9f, 0.9f)
-        val r = OnDeviceComposer.compose(listOf(LabelHit("Bicycle", 0.9f)), listOf(box), null, VisionMode.OBJECT, pack) as VisionResult.Success
+    @Test fun vehiclesComeFirstAndRaiseAlert() {
+        val r = OnDeviceComposer.compose(
+            emptyList(),
+            listOf(det("chair", 0.9f, 0.4f, 0.4f, 0.6f, 0.6f), det("car", 0.8f, 0.3f, 0.3f, 0.7f, 0.8f)),
+            null, VisionMode.OBJECT, pack,
+        ) as VisionResult.Success
+        assertTrue(r.scene.identified.contains("carro"))
         assertTrue(r.scene.hazards.any { it.contains("veículo") })
+        assertTrue(r.scene.description.contains("cadeira"))
+        assertTrue(SceneSpeech.compose(r.scene, pack).startsWith("Atenção."))
+    }
+
+    @Test fun knifeIsHazard() {
+        val r = OnDeviceComposer.compose(emptyList(), listOf(det("knife", 0.7f, 0.4f, 0.4f, 0.5f, 0.5f)), null, VisionMode.OBJECT, pack) as VisionResult.Success
+        assertTrue(r.scene.hazards.any { it.contains("faca") })
+    }
+}
+
+class WalkAnnouncerTest {
+    private val pack = PtBrLanguagePack
+    private fun det(label: String, l: Float, r: Float, h: Float) = Detection(label, 0.8f, ObjectBox(label, l, 0.2f, r, 0.2f + h))
+
+    @Test fun announcesOnceThenOnlyWhenCloser() {
+        val w = WalkAnnouncer(repeatAfterMs = 7000)
+        val far = listOf(det("bicycle", 0.1f, 0.2f, 0.15f))
+        val first = w.next(far, pack, 0)
+        assertEquals(1, first.size)
+        assertEquals("Bicicleta à sua esquerda, mais distante.", first[0].text)
+        assertEquals(0, w.next(far, pack, 1000).size)
+        val near = w.next(listOf(det("bicycle", 0.1f, 0.3f, 0.7f)), pack, 2000)
+        assertTrue(near.single().alert)
+        assertTrue(near.single().text.startsWith("Atenção."))
+    }
+
+    @Test fun ignoresFarUnimportantObjects() {
+        val w = WalkAnnouncer()
+        assertEquals(0, w.next(listOf(det("cup", 0.4f, 0.5f, 0.1f)), pack, 0).size)
     }
 }
 
@@ -144,5 +182,30 @@ class SpeechSplitTest {
         val parts = Speaker.splitForSpeech(text, 20)
         assertTrue(parts.all { it.length <= 20 })
         assertEquals(text.replace(" ", ""), parts.joinToString("").replace(" ", ""))
+    }
+}
+
+class MemoryMatcherTest {
+    private fun v(vararg x: Float) = floatArrayOf(*x)
+
+    @Test fun recognizesClosestTaughtObject() {
+        val samples = listOf(
+            com.leuname.lerguie.ai.memory.KnownSample(1, "remédio da pressão", v(1f, 0f, 0f)),
+            com.leuname.lerguie.ai.memory.KnownSample(2, "chaves", v(0f, 1f, 0f)),
+        )
+        val m = com.leuname.lerguie.ai.memory.MemoryMatcher.best(v(0.98f, 0.05f, 0f), samples)!!
+        assertEquals("remédio da pressão", m.name)
+        assertEquals(com.leuname.lerguie.ai.memory.MatchLevel.SURE, m.level)
+    }
+
+    @Test fun unknownObjectIsNotClaimed() {
+        val samples = listOf(com.leuname.lerguie.ai.memory.KnownSample(1, "chaves", v(0f, 1f, 0f)))
+        assertNull(com.leuname.lerguie.ai.memory.MemoryMatcher.best(v(1f, 0f, 0f), samples))
+    }
+
+    @Test fun bytesRoundTrip() {
+        val a = v(0.1f, -2f, 3.5f)
+        val b = com.leuname.lerguie.ai.memory.MemoryMatcher.fromBytes(com.leuname.lerguie.ai.memory.MemoryMatcher.toBytes(a))
+        assertTrue(a.contentEquals(b))
     }
 }

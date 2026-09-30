@@ -12,7 +12,7 @@ import com.leuname.lerguie.core.settings.SettingsRepository
  */
 class HybridSceneDescriber(
     val onDevice: SceneDescriber,
-    private val cloud: SceneDescriber,
+    private val cloud: CloudSceneDescriber,
     private val connectivity: Connectivity,
     private val settings: SettingsRepository,
     private val cloudConfigured: Boolean,
@@ -32,6 +32,18 @@ class HybridSceneDescriber(
             onDevice.describe(image, mode).withNotice(VisionNotice.QUOTA_SIMPLIFIED)
         } catch (e: Exception) {
             onDevice.describe(image, mode).withNotice(VisionNotice.CLOUD_FAILED_SIMPLIFIED)
+        }
+    }
+
+    /** Só nuvem (modo Caminhar): null quando indisponível ou em falha — o local continua falando. */
+    suspend fun describeCloudOnly(image: Bitmap, mode: VisionMode, target: String? = null): VisionResult? {
+        if (!settings.current().useCloudAi || !cloudConfigured || !cloudAllowed() || !connectivity.isOnline()) return null
+        return try {
+            cloud.describe(image, mode, target)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
         }
     }
 

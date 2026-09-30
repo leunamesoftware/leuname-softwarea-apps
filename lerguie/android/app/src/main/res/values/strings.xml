@@ -18,9 +18,9 @@
     <string name="feature_communicate">Comunicar</string>
     <string name="feature_communicate_desc">Ajuda a falar e entender.</string>
     <string name="history_home_desc">Acesse seus últimos resultados.</string>
-    <string name="voice_command">Comando de voz. Diga, por exemplo: ler, o que estou vendo, ouvir, comunicar, repetir ou salvar.</string>
+    <string name="voice_command">Comando de voz. Toque, fale e toque de novo. Ex.: ler, o que estou vendo, quero um leite, quero ir ao mercado.</string>
     <string name="voice_stop">Parar comando de voz</string>
-    <string name="voice_not_understood">Não entendi o comando. Tente: ler, ver, ouvir, comunicar, repetir ou salvar.</string>
+    <string name="voice_not_understood">Não entendi. Tente: o que estou vendo, ler, quero um leite, quero ir ao mercado, repetir ou salvar.</string>
     <string name="allow">Permitir</string>
     <string name="open_system_settings">Abrir configurações do aparelho</string>
     <string name="permission_denied_forever">A permissão foi negada. Para usar esta função, ative-a nas configurações do aparelho.</string>
@@ -204,6 +204,33 @@
     <string name="select">Selecionar</string>
     <string name="delete_selected">Excluir (%1$d)</string>
     <string name="delete_all_short">Apagar tudo</string>
+    <string name="mode_walk">Caminhar</string>
+    <string name="walk_active">Modo Caminhar ligado: aponte o celular para frente na altura do peito. O Lerguie avisa carros, motos, bicicletas, pessoas e obstáculos com a posição e a distância aproximada. Com internet, também descreve o caminho (portas, paredes, escadas).</string>
+    <string name="google_tts_suggest">Para uma voz mais natural, instale o motor de voz do Google (Serviços de fala do Google).</string>
+    <string name="google_tts_install">Instalar voz do Google</string>
+    <string name="voice_choice">Escolher voz (toque para ouvir)</string>
+    <string name="voice_auto">Automática — a mais natural disponível</string>
+    <string name="voice_natural">Natural (usa internet)</string>
+    <string name="voice_local">Funciona sem internet</string>
+    <string name="section_known">Objeto ensinado</string>
+    <string name="memory_title">Objetos ensinados</string>
+    <string name="memory_open">Ver e ensinar objetos</string>
+    <string name="memory_explain">Alguém que enxerga fotografa um objeto e dá um nome (ex.: remédio da pressão, minhas chaves, porta da cozinha). Depois, ao apontar a câmera para ele, o Lerguie diz o nome. Fica só neste celular e funciona sem internet.</string>
+    <string name="memory_teach_new">Ensinar novo objeto</string>
+    <string name="memory_empty">Nenhum objeto ensinado ainda.</string>
+    <string name="memory_samples">%1$d foto(s) de referência</string>
+    <string name="memory_delete">Excluir %1$s</string>
+    <string name="memory_teach_tip">Tire até 3 fotos do objeto de ângulos diferentes, com ele no centro, e escreva o nome (pode usar o microfone do teclado).</string>
+    <string name="memory_name_label">Nome do objeto</string>
+    <string name="memory_photo_n">Foto %1$d de %2$d</string>
+    <string name="memory_saving">Salvando…</string>
+    <string name="memory_saved">Objeto ensinado: %1$s.</string>
+    <string name="memory_failed">Não foi possível salvar. Tente outra foto com mais luz.</string>
+    <string name="permission_camera_teach">A câmera é usada para fotografar o objeto que você quer ensinar. As fotos não são guardadas: o Lerguie guarda apenas uma referência de semelhança, neste celular.</string>
+    <string name="assistant_hold">Segure para falar com o Lerguie</string>
+    <string name="assistant_listening">Ouvindo… solte quando terminar</string>
+    <string name="comm_hold_other">Segure enquanto a outra pessoa fala</string>
+    <string name="find_active">Procurando: %1$s. Aponte a câmera para frente e vire devagar; eu aviso quando encontrar.</string>
     <string-array name="quick_phrases">
         <item>Onde fica o banheiro?</item>
         <item>Quanto custa?</item>

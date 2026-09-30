@@ -1,8 +1,5 @@
 package com.leuname.lerguie.ui.communicate
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,7 +38,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +56,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -68,7 +67,6 @@ import com.leuname.lerguie.R
 import com.leuname.lerguie.ai.libras.ModuleStatus
 import com.leuname.lerguie.core.settings.AppSettings
 import com.leuname.lerguie.core.settings.DisplayPreference
-import com.leuname.lerguie.core.speech.SpeechListener
 import com.leuname.lerguie.core.util.Sharing
 import com.leuname.lerguie.core.voice.VoiceCommand
 import com.leuname.lerguie.ui.appContainer
@@ -76,11 +74,11 @@ import com.leuname.lerguie.ui.components.BigButton
 import com.leuname.lerguie.ui.components.ButtonKind
 import com.leuname.lerguie.ui.components.InfoBanner
 import com.leuname.lerguie.ui.components.LerguieHeader
-import com.leuname.lerguie.ui.components.MicButton
+import com.leuname.lerguie.ui.components.HoldToTalkButton
+import com.leuname.lerguie.ui.components.rememberHoldListener
 import com.leuname.lerguie.ui.components.ModeOption
 import com.leuname.lerguie.ui.components.ModeSelector
 import com.leuname.lerguie.ui.components.SpeakButton
-import com.leuname.lerguie.ui.components.hasPermission
 import com.leuname.lerguie.ui.lerguieViewModel
 import com.leuname.lerguie.ui.listen.listenErrorText
 import com.leuname.lerguie.ui.theme.LocalBrand
@@ -96,9 +94,9 @@ fun CommunicateScreen(nav: NavHostController) {
     val state by vm.state.collectAsStateWithLifecycle()
     val settings by container.settings.settings.collectAsStateWithLifecycle(AppSettings())
     val speaker by container.speaker.state.collectAsStateWithLifecycle()
-    val listener = remember { SpeechListener(context) { !container.connectivity.isOnline() } }
-    DisposableEffect(Unit) { onDispose { listener.release() } }
-    val listen by listener.state.collectAsStateWithLifecycle()
+    // Segure enquanto a outra pessoa fala; ao soltar, a fala inteira vira uma resposta.
+    val hold = rememberHoldListener { vm.addReply(it, settings.speakReplies) }
+    val listen = hold.state
     var tab by rememberSaveable { mutableStateOf(InputTab.PHRASES) }
     var fullscreen by remember { mutableStateOf<String?>(null) }
     val phrases = stringArrayResource(R.array.quick_phrases)
@@ -106,11 +104,6 @@ fun CommunicateScreen(nav: NavHostController) {
     val otherLabel = stringResource(R.string.conversation_other)
     val shareTitle = stringResource(R.string.share)
 
-    fun startListening() {
-        container.speaker.stop()
-        listener.start(continuous = false) { vm.addReply(it, settings.speakReplies) }
-    }
-    val micLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { if (it) startListening() }
 
     LaunchedEffect(Unit) {
         container.voiceCommands.commands.collect { cmd ->
@@ -144,6 +137,10 @@ fun CommunicateScreen(nav: NavHostController) {
                         value = state.draft, onValueChange = vm::setDraft,
                         label = { Text(stringResource(R.string.comm_type_label)) },
                         textStyle = MaterialTheme.typography.headlineSmall,
+                        // Ao tocar em "Enviar" no teclado, a mensagem é falada para a outra pessoa.
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                        keyboardActions = KeyboardActions(onSend = { vm.speakMine() }),
+                        maxLines = 4,
                         modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
                     )
                     InputTab.PHRASES -> FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -167,25 +164,17 @@ fun CommunicateScreen(nav: NavHostController) {
 
             // ---------- Entendo a resposta ----------
             Panel(Icons.Filled.RecordVoiceOver, LocalBrand.current.listenGradient.first(), stringResource(R.string.comm_other_title), stringResource(R.string.comm_other_desc)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    MicButton(
-                        listening = listen.listening, level = listen.level, size = 88.dp,
-                        label = stringResource(if (listen.listening) R.string.listen_stop else R.string.comm_listen_other),
-                        onClick = {
-                            when {
-                                listen.listening -> listener.stop()
-                                context.hasPermission(Manifest.permission.RECORD_AUDIO) -> startListening()
-                                else -> micLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                            }
-                        },
-                    )
-                    Spacer(Modifier.width(14.dp))
-                    Text(
-                        if (listen.listening) listen.partial.ifBlank { stringResource(R.string.comm_listening_other) }
-                        else stringResource(R.string.comm_tap_mic),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
-                    )
+                HoldToTalkButton(
+                    label = stringResource(R.string.comm_hold_other),
+                    listeningLabel = stringResource(R.string.comm_listening_other),
+                    listening = listen.listening,
+                    level = listen.level,
+                    onStart = hold.start,
+                    onStop = hold.stop,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (listen.listening && listen.partial.isNotBlank()) {
+                    Text(listen.partial, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                 }
                 listen.error?.let { InfoBanner(stringResource(listenErrorText(it)), warning = true) }
                 val reply = state.lastReply

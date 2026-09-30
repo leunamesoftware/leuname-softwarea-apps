@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +65,7 @@ import com.leuname.lerguie.ui.components.InfoBanner
 import com.leuname.lerguie.ui.components.LerguieHeader
 import com.leuname.lerguie.ui.components.ToggleRow
 import com.leuname.lerguie.ui.components.findActivity
+import com.leuname.lerguie.ui.navigation.Routes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -146,6 +148,34 @@ fun SettingsScreen(nav: NavHostController) {
                         Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     )
                 }
+                if (!speakerState.googleEngine) {
+                    InfoBanner(stringResource(R.string.google_tts_suggest), Modifier.padding(horizontal = 16.dp))
+                    BigButton(
+                        stringResource(R.string.google_tts_install), Icons.Filled.Download,
+                        {
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.tts"))
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                            }
+                        },
+                        Modifier.fillMaxWidth().padding(horizontal = 16.dp), ButtonKind.TONAL,
+                    )
+                }
+                if (speakerState.voices.isNotEmpty()) {
+                    Text(stringResource(R.string.voice_choice), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 16.dp))
+                    val autoLabel = stringResource(R.string.voice_auto)
+                    val naturalLabel = stringResource(R.string.voice_natural)
+                    val localLabel = stringResource(R.string.voice_local)
+                    val options = listOf("" to autoLabel) + speakerState.voices.mapIndexed { i, v ->
+                        v.name to "${i + 1}. " + (if (v.network) naturalLabel else localLabel)
+                    }
+                    ChoiceRow(options, s.voiceName) { name ->
+                        update { it.copy(voiceName = name) }
+                        container.speaker.speak(sample)
+                    }
+                }
                 LabeledSlider(stringResource(R.string.speech_rate_value, s.speechRate), s.speechRate, 0.5f..2f, steps = 5) { v -> update { it.copy(speechRate = v) } }
                 LabeledSlider(stringResource(R.string.speech_pitch_value, s.speechPitch), s.speechPitch, 0.5f..2f, steps = 5) { v -> update { it.copy(speechPitch = v) } }
                 BigButton(stringResource(R.string.test_voice), Icons.AutoMirrored.Filled.VolumeUp, { container.speaker.speak(sample) },
@@ -159,6 +189,12 @@ fun SettingsScreen(nav: NavHostController) {
                 ChoiceRow(AppSettings.AUTO_INTERVALS.map { it to stringResource(R.string.seconds_value, it) }, s.autoDescribeIntervalSec) { v ->
                     update { it.copy(autoDescribeIntervalSec = v) }
                 }
+            }
+
+            Section(stringResource(R.string.memory_title)) {
+                Text(stringResource(R.string.memory_explain), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(horizontal = 16.dp))
+                BigButton(stringResource(R.string.memory_open), Icons.Filled.School, { nav.navigate(Routes.MEMORY) },
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp), ButtonKind.TONAL)
             }
 
             Section(stringResource(R.string.settings_privacy)) {

@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -64,23 +66,24 @@ private const val MODE_TEXT = "text"
 private const val MODE_BARCODE = "barcode"
 
 @Composable
-fun SeeScreen(nav: NavHostController) {
+fun SeeScreen(nav: NavHostController, find: String = "") {
     val container = appContainer()
     val hint = stringResource(R.string.see_hint)
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LerguieHeader(onBack = { nav.popBackStack() }) {
+            HeaderAction(Icons.Filled.School, stringResource(R.string.memory_title)) { nav.navigate(Routes.MEMORY) }
             HeaderAction(Icons.AutoMirrored.Filled.HelpOutline, stringResource(R.string.help)) { container.speaker.speak(hint) }
         }
         PermissionGate(
             permission = Manifest.permission.CAMERA,
             title = stringResource(R.string.permission_camera_title),
             reason = stringResource(R.string.permission_camera_see),
-        ) { SeeCameraContent(nav, hint) }
+        ) { SeeCameraContent(nav, hint, find) }
     }
 }
 
 @Composable
-private fun SeeCameraContent(nav: NavHostController, hint: String) {
+private fun SeeCameraContent(nav: NavHostController, hint: String, find: String) {
     val context = LocalContext.current
     val container = appContainer()
     val vm = lerguieViewModel { SeeViewModel(it) }
@@ -90,9 +93,10 @@ private fun SeeCameraContent(nav: NavHostController, hint: String) {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { vm.resultReady.collect { nav.navigate(Routes.SEE_RESULT) } }
+    LaunchedEffect(find) { if (find.isNotBlank()) vm.setFind(find) }
     LaunchedEffect(state.torch) { controller.enableTorch(state.torch) }
-    LaunchedEffect(state.autoDescribe, settings.autoDescribeIntervalSec) {
-        if (state.autoDescribe) {
+    LaunchedEffect(state.continuous, settings.autoDescribeIntervalSec) {
+        if (state.continuous) {
             controller.setImageAnalysisAnalyzer(ContextCompat.getMainExecutor(context)) { proxy ->
                 vm.onFrame(proxy, settings.autoDescribeIntervalSec)
             }
@@ -106,6 +110,7 @@ private fun SeeCameraContent(nav: NavHostController, hint: String) {
     }
 
     val modes = listOf(
+        ModeOption(VisionMode.WALK.name, stringResource(R.string.mode_walk), Icons.AutoMirrored.Filled.DirectionsWalk),
         ModeOption(VisionMode.OBJECT.name, stringResource(R.string.mode_object), Icons.Filled.Category),
         ModeOption(VisionMode.PERSON.name, stringResource(R.string.mode_person), Icons.Filled.Person),
         ModeOption(VisionMode.ENVIRONMENT.name, stringResource(R.string.mode_environment), Icons.Filled.Landscape),
@@ -140,12 +145,18 @@ private fun SeeCameraContent(nav: NavHostController, hint: String) {
             }
         })
         Spacer(Modifier.height(4.dp))
-        ToggleRow(
-            title = stringResource(R.string.auto_describe),
-            subtitle = stringResource(R.string.auto_describe_desc, settings.autoDescribeIntervalSec),
-            checked = state.autoDescribe,
-            onChange = vm::setAutoDescribe,
-        )
+        if (state.find != null && state.mode == VisionMode.WALK) {
+            InfoBanner(stringResource(R.string.find_active, state.find!!), Modifier.padding(horizontal = 16.dp))
+        } else if (state.mode == VisionMode.WALK) {
+            InfoBanner(stringResource(R.string.walk_active), Modifier.padding(horizontal = 16.dp))
+        } else {
+            ToggleRow(
+                title = stringResource(R.string.auto_describe),
+                subtitle = stringResource(R.string.auto_describe_desc, settings.autoDescribeIntervalSec),
+                checked = state.autoDescribe,
+                onChange = vm::setAutoDescribe,
+            )
+        }
         CameraControls(
             captureLabel = stringResource(R.string.take_photo),
             torchOn = state.torch,

@@ -34,6 +34,8 @@ import com.leuname.lerguie.ui.communicate.CommunicateScreen
 import com.leuname.lerguie.ui.history.HistoryScreen
 import com.leuname.lerguie.ui.home.HomeScreen
 import com.leuname.lerguie.ui.listen.ListenScreen
+import com.leuname.lerguie.ui.memory.MemoryScreen
+import com.leuname.lerguie.ui.memory.TeachScreen
 import com.leuname.lerguie.ui.read.ReadResultScreen
 import com.leuname.lerguie.ui.read.ReadScreen
 import com.leuname.lerguie.ui.see.SeeResultScreen
@@ -42,7 +44,8 @@ import com.leuname.lerguie.ui.settings.SettingsScreen
 
 object Routes {
     const val HOME = "home"
-    const val SEE = "see"
+    const val SEE = "see?find={find}"
+    fun see(find: String = "") = "see?find=" + android.net.Uri.encode(find)
     const val SEE_RESULT = "see/result"
     const val READ = "read?mode={mode}"
     fun read(mode: String = "TEXT") = "read?mode=$mode"
@@ -50,6 +53,8 @@ object Routes {
     const val LISTEN = "listen"
     const val COMMUNICATE = "communicate"
     const val SETTINGS = "settings"
+    const val MEMORY = "memory"
+    const val TEACH = "memory/teach"
     const val HISTORY = "history?favorites={favorites}"
     fun history(favorites: Boolean) = "history?favorites=$favorites"
 }
@@ -73,7 +78,7 @@ fun NavHostController.navigateTab(route: String) {
 /** Navegação acionada por comando de voz. */
 fun NavHostController.handleVoiceNavigation(command: VoiceCommand): Boolean {
     val route = when (command) {
-        VoiceCommand.SEE -> Routes.SEE
+        VoiceCommand.SEE -> Routes.see()
         VoiceCommand.READ -> Routes.read()
         VoiceCommand.LISTEN -> Routes.LISTEN
         VoiceCommand.COMMUNICATE -> Routes.COMMUNICATE
@@ -123,7 +128,10 @@ fun LerguieNavHost(nav: NavHostController = rememberNavController()) {
         Box(Modifier.fillMaxSize().padding(padding)) {
             NavHost(navController = nav, startDestination = Routes.HOME) {
                 composable(Routes.HOME) { HomeScreen(nav) }
-                composable(Routes.SEE) { SeeScreen(nav) }
+                composable(
+                    Routes.SEE,
+                    arguments = listOf(navArgument("find") { type = NavType.StringType; defaultValue = "" }),
+                ) { e -> SeeScreen(nav, find = e.arguments?.getString("find").orEmpty()) }
                 composable(Routes.SEE_RESULT) { SeeResultScreen(nav) }
                 composable(
                     Routes.READ,
@@ -133,6 +141,8 @@ fun LerguieNavHost(nav: NavHostController = rememberNavController()) {
                 composable(Routes.LISTEN) { ListenScreen(nav) }
                 composable(Routes.COMMUNICATE) { CommunicateScreen(nav) }
                 composable(Routes.SETTINGS) { SettingsScreen(nav) }
+                composable(Routes.MEMORY) { MemoryScreen(nav) }
+                composable(Routes.TEACH) { TeachScreen(nav) }
                 composable(
                     Routes.HISTORY,
                     arguments = listOf(navArgument("favorites") { type = NavType.BoolType; defaultValue = false }),

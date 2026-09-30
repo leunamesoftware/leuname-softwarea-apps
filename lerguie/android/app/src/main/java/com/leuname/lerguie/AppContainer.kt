@@ -4,6 +4,8 @@ import android.content.Context
 import com.leuname.lerguie.ai.barcode.BarcodeReader
 import com.leuname.lerguie.ai.barcode.ProductLookup
 import com.leuname.lerguie.ai.libras.SignLanguagePresenter
+import com.leuname.lerguie.ai.memory.ImageEmbedderEngine
+import com.leuname.lerguie.ai.memory.ObjectMemory
 import com.leuname.lerguie.ai.libras.SignLanguageRecognizer
 import com.leuname.lerguie.ai.libras.UnavailableSignLanguagePresenter
 import com.leuname.lerguie.ai.libras.UnavailableSignLanguageRecognizer
@@ -11,6 +13,7 @@ import com.leuname.lerguie.ai.ocr.TextReader
 import com.leuname.lerguie.ai.vision.CloudSceneDescriber
 import com.leuname.lerguie.ai.vision.HybridSceneDescriber
 import com.leuname.lerguie.ai.vision.OnDeviceSceneDescriber
+import com.leuname.lerguie.ai.vision.RealtimeDetector
 import com.leuname.lerguie.core.billing.PlayBillingGateway
 import com.leuname.lerguie.core.haptics.Haptics
 import com.leuname.lerguie.core.network.Connectivity
@@ -38,18 +41,20 @@ class AppContainer(context: Context) {
 
     val settings = SettingsRepository(appContext)
     val haptics = Haptics(appContext)
-    val speaker = Speaker(appContext)
     val connectivity = Connectivity(appContext)
+    val speaker = Speaker(appContext) { connectivity.isOnline() }
     val api = LerguieApiClient(appContext, BuildConfig.API_BASE_URL)
 
     private val database = LerguieDatabase.create(appContext)
     val history = HistoryRepository(appContext, database.historyDao(), settings)
+    val memory = ObjectMemory(database.knownObjectDao(), ImageEmbedderEngine(appContext))
 
     // Planos/assinaturas: catálogo remoto + Google Play Billing (desligado até o catálogo ativar).
     val entitlements = EntitlementRepository(appContext, api, PlayBillingGateway(appContext), appScope)
 
+    val realtimeDetector = RealtimeDetector(appContext)
     val sceneDescriber = HybridSceneDescriber(
-        onDevice = OnDeviceSceneDescriber(),
+        onDevice = OnDeviceSceneDescriber(realtimeDetector),
         cloud = CloudSceneDescriber(api),
         connectivity = connectivity,
         settings = settings,
@@ -72,7 +77,7 @@ class AppContainer(context: Context) {
         appScope.launch {
             settings.settings.collect { s ->
                 haptics.enabled = s.vibration
-                speaker.configure(rate = s.speechRate, pitch = s.speechPitch)
+                speaker.configure(rate = s.speechRate, pitch = s.speechPitch, voiceName = s.voiceName)
             }
         }
     }

@@ -38,7 +38,7 @@ private data class VerifyRequest(val productId: String, val purchaseToken: Strin
 private data class ErrorBody(val error: String? = null)
 
 @Serializable
-data class DescribeRequest(val image: String, val mode: String, val locale: String)
+data class DescribeRequest(val image: String, val mode: String, val locale: String, val target: String? = null)
 
 @Serializable
 data class DescribeResponse(
@@ -70,9 +70,9 @@ class LerguieApiClient(context: Context, private val baseUrl: String) {
             prefs.edit().putString("install_id", it).apply()
         }
 
-    suspend fun describe(jpeg: ByteArray, mode: String): DescribeResponse {
+    suspend fun describe(jpeg: ByteArray, mode: String, target: String? = null): DescribeResponse {
         val body = json.encodeToString(
-            DescribeRequest(Base64.encodeToString(jpeg, Base64.NO_WRAP), mode, LanguagePacks.current().languageTag)
+            DescribeRequest(Base64.encodeToString(jpeg, Base64.NO_WRAP), mode, LanguagePacks.current().languageTag, target?.take(60))
         )
         return json.decodeFromString(DescribeResponse.serializer(), authorizedPost("/v1/describe", body))
     }

@@ -20,13 +20,21 @@ object PtBrLanguagePack : LanguagePack {
         Position.FRONT -> "à sua frente"
         Position.RIGHT -> "à sua direita"
     }
-    override fun personAt(position: String) = "Parece haver uma pessoa $position."
-    override fun oneObjectAt(position: String) = "Há um objeto $position."
-    override fun manyObjects(count: Int) = "Há $count objetos à sua frente."
     override fun alsoSeen(names: List<String>) = "Também identifiquei: ${names.joinToString(", ")}."
-    override fun objectAt(what: String?, position: String, near: Boolean) =
-        "Há ${what ?: "um objeto"} $position${if (near) ", bem próximo" else ""}."
     override fun vehicleNear(position: String) = "Há um veículo muito próximo, $position"
+    override fun proximity(p: Proximity) = when (p) {
+        Proximity.NEAR -> "bem perto"
+        Proximity.MEDIUM -> "a poucos metros"
+        Proximity.FAR -> "mais distante"
+    }
+    override fun detectedAt(thing: Term, position: String, proximity: Proximity) =
+        "Há ${thing.withArticle} $position, ${this.proximity(proximity)}."
+    override fun walkItem(thing: Term, position: String, proximity: Proximity) =
+        "${thing.name.replaceFirstChar { it.uppercase() }} $position, ${this.proximity(proximity)}."
+    override fun knownSure(name: String) = "É o seu objeto: $name."
+    override fun knownLikely(name: String) = "Parece ser o seu objeto: $name."
+    override fun knownWalk(name: String) = "$name à sua frente."
+    override fun alsoAround(items: List<String>) = "Também há: ${items.joinToString("; ")}."
     override fun dominantColor(color: ColorName) = "Cor predominante no centro: ${colorName(color)}."
     override fun colorName(color: ColorName) = when (color) {
         ColorName.BLACK -> "preto"; ColorName.WHITE -> "branco"; ColorName.GRAY -> "cinza"
@@ -37,6 +45,19 @@ object PtBrLanguagePack : LanguagePack {
     }
     override val unreadable = "[trecho pouco legível]"
     override val wakeWord = "lerguie"
+    override val navigatePhrases = listOf(
+        "quero ir para", "quero ir pra", "quero ir ao", "quero ir a", "quero ir na", "quero ir no",
+        "ir para", "ir pra", "ir ao", "ir a", "ir na", "ir no", "me leve para", "me leve ao", "me leve a",
+        "me leva para", "me leva pra", "me leva ao", "como chego", "como eu chego", "caminho para", "rota para", "navegar para",
+    )
+    override val findPhrases = listOf(
+        "procurar", "procure", "procura", "onde fica", "encontrar", "encontre", "achar", "ache", "onde esta", "onde tem",
+        "estou procurando", "quero", "eu quero", "preciso de", "preciso",
+    )
+    override val fillerWords = setOf("o", "a", "os", "as", "um", "uma", "uns", "umas", "de", "do", "da", "ao", "aos", "para", "pra", "pro", "no", "na", "meu", "minha", "chego", "ate")
+    override fun findingStart(item: String) = "Procurando $item. Aponte a câmera para frente e vire devagar. Eu aviso quando encontrar."
+    override fun found(text: String) = "Encontrei: $text"
+    override fun navigatingStart(place: String) = "Abrindo a navegação a pé até $place. As instruções de rua serão faladas pelo Google Maps. Volte ao Lerguie no modo Caminhar para eu avisar os obstáculos."
 
     override val voiceCommands: List<Pair<VoiceCommand, List<String>>> = listOf(
         VoiceCommand.STOP to listOf("parar", "pare", "silencio", "cala"),
@@ -80,7 +101,8 @@ object PtBrLanguagePack : LanguagePack {
         "Cup" to f("xícara"), "Mug" to f("caneca"), "Bottle" to f("garrafa"), "Glass" to m("copo"),
         "Plate" to m("prato"), "Bowl" to f("tigela"), "Fork" to m("garfo"), "Spoon" to f("colher"),
         "Glasses" to m("óculos"), "Sunglasses" to m("óculos de sol"), "Hat" to m("chapéu"), "Cap" to m("boné"),
-        "Shoe" to m("sapato"), "Sneakers" to m("tênis"), "Jeans" to f("calça jeans"), "Jacket" to f("jaqueta"),
+        "Shoe" to m("sapato"), "Sandal" to f("sandália"), "Flip-flops" to m("chinelo"), "Slipper" to m("chinelo"),
+        "Boot" to f("bota"), "Footwear" to m("calçado"), "Sneakers" to m("tênis"), "Jeans" to f("calça jeans"), "Jacket" to f("jaqueta"),
         "Shirt" to f("camisa"), "Dress" to m("vestido"), "Handbag" to f("bolsa"), "Backpack" to f("mochila"),
         "Umbrella" to m("guarda-chuva"), "Watch" to m("relógio de pulso"), "Jewellery" to f("joia"),
         "Book" to m("livro"), "Paper" to m("papel"), "Poster" to m("cartaz"), "Flag" to f("bandeira"),
@@ -108,12 +130,28 @@ object PtBrLanguagePack : LanguagePack {
         "Fireworks" to m("fogos de artifício"),
     )
 
-    override val objectCategories: Map<String, Term> = mapOf(
-        "Fashion good" to m("item de vestuário"),
-        "Food" to f("comida"),
-        "Home good" to m("objeto doméstico"),
-        "Place" to m("lugar"),
-        "Plant" to f("planta"),
+    override val cocoLabels: Map<String, Term> = mapOf(
+        "person" to f("pessoa"), "bicycle" to f("bicicleta"), "car" to m("carro"), "motorcycle" to f("moto"),
+        "airplane" to m("avião"), "bus" to m("ônibus"), "train" to m("trem"), "truck" to m("caminhão"), "boat" to m("barco"),
+        "traffic light" to m("semáforo"), "fire hydrant" to m("hidrante"), "stop sign" to f("placa de pare"),
+        "parking meter" to m("parquímetro"), "bench" to m("banco"), "bird" to m("pássaro"), "cat" to m("gato"),
+        "dog" to m("cachorro"), "horse" to m("cavalo"), "sheep" to f("ovelha"), "cow" to f("vaca"),
+        "elephant" to m("elefante"), "bear" to m("urso"), "zebra" to f("zebra"), "giraffe" to f("girafa"),
+        "backpack" to f("mochila"), "umbrella" to m("guarda-chuva"), "handbag" to f("bolsa"), "tie" to f("gravata"),
+        "suitcase" to f("mala"), "frisbee" to m("frisbee"), "skis" to m("esqui"), "snowboard" to f("prancha de neve"),
+        "sports ball" to f("bola"), "kite" to f("pipa"), "baseball bat" to m("taco"), "baseball glove" to f("luva"),
+        "skateboard" to m("skate"), "surfboard" to f("prancha de surfe"), "tennis racket" to f("raquete"),
+        "bottle" to f("garrafa"), "wine glass" to f("taça"), "cup" to m("copo"), "fork" to m("garfo"),
+        "knife" to f("faca").withHazard("Há uma faca, um objeto cortante"), "spoon" to f("colher"), "bowl" to f("tigela"),
+        "banana" to f("banana"), "apple" to f("maçã"), "sandwich" to m("sanduíche"), "orange" to f("laranja"),
+        "broccoli" to m("brócolis"), "carrot" to f("cenoura"), "hot dog" to m("cachorro-quente"), "pizza" to f("pizza"),
+        "donut" to f("rosquinha"), "cake" to m("bolo"), "chair" to f("cadeira"), "couch" to m("sofá"),
+        "potted plant" to m("vaso de planta"), "bed" to f("cama"), "dining table" to f("mesa"),
+        "toilet" to m("vaso sanitário"), "tv" to f("televisão"), "laptop" to m("notebook"), "mouse" to m("mouse"),
+        "remote" to m("controle remoto"), "keyboard" to m("teclado"), "cell phone" to m("celular"),
+        "microwave" to m("micro-ondas"), "oven" to m("forno"), "toaster" to f("torradeira"), "sink" to f("pia"),
+        "refrigerator" to f("geladeira"), "book" to m("livro"), "clock" to m("relógio"), "vase" to m("vaso"),
+        "scissors" to f("tesoura").withHazard("Há uma tesoura, um objeto cortante"), "teddy bear" to m("ursinho de pelúcia"),
+        "hair drier" to m("secador de cabelo"), "toothbrush" to f("escova de dentes"),
     )
-
 }

@@ -3,24 +3,27 @@ package com.leuname.lerguie.ai.vision
 import com.leuname.lerguie.i18n.ColorName
 import com.leuname.lerguie.i18n.LanguagePack
 import com.leuname.lerguie.i18n.Position
+import com.leuname.lerguie.i18n.Proximity
 
 data class LabelHit(val text: String, val confidence: Float)
 
 /** Caixa normalizada (0..1) de um objeto detectado. */
 data class ObjectBox(val category: String?, val left: Float, val top: Float, val right: Float, val bottom: Float) {
     val area: Float get() = (right - left).coerceAtLeast(0f) * (bottom - top).coerceAtLeast(0f)
+    val width: Float get() = (right - left).coerceAtLeast(0f)
+    val height: Float get() = (bottom - top).coerceAtLeast(0f)
     val centerX: Float get() = (left + right) / 2f
 }
 
 /**
  * Regras (sem dependências Android, testáveis) que transformam as detecções do aparelho
  * em uma descrição curta e honesta, no idioma do [LanguagePack].
+ * Detecções do detector em tempo real (nome + posição) têm prioridade sobre rótulos gerais.
  */
 object OnDeviceComposer {
     private const val MIN_LABEL_CONFIDENCE = 0.55f
-    private const val NEAR_AREA = 0.35f
-    private val vehicleLabels = setOf("Car", "Bus", "Truck", "Motorcycle", "Bicycle", "Vehicle", "Van")
-    private val personLabels = setOf("Smile", "Beard", "Baby", "Crowd", "Selfie", "Team", "Hand")
+    private const val MIN_DETECTION_SCORE = 0.45f
+    val vehicles = setOf("car", "motorcycle", "bus", "truck", "bicycle", "train")
 
     fun position(box: ObjectBox): Position = when {
         box.centerX < 0.36f -> Position.LEFT
@@ -28,54 +31,82 @@ object OnDeviceComposer {
         else -> Position.FRONT
     }
 
+    /** Proximidade aproximada pelo tamanho na imagem (não é medida de distância exata). */
+    fun proximity(box: ObjectBox): Proximity = when {
+        box.height > 0.6f || box.area > 0.3f -> Proximity.NEAR
+        box.height > 0.3f || box.area > 0.08f -> Proximity.MEDIUM
+        else -> Proximity.FAR
+    }
+
+    /** Ordem de importância: veículos e pessoas antes, depois o que estiver mais perto. */
+    fun rank(detections: List<Detection>): List<Detection> = detections.sortedWith(
+        compareBy<Detection> {
+            when {
+                it.label in vehicles -> 0
+                it.label == "person" -> 1
+                else -> 2
+            }
+        }.thenByDescending { it.box.area }
+    )
+
     fun compose(
         labels: List<LabelHit>,
-        objects: List<ObjectBox>,
+        detections: List<Detection>,
         color: ColorName?,
         mode: VisionMode,
         pack: LanguagePack,
     ): VisionResult {
+        val ranked = rank(detections.filter { it.score >= MIN_DETECTION_SCORE && pack.cocoLabels.containsKey(it.label) })
+        val dets = if (mode == VisionMode.PERSON) ranked.sortedByDescending { it.label == "person" } else ranked
         val translated = labels
             .filter { it.confidence >= MIN_LABEL_CONFIDENCE }
             .sortedByDescending { it.confidence }
-            .mapNotNull { hit -> pack.labels[hit.text]?.let { Triple(hit, it, hit.text) } }
+            .mapNotNull { hit -> pack.labels[hit.text]?.let { hit to it } }
             .distinctBy { it.second.name }
 
-        if (translated.isEmpty() && objects.isEmpty()) return VisionResult.NotRecognized
+        if (dets.isEmpty() && translated.isEmpty()) return VisionResult.NotRecognized
 
-        val largest = objects.maxByOrNull { it.area }
-        val where = largest?.let { pack.position(position(it)) } ?: pack.position(Position.FRONT)
+        fun where(d: Detection) = pack.position(position(d.box))
+
         val hazards = buildList {
-            translated.forEach { (hit, term, _) -> if (term.hazard != null && hit.confidence >= 0.6f) add(term.hazard) }
-            val vehicle = translated.any { it.third in vehicleLabels }
-            if (vehicle && largest != null && largest.area >= NEAR_AREA) add(pack.vehicleNear(where))
+            dets.forEach { d ->
+                val term = pack.cocoLabels.getValue(d.label)
+                if (term.hazard != null) add(term.hazard)
+                if (d.label in vehicles && proximity(d.box) != Proximity.FAR) add(pack.vehicleNear(where(d)))
+            }
+            translated.forEach { (hit, term) -> if (term.hazard != null && hit.confidence >= 0.6f) add(term.hazard) }
         }.distinct()
 
-        val primary = translated.firstOrNull()
-        val personHint = translated.any { it.third in personLabels }
-
-        val (identified, confidence) = when {
-            mode == VisionMode.PERSON && personHint -> pack.personAt(where) to Confidence.MEDIUM
-            primary != null -> {
-                val c = primary.first.confidence
-                val conf = when {
-                    c >= 0.85f -> Confidence.HIGH
-                    c >= 0.7f -> Confidence.MEDIUM
-                    else -> Confidence.LOW
-                }
-                (if (conf == Confidence.HIGH) pack.sure(primary.second) else pack.likely(primary.second)) to conf
+        val identified: String
+        val confidence: Confidence
+        if (dets.isNotEmpty()) {
+            val main = dets.first()
+            identified = pack.detectedAt(pack.cocoLabels.getValue(main.label), where(main), proximity(main.box))
+            confidence = when {
+                main.score >= 0.7f -> Confidence.HIGH
+                main.score >= 0.55f -> Confidence.MEDIUM
+                else -> Confidence.LOW
             }
-            objects.size == 1 -> pack.oneObjectAt(where) to Confidence.LOW
-            else -> pack.manyObjects(objects.size) to Confidence.LOW
+        } else {
+            val (hit, term) = translated.first()
+            confidence = when {
+                hit.confidence >= 0.85f -> Confidence.HIGH
+                hit.confidence >= 0.7f -> Confidence.MEDIUM
+                else -> Confidence.LOW
+            }
+            identified = if (confidence == Confidence.HIGH) pack.sure(term) else pack.likely(term)
         }
 
         val description = buildList {
-            val others = translated.drop(1).take(3).map { it.second.name }
-            if (others.isNotEmpty()) add(pack.alsoSeen(others))
-            if (largest != null && primary != null) {
-                val what = largest.category?.let { pack.objectCategories[it]?.withArticle }
-                add(pack.objectAt(what, where, largest.area >= NEAR_AREA))
+            val others = dets.drop(1).take(4).map { d ->
+                val t = pack.cocoLabels.getValue(d.label)
+                "${t.withArticle} ${where(d)}"
             }
+            if (others.isNotEmpty()) add(pack.alsoAround(others))
+            val detected = dets.map { pack.cocoLabels.getValue(it.label).name }.toSet()
+            val context = translated.map { it.second.name }.filter { it !in detected }
+                .let { if (dets.isEmpty()) it.drop(1) else it }.take(3)
+            if (context.isNotEmpty()) add(pack.alsoSeen(context))
         }.joinToString(" ")
 
         return VisionResult.Success(

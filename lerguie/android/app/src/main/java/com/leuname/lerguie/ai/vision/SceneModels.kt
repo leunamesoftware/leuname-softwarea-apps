@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.leuname.lerguie.i18n.LanguagePack
 import com.leuname.lerguie.i18n.LanguagePacks
 
-enum class VisionMode(val apiName: String) { OBJECT("object"), PERSON("person"), ENVIRONMENT("environment") }
+enum class VisionMode(val apiName: String) { WALK("walk"), OBJECT("object"), PERSON("person"), ENVIRONMENT("environment") }
 
 enum class Confidence { HIGH, MEDIUM, LOW }
 

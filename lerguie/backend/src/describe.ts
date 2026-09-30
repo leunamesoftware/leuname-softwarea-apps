@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-export type Mode = 'object' | 'person' | 'environment';
+export type Mode = 'walk' | 'object' | 'person' | 'environment';
 
 export interface SceneResult {
   identified: string;
@@ -33,7 +33,7 @@ const SYSTEM_PROMPT = `You describe photos for people who are blind or have low 
 Honesty matters more than completeness: a wrong description can mislead someone who cannot check it. Describe only what is visible. When you are not sure what something is, say so and lower "confidence" instead of guessing. If the image is too dark, blurred or unclear to describe safely, return an empty "identified" and "low" confidence.
 
 Fields:
-- identified: one sentence naming the main subject (e.g. "É um cachorro da raça Golden Retriever."). Mention the breed, brand or model only when clearly recognizable.
+- identified: one sentence naming the main subject precisely (the specific object, e.g. "chinelo" rather than "calçado"; "parede" when facing a wall) (e.g. "É um cachorro da raça Golden Retriever."). Mention the breed, brand or model only when clearly recognizable.
 - description: up to three sentences with the most useful details: size, position (left/right/in front, near/far), state, and any text that is visible and relevant.
 - environment: one sentence about the place, or empty.
 - action: one sentence about what is happening, or empty.
@@ -44,6 +44,7 @@ Fields:
 About people: never identify anyone by name and never guess identity, ethnicity, health, religion or other sensitive traits. You may describe approximate age range, clothing, posture, facial expression and what the person is doing.`;
 
 const MODE_HINT: Record<Mode, string> = {
+  walk: 'The person is WALKING with the camera pointing ahead. Be very brief: "identified" is one short sentence about the path ahead (e.g. "Corredor livre à frente, porta à direita a cerca de 3 metros."). Mention doors, walls, stairs, curbs, poles, obstacles, people and vehicles with side and approximate distance in meters. Leave description, environment, action and colors empty.',
   object: 'Focus on the main object or animal in the center of the image.',
   person: 'Focus on the people in the image, following the rules about people.',
   environment: 'Focus on the overall place: layout, main objects and where they are, paths and obstacles.',
@@ -57,6 +58,7 @@ export async function describeImage(
   imageBase64: string,
   mode: Mode,
   locale: string,
+  target?: string,
 ): Promise<SceneResult> {
   const client = new Anthropic({ apiKey, maxRetries: 1, timeout: 40_000 });
   const response = await client.beta.messages.create({
@@ -66,14 +68,22 @@ export async function describeImage(
     betas: ['server-side-fallback-2026-07-01'],
     fallbacks: 'default',
     // Descrição curta: esforço baixo = resposta rápida e barata.
-    output_config: { effort: 'low', format: { type: 'json_schema', schema: SCENE_SCHEMA } },
+    // Foto: esforço médio (mais precisão). Caminhar: baixo (resposta rápida).
+    output_config: { effort: mode === 'walk' ? 'low' : 'medium', format: { type: 'json_schema', schema: SCENE_SCHEMA } },
     system: SYSTEM_PROMPT,
     messages: [
       {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: imageBase64 } },
-          { type: 'text', text: `${MODE_HINT[mode]} Write every field in this language: ${locale}.` },
+          {
+            type: 'text',
+            text:
+              `${MODE_HINT[mode]} Write every field in this language: ${locale}.` +
+              (target
+                ? ` The person is looking for this item: "${target}". Start "identified" by saying clearly whether it is visible and exactly where (left/right/center, shelf height, approximate distance). If it is not visible, say so and suggest turning slowly. Never claim it is visible unless you can see it.`
+                : ''),
+          },
         ],
       },
     ],

@@ -39,8 +39,9 @@ import androidx.navigation.NavHostController
 import com.leuname.lerguie.R
 import com.leuname.lerguie.ui.components.FeatureCard
 import com.leuname.lerguie.ui.components.HeaderAction
+import com.leuname.lerguie.ui.components.HoldToTalkButton
+import com.leuname.lerguie.ui.components.rememberVoiceAssistant
 import com.leuname.lerguie.ui.components.LerguieHeader
-import com.leuname.lerguie.ui.components.VoiceCommandButton
 import com.leuname.lerguie.ui.navigation.Routes
 import com.leuname.lerguie.ui.navigation.navigateTab
 import com.leuname.lerguie.ui.theme.LocalBrand
@@ -50,17 +51,27 @@ fun HomeScreen(nav: NavHostController) {
     val brand = LocalBrand.current
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         LerguieHeader(big = true) {
-            VoiceCommandButton(nav)
             HeaderAction(Icons.Filled.Settings, stringResource(R.string.tab_settings)) { nav.navigateTab(Routes.SETTINGS) }
         }
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // Assistente: segure, fale ("quero um leite", "quero ir ao mercado", "ler"...) e solte.
+            val assistant = rememberVoiceAssistant(nav)
+            HoldToTalkButton(
+                label = stringResource(R.string.assistant_hold),
+                listeningLabel = stringResource(R.string.assistant_listening),
+                listening = assistant.state.listening,
+                level = assistant.state.level,
+                onStart = assistant.start,
+                onStop = assistant.stop,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FeatureCard(
                     stringResource(R.string.feature_see), stringResource(R.string.feature_see_desc),
-                    Icons.Filled.PhotoCamera, brand.seeGradient, { nav.navigate(Routes.SEE) }, Modifier.weight(1f),
+                    Icons.Filled.PhotoCamera, brand.seeGradient, { nav.navigate(Routes.see()) }, Modifier.weight(1f),
                 )
                 FeatureCard(
                     stringResource(R.string.feature_read), stringResource(R.string.feature_read_desc),

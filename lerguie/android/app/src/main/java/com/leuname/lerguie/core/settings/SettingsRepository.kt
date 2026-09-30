@@ -32,6 +32,7 @@ class SettingsRepository(private val context: Context) {
         val readingGuidance = booleanPreferencesKey("reading_guidance")
         val speechRate = floatPreferencesKey("speech_rate")
         val speechPitch = floatPreferencesKey("speech_pitch")
+        val voiceName = stringPreferencesKey("voice_name")
         val autoInterval = intPreferencesKey("auto_interval")
         val useCloudAi = booleanPreferencesKey("use_cloud_ai")
         val saveHistory = booleanPreferencesKey("save_history")
@@ -56,6 +57,7 @@ class SettingsRepository(private val context: Context) {
             readingGuidance = p[Keys.readingGuidance] ?: d.readingGuidance,
             speechRate = (p[Keys.speechRate] ?: d.speechRate).coerceIn(0.5f, 2f),
             speechPitch = (p[Keys.speechPitch] ?: d.speechPitch).coerceIn(0.5f, 2f),
+            voiceName = p[Keys.voiceName] ?: d.voiceName,
             autoDescribeIntervalSec = p[Keys.autoInterval] ?: d.autoDescribeIntervalSec,
             useCloudAi = p[Keys.useCloudAi] ?: d.useCloudAi,
             saveHistory = p[Keys.saveHistory] ?: d.saveHistory,
@@ -80,6 +82,7 @@ class SettingsRepository(private val context: Context) {
             p[Keys.readingGuidance] = s.readingGuidance
             p[Keys.speechRate] = s.speechRate
             p[Keys.speechPitch] = s.speechPitch
+            p[Keys.voiceName] = s.voiceName
             p[Keys.autoInterval] = s.autoDescribeIntervalSec
             p[Keys.useCloudAi] = s.useCloudAi
             p[Keys.saveHistory] = s.saveHistory

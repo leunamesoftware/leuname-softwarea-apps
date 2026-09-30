@@ -8,9 +8,12 @@ import kotlinx.coroutines.withContext
 
 /** Descrição detalhada pela IA do backend. A imagem não é armazenada no servidor. */
 class CloudSceneDescriber(private val api: LerguieApiClient) : SceneDescriber {
-    override suspend fun describe(image: Bitmap, mode: VisionMode): VisionResult {
-        val jpeg = withContext(Dispatchers.Default) { Bitmaps.toJpeg(Bitmaps.scaleDown(image, 1024), 80) }
-        val r = api.describe(jpeg, mode.apiName)
+    override suspend fun describe(image: Bitmap, mode: VisionMode): VisionResult = describe(image, mode, null)
+
+    /** [target]: o que a pessoa está procurando (ex.: "leite"). */
+    suspend fun describe(image: Bitmap, mode: VisionMode, target: String?): VisionResult {
+        val jpeg = withContext(Dispatchers.Default) { Bitmaps.toJpeg(Bitmaps.scaleDown(image, if (mode == VisionMode.WALK) 768 else 1280), 82) }
+        val r = api.describe(jpeg, mode.apiName, target)
         if (r.identified.isBlank()) return VisionResult.NotRecognized
         val confidence = when (r.confidence.lowercase()) {
             "high" -> Confidence.HIGH

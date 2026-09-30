@@ -13,12 +13,12 @@ camerax = "1.4.1"
 mlkitText = "16.0.1"
 mlkitBarcode = "17.3.0"
 mlkitLabeling = "17.0.9"
-mlkitObjects = "17.0.2"
 coroutines = "1.9.0"
 serialization = "1.7.3"
 splashscreen = "1.0.1"
 junit = "4.13.2"
 billing = "7.1.1"
+mediapipe = "0.10.20"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -44,10 +44,10 @@ camerax-view = { module = "androidx.camera:camera-view", version.ref = "camerax"
 mlkit-text = { module = "com.google.mlkit:text-recognition", version.ref = "mlkitText" }
 mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcode" }
 mlkit-labeling = { module = "com.google.mlkit:image-labeling", version.ref = "mlkitLabeling" }
-mlkit-objects = { module = "com.google.mlkit:object-detection", version.ref = "mlkitObjects" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "coroutines" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+mediapipe-vision = { module = "com.google.mediapipe:tasks-vision", version.ref = "mediapipe" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 junit = { module = "junit:junit", version.ref = "junit" }
 

@@ -16,10 +16,13 @@ data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.DARK,
     val vibration: Boolean = true,
     val autoRead: Boolean = true,
-    val speakReplies: Boolean = true,
+    /** Desligado por padrão: repetir a voz da outra pessoa confunde e é inútil para quem é surdo. */
+    val speakReplies: Boolean = false,
     val readingGuidance: Boolean = true,
     val speechRate: Float = 1f,
     val speechPitch: Float = 1f,
+    /** Vazio = automática (a mais natural disponível). */
+    val voiceName: String = "",
     val autoDescribeIntervalSec: Int = 5,
     val useCloudAi: Boolean = true,
     val saveHistory: Boolean = false,

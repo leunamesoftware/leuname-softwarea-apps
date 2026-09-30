@@ -15,7 +15,7 @@ const SESSION_TTL = 7 * 24 * 3600;
 const MAX_IMAGE_B64 = 2_800_000; // ~2 MB de JPEG; o app envia ~1024 px (bem menos)
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LOCALE_RE = /^[a-z]{2,3}(-[A-Z]{2})?$/;
-const MODES: Mode[] = ['object', 'person', 'environment'];
+const MODES: Mode[] = ['walk', 'object', 'person', 'environment'];
 
 function json(body: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
@@ -91,17 +91,19 @@ export default {
         const session = await auth(request, env);
         if (!session) return error(401, 'unauthorized');
         if (!(await env.DESCRIBE_LIMITER.limit({ key: session.sub })).success) return error(429, 'rate_limited');
-        const body = await readJson<{ image?: string; mode?: string; locale?: string }>(request, MAX_IMAGE_B64 + 2_000);
+        const body = await readJson<{ image?: string; mode?: string; locale?: string; target?: string }>(request, MAX_IMAGE_B64 + 2_000);
         if (!body?.image || !body.image.startsWith('/9j/')) return error(400, 'invalid_image');
         const mode = MODES.includes(body.mode as Mode) ? (body.mode as Mode) : 'object';
         const locale = body.locale && LOCALE_RE.test(body.locale) ? body.locale : 'pt-BR';
+        // Item procurado: texto curto e limpo (sem aspas/controle) para ir ao prompt.
+        const target = typeof body.target === 'string' ? body.target.replace(/[^\p{L}\p{N} .,-]/gu, '').trim().slice(0, 60) || undefined : undefined;
 
         const plan = findPlan(loadCatalog(env.PLANS_JSON), session.plan);
         if (!plan.features.includes('CLOUD_DESCRIPTION')) return error(403, 'feature_not_in_plan');
         if (!(await consumeDailyQuota(env, session, plan.limits.cloud_descriptions_per_day))) return error(429, 'quota_exceeded');
 
         try {
-          return json(await describeImage(env.ANTHROPIC_API_KEY, env.CLAUDE_MODEL, body.image, mode, locale));
+          return json(await describeImage(env.ANTHROPIC_API_KEY, env.CLAUDE_MODEL, body.image, mode, locale, target));
         } catch (e) {
           if (e instanceof NotDescribableError) {
             return json({ identified: '', description: '', environment: '', action: '', colors: '', hazards: [], confidence: 'low' });
