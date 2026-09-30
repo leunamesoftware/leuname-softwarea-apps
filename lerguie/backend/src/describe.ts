@@ -34,7 +34,7 @@ Honesty matters more than completeness: a wrong description can mislead someone 
 
 Fields:
 - identified: one sentence naming the main subject precisely (the specific object, e.g. "chinelo" rather than "calçado"; "parede" when facing a wall) (e.g. "É um cachorro da raça Golden Retriever."). Mention the breed, brand or model only when clearly recognizable.
-- description: up to three sentences with the most useful details: size, position (left/right/in front, near/far), state, and any text that is visible and relevant.
+- description: up to three sentences with the most useful details: size, position (left/right/in front, near/far), state, and any text that is visible (read warnings and signs word for word). For appliances or objects the person may need to use, briefly say where the main parts and controls are (e.g. a stove: burners on top, knobs on the front to turn on).
 - environment: one sentence about the place, or empty.
 - action: one sentence about what is happening, or empty.
 - colors: one sentence with the main colors, or empty.

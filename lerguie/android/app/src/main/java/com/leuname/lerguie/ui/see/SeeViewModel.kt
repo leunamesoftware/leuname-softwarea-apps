@@ -246,13 +246,17 @@ class SeeViewModel(private val c: AppContainer) : ViewModel() {
     private suspend fun autoStep(bitmap: Bitmap) {
         val result = c.sceneDescriber.onDevice.describe(bitmap, _state.value.mode)
         val known = c.memory.recognize(bitmap)
-        if ((result is VisionResult.Success || known != null) && _state.value.continuous) {
+        // Lê também o que estiver escrito (placas, avisos, rótulos) — só na hora, nada é guardado.
+        val written = (c.textReader.read(bitmap) as? com.leuname.lerguie.ai.ocr.OcrResult.Success)?.fullText
+            ?.replace(Regex("\\s+"), " ")?.trim()?.takeIf { it.length >= 3 }?.take(160)
+        if ((result is VisionResult.Success || known != null || written != null) && _state.value.continuous) {
             val pack = LanguagePacks.current()
             val scene = (result as? VisionResult.Success)?.scene
             val short = buildList {
                 if (scene != null && scene.hazards.isNotEmpty()) add(pack.attention(scene.hazards))
                 if (known != null) add(pack.knownWalk(known.name))
                 else if (scene != null) add(SceneSpeech.headline(scene, pack))
+                if (written != null) add(pack.writtenText(written))
             }.joinToString(" ")
             if (short != _state.value.lastAuto) {
                 _state.update { it.copy(lastAuto = short) }
