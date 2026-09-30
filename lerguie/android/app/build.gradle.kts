@@ -1,3 +1,4 @@
+import java.net.URI
 import java.util.Properties
 
 plugins {
@@ -107,7 +108,7 @@ val downloadModels by tasks.registering {
             val out = modelsDir.file(name).asFile
             if (!out.exists()) {
                 out.parentFile.mkdirs()
-                java.net.URI(url).toURL().openStream().use { input -> out.outputStream().use { input.copyTo(it) } }
+                URI(url).toURL().openStream().use { input -> out.outputStream().use { output -> input.copyTo(output) } }
             }
         }
     }
