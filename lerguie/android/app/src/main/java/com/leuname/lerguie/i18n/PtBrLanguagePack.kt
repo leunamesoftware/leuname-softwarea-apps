@@ -102,7 +102,7 @@ object PtBrLanguagePack : LanguagePack {
         "Bed" to f("cama"), "Shelf" to f("prateleira"), "Cabinetry" to m("armário"), "Door" to f("porta"),
         "Window" to f("janela"), "Curtain" to f("cortina"), "Lamp" to m("abajur"), "Sink" to f("pia"),
         "Toilet" to m("vaso sanitário"), "Bathtub" to f("banheira"), "Kitchen" to f("cozinha"),
-        "Room" to m("cômodo"), "Wall" to f("parede"), "Floor" to m("chão"), "Stairs" to f("escada").withHazard("Há uma escada à frente"),
+        "Room" to m("cômodo"), "Wall" to f("parede"), "Floor" to m("chão"), "Stairs" to f("escada"),
         "Television" to f("televisão"), "Clock" to m("relógio"), "Mirror" to m("espelho"),
         "Refrigerator" to f("geladeira"), "Oven" to m("forno"), "Microwave" to m("micro-ondas"),
         "Pillow" to m("travesseiro"), "Blanket" to m("cobertor"), "Rug" to m("tapete"),
@@ -136,8 +136,8 @@ object PtBrLanguagePack : LanguagePack {
         "Snow" to f("neve"), "Rain" to f("chuva"), "Pool" to f("piscina"), "Pier" to m("píer"),
         "Factory" to f("fábrica"), "Church" to f("igreja"), "Shop" to f("loja"), "Supermarket" to m("supermercado"),
         "Office" to m("escritório"), "Restaurant" to m("restaurante"), "Stadium" to m("estádio"),
-        "Fire" to m("fogo").withHazard("Há fogo à frente"),
-        "Bonfire" to f("fogueira").withHazard("Há fogo à frente"),
+        "Fire" to m("fogo"),
+        "Bonfire" to f("fogueira"),
         "Fireworks" to m("fogos de artifício"),
     )
 

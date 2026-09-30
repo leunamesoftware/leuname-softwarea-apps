@@ -17,7 +17,7 @@ class WalkAnnouncer(private val repeatAfterMs: Long = 7000) {
     fun reset() = memory.clear()
 
     fun next(detections: List<Detection>, pack: LanguagePack, now: Long): List<Announcement> {
-        val relevant = OnDeviceComposer.rank(detections.filter { it.score >= 0.5f && pack.cocoLabels.containsKey(it.label) })
+        val relevant = OnDeviceComposer.rank(detections.filter { it.score >= 0.6f && pack.cocoLabels.containsKey(it.label) })
         val out = mutableListOf<Announcement>()
         for (d in relevant) {
             if (out.size >= 2) break

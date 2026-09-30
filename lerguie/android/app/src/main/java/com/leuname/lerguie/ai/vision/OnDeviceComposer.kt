@@ -21,8 +21,10 @@ data class ObjectBox(val category: String?, val left: Float, val top: Float, val
  * Detecções do detector em tempo real (nome + posição) têm prioridade sobre rótulos gerais.
  */
 object OnDeviceComposer {
-    private const val MIN_LABEL_CONFIDENCE = 0.55f
-    private const val MIN_DETECTION_SCORE = 0.45f
+    // Limiares altos de propósito: no aparelho é melhor calar do que afirmar errado.
+    private const val MIN_LABEL_CONFIDENCE = 0.7f
+    private const val MIN_DETECTION_SCORE = 0.55f
+    private const val MIN_HAZARD_SCORE = 0.7f
     val vehicles = setOf("car", "motorcycle", "bus", "truck", "bicycle", "train")
 
     fun position(box: ObjectBox): Position = when {
@@ -69,12 +71,13 @@ object OnDeviceComposer {
         fun where(d: Detection) = pack.position(position(d.box))
 
         val hazards = buildList {
-            dets.forEach { d ->
+            dets.filter { it.score >= MIN_HAZARD_SCORE }.forEach { d ->
                 val term = pack.cocoLabels.getValue(d.label)
                 if (term.hazard != null) add(term.hazard)
                 if (d.label in vehicles && proximity(d.box) != Proximity.FAR) add(pack.vehicleNear(where(d)))
             }
-            translated.forEach { (hit, term) -> if (term.hazard != null && hit.confidence >= 0.6f) add(term.hazard) }
+            // Rótulos gerais (sem posição) quase nunca bastam para alertar: só com certeza muito alta.
+            translated.forEach { (hit, term) -> if (term.hazard != null && hit.confidence >= 0.92f) add(term.hazard) }
         }.distinct()
 
         val identified: String
@@ -83,15 +86,15 @@ object OnDeviceComposer {
             val main = dets.first()
             identified = pack.detectedAt(pack.cocoLabels.getValue(main.label), where(main), proximity(main.box))
             confidence = when {
-                main.score >= 0.7f -> Confidence.HIGH
-                main.score >= 0.55f -> Confidence.MEDIUM
+                main.score >= 0.75f -> Confidence.HIGH
+                main.score >= 0.62f -> Confidence.MEDIUM
                 else -> Confidence.LOW
             }
         } else {
             val (hit, term) = translated.first()
             confidence = when {
-                hit.confidence >= 0.85f -> Confidence.HIGH
-                hit.confidence >= 0.7f -> Confidence.MEDIUM
+                hit.confidence >= 0.92f -> Confidence.HIGH
+                hit.confidence >= 0.82f -> Confidence.MEDIUM
                 else -> Confidence.LOW
             }
             identified = if (confidence == Confidence.HIGH) pack.sure(term) else pack.likely(term)

@@ -77,13 +77,13 @@ class OnDeviceComposerTest {
     }
 
     @Test fun highConfidenceLabelIsAffirmative() {
-        val r = OnDeviceComposer.compose(listOf(LabelHit("Dog", 0.93f)), emptyList(), null, VisionMode.OBJECT, pack) as VisionResult.Success
+        val r = OnDeviceComposer.compose(listOf(LabelHit("Dog", 0.95f)), emptyList(), null, VisionMode.OBJECT, pack) as VisionResult.Success
         assertEquals("É um cachorro.", r.scene.identified)
         assertEquals(Confidence.HIGH, r.scene.confidence)
     }
 
     @Test fun lowConfidenceIsSpokenAsUncertain() {
-        val r = OnDeviceComposer.compose(listOf(LabelHit("Chair", 0.6f)), emptyList(), null, VisionMode.OBJECT, pack) as VisionResult.Success
+        val r = OnDeviceComposer.compose(listOf(LabelHit("Chair", 0.75f)), emptyList(), null, VisionMode.OBJECT, pack) as VisionResult.Success
         assertEquals(Confidence.LOW, r.scene.confidence)
         assertTrue(SceneSpeech.headline(r.scene, pack).startsWith("Não tenho certeza"))
     }
@@ -107,7 +107,7 @@ class OnDeviceComposerTest {
     }
 
     @Test fun knifeIsHazard() {
-        val r = OnDeviceComposer.compose(emptyList(), listOf(det("knife", 0.7f, 0.4f, 0.4f, 0.5f, 0.5f)), null, VisionMode.OBJECT, pack) as VisionResult.Success
+        val r = OnDeviceComposer.compose(emptyList(), listOf(det("knife", 0.8f, 0.4f, 0.4f, 0.5f, 0.5f)), null, VisionMode.OBJECT, pack) as VisionResult.Success
         assertTrue(r.scene.hazards.any { it.contains("faca") })
     }
 }
