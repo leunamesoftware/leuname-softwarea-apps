@@ -1,0 +1,48 @@
+{
+  "@@locale": "es",
+  "appName": "Eclud",
+  "tagline": "EURO CLUB DE DESCUENTOS",
+
+  "onboardingHeadlineHighlight": "Descuentos",
+  "onboardingHeadlineRest": " reales\nen los mejores sitios\nde tu ciudad",
+  "priceFrom": "Solo",
+  "pricePerMonth": "/mes",
+  "priceDescription": "Accede a descuentos exclusivos\nen establecimientos asociados.",
+  "startNow": "Empezar ahora",
+  "haveAccount": "¿Ya tienes cuenta?",
+  "signIn": "Inicia sesión",
+  "securePayment": "Pago seguro con Stripe",
+
+  "categoryAll": "Todos",
+  "categoryFood": "Comida",
+  "categoryRestaurants": "Restaurantes",
+  "categoryCafes": "Cafeterías",
+  "categoryBeauty": "Belleza",
+  "categoryLeisure": "Ocio",
+
+  "greeting": "¡Hola, {name}!",
+  "@greeting": { "placeholders": { "name": { "type": "String" } } },
+  "greetingAnonymous": "¡Hola!",
+  "homeSubtitle": "Explora las mejores ofertas cerca de ti.",
+  "searchHint": "Buscar restaurantes, cafeterías, servicios...",
+  "promoTitle": "DESCUENTOS\nDE HASTA {percent}",
+  "@promoTitle": { "placeholders": { "percent": { "type": "String" } } },
+  "promoSubtitle": "Restaurantes, cafeterías, belleza\n¡y mucho más!",
+  "nearest": "Más cercanos",
+  "seeMap": "Ver mapa",
+  "discountLabel": "de descuento",
+  "noResults": "No encontramos establecimientos con esos filtros.",
+  "loadError": "No se pudieron cargar los establecimientos.",
+  "retry": "Reintentar",
+  "notifications": "Notificaciones",
+
+  "mapSearchHint": "Buscar en esta zona...",
+  "myLocation": "Mi ubicación",
+
+  "navHome": "Inicio",
+  "navMap": "Mapa",
+  "navSavings": "Mi ahorro",
+  "navProfile": "Perfil",
+  "comingSoon": "Próximamente",
+  "comingSoonDescription": "Estamos preparando esta sección."
+}

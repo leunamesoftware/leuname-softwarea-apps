@@ -1,0 +1,107 @@
+import 'package:latlong2/latlong.dart';
+
+import '../data/models/partner.dart';
+import '../data/models/partner_category.dart';
+import '../data/repositories/partner_repository.dart';
+
+/// Parceiros fictícios em Madri, usados até o backend estar pronto.
+class DemoPartnerRepository implements PartnerRepository {
+  @override
+  Future<List<Partner>> fetchPartners() async {
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    return partners;
+  }
+
+  static const partners = [
+    Partner(
+      id: 'p1',
+      name: 'La Bella Cucina',
+      category: PartnerCategory.food,
+      priceLevel: 2,
+      discountPercent: 15,
+      location: LatLng(40.4189, -3.7065),
+      address: 'Calle del Arenal, 12',
+    ),
+    Partner(
+      id: 'p2',
+      name: 'Coffee Time',
+      category: PartnerCategory.cafe,
+      priceLevel: 1,
+      discountPercent: 10,
+      location: LatLng(40.4150, -3.6990),
+      address: 'Calle de las Huertas, 8',
+    ),
+    Partner(
+      id: 'p3',
+      name: 'Barbería Elite',
+      category: PartnerCategory.beauty,
+      priceLevel: 2,
+      discountPercent: 20,
+      location: LatLng(40.4215, -3.7010),
+      address: 'Calle de la Montera, 25',
+    ),
+    Partner(
+      id: 'p4',
+      name: 'Taberna El Rincón',
+      category: PartnerCategory.food,
+      priceLevel: 2,
+      discountPercent: 12,
+      location: LatLng(40.4132, -3.7075),
+      address: 'Calle de Toledo, 40',
+    ),
+    Partner(
+      id: 'p5',
+      name: 'Café Aurora',
+      category: PartnerCategory.cafe,
+      priceLevel: 1,
+      discountPercent: 10,
+      location: LatLng(40.4198, -3.7102),
+      address: 'Plaza de Isabel II, 3',
+    ),
+    Partner(
+      id: 'p6',
+      name: 'Estética Luna',
+      category: PartnerCategory.beauty,
+      priceLevel: 3,
+      discountPercent: 18,
+      location: LatLng(40.4240, -3.6975),
+      address: 'Calle de Fuencarral, 60',
+    ),
+    Partner(
+      id: 'p7',
+      name: 'Cine Estrella',
+      category: PartnerCategory.leisure,
+      priceLevel: 2,
+      discountPercent: 15,
+      location: LatLng(40.4205, -3.7058),
+      address: 'Gran Vía, 70',
+    ),
+    Partner(
+      id: 'p8',
+      name: 'Bolera Sol',
+      category: PartnerCategory.leisure,
+      priceLevel: 1,
+      discountPercent: 10,
+      location: LatLng(40.4120, -3.7020),
+      address: 'Calle de Atocha, 30',
+    ),
+    Partner(
+      id: 'p9',
+      name: 'Sushi Kaze',
+      category: PartnerCategory.food,
+      priceLevel: 3,
+      discountPercent: 15,
+      location: LatLng(40.4250, -3.7040),
+      address: 'Calle de Hortaleza, 15',
+    ),
+    Partner(
+      id: 'p10',
+      name: 'Pastelería Dulce',
+      category: PartnerCategory.cafe,
+      priceLevel: 1,
+      discountPercent: 8,
+      location: LatLng(40.4160, -3.7120),
+      address: 'Calle Mayor, 55',
+    ),
+  ];
+}
