@@ -44,7 +44,7 @@ class PartnerCard extends StatelessWidget {
                   children: [
                     Text(
                       partner.name,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 15,
@@ -75,15 +75,13 @@ class PartnerCard extends StatelessWidget {
                             color: AppColors.textMuted,
                           ),
                         ),
-                        if (partner.openingHours case final hours?) ...[
-                          const Text(
-                            '  ·  ',
-                            style: TextStyle(color: AppColors.textMuted),
-                          ),
-                          Flexible(child: OpenStatus(hours: hours)),
-                        ],
                       ],
                     ),
+                    // Linha própria: em celular estreito não é cortado.
+                    if (partner.openingHours case final hours?) ...[
+                      const SizedBox(height: 2),
+                      OpenStatus(hours: hours),
+                    ],
                   ],
                 ),
               ),
