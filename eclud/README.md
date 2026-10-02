@@ -82,8 +82,11 @@ lib/
   apps que exigem conta para o que não precisa); usar desconto exige login.
 - **Sessão** guardada no cofre do sistema (Keychain/Keystore).
 - **PIN da loja** só existe como hash no servidor; 5 erros bloqueiam 15 min.
-- **Pagamento**: no Android, a assinatura vendida dentro do app deve usar o
-  Google Play Billing (regra da loja). O Stripe fica para o site.
+- **Pagamento**: a assinatura é vendida só pela Google Play, que recolhe o IVA
+  europeu (a empresa é brasileira, sem registro de IVA na UE). Venda pelo
+  site, se um dia fizer sentido, via Paddle/Lemon Squeezy (cuidam do IVA).
+- **RGPD**: empresa de fora da UE normalmente precisa de representante na UE
+  (art. 27); campo previsto na Política de privacidade.
 
 ## Publicação automática
 

@@ -42,9 +42,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signIn => 'Inicia sesión';
 
   @override
-  String get securePayment => 'Pago seguro con Stripe';
-
-  @override
   String get categoryAll => 'Todos';
 
   @override

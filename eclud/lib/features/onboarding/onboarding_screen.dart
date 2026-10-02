@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -121,9 +120,9 @@ class OnboardingScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          // No app Android a assinatura é cobrada pela Play;
-                          // na versão web (PC), pelo Stripe.
-                          kIsWeb ? l10n.securePayment : l10n.securePaymentPlay,
+                          // Cobrança pela Google Play, que também recolhe o IVA
+                          // europeu (a empresa é brasileira).
+                          l10n.securePaymentPlay,
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textMuted,
@@ -131,8 +130,6 @@ class OnboardingScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    if (kIsWeb) const _PaymentMethods(),
                   ],
                 ),
               ),
@@ -254,63 +251,4 @@ class _PriceCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _PaymentMethods extends StatelessWidget {
-  const _PaymentMethods();
-
-  @override
-  Widget build(BuildContext context) {
-    const style = TextStyle(fontSize: 14, fontWeight: FontWeight.w800);
-    return const Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 22,
-      runSpacing: 8,
-      children: [
-        Text(
-          'VISA',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-        _MastercardMark(),
-        Text('Apple Pay', style: style),
-        Text('G Pay', style: style),
-      ],
-    );
-  }
-}
-
-class _MastercardMark extends StatelessWidget {
-  const _MastercardMark();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 32,
-      height: 20,
-      child: Stack(
-        children: [
-          Positioned(left: 0, child: _Dot(Color(0xFFEB001B))),
-          Positioned(left: 12, child: _Dot(Color(0xE6F79E1B))),
-        ],
-      ),
-    );
-  }
-}
-
-class _Dot extends StatelessWidget {
-  const _Dot(this.color);
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 20,
-    height: 20,
-    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-  );
 }

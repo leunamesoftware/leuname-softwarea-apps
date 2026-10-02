@@ -154,12 +154,6 @@ abstract class AppLocalizations {
   /// **'Inicia sesión'**
   String get signIn;
 
-  /// No description provided for @securePayment.
-  ///
-  /// In es, this message translates to:
-  /// **'Pago seguro con Stripe'**
-  String get securePayment;
-
   /// No description provided for @categoryAll.
   ///
   /// In es, this message translates to:
