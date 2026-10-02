@@ -2,7 +2,6 @@
   "@@locale": "es",
   "appName": "Eclud",
   "tagline": "EURO CLUB DE DESCUENTOS",
-
   "onboardingHeadlineHighlight": "Descuentos",
   "onboardingHeadlineRest": " reales\nen los mejores sitios\nde tu ciudad",
   "priceFrom": "Solo",
@@ -12,21 +11,31 @@
   "haveAccount": "¿Ya tienes cuenta?",
   "signIn": "Inicia sesión",
   "securePayment": "Pago seguro con Stripe",
-
   "categoryAll": "Todos",
   "categoryFood": "Comida",
   "categoryRestaurants": "Restaurantes",
   "categoryCafes": "Cafeterías",
   "categoryBeauty": "Belleza",
   "categoryLeisure": "Ocio",
-
   "greeting": "¡Hola, {name}!",
-  "@greeting": { "placeholders": { "name": { "type": "String" } } },
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "greetingAnonymous": "¡Hola!",
   "homeSubtitle": "Explora las mejores ofertas cerca de ti.",
   "searchHint": "Buscar restaurantes, cafeterías, servicios...",
   "promoTitle": "DESCUENTOS\nDE HASTA {percent}",
-  "@promoTitle": { "placeholders": { "percent": { "type": "String" } } },
+  "@promoTitle": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "promoSubtitle": "Restaurantes, cafeterías, belleza\n¡y mucho más!",
   "nearest": "Más cercanos",
   "seeMap": "Ver mapa",
@@ -35,14 +44,95 @@
   "loadError": "No se pudieron cargar los establecimientos.",
   "retry": "Reintentar",
   "notifications": "Notificaciones",
-
   "mapSearchHint": "Buscar en esta zona...",
   "myLocation": "Mi ubicación",
-
   "navHome": "Inicio",
   "navMap": "Mapa",
   "navSavings": "Mi ahorro",
   "navProfile": "Perfil",
   "comingSoon": "Próximamente",
-  "comingSoonDescription": "Estamos preparando esta sección."
+  "comingSoonDescription": "Estamos preparando esta sección.",
+  "reviews": "({count} reseñas)",
+  "@reviews": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReviewsYet": "Nuevo en Eclud",
+  "address": "Dirección",
+  "howToGetThere": "Cómo llegar",
+  "menu": "Carta",
+  "seeExternalMenu": "Ver carta externa",
+  "seeMenu": "Ver carta",
+  "discountRuleTitle": "Condiciones del descuento",
+  "defaultDiscountRule": "{percent} de descuento en el total de la cuenta. No acumulable con otras promociones.",
+  "@defaultDiscountRule": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "addFavorite": "Añadir a favoritos",
+  "removeFavorite": "Quitar de favoritos",
+  "back": "Volver",
+  "partnerNotFound": "Este establecimiento ya no está disponible.",
+  "linkError": "No se pudo abrir el enlace.",
+  "redeemDiscount": "Canjear descuento",
+  "redeemInstructions": "Introduce el PIN de 4 dígitos del establecimiento para activar tu descuento.",
+  "cancel": "Cancelar",
+  "delete": "Borrar",
+  "checkingPin": "Comprobando...",
+  "wrongPin": "PIN incorrecto. Te quedan {count} intentos.",
+  "@wrongPin": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tooManyAttempts": "Demasiados intentos. Vuelve a intentarlo en {minutes} min.",
+  "@tooManyAttempts": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "redeemError": "No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.",
+  "showToStaff": "Muestra esta pantalla al personal\n¡y disfruta!",
+  "redemptionCode": "Código",
+  "couponActive": "¡CUPÓN ACTIVO!",
+  "applyDiscount": "Aplica {percent} de descuento\nen el total de la cuenta",
+  "@applyDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "activatedAt": "Activado a las {time}",
+  "@activatedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backToHome": "Volver al inicio",
+  "savingsTitle": "Mi ahorro",
+  "netSavedThisMonth": "ahorrados\neste mes",
+  "totalSaved": "Total ahorrado",
+  "monthlySubscription": "Suscripción mensual",
+  "yourBenefit": "Tu beneficio",
+  "savingsHistory": "Historial de ahorros",
+  "noSavingsYet": "Aún no has usado ningún descuento este mes.",
+  "addAmount": "Añadir importe",
+  "amountPaidTitle": "¿Cuánto pagaste?",
+  "amountPaidHint": "Importe pagado con descuento",
+  "amountInvalid": "Introduce un importe válido.",
+  "save": "Guardar",
+  "savingsPendingNote": "Añade el importe pagado para calcular tu ahorro."
 }

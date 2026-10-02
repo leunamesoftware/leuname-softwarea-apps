@@ -321,6 +321,252 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Estamos preparando esta sección.'**
   String get comingSoonDescription;
+
+  /// No description provided for @reviews.
+  ///
+  /// In es, this message translates to:
+  /// **'({count} reseñas)'**
+  String reviews(int count);
+
+  /// No description provided for @noReviewsYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo en Eclud'**
+  String get noReviewsYet;
+
+  /// No description provided for @address.
+  ///
+  /// In es, this message translates to:
+  /// **'Dirección'**
+  String get address;
+
+  /// No description provided for @howToGetThere.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo llegar'**
+  String get howToGetThere;
+
+  /// No description provided for @menu.
+  ///
+  /// In es, this message translates to:
+  /// **'Carta'**
+  String get menu;
+
+  /// No description provided for @seeExternalMenu.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver carta externa'**
+  String get seeExternalMenu;
+
+  /// No description provided for @seeMenu.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver carta'**
+  String get seeMenu;
+
+  /// No description provided for @discountRuleTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Condiciones del descuento'**
+  String get discountRuleTitle;
+
+  /// No description provided for @defaultDiscountRule.
+  ///
+  /// In es, this message translates to:
+  /// **'{percent} de descuento en el total de la cuenta. No acumulable con otras promociones.'**
+  String defaultDiscountRule(String percent);
+
+  /// No description provided for @addFavorite.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir a favoritos'**
+  String get addFavorite;
+
+  /// No description provided for @removeFavorite.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar de favoritos'**
+  String get removeFavorite;
+
+  /// No description provided for @back.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver'**
+  String get back;
+
+  /// No description provided for @partnerNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Este establecimiento ya no está disponible.'**
+  String get partnerNotFound;
+
+  /// No description provided for @linkError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el enlace.'**
+  String get linkError;
+
+  /// No description provided for @redeemDiscount.
+  ///
+  /// In es, this message translates to:
+  /// **'Canjear descuento'**
+  String get redeemDiscount;
+
+  /// No description provided for @redeemInstructions.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el PIN de 4 dígitos del establecimiento para activar tu descuento.'**
+  String get redeemInstructions;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar'**
+  String get delete;
+
+  /// No description provided for @checkingPin.
+  ///
+  /// In es, this message translates to:
+  /// **'Comprobando...'**
+  String get checkingPin;
+
+  /// No description provided for @wrongPin.
+  ///
+  /// In es, this message translates to:
+  /// **'PIN incorrecto. Te quedan {count} intentos.'**
+  String wrongPin(int count);
+
+  /// No description provided for @tooManyAttempts.
+  ///
+  /// In es, this message translates to:
+  /// **'Demasiados intentos. Vuelve a intentarlo en {minutes} min.'**
+  String tooManyAttempts(int minutes);
+
+  /// No description provided for @redeemError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.'**
+  String get redeemError;
+
+  /// No description provided for @showToStaff.
+  ///
+  /// In es, this message translates to:
+  /// **'Muestra esta pantalla al personal\n¡y disfruta!'**
+  String get showToStaff;
+
+  /// No description provided for @redemptionCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Código'**
+  String get redemptionCode;
+
+  /// No description provided for @couponActive.
+  ///
+  /// In es, this message translates to:
+  /// **'¡CUPÓN ACTIVO!'**
+  String get couponActive;
+
+  /// No description provided for @applyDiscount.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplica {percent} de descuento\nen el total de la cuenta'**
+  String applyDiscount(String percent);
+
+  /// No description provided for @activatedAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Activado a las {time}'**
+  String activatedAt(String time);
+
+  /// No description provided for @backToHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver al inicio'**
+  String get backToHome;
+
+  /// No description provided for @savingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi ahorro'**
+  String get savingsTitle;
+
+  /// No description provided for @netSavedThisMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'ahorrados\neste mes'**
+  String get netSavedThisMonth;
+
+  /// No description provided for @totalSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Total ahorrado'**
+  String get totalSaved;
+
+  /// No description provided for @monthlySubscription.
+  ///
+  /// In es, this message translates to:
+  /// **'Suscripción mensual'**
+  String get monthlySubscription;
+
+  /// No description provided for @yourBenefit.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu beneficio'**
+  String get yourBenefit;
+
+  /// No description provided for @savingsHistory.
+  ///
+  /// In es, this message translates to:
+  /// **'Historial de ahorros'**
+  String get savingsHistory;
+
+  /// No description provided for @noSavingsYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has usado ningún descuento este mes.'**
+  String get noSavingsYet;
+
+  /// No description provided for @addAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir importe'**
+  String get addAmount;
+
+  /// No description provided for @amountPaidTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cuánto pagaste?'**
+  String get amountPaidTitle;
+
+  /// No description provided for @amountPaidHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Importe pagado con descuento'**
+  String get amountPaidHint;
+
+  /// No description provided for @amountInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un importe válido.'**
+  String get amountInvalid;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
+
+  /// No description provided for @savingsPendingNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade el importe pagado para calcular tu ahorro.'**
+  String get savingsPendingNote;
 }
 
 class _AppLocalizationsDelegate

@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../features/home/home_screen.dart';
 import '../features/map/map_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../features/partner_detail/partner_detail_screen.dart';
+import '../features/redeem/redeem_screen.dart';
+import '../features/savings/savings_screen.dart';
 import '../features/placeholders/placeholder_screens.dart';
 import '../widgets/app_shell.dart';
 import 'route_paths.dart';
@@ -16,6 +19,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.onboarding,
         builder: (_, _) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/local/:id',
+        builder: (_, state) =>
+            PartnerDetailScreen(partnerId: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'canjear',
+            builder: (_, state) =>
+                RedeemScreen(partnerId: state.pathParameters['id']!),
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => AppShell(navigationShell: shell),

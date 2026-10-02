@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/models/partner.dart';
 import '../../l10n/app_localizations.dart';
+import '../../routes/route_paths.dart';
 import '../../widgets/category_chips.dart';
 import '../../widgets/eclud_logo.dart';
 import '../../widgets/partner_card.dart';
@@ -153,7 +155,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   child: PartnerCard(
                     item: selected,
                     onTap: () =>
-                        _mapController.move(selected!.partner.location, 16.5),
+                        context.push(RoutePaths.partner(selected!.partner.id)),
                   ),
                 ),
               const SizedBox(height: 12),

@@ -129,4 +129,142 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get comingSoonDescription => 'Estamos preparando esta sección.';
+
+  @override
+  String reviews(int count) {
+    return '($count reseñas)';
+  }
+
+  @override
+  String get noReviewsYet => 'Nuevo en Eclud';
+
+  @override
+  String get address => 'Dirección';
+
+  @override
+  String get howToGetThere => 'Cómo llegar';
+
+  @override
+  String get menu => 'Carta';
+
+  @override
+  String get seeExternalMenu => 'Ver carta externa';
+
+  @override
+  String get seeMenu => 'Ver carta';
+
+  @override
+  String get discountRuleTitle => 'Condiciones del descuento';
+
+  @override
+  String defaultDiscountRule(String percent) {
+    return '$percent de descuento en el total de la cuenta. No acumulable con otras promociones.';
+  }
+
+  @override
+  String get addFavorite => 'Añadir a favoritos';
+
+  @override
+  String get removeFavorite => 'Quitar de favoritos';
+
+  @override
+  String get back => 'Volver';
+
+  @override
+  String get partnerNotFound => 'Este establecimiento ya no está disponible.';
+
+  @override
+  String get linkError => 'No se pudo abrir el enlace.';
+
+  @override
+  String get redeemDiscount => 'Canjear descuento';
+
+  @override
+  String get redeemInstructions =>
+      'Introduce el PIN de 4 dígitos del establecimiento para activar tu descuento.';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get delete => 'Borrar';
+
+  @override
+  String get checkingPin => 'Comprobando...';
+
+  @override
+  String wrongPin(int count) {
+    return 'PIN incorrecto. Te quedan $count intentos.';
+  }
+
+  @override
+  String tooManyAttempts(int minutes) {
+    return 'Demasiados intentos. Vuelve a intentarlo en $minutes min.';
+  }
+
+  @override
+  String get redeemError =>
+      'No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.';
+
+  @override
+  String get showToStaff => 'Muestra esta pantalla al personal\n¡y disfruta!';
+
+  @override
+  String get redemptionCode => 'Código';
+
+  @override
+  String get couponActive => '¡CUPÓN ACTIVO!';
+
+  @override
+  String applyDiscount(String percent) {
+    return 'Aplica $percent de descuento\nen el total de la cuenta';
+  }
+
+  @override
+  String activatedAt(String time) {
+    return 'Activado a las $time';
+  }
+
+  @override
+  String get backToHome => 'Volver al inicio';
+
+  @override
+  String get savingsTitle => 'Mi ahorro';
+
+  @override
+  String get netSavedThisMonth => 'ahorrados\neste mes';
+
+  @override
+  String get totalSaved => 'Total ahorrado';
+
+  @override
+  String get monthlySubscription => 'Suscripción mensual';
+
+  @override
+  String get yourBenefit => 'Tu beneficio';
+
+  @override
+  String get savingsHistory => 'Historial de ahorros';
+
+  @override
+  String get noSavingsYet => 'Aún no has usado ningún descuento este mes.';
+
+  @override
+  String get addAmount => 'Añadir importe';
+
+  @override
+  String get amountPaidTitle => '¿Cuánto pagaste?';
+
+  @override
+  String get amountPaidHint => 'Importe pagado con descuento';
+
+  @override
+  String get amountInvalid => 'Introduce un importe válido.';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get savingsPendingNote =>
+      'Añade el importe pagado para calcular tu ahorro.';
 }

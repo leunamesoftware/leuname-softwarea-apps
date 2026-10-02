@@ -12,7 +12,13 @@ class Partner {
     required this.discountPercent,
     required this.location,
     required this.address,
+    required this.city,
+    required this.country,
     this.imageUrl,
+    this.rating,
+    this.reviewCount = 0,
+    this.menuUrl,
+    this.discountRule,
   }) : assert(priceLevel >= 1 && priceLevel <= 3),
        assert(discountPercent > 0 && discountPercent <= 100);
 
@@ -25,7 +31,19 @@ class Partner {
   final int discountPercent;
   final LatLng location;
   final String address;
+  final String city;
+  final String country;
   final String? imageUrl;
+
+  /// Nota média de 0 a 5; `null` enquanto não houver avaliações.
+  final double? rating;
+  final int reviewCount;
+
+  /// Link do cardápio no site do próprio estabelecimento.
+  final String? menuUrl;
+
+  /// Regra específica do desconto; sem ela, o app usa o texto padrão.
+  final String? discountRule;
 
   String get priceLabel => '€' * priceLevel;
 }

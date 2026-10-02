@@ -5,4 +5,7 @@ abstract final class RoutePaths {
   static const String map = '/mapa';
   static const String savings = '/ahorro';
   static const String profile = '/perfil';
+
+  static String partner(String id) => '/local/$id';
+  static String redeem(String id) => '/local/$id/canjear';
 }

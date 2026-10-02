@@ -74,4 +74,31 @@ void main() {
     expect(find.text('Estética Luna'), findsOneWidget);
     expect(find.byType(PartnerCard), findsOneWidget);
   });
+
+  testWidgets('detalhe → PIN → cupom ativo', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(500, 1400));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Empezar ahora'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('La Bella Cucina'));
+    await tester.pumpAndSettle();
+    expect(find.text('Condiciones del descuento'), findsOneWidget);
+
+    await tester.tap(find.text('Canjear descuento'));
+    await tester.pumpAndSettle();
+    for (final d in ['1', '2', '3', '4']) {
+      await tester.tap(find.text(d));
+      await tester.pump();
+    }
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+
+    expect(find.text('¡CUPÓN ACTIVO!'), findsOneWidget);
+    // O relógio da tela de cupom roda sem parar; sai para encerrar o teste.
+    await tester.tap(find.text('Volver al inicio'));
+    await tester.pumpAndSettle();
+    expect(find.text('Más cercanos'), findsOneWidget);
+  });
 }

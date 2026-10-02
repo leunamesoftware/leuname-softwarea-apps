@@ -132,7 +132,12 @@ class HomeScreen extends ConsumerWidget {
                     sliver: SliverList.separated(
                       itemCount: items.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) => PartnerCard(item: items[i]),
+                      itemBuilder: (_, i) => PartnerCard(
+                        item: items[i],
+                        onTap: () => context.push(
+                          RoutePaths.partner(items[i].partner.id),
+                        ),
+                      ),
                     ),
                   ),
               ],

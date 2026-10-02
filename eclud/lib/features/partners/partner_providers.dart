@@ -4,7 +4,9 @@ import 'package:latlong2/latlong.dart';
 import '../../data/models/partner.dart';
 import '../../data/models/partner_category.dart';
 import '../../data/repositories/partner_repository.dart';
+import '../../data/repositories/redemption_repository.dart';
 import '../../demo/demo_partner_repository.dart';
+import '../../demo/demo_redemption_repository.dart';
 import '../location/location_providers.dart';
 
 final partnerRepositoryProvider = Provider<PartnerRepository>(
@@ -94,3 +96,19 @@ String _normalize(String value) {
   }
   return buffer.toString();
 }
+
+/// Um parceiro pelo id, já com a distância; `null` se não existir mais.
+final partnerByIdProvider = FutureProvider.family<NearbyPartner?, String>((
+  ref,
+  id,
+) async {
+  final partners = await ref.watch(nearbyPartnersProvider.future);
+  for (final item in partners) {
+    if (item.partner.id == id) return item;
+  }
+  return null;
+});
+
+final redemptionRepositoryProvider = Provider<RedemptionRepository>(
+  (ref) => DemoRedemptionRepository(),
+);
