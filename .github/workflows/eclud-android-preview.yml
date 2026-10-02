@@ -1,0 +1,72 @@
+name: Eclud — APK de prévia (Android)
+
+# Gera um APK para instalar no celular e acompanhar o desenvolvimento.
+# Fica sempre no mesmo link:
+#   https://github.com/leunamesoftware/leuname-softwarea-apps/releases/download/eclud-preview/eclud.apk
+# É só prévia (assinatura de teste); a versão da Play Store usa outra chave.
+
+on:
+  push:
+    branches:
+      - main
+      - claude/aplicativo-profissional-7irtpr
+    paths:
+      - 'eclud/**'
+      - '!eclud/backend/**'
+      - '.github/workflows/eclud-android-preview.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: eclud-android-preview
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Mesma chave de teste entre execuções, para o celular aceitar a
+      # atualização por cima da versão já instalada.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: eclud-preview-debug-keystore
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+
+      - name: Construir APK
+        working-directory: eclud
+        env:
+          # Se o secret existir, a prévia usa a API publicada; senão, os
+          # dados de demonstração.
+          API_URL: ${{ secrets.ECLUD_API_URL }}
+        run: |
+          flutter pub get
+          flutter build apk --release --dart-define=API_URL="$API_URL"
+          cp build/app/outputs/flutter-apk/app-release.apk eclud.apk
+
+      - name: Publicar no link fixo
+        working-directory: eclud
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view eclud-preview >/dev/null 2>&1; then
+            gh release create eclud-preview --prerelease \
+              --title "Eclud — prévia Android" \
+              --notes "APK de prévia, atualizado automaticamente a cada mudança no app. Para instalar, permita 'instalar apps desconhecidos' no navegador do celular." \
+              --target "$GITHUB_SHA"
+          fi
+          gh release upload eclud-preview eclud.apk --clobber
+          echo "APK: https://github.com/${GITHUB_REPOSITORY}/releases/download/eclud-preview/eclud.apk" >> "$GITHUB_STEP_SUMMARY"
