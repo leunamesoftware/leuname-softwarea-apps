@@ -74,7 +74,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   (v ?? '').isEmpty ? l10n.passwordTooShort : null,
               onSubmitted: (_) => _submit(),
             ),
-            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () =>
+                    context.push(withNext(context, RoutePaths.forgotPassword)),
+                child: Text(l10n.forgotPassword),
+              ),
+            ),
             AuthError(_error),
             _loading
                 ? const Center(child: CircularProgressIndicator())

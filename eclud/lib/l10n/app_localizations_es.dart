@@ -551,4 +551,105 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get securePaymentPlay => 'Pago seguro con Google Play';
+
+  @override
+  String get forgotPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get forgotTitle => 'Recupera tu cuenta';
+
+  @override
+  String get forgotIntro => 'Te enviaremos un código de 6 dígitos a tu correo.';
+
+  @override
+  String get sendCode => 'Enviar código';
+
+  @override
+  String codeSent(String email) {
+    return 'Si existe una cuenta con $email, recibirás un código en unos minutos. Revisa también la carpeta de spam.';
+  }
+
+  @override
+  String get codeLabel => 'Código de 6 dígitos';
+
+  @override
+  String get codeInvalidFormat => 'El código tiene 6 dígitos.';
+
+  @override
+  String get newPasswordLabel => 'Nueva contraseña';
+
+  @override
+  String get savePassword => 'Guardar y entrar';
+
+  @override
+  String get resendCode => 'Volver a enviar';
+
+  @override
+  String get errorInvalidCode =>
+      'Código incorrecto o caducado. Pide uno nuevo.';
+
+  @override
+  String get errorReviewNotAllowed =>
+      'Solo puedes valorar los sitios donde has usado un descuento.';
+
+  @override
+  String get errorPurchaseInUse =>
+      'Esta compra ya está vinculada a otra cuenta.';
+
+  @override
+  String get errorPurchase =>
+      'No pudimos confirmar la compra. Inténtalo de nuevo en unos minutos.';
+
+  @override
+  String get subscribeTitle => 'Hazte miembro de Eclud';
+
+  @override
+  String get subscribeBenefit1 =>
+      'Descuentos en restaurantes, cafeterías, belleza y ocio';
+
+  @override
+  String get subscribeBenefit2 => 'Úsalos tantas veces como quieras';
+
+  @override
+  String get subscribeBenefit3 => 'Ve cuánto ahorras cada mes';
+
+  @override
+  String subscribeCta(String price) {
+    return 'Suscribirme por $price/mes';
+  }
+
+  @override
+  String get subscribeLegal =>
+      'Se renueva cada mes. Cancela cuando quieras en Google Play.';
+
+  @override
+  String get restorePurchases => 'Restaurar compra';
+
+  @override
+  String get notNow => 'Ahora no';
+
+  @override
+  String get subscribeOnAndroid =>
+      'La suscripción se contrata desde la app Eclud para Android.';
+
+  @override
+  String get openGooglePlay => 'Abrir Google Play';
+
+  @override
+  String get subscribed => '¡Ya eres miembro de Eclud!';
+
+  @override
+  String get manageSubscription => 'Gestionar suscripción';
+
+  @override
+  String get subscribe => 'Suscribirme';
+
+  @override
+  String freeTrial(int days) {
+    return '$days días gratis';
+  }
+
+  @override
+  String get storeUnavailable =>
+      'Google Play no está disponible en este dispositivo.';
 }

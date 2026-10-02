@@ -8,6 +8,8 @@ import '../../core/utils/error_messages.dart';
 import '../../data/models/partner.dart';
 import '../../data/models/redemption.dart';
 import '../../l10n/app_localizations.dart';
+import '../../routes/route_paths.dart';
+import '../../widgets/primary_button.dart';
 import '../partners/partner_providers.dart';
 import '../savings/savings_providers.dart';
 import 'widgets/coupon_active_view.dart';
@@ -29,6 +31,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
   String _pin = '';
   bool _checking = false;
   String? _error;
+  bool _needsSubscription = false;
   Redemption? _redemption;
 
   void _onDigit(String digit) {
@@ -65,6 +68,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
             _error = l10n.tooManyAttempts((retryAfter.inSeconds / 60).ceil());
           case RedemptionSubscriptionRequired():
             _error = l10n.subscriptionRequired;
+            _needsSubscription = true;
         }
       });
     } catch (e) {
@@ -95,6 +99,7 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
       checking: _checking,
       error: _error,
       partner: partner,
+      needsSubscription: _needsSubscription,
       onDigit: _onDigit,
       onDelete: _onDelete,
     );
@@ -107,6 +112,7 @@ class _PinEntry extends StatelessWidget {
     required this.checking,
     required this.error,
     required this.partner,
+    required this.needsSubscription,
     required this.onDigit,
     required this.onDelete,
   });
@@ -115,6 +121,7 @@ class _PinEntry extends StatelessWidget {
   final bool checking;
   final String? error;
   final Partner? partner;
+  final bool needsSubscription;
   final ValueChanged<String> onDigit;
   final VoidCallback onDelete;
 
@@ -180,6 +187,13 @@ class _PinEntry extends StatelessWidget {
                               ),
                       ),
                     ),
+                    if (needsSubscription) ...[
+                      PrimaryButton(
+                        label: l10n.subscribe,
+                        onPressed: () => context.push(RoutePaths.subscribe),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     PinPad(
                       enabled: !checking,
                       onDigit: onDigit,

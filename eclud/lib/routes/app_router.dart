@@ -18,13 +18,21 @@ import '../features/partner_detail/partner_detail_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/redeem/redeem_screen.dart';
 import '../features/savings/savings_screen.dart';
+import '../features/subscription/subscription_screen.dart';
+import '../features/auth/forgot_password_screen.dart';
 import '../widgets/app_shell.dart';
 import 'route_paths.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  // Reavalia os redirecionamentos sempre que a sessão muda.
+  // Reavalia os redirecionamentos quando muda quem está logado (ou o papel),
+  // não a cada atualização do perfil — isso desfaria navegações em curso.
   final sessionChanges = ValueNotifier(0);
-  ref.listen(sessionProvider, (_, _) => sessionChanges.value++);
+  ref.listen(
+    sessionProvider.select(
+      (s) => (s.isLoading && !s.hasValue, s.value?.id, s.value?.role),
+    ),
+    (_, _) => sessionChanges.value++,
+  );
 
   final router = GoRouter(
     initialLocation: RoutePaths.onboarding,
@@ -44,6 +52,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const RegisterScreen(),
       ),
       GoRoute(path: RoutePaths.login, builder: (_, _) => const LoginScreen()),
+      GoRoute(
+        path: RoutePaths.subscribe,
+        builder: (_, _) => const SubscriptionScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.forgotPassword,
+        builder: (_, _) => const ForgotPasswordScreen(),
+      ),
       GoRoute(
         path: RoutePaths.favorites,
         builder: (_, _) => const FavoritesScreen(),
@@ -112,6 +128,7 @@ String? authRedirect({
     RoutePaths.onboarding,
     RoutePaths.register,
     RoutePaths.login,
+    RoutePaths.forgotPassword,
   };
   if (user != null && accountPages.contains(location)) {
     // Só caminhos internos, para não virar redirecionamento aberto.

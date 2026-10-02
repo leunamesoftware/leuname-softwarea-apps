@@ -17,4 +17,14 @@ abstract interface class AuthRepository {
 
   /// Apaga a conta e os dados pessoais (RGPD).
   Future<void> deleteAccount();
+
+  /// Envia por e-mail um código de 6 dígitos para criar nova senha.
+  Future<void> requestPasswordReset(String email);
+
+  /// Troca a senha com o código recebido e já entra na conta.
+  Future<AppUser> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  });
 }

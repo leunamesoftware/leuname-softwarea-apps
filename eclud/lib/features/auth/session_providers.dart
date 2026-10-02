@@ -19,8 +19,13 @@ final apiClientProvider = Provider<ApiClient>(
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AppConfig.isDemo
-      ? DemoAuthRepository()
+      ? ref.watch(demoAuthRepositoryProvider)
       : ApiAuthRepository(ref.watch(apiClientProvider)),
+);
+
+/// Instância única da demonstração (a assinatura simulada fica nela).
+final demoAuthRepositoryProvider = Provider<DemoAuthRepository>(
+  (ref) => DemoAuthRepository(),
 );
 
 /// Usuário logado (`null` = visitante). Começa recuperando a sessão salva.
@@ -51,6 +56,20 @@ class Session extends AsyncNotifier<AppUser?> {
           .read(authRepositoryProvider)
           .login(email: email, password: password),
     );
+  }
+
+  Future<void> resetPassword(String email, String code, String password) async {
+    state = AsyncData(
+      await ref
+          .read(authRepositoryProvider)
+          .resetPassword(email: email, code: code, password: password),
+    );
+  }
+
+  /// Recarrega o perfil (ex.: depois de assinar).
+  Future<void> refresh() async {
+    final user = await ref.read(authRepositoryProvider).restore();
+    if (user != null) state = AsyncData(user);
   }
 
   Future<void> logout() async {

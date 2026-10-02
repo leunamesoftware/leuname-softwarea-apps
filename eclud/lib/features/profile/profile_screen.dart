@@ -12,6 +12,7 @@ import '../../l10n/app_localizations.dart';
 import '../../routes/route_paths.dart';
 import '../../widgets/sign_in_prompt.dart';
 import '../auth/session_providers.dart';
+import '../subscription/subscription_providers.dart';
 
 /// Perfil: dados da conta, assinatura, painel do lojista e privacidade.
 class ProfileScreen extends ConsumerWidget {
@@ -46,6 +47,17 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           _AccountCard(user: user),
           const SizedBox(height: 16),
+          user.subscriptionActive
+              ? _Tile(
+                  icon: Icons.workspace_premium_outlined,
+                  title: l10n.manageSubscription,
+                  onTap: () => openLink(manageSubscriptionUrl),
+                )
+              : _Tile(
+                  icon: Icons.workspace_premium_outlined,
+                  title: l10n.subscribe,
+                  onTap: () => context.push(RoutePaths.subscribe),
+                ),
           _Tile(
             icon: Icons.favorite_border,
             title: l10n.favorites,

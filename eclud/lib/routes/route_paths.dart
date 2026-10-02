@@ -7,6 +7,8 @@ abstract final class RoutePaths {
   static const String profile = '/perfil';
 
   static const String favorites = '/favoritos';
+  static const String subscribe = '/suscripcion';
+  static const String forgotPassword = '/recuperar';
   static const String register = '/registro';
   static const String login = '/entrar';
   static const String merchant = '/comercio';

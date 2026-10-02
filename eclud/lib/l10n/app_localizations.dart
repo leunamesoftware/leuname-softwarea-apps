@@ -1101,6 +1101,180 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Pago seguro con Google Play'**
   String get securePaymentPlay;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Olvidaste tu contraseña?'**
+  String get forgotPassword;
+
+  /// No description provided for @forgotTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recupera tu cuenta'**
+  String get forgotTitle;
+
+  /// No description provided for @forgotIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Te enviaremos un código de 6 dígitos a tu correo.'**
+  String get forgotIntro;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar código'**
+  String get sendCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Si existe una cuenta con {email}, recibirás un código en unos minutos. Revisa también la carpeta de spam.'**
+  String codeSent(String email);
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de 6 dígitos'**
+  String get codeLabel;
+
+  /// No description provided for @codeInvalidFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'El código tiene 6 dígitos.'**
+  String get codeInvalidFormat;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get newPasswordLabel;
+
+  /// No description provided for @savePassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar y entrar'**
+  String get savePassword;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver a enviar'**
+  String get resendCode;
+
+  /// No description provided for @errorInvalidCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Código incorrecto o caducado. Pide uno nuevo.'**
+  String get errorInvalidCode;
+
+  /// No description provided for @errorReviewNotAllowed.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo puedes valorar los sitios donde has usado un descuento.'**
+  String get errorReviewNotAllowed;
+
+  /// No description provided for @errorPurchaseInUse.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta compra ya está vinculada a otra cuenta.'**
+  String get errorPurchaseInUse;
+
+  /// No description provided for @errorPurchase.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos confirmar la compra. Inténtalo de nuevo en unos minutos.'**
+  String get errorPurchase;
+
+  /// No description provided for @subscribeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Hazte miembro de Eclud'**
+  String get subscribeTitle;
+
+  /// No description provided for @subscribeBenefit1.
+  ///
+  /// In es, this message translates to:
+  /// **'Descuentos en restaurantes, cafeterías, belleza y ocio'**
+  String get subscribeBenefit1;
+
+  /// No description provided for @subscribeBenefit2.
+  ///
+  /// In es, this message translates to:
+  /// **'Úsalos tantas veces como quieras'**
+  String get subscribeBenefit2;
+
+  /// No description provided for @subscribeBenefit3.
+  ///
+  /// In es, this message translates to:
+  /// **'Ve cuánto ahorras cada mes'**
+  String get subscribeBenefit3;
+
+  /// No description provided for @subscribeCta.
+  ///
+  /// In es, this message translates to:
+  /// **'Suscribirme por {price}/mes'**
+  String subscribeCta(String price);
+
+  /// No description provided for @subscribeLegal.
+  ///
+  /// In es, this message translates to:
+  /// **'Se renueva cada mes. Cancela cuando quieras en Google Play.'**
+  String get subscribeLegal;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar compra'**
+  String get restorePurchases;
+
+  /// No description provided for @notNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Ahora no'**
+  String get notNow;
+
+  /// No description provided for @subscribeOnAndroid.
+  ///
+  /// In es, this message translates to:
+  /// **'La suscripción se contrata desde la app Eclud para Android.'**
+  String get subscribeOnAndroid;
+
+  /// No description provided for @openGooglePlay.
+  ///
+  /// In es, this message translates to:
+  /// **'Abrir Google Play'**
+  String get openGooglePlay;
+
+  /// No description provided for @subscribed.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ya eres miembro de Eclud!'**
+  String get subscribed;
+
+  /// No description provided for @manageSubscription.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestionar suscripción'**
+  String get manageSubscription;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In es, this message translates to:
+  /// **'Suscribirme'**
+  String get subscribe;
+
+  /// No description provided for @freeTrial.
+  ///
+  /// In es, this message translates to:
+  /// **'{days} días gratis'**
+  String freeTrial(int days);
+
+  /// No description provided for @storeUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Google Play no está disponible en este dispositivo.'**
+  String get storeUnavailable;
 }
 
 class _AppLocalizationsDelegate

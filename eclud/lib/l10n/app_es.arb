@@ -260,5 +260,55 @@
       }
     }
   },
-  "securePaymentPlay": "Pago seguro con Google Play"
+  "securePaymentPlay": "Pago seguro con Google Play",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "forgotTitle": "Recupera tu cuenta",
+  "forgotIntro": "Te enviaremos un código de 6 dígitos a tu correo.",
+  "sendCode": "Enviar código",
+  "codeSent": "Si existe una cuenta con {email}, recibirás un código en unos minutos. Revisa también la carpeta de spam.",
+  "@codeSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "codeLabel": "Código de 6 dígitos",
+  "codeInvalidFormat": "El código tiene 6 dígitos.",
+  "newPasswordLabel": "Nueva contraseña",
+  "savePassword": "Guardar y entrar",
+  "resendCode": "Volver a enviar",
+  "errorInvalidCode": "Código incorrecto o caducado. Pide uno nuevo.",
+  "errorReviewNotAllowed": "Solo puedes valorar los sitios donde has usado un descuento.",
+  "errorPurchaseInUse": "Esta compra ya está vinculada a otra cuenta.",
+  "errorPurchase": "No pudimos confirmar la compra. Inténtalo de nuevo en unos minutos.",
+  "subscribeTitle": "Hazte miembro de Eclud",
+  "subscribeBenefit1": "Descuentos en restaurantes, cafeterías, belleza y ocio",
+  "subscribeBenefit2": "Úsalos tantas veces como quieras",
+  "subscribeBenefit3": "Ve cuánto ahorras cada mes",
+  "subscribeCta": "Suscribirme por {price}/mes",
+  "@subscribeCta": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeLegal": "Se renueva cada mes. Cancela cuando quieras en Google Play.",
+  "restorePurchases": "Restaurar compra",
+  "notNow": "Ahora no",
+  "subscribeOnAndroid": "La suscripción se contrata desde la app Eclud para Android.",
+  "openGooglePlay": "Abrir Google Play",
+  "subscribed": "¡Ya eres miembro de Eclud!",
+  "manageSubscription": "Gestionar suscripción",
+  "subscribe": "Suscribirme",
+  "freeTrial": "{days} días gratis",
+  "@freeTrial": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "storeUnavailable": "Google Play no está disponible en este dispositivo."
 }

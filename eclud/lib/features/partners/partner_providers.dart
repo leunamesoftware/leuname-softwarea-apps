@@ -146,6 +146,7 @@ final redemptionRepositoryProvider = Provider<RedemptionRepository>(
   (ref) => AppConfig.isDemo
       ? DemoRedemptionRepository(
           onRedeemed: ref.watch(demoSavingsRepositoryProvider).record,
+          isSubscribed: () => ref.read(demoAuthRepositoryProvider).subscribed,
         )
       : ApiRedemptionRepository(ref.watch(apiClientProvider)),
 );

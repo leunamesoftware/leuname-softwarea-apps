@@ -53,7 +53,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       await ref
           .read(sessionProvider.notifier)
           .register(_name.text.trim(), _email.text.trim(), _password.text);
-      if (mounted) context.go(nextAfterAuth(context));
+      // Conta nova sem destino definido segue para a assinatura.
+      if (!mounted) return;
+      final next = GoRouterState.of(context).uri.queryParameters['next'];
+      context.go(isSafeNext(next) ? next! : RoutePaths.subscribe);
     } catch (e) {
       if (mounted) setState(() => _error = errorMessage(l10n, e));
     } finally {

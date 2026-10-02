@@ -13,6 +13,10 @@ String errorMessage(AppLocalizations l10n, Object error) {
     ),
     'subscription_required' => l10n.subscriptionRequired,
     'owner_not_found' => l10n.errorOwnerNotFound,
+    'invalid_code' => l10n.errorInvalidCode,
+    'review_not_allowed' => l10n.errorReviewNotAllowed,
+    'purchase_in_use' => l10n.errorPurchaseInUse,
+    'billing_not_configured' || 'invalid_purchase' => l10n.errorPurchase,
     'owner_has_merchant' => l10n.errorOwnerHasMerchant,
     _ => l10n.errorGeneric,
   };

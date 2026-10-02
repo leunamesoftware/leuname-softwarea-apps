@@ -7,8 +7,14 @@ import 'demo_partner_repository.dart';
 /// Simulação para a demonstração: o PIN de todos os parceiros é 1234.
 /// Reproduz o limite de tentativas que o servidor real vai aplicar.
 class DemoRedemptionRepository implements RedemptionRepository {
-  DemoRedemptionRepository({DateTime Function()? clock, this.onRedeemed})
-    : _clock = clock ?? DateTime.now;
+  DemoRedemptionRepository({
+    DateTime Function()? clock,
+    this.onRedeemed,
+    this.isSubscribed,
+  }) : _clock = clock ?? DateTime.now;
+
+  /// Na demonstração do app, exige a assinatura simulada (como a API real).
+  final bool Function()? isSubscribed;
 
   /// Avisado a cada resgate, para o histórico de demonstração.
   final void Function(Redemption redemption)? onRedeemed;
@@ -28,6 +34,9 @@ class DemoRedemptionRepository implements RedemptionRepository {
     required String pin,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
+    if (isSubscribed != null && !isSubscribed!()) {
+      return const RedemptionSubscriptionRequired();
+    }
     final now = _clock();
 
     final lockedUntil = _lockedUntil[partnerId];

@@ -51,6 +51,23 @@ class ApiAuthRepository implements AuthRepository {
   Future<void> logout() => _api.tokens.clear();
 
   @override
+  Future<void> requestPasswordReset(String email) =>
+      _api.post('/auth/forgot', {'email': email});
+
+  @override
+  Future<AppUser> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) => _session(
+    _api.post('/auth/reset', {
+      'email': email,
+      'code': code,
+      'password': password,
+    }),
+  );
+
+  @override
   Future<void> deleteAccount() async {
     await _api.delete('/me');
     await _api.tokens.clear();

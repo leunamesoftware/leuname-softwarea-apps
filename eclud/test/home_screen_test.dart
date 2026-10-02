@@ -106,12 +106,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('La Bella Cucina'), findsOneWidget);
 
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.text(d));
+    Future<void> typePin() async {
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.text(d));
+        await tester.pump();
+      }
+      await tester.pump(const Duration(seconds: 1));
       await tester.pump();
     }
+
+    // Sem assinatura o desconto não é liberado: assina e tenta de novo.
+    await typePin();
+    expect(
+      find.text('Necesitas una suscripción activa para usar descuentos.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Suscribirme'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('Suscribirme por'));
     await tester.pump(const Duration(seconds: 1));
-    await tester.pump();
+    await tester.pumpAndSettle();
+
+    await typePin();
 
     expect(find.text('¡CUPÓN ACTIVO!'), findsOneWidget);
     // O relógio da tela de cupom roda sem parar; sai para encerrar o teste.
@@ -154,5 +170,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(PartnerCard), findsOneWidget);
     expect(find.text('Coffee Time'), findsOneWidget);
+  });
+
+  testWidgets('recuperar senha com o código enviado por e-mail', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(500, 1400));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inicia sesión'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('¿Olvidaste tu contraseña?'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Correo electrónico'),
+      'lucia@demo.es',
+    );
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Enviar código'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Código de 6 dígitos'),
+      '123456',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Contraseña'),
+      'nueva-clave-1',
+    );
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Guardar y entrar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('¡Hola, Lucía!'), findsOneWidget);
   });
 }
