@@ -101,7 +101,6 @@
       }
     }
   },
-  "redeemError": "No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.",
   "showToStaff": "Muestra esta pantalla al personal\n¡y disfruta!",
   "redemptionCode": "Código",
   "couponActive": "¡CUPÓN ACTIVO!",
@@ -179,5 +178,44 @@
   "urlInvalid": "Introduce un enlace que empiece por https://",
   "percentInvalid": "Elige un descuento entre 5% y 50%.",
   "settingsSaved": "Cambios guardados.",
-  "saveChanges": "Guardar cambios"
+  "saveChanges": "Guardar cambios",
+  "createAccount": "Crear cuenta",
+  "registerTitle": "Crea tu cuenta",
+  "loginTitle": "Inicia sesión",
+  "nameLabel": "Nombre",
+  "emailLabel": "Correo electrónico",
+  "passwordLabel": "Contraseña",
+  "passwordHint": "Mínimo 8 caracteres",
+  "showPassword": "Mostrar contraseña",
+  "hidePassword": "Ocultar contraseña",
+  "acceptTerms": "Acepto los Términos de uso y la Política de privacidad.",
+  "termsOfUse": "Términos de uso",
+  "privacyPolicy": "Política de privacidad",
+  "noAccount": "¿No tienes cuenta?",
+  "exploreWithoutAccount": "Ver descuentos sin registrarme",
+  "nameInvalid": "Introduce tu nombre.",
+  "emailInvalid": "Introduce un correo válido.",
+  "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+  "mustAcceptTerms": "Debes aceptar los términos para continuar.",
+  "errorEmailTaken": "Ya existe una cuenta con este correo.",
+  "errorInvalidCredentials": "Correo o contraseña incorrectos.",
+  "errorNetwork": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+  "errorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+  "signInToSeeSavings": "Inicia sesión para ver cuánto ahorras con Eclud.",
+  "signInToSeeProfile": "Crea tu cuenta o inicia sesión para gestionar tu suscripción.",
+  "subscriptionActiveUntil": "Suscripción activa hasta el {date}",
+  "@subscriptionActiveUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "subscriptionInactive": "Sin suscripción activa",
+  "subscriptionRequired": "Necesitas una suscripción activa para usar descuentos.",
+  "logout": "Cerrar sesión",
+  "deleteAccount": "Eliminar cuenta",
+  "deleteAccountTitle": "¿Eliminar tu cuenta?",
+  "deleteAccountBody": "Se borrarán tus datos personales de forma permanente. Esta acción no se puede deshacer.",
+  "confirmDelete": "Eliminar"
 }

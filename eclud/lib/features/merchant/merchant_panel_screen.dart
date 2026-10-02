@@ -8,6 +8,7 @@ import '../../core/utils/formatters.dart';
 import '../../data/models/merchant_dashboard.dart';
 import '../../l10n/app_localizations.dart';
 import '../../routes/route_paths.dart';
+import '../../widgets/content_width.dart';
 import '../../widgets/partner_image.dart';
 import 'merchant_providers.dart';
 import 'widgets/daily_bar_chart.dart';
@@ -56,23 +57,25 @@ class _MerchantPanelScreenState extends ConsumerState<MerchantPanelScreen> {
             ],
           ),
         ),
-        data: (data) => ListView(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
-          children: [
-            _StoreHeader(data: data),
-            const SizedBox(height: 16),
-            _Tabs(
-              labels: [l10n.tabSummary, l10n.tabCoupons, l10n.tabSettings],
-              selected: _tab,
-              onSelected: (i) => setState(() => _tab = i),
-            ),
-            const SizedBox(height: 20),
-            switch (_tab) {
-              0 => _Summary(data: data),
-              1 => _Coupons(coupons: data.recentCoupons),
-              _ => MerchantSettingsForm(data: data),
-            },
-          ],
+        data: (data) => ContentWidth(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+            children: [
+              _StoreHeader(data: data),
+              const SizedBox(height: 16),
+              _Tabs(
+                labels: [l10n.tabSummary, l10n.tabCoupons, l10n.tabSettings],
+                selected: _tab,
+                onSelected: (i) => setState(() => _tab = i),
+              ),
+              const SizedBox(height: 20),
+              switch (_tab) {
+                0 => _Summary(data: data),
+                1 => _Coupons(coupons: data.recentCoupons),
+                _ => MerchantSettingsForm(data: data),
+              },
+            ],
+          ),
         ),
       ),
     );
@@ -97,7 +100,7 @@ class _StoreHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          PartnerImage(partner: data.partner, size: 52),
+          PartnerImage.of(data.partner, size: 52),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

@@ -74,8 +74,7 @@ class OnboardingScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     PrimaryButton(
                       label: l10n.startNow,
-                      // Cadastro e assinatura entram na próxima etapa.
-                      onPressed: () => context.go(RoutePaths.home),
+                      onPressed: () => context.push(RoutePaths.register),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -87,7 +86,7 @@ class OnboardingScreen extends StatelessWidget {
                           style: const TextStyle(color: AppColors.textMuted),
                         ),
                         TextButton(
-                          onPressed: () => context.go(RoutePaths.home),
+                          onPressed: () => context.push(RoutePaths.login),
                           child: Text(
                             l10n.signIn,
                             style: const TextStyle(
@@ -97,6 +96,17 @@ class OnboardingScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    TextButton(
+                      onPressed: () => context.go(RoutePaths.home),
+                      child: Text(
+                        l10n.exploreWithoutAccount,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.textMuted,
+                        ),
+                      ),
                     ),
                     const Divider(color: Color(0x1FFFFFFF), height: 24),
                     Row(

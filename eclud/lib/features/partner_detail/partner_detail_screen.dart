@@ -10,6 +10,7 @@ import '../../data/models/partner.dart';
 import '../../l10n/app_localizations.dart';
 import '../../routes/route_paths.dart';
 import '../../widgets/category_style.dart';
+import '../../widgets/content_width.dart';
 import '../../widgets/discount_badge.dart';
 import '../../widgets/primary_button.dart';
 import '../favorites/favorite_providers.dart';
@@ -38,7 +39,7 @@ class PartnerDetailScreen extends ConsumerWidget {
         ),
         data: (item) => item == null
             ? _Message(text: l10n.partnerNotFound)
-            : _Details(item: item),
+            : ContentWidth(child: _Details(item: item)),
       ),
     );
   }

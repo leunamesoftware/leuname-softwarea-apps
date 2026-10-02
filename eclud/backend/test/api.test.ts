@@ -131,6 +131,7 @@ describe('resgate', () => {
     const history = await call('/me/redemptions', { token });
     expect(history.body).toHaveLength(1);
     expect(history.body[0].amountPaid).toBe(85);
+    expect(history.body[0].merchantName).toBe('La Bella Cucina');
   });
 
   it('PIN errado conta tentativas e bloqueia na quinta', async () => {

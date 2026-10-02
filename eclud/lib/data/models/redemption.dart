@@ -12,6 +12,13 @@ class Redemption {
   final String partnerId;
   final int discountPercent;
   final DateTime redeemedAt;
+
+  factory Redemption.fromJson(Map<String, dynamic> json) => Redemption(
+    code: json['code'] as String,
+    partnerId: json['merchantId'] as String,
+    discountPercent: json['discountPercent'] as int,
+    redeemedAt: DateTime.parse(json['redeemedAt'] as String).toLocal(),
+  );
 }
 
 /// Resultado da validação do PIN.
@@ -35,4 +42,9 @@ final class RedemptionLocked extends RedemptionResult {
   const RedemptionLocked(this.retryAfter);
 
   final Duration retryAfter;
+}
+
+/// O usuário precisa de assinatura ativa para usar descontos.
+final class RedemptionSubscriptionRequired extends RedemptionResult {
+  const RedemptionSubscriptionRequired();
 }

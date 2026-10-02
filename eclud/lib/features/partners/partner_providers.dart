@@ -1,16 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/config/app_config.dart';
+import '../../data/api/api_partner_repository.dart';
+import '../../data/api/api_redemption_repository.dart';
 import '../../data/models/partner.dart';
 import '../../data/models/partner_category.dart';
 import '../../data/repositories/partner_repository.dart';
 import '../../data/repositories/redemption_repository.dart';
 import '../../demo/demo_partner_repository.dart';
 import '../../demo/demo_redemption_repository.dart';
+import '../auth/session_providers.dart';
 import '../location/location_providers.dart';
+import '../savings/savings_providers.dart';
 
 final partnerRepositoryProvider = Provider<PartnerRepository>(
-  (ref) => DemoPartnerRepository(),
+  (ref) => AppConfig.isDemo
+      ? DemoPartnerRepository()
+      : ApiPartnerRepository(ref.watch(apiClientProvider)),
 );
 
 /// Parceiros ordenados do mais próximo ao mais distante do usuário.
@@ -110,5 +117,9 @@ final partnerByIdProvider = FutureProvider.family<NearbyPartner?, String>((
 });
 
 final redemptionRepositoryProvider = Provider<RedemptionRepository>(
-  (ref) => DemoRedemptionRepository(),
+  (ref) => AppConfig.isDemo
+      ? DemoRedemptionRepository(
+          onRedeemed: ref.watch(demoSavingsRepositoryProvider).record,
+        )
+      : ApiRedemptionRepository(ref.watch(apiClientProvider)),
 );

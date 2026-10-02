@@ -2,25 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/models/app_user.dart';
+import '../features/auth/auth_form.dart';
+import '../features/auth/login_screen.dart';
+import '../features/auth/register_screen.dart';
+import '../features/auth/session_providers.dart';
 import '../features/home/home_screen.dart';
 import '../features/map/map_screen.dart';
 import '../features/merchant/merchant_panel_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/partner_detail/partner_detail_screen.dart';
+import '../features/profile/profile_screen.dart';
 import '../features/redeem/redeem_screen.dart';
 import '../features/savings/savings_screen.dart';
-import '../features/placeholders/placeholder_screens.dart';
 import '../widgets/app_shell.dart';
 import 'route_paths.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
+  // Reavalia os redirecionamentos sempre que a sessão muda.
+  final sessionChanges = ValueNotifier(0);
+  ref.listen(sessionProvider, (_, _) => sessionChanges.value++);
+
   final router = GoRouter(
     initialLocation: RoutePaths.onboarding,
+    refreshListenable: sessionChanges,
+    redirect: (_, state) => authRedirect(
+      session: ref.read(sessionProvider),
+      location: state.matchedLocation,
+      uri: state.uri,
+    ),
     routes: [
       GoRoute(
         path: RoutePaths.onboarding,
         builder: (_, _) => const OnboardingScreen(),
       ),
+      GoRoute(
+        path: RoutePaths.register,
+        builder: (_, _) => const RegisterScreen(),
+      ),
+      GoRoute(path: RoutePaths.login, builder: (_, _) => const LoginScreen()),
       GoRoute(
         path: RoutePaths.merchant,
         builder: (_, _) => const MerchantPanelScreen(),
@@ -48,10 +68,51 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-  ref.onDispose(router.dispose);
+  ref.onDispose(() {
+    router.dispose();
+    sessionChanges.dispose();
+  });
   return router;
 });
 
 StatefulShellBranch _branch(String path, Widget screen) => StatefulShellBranch(
   routes: [GoRoute(path: path, builder: (_, _) => screen)],
 );
+
+/// Regras de acesso:
+/// - visitantes podem explorar parceiros e mapa (exigência da App Store:
+///   não pedir conta para o que não precisa de conta);
+/// - usar desconto exige login; o painel exige conta de lojista;
+/// - quem já entrou não volta para as telas de boas-vindas/login.
+@visibleForTesting
+String? authRedirect({
+  required AsyncValue<AppUser?> session,
+  required String location,
+  required Uri uri,
+}) {
+  if (session.isLoading && !session.hasValue) return null;
+  final user = session.value;
+
+  const accountPages = {
+    RoutePaths.onboarding,
+    RoutePaths.register,
+    RoutePaths.login,
+  };
+  if (user != null && accountPages.contains(location)) {
+    // Só caminhos internos, para não virar redirecionamento aberto.
+    final next = uri.queryParameters['next'];
+    return isSafeNext(next) ? next : RoutePaths.home;
+  }
+
+  if (user == null && location.endsWith('/canjear')) {
+    return Uri(
+      path: RoutePaths.login,
+      queryParameters: {'next': uri.toString()},
+    ).toString();
+  }
+
+  if (location == RoutePaths.merchant && !(user?.isMerchant ?? false)) {
+    return user == null ? RoutePaths.login : RoutePaths.home;
+  }
+  return null;
+}

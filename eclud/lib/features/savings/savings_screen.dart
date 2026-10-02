@@ -8,6 +8,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/partner_image.dart';
+import '../../widgets/sign_in_prompt.dart';
+import '../auth/session_providers.dart';
 import 'savings_entry.dart';
 import 'savings_providers.dart';
 
@@ -18,74 +20,110 @@ class SavingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    final summary = ref.watch(monthlySavingsProvider);
-    String money(double v) => Formatters.price(v, locale);
+    if (ref.watch(currentUserProvider) == null) {
+      return SignInPrompt(
+        icon: Icons.savings_outlined,
+        title: l10n.savingsTitle,
+        message: l10n.signInToSeeSavings,
+      );
+    }
 
     return SafeArea(
       bottom: false,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-        children: [
-          Center(
-            child: Text(
-              l10n.savingsTitle,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Center(
-            child: _SavingsRing(
-              value: money(summary.netBenefit),
-              caption: l10n.netSavedThisMonth,
-              progress: summary.totalSaved <= 0
-                  ? 0
-                  : max(0, summary.netBenefit) / summary.totalSaved,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  label: l10n.totalSaved,
-                  value: money(summary.totalSaved),
-                ),
+      child: ref
+          .watch(monthlySavingsProvider)
+          .when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, _) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.loadError),
+                  TextButton(
+                    onPressed: () => ref.invalidate(savingsHistoryProvider),
+                    child: Text(l10n.retry),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  label: l10n.monthlySubscription,
-                  value: '- ${money(summary.subscription)}',
-                ),
-              ),
-            ],
+            ),
+            data: (summary) => _SavingsBody(summary: summary),
           ),
-          const SizedBox(height: 12),
-          _BenefitCard(
-            label: l10n.yourBenefit,
+    );
+  }
+}
+
+class _SavingsBody extends StatelessWidget {
+  const _SavingsBody({required this.summary});
+
+  final MonthlySavings summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    String money(double v) => Formatters.price(v, locale);
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      children: [
+        Center(
+          child: Text(
+            l10n.savingsTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Center(
+          child: _SavingsRing(
             value: money(summary.netBenefit),
-            positive: summary.netBenefit >= 0,
+            caption: l10n.netSavedThisMonth,
+            progress: summary.totalSaved <= 0
+                ? 0
+                : max(0, summary.netBenefit) / summary.totalSaved,
           ),
-          const SizedBox(height: 24),
-          Text(
-            l10n.savingsHistory,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          if (summary.entries.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text(
-                l10n.noSavingsYet,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted),
+        ),
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            Expanded(
+              child: _StatCard(
+                label: l10n.totalSaved,
+                value: money(summary.totalSaved),
               ),
-            )
-          else
-            for (final entry in summary.entries) _HistoryRow(entry: entry),
-        ],
-      ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StatCard(
+                label: l10n.monthlySubscription,
+                value: '- ${money(summary.subscription)}',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _BenefitCard(
+          label: l10n.yourBenefit,
+          value: money(summary.netBenefit),
+          positive: summary.netBenefit >= 0,
+        ),
+        const SizedBox(height: 24),
+        Text(
+          l10n.savingsHistory,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        if (summary.entries.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Text(
+              l10n.noSavingsYet,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+          )
+        else
+          for (final entry in summary.entries) _HistoryRow(entry: entry),
+      ],
     );
   }
 }
@@ -286,11 +324,15 @@ class _HistoryRow extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          PartnerImage(partner: entry.partner, size: 40),
+          PartnerImage(
+            category: entry.category,
+            imageUrl: entry.imageUrl,
+            size: 40,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              entry.partner.name,
+              entry.partnerName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.w600),
@@ -339,10 +381,15 @@ class _HistoryRow extends ConsumerWidget {
       context: context,
       builder: (_) => const _AmountDialog(),
     );
-    if (amount != null) {
-      ref
+    if (amount == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final error = AppLocalizations.of(context).loadError;
+    try {
+      await ref
           .read(savingsHistoryProvider.notifier)
           .setAmountPaid(entry.redemption.code, amount);
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
     }
   }
 }

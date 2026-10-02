@@ -78,8 +78,9 @@ redemptions.get('/me/redemptions', requireAuth(), async (c) => {
   if (!/^\d{4}-\d{2}$/.test(month)) return fail(c, 400, 'invalid_input');
 
   const { results } = await c.env.DB.prepare(
-    `SELECT r.code, r.merchant_id, r.discount_percent, r.amount_paid_cents, r.created_at
-     FROM redemptions r
+    `SELECT r.code, r.merchant_id, r.discount_percent, r.amount_paid_cents, r.created_at,
+            m.name, m.category, m.price_level, m.image_url
+     FROM redemptions r JOIN merchants m ON m.id = r.merchant_id
      WHERE r.user_id = ? AND substr(r.created_at, 1, 7) = ?
      ORDER BY r.created_at DESC`,
   )
@@ -90,12 +91,20 @@ redemptions.get('/me/redemptions', requireAuth(), async (c) => {
       discount_percent: number;
       amount_paid_cents: number | null;
       created_at: string;
+      name: string;
+      category: string;
+      price_level: number;
+      image_url: string | null;
     }>();
 
   return c.json(
     results.map((r) => ({
       code: r.code,
       merchantId: r.merchant_id,
+      merchantName: r.name,
+      category: r.category,
+      priceLevel: r.price_level,
+      imageUrl: r.image_url,
       discountPercent: r.discount_percent,
       amountPaid: r.amount_paid_cents === null ? null : r.amount_paid_cents / 100,
       redeemedAt: r.created_at,

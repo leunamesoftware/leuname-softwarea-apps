@@ -5,15 +5,15 @@ import 'package:eclud/features/savings/savings_entry.dart';
 import 'package:eclud/features/savings/savings_providers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-SavingsEntry _entry(int percent, double? paid) => SavingsEntry(
-  partner: DemoPartnerRepository.partners.first,
-  amountPaid: paid,
-  redemption: Redemption(
+SavingsEntry _entry(int percent, double? paid) => SavingsEntry.fromPartner(
+  Redemption(
     code: 'X',
     partnerId: 'p1',
     discountPercent: percent,
     redeemedAt: DateTime(2026, 10, 1),
   ),
+  DemoPartnerRepository.partners.first,
+  amountPaid: paid,
 );
 
 void main() {

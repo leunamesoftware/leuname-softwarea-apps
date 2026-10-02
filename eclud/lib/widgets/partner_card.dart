@@ -35,7 +35,7 @@ class PartnerCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              PartnerImage(partner: partner),
+              PartnerImage.of(partner),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

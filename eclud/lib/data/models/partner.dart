@@ -46,6 +46,26 @@ class Partner {
   final String? discountRule;
 
   String get priceLabel => '€' * priceLevel;
+
+  factory Partner.fromJson(Map<String, dynamic> json) => Partner(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    category: PartnerCategory.values.byName(json['category'] as String),
+    priceLevel: json['priceLevel'] as int,
+    discountPercent: json['discountPercent'] as int,
+    location: LatLng(
+      (json['lat'] as num).toDouble(),
+      (json['lng'] as num).toDouble(),
+    ),
+    address: json['address'] as String,
+    city: json['city'] as String,
+    country: json['country'] as String,
+    imageUrl: json['imageUrl'] as String?,
+    rating: (json['rating'] as num?)?.toDouble(),
+    reviewCount: json['reviewCount'] as int? ?? 0,
+    menuUrl: json['menuUrl'] as String?,
+    discountRule: json['discountRule'] as String?,
+  );
 }
 
 /// Parceiro com a distância já calculada até o usuário, em metros.

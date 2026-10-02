@@ -9,6 +9,7 @@ import '../../data/models/partner.dart';
 import '../../l10n/app_localizations.dart';
 import '../../routes/route_paths.dart';
 import '../../widgets/category_chips.dart';
+import '../../widgets/app_shell.dart';
 import '../../widgets/eclud_logo.dart';
 import '../../widgets/partner_card.dart';
 import '../location/location_providers.dart';
@@ -39,6 +40,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final userLocation = ref.watch(userLocationProvider).value;
     final partners = ref.watch(mapPartnersProvider).value ?? const [];
     final category = ref.watch(mapCategoryProvider);
+    final isWide = MediaQuery.sizeOf(context).width >= AppShell.wideBreakpoint;
 
     NearbyPartner? selected;
     for (final item in partners) {
@@ -113,11 +115,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: Column(
               children: [
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: EcludLogoRow(),
-                ),
-                const SizedBox(height: 12),
+                if (!isWide) ...[
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: EcludLogoRow(),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 TextField(
                   onChanged: ref.read(mapSearchProvider.notifier).update,
                   textInputAction: TextInputAction.search,

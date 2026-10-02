@@ -203,10 +203,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get redeemError =>
-      'No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.';
-
-  @override
   String get showToStaff => 'Muestra esta pantalla al personal\n¡y disfruta!';
 
   @override
@@ -357,4 +353,109 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveChanges => 'Guardar cambios';
+
+  @override
+  String get createAccount => 'Crear cuenta';
+
+  @override
+  String get registerTitle => 'Crea tu cuenta';
+
+  @override
+  String get loginTitle => 'Inicia sesión';
+
+  @override
+  String get nameLabel => 'Nombre';
+
+  @override
+  String get emailLabel => 'Correo electrónico';
+
+  @override
+  String get passwordLabel => 'Contraseña';
+
+  @override
+  String get passwordHint => 'Mínimo 8 caracteres';
+
+  @override
+  String get showPassword => 'Mostrar contraseña';
+
+  @override
+  String get hidePassword => 'Ocultar contraseña';
+
+  @override
+  String get acceptTerms =>
+      'Acepto los Términos de uso y la Política de privacidad.';
+
+  @override
+  String get termsOfUse => 'Términos de uso';
+
+  @override
+  String get privacyPolicy => 'Política de privacidad';
+
+  @override
+  String get noAccount => '¿No tienes cuenta?';
+
+  @override
+  String get exploreWithoutAccount => 'Ver descuentos sin registrarme';
+
+  @override
+  String get nameInvalid => 'Introduce tu nombre.';
+
+  @override
+  String get emailInvalid => 'Introduce un correo válido.';
+
+  @override
+  String get passwordTooShort =>
+      'La contraseña debe tener al menos 8 caracteres.';
+
+  @override
+  String get mustAcceptTerms => 'Debes aceptar los términos para continuar.';
+
+  @override
+  String get errorEmailTaken => 'Ya existe una cuenta con este correo.';
+
+  @override
+  String get errorInvalidCredentials => 'Correo o contraseña incorrectos.';
+
+  @override
+  String get errorNetwork =>
+      'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
+
+  @override
+  String get errorGeneric => 'Algo salió mal. Inténtalo de nuevo.';
+
+  @override
+  String get signInToSeeSavings =>
+      'Inicia sesión para ver cuánto ahorras con Eclud.';
+
+  @override
+  String get signInToSeeProfile =>
+      'Crea tu cuenta o inicia sesión para gestionar tu suscripción.';
+
+  @override
+  String subscriptionActiveUntil(String date) {
+    return 'Suscripción activa hasta el $date';
+  }
+
+  @override
+  String get subscriptionInactive => 'Sin suscripción activa';
+
+  @override
+  String get subscriptionRequired =>
+      'Necesitas una suscripción activa para usar descuentos.';
+
+  @override
+  String get logout => 'Cerrar sesión';
+
+  @override
+  String get deleteAccount => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountTitle => '¿Eliminar tu cuenta?';
+
+  @override
+  String get deleteAccountBody =>
+      'Se borrarán tus datos personales de forma permanente. Esta acción no se puede deshacer.';
+
+  @override
+  String get confirmDelete => 'Eliminar';
 }

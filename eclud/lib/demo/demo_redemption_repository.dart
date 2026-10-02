@@ -7,8 +7,11 @@ import 'demo_partner_repository.dart';
 /// Simulação para a demonstração: o PIN de todos os parceiros é 1234.
 /// Reproduz o limite de tentativas que o servidor real vai aplicar.
 class DemoRedemptionRepository implements RedemptionRepository {
-  DemoRedemptionRepository({DateTime Function()? clock})
+  DemoRedemptionRepository({DateTime Function()? clock, this.onRedeemed})
     : _clock = clock ?? DateTime.now;
+
+  /// Avisado a cada resgate, para o histórico de demonstração.
+  final void Function(Redemption redemption)? onRedeemed;
 
   static const demoPin = '1234';
   static const maxAttempts = 5;
@@ -47,14 +50,14 @@ class DemoRedemptionRepository implements RedemptionRepository {
     final partner = DemoPartnerRepository.partners.firstWhere(
       (p) => p.id == partnerId,
     );
-    return RedemptionSuccess(
-      Redemption(
-        code: _code(),
-        partnerId: partnerId,
-        discountPercent: partner.discountPercent,
-        redeemedAt: now,
-      ),
+    final redemption = Redemption(
+      code: _code(),
+      partnerId: partnerId,
+      discountPercent: partner.discountPercent,
+      redeemedAt: now,
     );
+    onRedeemed?.call(redemption);
+    return RedemptionSuccess(redemption);
   }
 
   String _code() {

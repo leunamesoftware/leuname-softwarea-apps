@@ -6,6 +6,7 @@ import 'package:eclud/features/location/location_providers.dart';
 import 'package:eclud/features/partners/partner_providers.dart';
 import 'package:eclud/core/config/app_config.dart';
 import 'package:eclud/widgets/partner_card.dart';
+import 'package:eclud/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Empezar ahora'), findsOneWidget);
-    await tester.tap(find.text('Empezar ahora'));
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
     await tester.pumpAndSettle();
 
     expect(find.text('Más cercanos'), findsOneWidget);
@@ -44,7 +45,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 3000));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Empezar ahora'));
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
     await tester.pumpAndSettle();
 
     // A fonte de teste é larga: rola a lista de filtros até o chip.
@@ -65,7 +66,7 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(400, 3000));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Empezar ahora'));
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'estetica');
@@ -79,15 +80,29 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(500, 1400));
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Empezar ahora'));
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('La Bella Cucina'));
     await tester.pumpAndSettle();
     expect(find.text('Condiciones del descuento'), findsOneWidget);
 
+    // Visitante: usar desconto pede login e depois volta ao PIN.
     await tester.tap(find.text('Canjear descuento'));
     await tester.pumpAndSettle();
+    expect(find.text('Inicia sesión'), findsWidgets);
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Correo electrónico'),
+      'lucia@demo.es',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Contraseña'),
+      'contraseña',
+    );
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Inicia sesión'));
+    await tester.pumpAndSettle();
+    expect(find.text('La Bella Cucina'), findsOneWidget);
+
     for (final d in ['1', '2', '3', '4']) {
       await tester.tap(find.text(d));
       await tester.pump();

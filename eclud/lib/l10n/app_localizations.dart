@@ -448,12 +448,6 @@ abstract class AppLocalizations {
   /// **'Demasiados intentos. Vuelve a intentarlo en {minutes} min.'**
   String tooManyAttempts(int minutes);
 
-  /// No description provided for @redeemError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se pudo validar el PIN. Revisa tu conexión e inténtalo de nuevo.'**
-  String get redeemError;
-
   /// No description provided for @showToStaff.
   ///
   /// In es, this message translates to:
@@ -735,6 +729,198 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar cambios'**
   String get saveChanges;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear cuenta'**
+  String get createAccount;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu cuenta'**
+  String get registerTitle;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión'**
+  String get loginTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get nameLabel;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Mínimo 8 caracteres'**
+  String get passwordHint;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar contraseña'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar contraseña'**
+  String get hidePassword;
+
+  /// No description provided for @acceptTerms.
+  ///
+  /// In es, this message translates to:
+  /// **'Acepto los Términos de uso y la Política de privacidad.'**
+  String get acceptTerms;
+
+  /// No description provided for @termsOfUse.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos de uso'**
+  String get termsOfUse;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de privacidad'**
+  String get privacyPolicy;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'¿No tienes cuenta?'**
+  String get noAccount;
+
+  /// No description provided for @exploreWithoutAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver descuentos sin registrarme'**
+  String get exploreWithoutAccount;
+
+  /// No description provided for @nameInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu nombre.'**
+  String get nameInvalid;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un correo válido.'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 8 caracteres.'**
+  String get passwordTooShort;
+
+  /// No description provided for @mustAcceptTerms.
+  ///
+  /// In es, this message translates to:
+  /// **'Debes aceptar los términos para continuar.'**
+  String get mustAcceptTerms;
+
+  /// No description provided for @errorEmailTaken.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya existe una cuenta con este correo.'**
+  String get errorEmailTaken;
+
+  /// No description provided for @errorInvalidCredentials.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo o contraseña incorrectos.'**
+  String get errorInvalidCredentials;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin conexión. Revisa tu internet e inténtalo de nuevo.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorGeneric.
+  ///
+  /// In es, this message translates to:
+  /// **'Algo salió mal. Inténtalo de nuevo.'**
+  String get errorGeneric;
+
+  /// No description provided for @signInToSeeSavings.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión para ver cuánto ahorras con Eclud.'**
+  String get signInToSeeSavings;
+
+  /// No description provided for @signInToSeeProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu cuenta o inicia sesión para gestionar tu suscripción.'**
+  String get signInToSeeProfile;
+
+  /// No description provided for @subscriptionActiveUntil.
+  ///
+  /// In es, this message translates to:
+  /// **'Suscripción activa hasta el {date}'**
+  String subscriptionActiveUntil(String date);
+
+  /// No description provided for @subscriptionInactive.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin suscripción activa'**
+  String get subscriptionInactive;
+
+  /// No description provided for @subscriptionRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitas una suscripción activa para usar descuentos.'**
+  String get subscriptionRequired;
+
+  /// No description provided for @logout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get logout;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar tu cuenta?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán tus datos personales de forma permanente. Esta acción no se puede deshacer.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get confirmDelete;
 }
 
 class _AppLocalizationsDelegate

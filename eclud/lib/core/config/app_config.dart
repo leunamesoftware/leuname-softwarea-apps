@@ -3,6 +3,22 @@ import 'package:latlong2/latlong.dart';
 /// Configuração do app. Valores sensíveis ou que mudam por ambiente vêm de
 /// `--dart-define`, nunca escritos no código.
 abstract final class AppConfig {
+  /// Endereço da API (ex.: https://api.eclud.app). Vazio = modo
+  /// demonstração, com dados locais e sem servidor.
+  static const String apiUrl = String.fromEnvironment('API_URL');
+
+  static bool get isDemo => apiUrl.isEmpty;
+
+  /// Páginas legais exibidas no cadastro e no perfil.
+  static const String termsUrl = String.fromEnvironment(
+    'TERMS_URL',
+    defaultValue: 'https://eclud.app/terminos',
+  );
+  static const String privacyUrl = String.fromEnvironment(
+    'PRIVACY_URL',
+    defaultValue: 'https://eclud.app/privacidad',
+  );
+
   /// Preço mensal da assinatura, em euros.
   static const double monthlyPrice = 1.99;
 

@@ -108,7 +108,7 @@ class _CouponActiveViewState extends State<CouponActiveView>
                       ),
                       child: Row(
                         children: [
-                          PartnerImage(partner: partner, size: 60),
+                          PartnerImage.of(partner, size: 60),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(

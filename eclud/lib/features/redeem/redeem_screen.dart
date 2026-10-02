@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_messages.dart';
 import '../../data/models/partner.dart';
 import '../../data/models/redemption.dart';
 import '../../l10n/app_localizations.dart';
@@ -56,24 +57,18 @@ class _RedeemScreenState extends ConsumerState<RedeemScreen> {
         switch (result) {
           case RedemptionSuccess(:final redemption):
             _redemption = redemption;
-            final partner = ref
-                .read(partnerByIdProvider(widget.partnerId))
-                .value
-                ?.partner;
-            if (partner != null) {
-              ref
-                  .read(savingsHistoryProvider.notifier)
-                  .add(redemption, partner);
-            }
+            ref.invalidate(savingsHistoryProvider);
             HapticFeedback.mediumImpact();
           case RedemptionWrongPin(:final remainingAttempts):
             _error = l10n.wrongPin(remainingAttempts);
           case RedemptionLocked(:final retryAfter):
             _error = l10n.tooManyAttempts((retryAfter.inSeconds / 60).ceil());
+          case RedemptionSubscriptionRequired():
+            _error = l10n.subscriptionRequired;
         }
       });
-    } catch (_) {
-      if (mounted) setState(() => _error = l10n.redeemError);
+    } catch (e) {
+      if (mounted) setState(() => _error = errorMessage(l10n, e));
     } finally {
       if (mounted) {
         setState(() {

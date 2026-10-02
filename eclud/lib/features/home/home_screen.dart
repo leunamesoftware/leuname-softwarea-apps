@@ -8,8 +8,10 @@ import '../../core/utils/formatters.dart';
 import '../../l10n/app_localizations.dart';
 import '../../routes/route_paths.dart';
 import '../../widgets/category_chips.dart';
+import '../../widgets/app_shell.dart';
 import '../../widgets/eclud_logo.dart';
 import '../../widgets/partner_card.dart';
+import '../auth/session_providers.dart';
 import '../partners/partner_providers.dart';
 import 'widgets/promo_banner.dart';
 
@@ -22,6 +24,8 @@ class HomeScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final partners = ref.watch(homePartnersProvider);
     final category = ref.watch(homeCategoryProvider);
+    final user = ref.watch(currentUserProvider);
+    final isWide = MediaQuery.sizeOf(context).width >= AppShell.wideBreakpoint;
 
     return SafeArea(
       bottom: false,
@@ -35,7 +39,8 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
-                    const EcludLogoRow(),
+                    // No PC o logo já aparece no menu lateral.
+                    if (!isWide) const EcludLogoRow(),
                     const Spacer(),
                     IconButton(
                       tooltip: l10n.notifications,
@@ -50,9 +55,10 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               sliver: SliverList.list(
                 children: [
-                  // Sem login ainda: saudação genérica até existir conta.
                   Text(
-                    l10n.greetingAnonymous,
+                    user == null
+                        ? l10n.greetingAnonymous
+                        : l10n.greeting(user.firstName),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
