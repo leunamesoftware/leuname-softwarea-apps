@@ -18,6 +18,9 @@ cobre o início) com banco D1 (SQLite).
 | PATCH | `/me/redemptions/:code` | logado | valor pago `{ amountPaid }` |
 | GET | `/merchant/dashboard` | lojista | números do mês e últimos 30 dias |
 | PUT | `/merchant/settings` | lojista | desconto, regra, carta, PIN, pausar |
+| GET | `/admin/merchants` | admin | todos os estabelecimentos |
+| POST | `/admin/merchants` | admin | cadastrar (liga à conta do lojista) |
+| PATCH | `/admin/merchants/:id` | admin | aprovar / rejeitar `{ status }` |
 
 Erros sempre como `{ "error": "<código>" }`; o app traduz o código.
 

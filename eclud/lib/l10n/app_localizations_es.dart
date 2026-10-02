@@ -458,4 +458,79 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get confirmDelete => 'Eliminar';
+
+  @override
+  String get adminPanel => 'Administración';
+
+  @override
+  String get adminPanelHint => 'Da de alta y aprueba establecimientos.';
+
+  @override
+  String get addMerchant => 'Añadir establecimiento';
+
+  @override
+  String get statusPending => 'Pendiente';
+
+  @override
+  String get statusApproved => 'Aprobado';
+
+  @override
+  String get statusRejected => 'Rechazado';
+
+  @override
+  String get approve => 'Aprobar';
+
+  @override
+  String get reject => 'Rechazar';
+
+  @override
+  String get noMerchants => 'Todavía no hay establecimientos.';
+
+  @override
+  String get ownerEmailLabel => 'Correo de la cuenta del comercio';
+
+  @override
+  String get ownerEmailHint => 'El comercio debe registrarse antes en la app';
+
+  @override
+  String get categoryLabel => 'Categoría';
+
+  @override
+  String get priceLevelLabel => 'Precio';
+
+  @override
+  String get addressLabel => 'Dirección';
+
+  @override
+  String get cityLabel => 'Ciudad';
+
+  @override
+  String get countryLabel => 'País';
+
+  @override
+  String get pinLabel => 'PIN del comercio (4 dígitos)';
+
+  @override
+  String get imageUrlLabel => 'Enlace de la foto (opcional)';
+
+  @override
+  String get locationLabel => 'Ubicación';
+
+  @override
+  String get locationHint => 'Toca el mapa para marcar el establecimiento.';
+
+  @override
+  String get locationRequired => 'Marca la ubicación en el mapa.';
+
+  @override
+  String get fieldRequired => 'Campo obligatorio.';
+
+  @override
+  String get merchantCreated => 'Establecimiento añadido.';
+
+  @override
+  String get errorOwnerNotFound => 'No existe ninguna cuenta con ese correo.';
+
+  @override
+  String get errorOwnerHasMerchant => 'Esa cuenta ya tiene un establecimiento.';
 }

@@ -224,3 +224,68 @@ describe('parceiros', () => {
     expect(JSON.stringify(res.body)).not.toContain('pin');
   });
 });
+
+describe('administração', () => {
+  async function adminToken() {
+    const a = await register();
+    await env.DB.prepare("UPDATE users SET role = 'admin' WHERE id = ?").bind(a.id).run();
+    return a.token;
+  }
+
+  const newMerchant = (ownerEmail: string) => ({
+    name: 'Café Aurora',
+    category: 'cafe',
+    priceLevel: 1,
+    discountPercent: 10,
+    discountRule: null,
+    address: 'Plaza de Isabel II, 3',
+    city: 'Madrid',
+    country: 'España',
+    lat: 40.4198,
+    lng: -3.7102,
+    menuUrl: null,
+    imageUrl: null,
+    ownerEmail,
+    pin: '4321',
+  });
+
+  it('só administrador acessa', async () => {
+    const member = await register();
+    expect((await call('/admin/merchants', { token: member.token })).status).toBe(403);
+  });
+
+  it('cadastra parceiro ligado ao lojista, que vira lojista e aparece na lista', async () => {
+    const token = await adminToken();
+    const owner = await register();
+    const created = await call('/admin/merchants', { method: 'POST', token, json: newMerchant(owner.email) });
+    expect(created.status).toBe(201);
+
+    const me = await call('/me', { token: owner.token });
+    expect(me.body.role).toBe('merchant');
+    expect(me.body.merchantId).toBe(created.body.id);
+
+    const partners = await call('/partners');
+    expect(partners.body.some((p: { id: string }) => p.id === created.body.id)).toBe(true);
+
+    const again = await call('/admin/merchants', { method: 'POST', token, json: newMerchant(owner.email) });
+    expect(again.status).toBe(409);
+  });
+
+  it('recusa dono inexistente e dados inválidos', async () => {
+    const token = await adminToken();
+    expect((await call('/admin/merchants', { method: 'POST', token, json: newMerchant('nadie@test.es') })).status).toBe(404);
+    const owner = await register();
+    const bad = { ...newMerchant(owner.email), pin: '12', discountPercent: 80 };
+    expect((await call('/admin/merchants', { method: 'POST', token, json: bad })).status).toBe(400);
+  });
+
+  it('rejeitar tira o parceiro da lista pública', async () => {
+    const token = await adminToken();
+    const owner = await register();
+    const created = await call('/admin/merchants', { method: 'POST', token, json: newMerchant(owner.email) });
+    const patch = await call(`/admin/merchants/${created.body.id}`, { method: 'PATCH', token, json: { status: 'rejected' } });
+    expect(patch.status).toBe(204);
+    const partners = await call('/partners');
+    expect(partners.body.some((p: { id: string }) => p.id === created.body.id)).toBe(false);
+  });
+});

@@ -9,6 +9,8 @@ abstract final class RoutePaths {
   static const String register = '/registro';
   static const String login = '/entrar';
   static const String merchant = '/comercio';
+  static const String admin = '/admin';
+  static const String adminNewMerchant = '/admin/nuevo';
 
   static String partner(String id) => '/local/$id';
   static String redeem(String id) => '/local/$id/canjear';

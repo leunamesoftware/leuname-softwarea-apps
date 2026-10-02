@@ -3,7 +3,8 @@ import '../data/models/app_user.dart';
 import '../data/repositories/auth_repository.dart';
 
 /// Contas de demonstração, só na memória. Qualquer e-mail funciona;
-/// um e-mail que comece com "comercio" entra como lojista.
+/// um e-mail que comece com "comercio" entra como lojista e um que comece
+/// com "admin", como administrador.
 class DemoAuthRepository implements AuthRepository {
   final _passwords = <String, String>{};
   final _names = <String, String>{};
@@ -49,11 +50,16 @@ class DemoAuthRepository implements AuthRepository {
 
   AppUser _user(String email) {
     final isMerchant = email.startsWith('comercio');
+    final isAdmin = email.startsWith('admin');
     return AppUser(
       id: 'demo-$email',
       name: _names[email] ?? (isMerchant ? 'La Bella Cucina' : 'Lucía'),
       email: email,
-      role: isMerchant ? UserRole.merchant : UserRole.member,
+      role: isAdmin
+          ? UserRole.admin
+          : isMerchant
+          ? UserRole.merchant
+          : UserRole.member,
       subscriptionActive: true,
       subscriptionEnd: DateTime.now().add(const Duration(days: 30)),
       merchantId: isMerchant ? 'p1' : null,

@@ -53,6 +53,20 @@ void main() {
       );
     });
 
+    test('administração só para administrador', () {
+      const admin = AppUser(
+        id: '3',
+        name: 'Admin',
+        email: 'admin@test.es',
+        role: UserRole.admin,
+      );
+      expect(
+        _redirect(_merchant, RoutePaths.adminNewMerchant),
+        RoutePaths.home,
+      );
+      expect(_redirect(admin, RoutePaths.adminNewMerchant), isNull);
+    });
+
     test('painel só para lojista', () {
       expect(_redirect(null, RoutePaths.merchant), RoutePaths.login);
       expect(_redirect(_member, RoutePaths.merchant), RoutePaths.home);

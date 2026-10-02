@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import { fail } from './http';
 import { account } from './routes/account';
+import { admin } from './routes/admin';
 import { merchant } from './routes/merchant';
 import { partners } from './routes/partners';
 import { redemptions } from './routes/redemptions';
@@ -33,6 +34,7 @@ app.route('/', account);
 app.route('/', partners);
 app.route('/', redemptions);
 app.route('/', merchant);
+app.route('/', admin);
 
 app.notFound((c) => fail(c, 404, 'not_found'));
 app.onError((err, c) => {

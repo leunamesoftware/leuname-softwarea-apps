@@ -24,6 +24,8 @@ class AppUser {
       (role == UserRole.merchant || role == UserRole.admin) &&
       merchantId != null;
 
+  bool get isAdmin => role == UserRole.admin;
+
   String get firstName => name.trim().split(RegExp(r'\s+')).first;
 
   factory AppUser.fromJson(Map<String, dynamic> json) {

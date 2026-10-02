@@ -921,6 +921,156 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Eliminar'**
   String get confirmDelete;
+
+  /// No description provided for @adminPanel.
+  ///
+  /// In es, this message translates to:
+  /// **'Administración'**
+  String get adminPanel;
+
+  /// No description provided for @adminPanelHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Da de alta y aprueba establecimientos.'**
+  String get adminPanelHint;
+
+  /// No description provided for @addMerchant.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir establecimiento'**
+  String get addMerchant;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get statusPending;
+
+  /// No description provided for @statusApproved.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobado'**
+  String get statusApproved;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazado'**
+  String get statusRejected;
+
+  /// No description provided for @approve.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobar'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get reject;
+
+  /// No description provided for @noMerchants.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay establecimientos.'**
+  String get noMerchants;
+
+  /// No description provided for @ownerEmailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo de la cuenta del comercio'**
+  String get ownerEmailLabel;
+
+  /// No description provided for @ownerEmailHint.
+  ///
+  /// In es, this message translates to:
+  /// **'El comercio debe registrarse antes en la app'**
+  String get ownerEmailHint;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría'**
+  String get categoryLabel;
+
+  /// No description provided for @priceLevelLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio'**
+  String get priceLevelLabel;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Dirección'**
+  String get addressLabel;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad'**
+  String get cityLabel;
+
+  /// No description provided for @countryLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'País'**
+  String get countryLabel;
+
+  /// No description provided for @pinLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'PIN del comercio (4 dígitos)'**
+  String get pinLabel;
+
+  /// No description provided for @imageUrlLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Enlace de la foto (opcional)'**
+  String get imageUrlLabel;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación'**
+  String get locationLabel;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca el mapa para marcar el establecimiento.'**
+  String get locationHint;
+
+  /// No description provided for @locationRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca la ubicación en el mapa.'**
+  String get locationRequired;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo obligatorio.'**
+  String get fieldRequired;
+
+  /// No description provided for @merchantCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Establecimiento añadido.'**
+  String get merchantCreated;
+
+  /// No description provided for @errorOwnerNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No existe ninguna cuenta con ese correo.'**
+  String get errorOwnerNotFound;
+
+  /// No description provided for @errorOwnerHasMerchant.
+  ///
+  /// In es, this message translates to:
+  /// **'Esa cuenta ya tiene un establecimiento.'**
+  String get errorOwnerHasMerchant;
 }
 
 class _AppLocalizationsDelegate

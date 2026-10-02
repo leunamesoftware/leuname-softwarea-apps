@@ -12,6 +12,8 @@ String errorMessage(AppLocalizations l10n, Object error) {
       ((error.data['retryAfterSeconds'] as int? ?? 900) / 60).ceil(),
     ),
     'subscription_required' => l10n.subscriptionRequired,
+    'owner_not_found' => l10n.errorOwnerNotFound,
+    'owner_has_merchant' => l10n.errorOwnerHasMerchant,
     _ => l10n.errorGeneric,
   };
 }

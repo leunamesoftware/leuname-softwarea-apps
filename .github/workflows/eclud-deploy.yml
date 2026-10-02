@@ -119,7 +119,9 @@ jobs:
         run: |
           flutter pub get
           flutter build web --release --no-web-resources-cdn \
-            --dart-define=API_URL=${{ steps.urls.outputs.api }}
+            --dart-define=API_URL=${{ steps.urls.outputs.api }} \
+            --dart-define=TERMS_URL=${{ steps.urls.outputs.site }}/legal/terminos.html \
+            --dart-define=PRIVACY_URL=${{ steps.urls.outputs.site }}/legal/privacidad.html
           npx --yes wrangler@4 pages deploy build/web --project-name=eclud --branch=main --commit-dirty=true
           echo "### Eclud publicado" >> "$GITHUB_STEP_SUMMARY"
           echo "- Site: ${{ steps.urls.outputs.site }}" >> "$GITHUB_STEP_SUMMARY"

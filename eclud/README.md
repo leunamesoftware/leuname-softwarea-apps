@@ -17,13 +17,17 @@ Stack: **Flutter** + **Riverpod** + **go_router** + **flutter_map** no app;
 Prontos: as 8 telas do projeto, cadastro/login, perfil (com exclusão de
 conta), acesso de visitante para explorar, painel do lojista e a API.
 
-Falta: pagamento da assinatura, páginas de termos/privacidade e painel de
-administração para aprovar parceiros.
+Também prontos: páginas de Termos e Privacidade (`web/legal/`, com campos
+`[ ]` da empresa a completar) e painel de administração para cadastrar e
+aprovar estabelecimentos (localização marcada no mapa).
+
+Falta: pagamento da assinatura.
 
 ## Modo demonstração x API real
 
 - Sem `API_URL`: dados de demonstração, sem servidor. Qualquer e-mail
-  entra; um e-mail que comece com `comercio` entra como lojista. PIN: `1234`.
+  entra; e-mail que comece com `comercio` entra como lojista e com `admin`,
+  como administrador. PIN: `1234`.
 - Com `--dart-define=API_URL=https://...`: usa a API de verdade.
 
 ## Rodar o projeto
@@ -80,3 +84,16 @@ lib/
 - **PIN da loja** só existe como hash no servidor; 5 erros bloqueiam 15 min.
 - **Pagamento**: no Android, a assinatura vendida dentro do app deve usar o
   Google Play Billing (regra da loja). O Stripe fica para o site.
+
+## Publicação automática
+
+A esteira `.github/workflows/eclud-deploy.yml` testa tudo e publica:
+
+- API → Worker `eclud-api` (banco `eclud-db`, Europa Ocidental)
+- Site (versão PC) → Cloudflare Pages `eclud` (`eclud.pages.dev`)
+
+Precisa, uma vez, dos secrets do repositório `CLOUDFLARE_API_TOKEN` (token
+com permissão de Workers, D1 e Pages) e `CLOUDFLARE_ACCOUNT_ID`.
+
+Primeiro administrador: crie a conta no app e rode uma vez
+`UPDATE users SET role = 'admin' WHERE email = '<seu e-mail>'` no `eclud-db`.

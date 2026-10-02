@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/models/app_user.dart';
+import '../features/admin/admin_panel_screen.dart';
+import '../features/admin/merchant_form_screen.dart';
 import '../features/auth/auth_form.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
@@ -46,6 +48,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const MerchantPanelScreen(),
       ),
       GoRoute(
+        path: RoutePaths.admin,
+        builder: (_, _) => const AdminPanelScreen(),
+        routes: [
+          GoRoute(path: 'nuevo', builder: (_, _) => const MerchantFormScreen()),
+        ],
+      ),
+      GoRoute(
         path: '/local/:id',
         builder: (_, state) =>
             PartnerDetailScreen(partnerId: state.pathParameters['id']!),
@@ -82,7 +91,8 @@ StatefulShellBranch _branch(String path, Widget screen) => StatefulShellBranch(
 /// Regras de acesso:
 /// - visitantes podem explorar parceiros e mapa (exigência da App Store:
 ///   não pedir conta para o que não precisa de conta);
-/// - usar desconto exige login; o painel exige conta de lojista;
+/// - usar desconto exige login; o painel exige conta de lojista e a
+///   administração, conta de administrador;
 /// - quem já entrou não volta para as telas de boas-vindas/login.
 @visibleForTesting
 String? authRedirect({
@@ -112,6 +122,9 @@ String? authRedirect({
   }
 
   if (location == RoutePaths.merchant && !(user?.isMerchant ?? false)) {
+    return user == null ? RoutePaths.login : RoutePaths.home;
+  }
+  if (location.startsWith(RoutePaths.admin) && !(user?.isAdmin ?? false)) {
     return user == null ? RoutePaths.login : RoutePaths.home;
   }
   return null;

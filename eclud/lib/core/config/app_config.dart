@@ -9,14 +9,15 @@ abstract final class AppConfig {
 
   static bool get isDemo => apiUrl.isEmpty;
 
-  /// Páginas legais exibidas no cadastro e no perfil.
+  /// Páginas legais exibidas no cadastro e no perfil (publicadas junto
+  /// com o site, em web/legal/).
   static const String termsUrl = String.fromEnvironment(
     'TERMS_URL',
-    defaultValue: 'https://eclud.app/terminos',
+    defaultValue: 'https://eclud.pages.dev/legal/terminos.html',
   );
   static const String privacyUrl = String.fromEnvironment(
     'PRIVACY_URL',
-    defaultValue: 'https://eclud.app/privacidad',
+    defaultValue: 'https://eclud.pages.dev/legal/privacidad.html',
   );
 
   /// Preço mensal da assinatura, em euros.

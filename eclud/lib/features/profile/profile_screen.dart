@@ -46,6 +46,13 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           _AccountCard(user: user),
           const SizedBox(height: 16),
+          if (user.isAdmin)
+            _Tile(
+              icon: Icons.admin_panel_settings_outlined,
+              title: l10n.adminPanel,
+              subtitle: l10n.adminPanelHint,
+              onTap: () => context.push(RoutePaths.admin),
+            ),
           if (user.isMerchant)
             _Tile(
               icon: Icons.storefront_outlined,
