@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/partner.dart';
 import '../../../data/models/redemption.dart';
@@ -188,6 +189,7 @@ class _CouponActiveViewState extends State<CouponActiveView>
                             borderRadius: BorderRadius.circular(16),
                           ),
                           textStyle: const TextStyle(
+                            fontFamily: AppTheme.fontFamily,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),

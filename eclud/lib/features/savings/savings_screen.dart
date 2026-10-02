@@ -297,9 +297,10 @@ class _HistoryRow extends ConsumerWidget {
             ),
           ),
           SizedBox(
-            width: 44,
+            width: 48,
             child: Text(
               Formatters.percent(entry.redemption.discountPercent),
+              textAlign: TextAlign.right,
               style: const TextStyle(color: AppColors.textMuted),
             ),
           ),

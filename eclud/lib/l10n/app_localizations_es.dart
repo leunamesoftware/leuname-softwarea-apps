@@ -267,4 +267,94 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get savingsPendingNote =>
       'Añade el importe pagado para calcular tu ahorro.';
+
+  @override
+  String get merchantPanel => 'Panel del comercio';
+
+  @override
+  String get merchantPanelHint =>
+      'Gestiona tu establecimiento y tus descuentos.';
+
+  @override
+  String get statusActive => 'Activo';
+
+  @override
+  String get statusPaused => 'Pausado';
+
+  @override
+  String get tabSummary => 'Resumen';
+
+  @override
+  String get tabCoupons => 'Cupones';
+
+  @override
+  String get tabSettings => 'Ajustes';
+
+  @override
+  String get thisMonth => 'Este mes';
+
+  @override
+  String get validatedCoupons => 'Cupones validados';
+
+  @override
+  String get discountGranted => 'Descuento concedido';
+
+  @override
+  String get newCustomers => 'Clientes nuevos';
+
+  @override
+  String get dailyReport => 'Validaciones · últimos 30 días';
+
+  @override
+  String dailyReportA11y(int total) {
+    return 'Gráfico de validaciones por día. Total: $total.';
+  }
+
+  @override
+  String dayValue(String date, int count) {
+    return '$date: $count cupones';
+  }
+
+  @override
+  String get recentCoupons => 'Últimos cupones validados';
+
+  @override
+  String get noCoupons => 'Todavía no hay cupones validados.';
+
+  @override
+  String get visibleInApp => 'Visible en la app';
+
+  @override
+  String get visibleInAppHint =>
+      'Desactívalo para pausar tus descuentos temporalmente.';
+
+  @override
+  String get discountPercentLabel => 'Porcentaje de descuento';
+
+  @override
+  String get discountRuleLabel => 'Condiciones del descuento';
+
+  @override
+  String get menuUrlLabel => 'Enlace de la carta (opcional)';
+
+  @override
+  String get newPinLabel => 'Nuevo PIN (4 dígitos)';
+
+  @override
+  String get newPinHint => 'Déjalo vacío para mantener el actual';
+
+  @override
+  String get pinInvalid => 'El PIN debe tener 4 dígitos.';
+
+  @override
+  String get urlInvalid => 'Introduce un enlace que empiece por https://';
+
+  @override
+  String get percentInvalid => 'Elige un descuento entre 5% y 50%.';
+
+  @override
+  String get settingsSaved => 'Cambios guardados.';
+
+  @override
+  String get saveChanges => 'Guardar cambios';
 }

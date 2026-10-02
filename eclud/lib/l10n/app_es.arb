@@ -134,5 +134,50 @@
   "amountPaidHint": "Importe pagado con descuento",
   "amountInvalid": "Introduce un importe válido.",
   "save": "Guardar",
-  "savingsPendingNote": "Añade el importe pagado para calcular tu ahorro."
+  "savingsPendingNote": "Añade el importe pagado para calcular tu ahorro.",
+  "merchantPanel": "Panel del comercio",
+  "merchantPanelHint": "Gestiona tu establecimiento y tus descuentos.",
+  "statusActive": "Activo",
+  "statusPaused": "Pausado",
+  "tabSummary": "Resumen",
+  "tabCoupons": "Cupones",
+  "tabSettings": "Ajustes",
+  "thisMonth": "Este mes",
+  "validatedCoupons": "Cupones validados",
+  "discountGranted": "Descuento concedido",
+  "newCustomers": "Clientes nuevos",
+  "dailyReport": "Validaciones · últimos 30 días",
+  "dailyReportA11y": "Gráfico de validaciones por día. Total: {total}.",
+  "@dailyReportA11y": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "dayValue": "{date}: {count} cupones",
+  "@dayValue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCoupons": "Últimos cupones validados",
+  "noCoupons": "Todavía no hay cupones validados.",
+  "visibleInApp": "Visible en la app",
+  "visibleInAppHint": "Desactívalo para pausar tus descuentos temporalmente.",
+  "discountPercentLabel": "Porcentaje de descuento",
+  "discountRuleLabel": "Condiciones del descuento",
+  "menuUrlLabel": "Enlace de la carta (opcional)",
+  "newPinLabel": "Nuevo PIN (4 dígitos)",
+  "newPinHint": "Déjalo vacío para mantener el actual",
+  "pinInvalid": "El PIN debe tener 4 dígitos.",
+  "urlInvalid": "Introduce un enlace que empiece por https://",
+  "percentInvalid": "Elige un descuento entre 5% y 50%.",
+  "settingsSaved": "Cambios guardados.",
+  "saveChanges": "Guardar cambios"
 }

@@ -567,6 +567,174 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Añade el importe pagado para calcular tu ahorro.'**
   String get savingsPendingNote;
+
+  /// No description provided for @merchantPanel.
+  ///
+  /// In es, this message translates to:
+  /// **'Panel del comercio'**
+  String get merchantPanel;
+
+  /// No description provided for @merchantPanelHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestiona tu establecimiento y tus descuentos.'**
+  String get merchantPanelHint;
+
+  /// No description provided for @statusActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
+  String get statusActive;
+
+  /// No description provided for @statusPaused.
+  ///
+  /// In es, this message translates to:
+  /// **'Pausado'**
+  String get statusPaused;
+
+  /// No description provided for @tabSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen'**
+  String get tabSummary;
+
+  /// No description provided for @tabCoupons.
+  ///
+  /// In es, this message translates to:
+  /// **'Cupones'**
+  String get tabCoupons;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get tabSettings;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'Este mes'**
+  String get thisMonth;
+
+  /// No description provided for @validatedCoupons.
+  ///
+  /// In es, this message translates to:
+  /// **'Cupones validados'**
+  String get validatedCoupons;
+
+  /// No description provided for @discountGranted.
+  ///
+  /// In es, this message translates to:
+  /// **'Descuento concedido'**
+  String get discountGranted;
+
+  /// No description provided for @newCustomers.
+  ///
+  /// In es, this message translates to:
+  /// **'Clientes nuevos'**
+  String get newCustomers;
+
+  /// No description provided for @dailyReport.
+  ///
+  /// In es, this message translates to:
+  /// **'Validaciones · últimos 30 días'**
+  String get dailyReport;
+
+  /// No description provided for @dailyReportA11y.
+  ///
+  /// In es, this message translates to:
+  /// **'Gráfico de validaciones por día. Total: {total}.'**
+  String dailyReportA11y(int total);
+
+  /// No description provided for @dayValue.
+  ///
+  /// In es, this message translates to:
+  /// **'{date}: {count} cupones'**
+  String dayValue(String date, int count);
+
+  /// No description provided for @recentCoupons.
+  ///
+  /// In es, this message translates to:
+  /// **'Últimos cupones validados'**
+  String get recentCoupons;
+
+  /// No description provided for @noCoupons.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay cupones validados.'**
+  String get noCoupons;
+
+  /// No description provided for @visibleInApp.
+  ///
+  /// In es, this message translates to:
+  /// **'Visible en la app'**
+  String get visibleInApp;
+
+  /// No description provided for @visibleInAppHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactívalo para pausar tus descuentos temporalmente.'**
+  String get visibleInAppHint;
+
+  /// No description provided for @discountPercentLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Porcentaje de descuento'**
+  String get discountPercentLabel;
+
+  /// No description provided for @discountRuleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Condiciones del descuento'**
+  String get discountRuleLabel;
+
+  /// No description provided for @menuUrlLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Enlace de la carta (opcional)'**
+  String get menuUrlLabel;
+
+  /// No description provided for @newPinLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo PIN (4 dígitos)'**
+  String get newPinLabel;
+
+  /// No description provided for @newPinHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Déjalo vacío para mantener el actual'**
+  String get newPinHint;
+
+  /// No description provided for @pinInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El PIN debe tener 4 dígitos.'**
+  String get pinInvalid;
+
+  /// No description provided for @urlInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un enlace que empiece por https://'**
+  String get urlInvalid;
+
+  /// No description provided for @percentInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un descuento entre 5% y 50%.'**
+  String get percentInvalid;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambios guardados.'**
+  String get settingsSaved;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar cambios'**
+  String get saveChanges;
 }
 
 class _AppLocalizationsDelegate

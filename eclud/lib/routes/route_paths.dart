@@ -6,6 +6,8 @@ abstract final class RoutePaths {
   static const String savings = '/ahorro';
   static const String profile = '/perfil';
 
+  static const String merchant = '/comercio';
+
   static String partner(String id) => '/local/$id';
   static String redeem(String id) => '/local/$id/canjear';
 }

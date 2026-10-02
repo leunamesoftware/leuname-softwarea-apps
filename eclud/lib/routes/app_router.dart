@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/home/home_screen.dart';
 import '../features/map/map_screen.dart';
+import '../features/merchant/merchant_panel_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/partner_detail/partner_detail_screen.dart';
 import '../features/redeem/redeem_screen.dart';
@@ -19,6 +20,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.onboarding,
         builder: (_, _) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.merchant,
+        builder: (_, _) => const MerchantPanelScreen(),
       ),
       GoRoute(
         path: '/local/:id',
