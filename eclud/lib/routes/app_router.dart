@@ -9,6 +9,7 @@ import '../features/auth/auth_form.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/auth/session_providers.dart';
+import '../features/favorites/favorites_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/map/map_screen.dart';
 import '../features/merchant/merchant_panel_screen.dart';
@@ -43,6 +44,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const RegisterScreen(),
       ),
       GoRoute(path: RoutePaths.login, builder: (_, _) => const LoginScreen()),
+      GoRoute(
+        path: RoutePaths.favorites,
+        builder: (_, _) => const FavoritesScreen(),
+      ),
       GoRoute(
         path: RoutePaths.merchant,
         builder: (_, _) => const MerchantPanelScreen(),

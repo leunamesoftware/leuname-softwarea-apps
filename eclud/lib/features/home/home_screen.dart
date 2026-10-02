@@ -25,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
     final partners = ref.watch(homePartnersProvider);
     final category = ref.watch(homeCategoryProvider);
     final user = ref.watch(currentUserProvider);
+    final sort = ref.watch(homeSortProvider);
     final isWide = MediaQuery.sizeOf(context).width >= AppShell.wideBreakpoint;
 
     return SafeArea(
@@ -43,9 +44,9 @@ class HomeScreen extends ConsumerWidget {
                     if (!isWide) const EcludLogoRow(),
                     const Spacer(),
                     IconButton(
-                      tooltip: l10n.notifications,
-                      onPressed: () {},
-                      icon: const Icon(Icons.notifications_none_rounded),
+                      tooltip: l10n.favorites,
+                      onPressed: () => context.push(RoutePaths.favorites),
+                      icon: const Icon(Icons.favorite_border_rounded),
                     ),
                   ],
                 ),
@@ -106,14 +107,45 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
-                    Text(
-                      l10n.nearest,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              sort == PartnerSort.discount
+                                  ? l10n.sortDiscount
+                                  : l10n.nearest,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          PopupMenuButton<PartnerSort>(
+                            tooltip: l10n.sortBy,
+                            initialValue: sort,
+                            color: AppColors.surface,
+                            icon: const Icon(
+                              Icons.swap_vert_rounded,
+                              color: AppColors.textMuted,
+                            ),
+                            onSelected: ref.read(homeSortProvider.notifier).set,
+                            itemBuilder: (_) => [
+                              PopupMenuItem(
+                                value: PartnerSort.distance,
+                                child: Text(l10n.nearest),
+                              ),
+                              PopupMenuItem(
+                                value: PartnerSort.discount,
+                                child: Text(l10n.sortDiscount),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const Spacer(),
                     TextButton(
                       onPressed: () => context.go(RoutePaths.map),
                       child: Text(

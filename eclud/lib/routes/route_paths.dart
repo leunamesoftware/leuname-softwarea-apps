@@ -6,6 +6,7 @@ abstract final class RoutePaths {
   static const String savings = '/ahorro';
   static const String profile = '/perfil';
 
+  static const String favorites = '/favoritos';
   static const String register = '/registro';
   static const String login = '/entrar';
   static const String merchant = '/comercio';

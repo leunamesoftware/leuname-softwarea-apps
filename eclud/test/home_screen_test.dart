@@ -10,6 +10,7 @@ import 'package:eclud/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _InstantRepository implements PartnerRepository {
   @override
@@ -26,6 +27,8 @@ Widget _app() => ProviderScope(
 );
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
   testWidgets('onboarding leva à tela inicial com parceiros', (tester) async {
     await tester.binding.setSurfaceSize(const Size(400, 1200));
     await tester.pumpWidget(_app());
@@ -115,5 +118,41 @@ void main() {
     await tester.tap(find.text('Volver al inicio'));
     await tester.pumpAndSettle();
     expect(find.text('Más cercanos'), findsOneWidget);
+  });
+
+  testWidgets('ordenar por maior desconto põe 20% primeiro', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 3000));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Ordenar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mayor descuento').last);
+    await tester.pumpAndSettle();
+
+    final first = tester.widget<PartnerCard>(find.byType(PartnerCard).first);
+    expect(first.item.partner.discountPercent, 20);
+  });
+
+  testWidgets('favoritar no detalhe aparece em Mis favoritos', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(500, 1400));
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ver descuentos sin registrarme'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Coffee Time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Añadir a favoritos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Volver'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Mis favoritos'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PartnerCard), findsOneWidget);
+    expect(find.text('Coffee Time'), findsOneWidget);
   });
 }

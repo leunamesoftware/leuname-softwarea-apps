@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,6 +11,7 @@ import '../../routes/route_paths.dart';
 import '../../widgets/category_style.dart';
 import '../../widgets/eclud_logo.dart';
 import '../../widgets/primary_button.dart';
+import '../../widgets/staggered_column.dart';
 
 /// Tela 1 — apresentação do clube, preço e acesso ao cadastro.
 class OnboardingScreen extends StatelessWidget {
@@ -34,9 +36,9 @@ class OnboardingScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 440),
-                child: Column(
+                child: StaggeredColumn(
                   children: [
-                    const EcludMark(size: 104),
+                    const GlowingMark(child: EcludMark(size: 112)),
                     const SizedBox(height: 4),
                     const EcludWordmark(fontSize: 56),
                     const SizedBox(height: 10),
@@ -119,7 +121,9 @@ class OnboardingScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          l10n.securePayment,
+                          // No app Android a assinatura é cobrada pela Play;
+                          // na versão web (PC), pelo Stripe.
+                          kIsWeb ? l10n.securePayment : l10n.securePaymentPlay,
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textMuted,
@@ -128,7 +132,7 @@ class OnboardingScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    const _PaymentMethods(),
+                    if (kIsWeb) const _PaymentMethods(),
                   ],
                 ),
               ),

@@ -47,6 +47,19 @@ class SearchQuery extends Notifier<String> {
   void update(String value) => state = value.trim();
 }
 
+enum PartnerSort { distance, discount }
+
+class SortOrder extends Notifier<PartnerSort> {
+  @override
+  PartnerSort build() => PartnerSort.distance;
+
+  void set(PartnerSort value) => state = value;
+}
+
+final homeSortProvider = NotifierProvider<SortOrder, PartnerSort>(
+  SortOrder.new,
+);
+
 final homeCategoryProvider = NotifierProvider<CategoryFilter, PartnerCategory?>(
   CategoryFilter.new,
 );
@@ -78,9 +91,22 @@ List<NearbyPartner> applyFilters(
 final homePartnersProvider = Provider<AsyncValue<List<NearbyPartner>>>((ref) {
   final category = ref.watch(homeCategoryProvider);
   final query = ref.watch(homeSearchProvider);
-  return ref
-      .watch(nearbyPartnersProvider)
-      .whenData((list) => applyFilters(list, category, query));
+  final sort = ref.watch(homeSortProvider);
+  return ref.watch(nearbyPartnersProvider).whenData((list) {
+    final filtered = applyFilters(list, category, query);
+    if (sort == PartnerSort.discount) {
+      // Maior desconto primeiro; empate decide pela distância.
+      filtered.sort((a, b) {
+        final byDiscount = b.partner.discountPercent.compareTo(
+          a.partner.discountPercent,
+        );
+        return byDiscount != 0
+            ? byDiscount
+            : a.distanceMeters.compareTo(b.distanceMeters);
+      });
+    }
+    return filtered;
+  });
 });
 
 final mapPartnersProvider = Provider<AsyncValue<List<NearbyPartner>>>((ref) {

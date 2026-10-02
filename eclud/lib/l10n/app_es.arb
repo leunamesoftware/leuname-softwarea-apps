@@ -43,7 +43,6 @@
   "noResults": "No encontramos establecimientos con esos filtros.",
   "loadError": "No se pudieron cargar los establecimientos.",
   "retry": "Reintentar",
-  "notifications": "Notificaciones",
   "mapSearchHint": "Buscar en esta zona...",
   "myLocation": "Mi ubicación",
   "navHome": "Inicio",
@@ -242,5 +241,25 @@
   "fieldRequired": "Campo obligatorio.",
   "merchantCreated": "Establecimiento añadido.",
   "errorOwnerNotFound": "No existe ninguna cuenta con ese correo.",
-  "errorOwnerHasMerchant": "Esa cuenta ya tiene un establecimiento."
+  "errorOwnerHasMerchant": "Esa cuenta ya tiene un establecimiento.",
+  "favorites": "Mis favoritos",
+  "noFavorites": "Aún no tienes favoritos. Toca el corazón en un establecimiento para guardarlo aquí.",
+  "sortBy": "Ordenar",
+  "sortDiscount": "Mayor descuento",
+  "share": "Compartir",
+  "shareText": "{percent} de descuento en {name} con Eclud 👉 {link}",
+  "@shareText": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "securePaymentPlay": "Pago seguro con Google Play"
 }

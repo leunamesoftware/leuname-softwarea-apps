@@ -268,12 +268,6 @@ abstract class AppLocalizations {
   /// **'Reintentar'**
   String get retry;
 
-  /// No description provided for @notifications.
-  ///
-  /// In es, this message translates to:
-  /// **'Notificaciones'**
-  String get notifications;
-
   /// No description provided for @mapSearchHint.
   ///
   /// In es, this message translates to:
@@ -1071,6 +1065,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Esa cuenta ya tiene un establecimiento.'**
   String get errorOwnerHasMerchant;
+
+  /// No description provided for @favorites.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis favoritos'**
+  String get favorites;
+
+  /// No description provided for @noFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no tienes favoritos. Toca el corazón en un establecimiento para guardarlo aquí.'**
+  String get noFavorites;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In es, this message translates to:
+  /// **'Ordenar'**
+  String get sortBy;
+
+  /// No description provided for @sortDiscount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mayor descuento'**
+  String get sortDiscount;
+
+  /// No description provided for @share.
+  ///
+  /// In es, this message translates to:
+  /// **'Compartir'**
+  String get share;
+
+  /// No description provided for @shareText.
+  ///
+  /// In es, this message translates to:
+  /// **'{percent} de descuento en {name} con Eclud 👉 {link}'**
+  String shareText(String percent, String name, String link);
+
+  /// No description provided for @securePaymentPlay.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago seguro con Google Play'**
+  String get securePaymentPlay;
 }
 
 class _AppLocalizationsDelegate

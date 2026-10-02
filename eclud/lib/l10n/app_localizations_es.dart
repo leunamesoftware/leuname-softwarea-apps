@@ -104,9 +104,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get retry => 'Reintentar';
 
   @override
-  String get notifications => 'Notificaciones';
-
-  @override
   String get mapSearchHint => 'Buscar en esta zona...';
 
   @override
@@ -533,4 +530,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorOwnerHasMerchant => 'Esa cuenta ya tiene un establecimiento.';
+
+  @override
+  String get favorites => 'Mis favoritos';
+
+  @override
+  String get noFavorites =>
+      'Aún no tienes favoritos. Toca el corazón en un establecimiento para guardarlo aquí.';
+
+  @override
+  String get sortBy => 'Ordenar';
+
+  @override
+  String get sortDiscount => 'Mayor descuento';
+
+  @override
+  String get share => 'Compartir';
+
+  @override
+  String shareText(String percent, String name, String link) {
+    return '$percent de descuento en $name con Eclud 👉 $link';
+  }
+
+  @override
+  String get securePaymentPlay => 'Pago seguro con Google Play';
 }

@@ -9,6 +9,12 @@ abstract final class AppConfig {
 
   static bool get isDemo => apiUrl.isEmpty;
 
+  /// Endereço público do site, usado nos links compartilhados.
+  static const String siteUrl = String.fromEnvironment(
+    'SITE_URL',
+    defaultValue: 'https://eclud.pages.dev',
+  );
+
   /// Páginas legais exibidas no cadastro e no perfil (publicadas junto
   /// com o site, em web/legal/).
   static const String termsUrl = String.fromEnvironment(

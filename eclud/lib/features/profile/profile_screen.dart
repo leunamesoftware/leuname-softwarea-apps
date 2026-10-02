@@ -46,6 +46,11 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           _AccountCard(user: user),
           const SizedBox(height: 16),
+          _Tile(
+            icon: Icons.favorite_border,
+            title: l10n.favorites,
+            onTap: () => context.push(RoutePaths.favorites),
+          ),
           if (user.isAdmin)
             _Tile(
               icon: Icons.admin_panel_settings_outlined,

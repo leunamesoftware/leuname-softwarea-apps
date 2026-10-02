@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../core/config/app_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/external_links.dart';
 import '../../core/utils/formatters.dart';
@@ -222,7 +224,6 @@ class _Header extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _CircleButton(
@@ -232,6 +233,13 @@ class _Header extends ConsumerWidget {
                         ? context.pop()
                         : context.go(RoutePaths.home),
                   ),
+                  const Spacer(),
+                  _CircleButton(
+                    icon: Icons.share_outlined,
+                    tooltip: l10n.share,
+                    onTap: () => _share(context, l10n),
+                  ),
+                  const SizedBox(width: 8),
                   _CircleButton(
                     icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: isFavorite ? AppColors.gold : AppColors.text,
@@ -246,6 +254,22 @@ class _Header extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+extension on _Header {
+  /// Compartilha o desconto com um link que abre o estabelecimento.
+  void _share(BuildContext context, AppLocalizations l10n) {
+    final link = '${AppConfig.siteUrl}/#${RoutePaths.partner(partner.id)}';
+    SharePlus.instance.share(
+      ShareParams(
+        text: l10n.shareText(
+          Formatters.percent(partner.discountPercent),
+          partner.name,
+          link,
+        ),
       ),
     );
   }
