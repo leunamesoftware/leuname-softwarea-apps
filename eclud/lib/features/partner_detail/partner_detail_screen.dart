@@ -260,15 +260,14 @@ class _Header extends ConsumerWidget {
 }
 
 extension on _Header {
-  /// Compartilha o desconto com um link que abre o estabelecimento.
+  /// Compartilha o desconto com o link do app na Play Store.
   void _share(BuildContext context, AppLocalizations l10n) {
-    final link = '${AppConfig.siteUrl}/#${RoutePaths.partner(partner.id)}';
     SharePlus.instance.share(
       ShareParams(
         text: l10n.shareText(
           Formatters.percent(partner.discountPercent),
           partner.name,
-          link,
+          AppConfig.storeUrl,
         ),
       ),
     );

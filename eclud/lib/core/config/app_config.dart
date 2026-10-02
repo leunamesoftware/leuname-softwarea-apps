@@ -9,11 +9,10 @@ abstract final class AppConfig {
 
   static bool get isDemo => apiUrl.isEmpty;
 
-  /// Endereço público do site, usado nos links compartilhados.
-  static const String siteUrl = String.fromEnvironment(
-    'SITE_URL',
-    defaultValue: 'https://eclud.pages.dev',
-  );
+  /// Página do app na Play Store (único canal de venda), usada nos
+  /// links compartilhados.
+  static const String storeUrl =
+      'https://play.google.com/store/apps/details?id=com.leunamesoftwares.eclud';
 
   /// Páginas legais exibidas no cadastro e no perfil (publicadas junto
   /// com o site, em web/legal/).

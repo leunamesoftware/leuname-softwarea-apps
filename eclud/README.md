@@ -82,9 +82,11 @@ lib/
   apps que exigem conta para o que não precisa); usar desconto exige login.
 - **Sessão** guardada no cofre do sistema (Keychain/Keystore).
 - **PIN da loja** só existe como hash no servidor; 5 erros bloqueiam 15 min.
-- **Pagamento**: a assinatura é vendida só pela Google Play, que recolhe o IVA
-  europeu (a empresa é brasileira, sem registro de IVA na UE). Venda pelo
-  site, se um dia fizer sentido, via Paddle/Lemon Squeezy (cuidam do IVA).
+- **Venda só pela Play Store** (decisão da LeuName para todos os apps): a
+  assinatura do cliente e, no futuro, o plano destaque do lojista são
+  assinaturas da Google Play, que também recolhe o IVA europeu. A versão
+  web serve como ferramenta (painéis do lojista e da administração), não
+  vende. Links compartilhados levam à página do app na Play.
 - **RGPD**: empresa de fora da UE normalmente precisa de representante na UE
   (art. 27); campo previsto na Política de privacidade.
 
