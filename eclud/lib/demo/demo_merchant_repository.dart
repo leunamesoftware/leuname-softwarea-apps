@@ -36,6 +36,7 @@ class DemoMerchantRepository implements MerchantRepository {
             reviewCount: base.reviewCount,
             menuUrl: settings.menuUrl,
             discountRule: settings.discountRule,
+            openingHours: settings.openingHours,
           );
 
     final random = Random(42);
@@ -66,6 +67,10 @@ class DemoMerchantRepository implements MerchantRepository {
       recentCoupons: coupons,
     );
   }
+
+  @override
+  Future<void> uploadPhoto(List<int> bytes, String contentType) =>
+      Future<void>.delayed(const Duration(milliseconds: 400));
 
   @override
   Future<void> saveSettings(MerchantSettings settings) async {

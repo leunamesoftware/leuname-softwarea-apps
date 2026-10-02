@@ -652,4 +652,68 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get storeUnavailable =>
       'Google Play no está disponible en este dispositivo.';
+
+  @override
+  String get openNow => 'Abierto';
+
+  @override
+  String get closedNow => 'Cerrado';
+
+  @override
+  String opensAt(String time) {
+    return 'Abre a las $time';
+  }
+
+  @override
+  String get hours => 'Horario';
+
+  @override
+  String get closedAllDay => 'Cerrado';
+
+  @override
+  String get reviewsTitle => 'Opiniones';
+
+  @override
+  String get noReviews => 'Aún no hay opiniones.';
+
+  @override
+  String get rate => 'Valorar';
+
+  @override
+  String get yourRating => 'Tu valoración';
+
+  @override
+  String get commentLabel => 'Comentario (opcional)';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get thanksReview => '¡Gracias por tu opinión!';
+
+  @override
+  String starsA11y(int count) {
+    return '$count de 5 estrellas';
+  }
+
+  @override
+  String get photoLabel => 'Foto del establecimiento';
+
+  @override
+  String get changePhoto => 'Cambiar foto';
+
+  @override
+  String get photoUpdated => 'Foto actualizada.';
+
+  @override
+  String get photoTooLarge => 'La foto es demasiado grande (máximo 2 MB).';
+
+  @override
+  String get openingHoursLabel => 'Horario de apertura';
+
+  @override
+  String get addShift => 'Añadir turno';
+
+  @override
+  String get removeShift => 'Quitar turno';
 }

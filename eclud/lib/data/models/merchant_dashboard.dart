@@ -1,3 +1,4 @@
+import 'opening_hours.dart';
 import 'partner.dart';
 
 /// Cupom validado na loja, visto pelo lojista.
@@ -74,6 +75,7 @@ class MerchantSettings {
     required this.discountRule,
     this.menuUrl,
     this.newPin,
+    this.openingHours,
   });
 
   final bool isActive;
@@ -83,6 +85,7 @@ class MerchantSettings {
 
   /// Novo PIN; `null` mantém o atual. Só é enviado ao servidor, nunca lido.
   final String? newPin;
+  final OpeningHours? openingHours;
 
   Map<String, dynamic> toJson() => {
     'isActive': isActive,
@@ -90,5 +93,6 @@ class MerchantSettings {
     'discountRule': discountRule.isEmpty ? null : discountRule,
     'menuUrl': menuUrl,
     'newPin': newPin,
+    'openingHours': openingHours?.toJson(),
   };
 }

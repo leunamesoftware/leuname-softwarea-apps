@@ -6,6 +6,7 @@ import '../data/models/partner.dart';
 import '../l10n/app_localizations.dart';
 import 'category_style.dart';
 import 'discount_badge.dart';
+import 'open_status.dart';
 import 'partner_image.dart';
 
 /// Cartão de parceiro: foto, nome, categoria, distância e desconto.
@@ -74,6 +75,13 @@ class PartnerCard extends StatelessWidget {
                             color: AppColors.textMuted,
                           ),
                         ),
+                        if (partner.openingHours case final hours?) ...[
+                          const Text(
+                            '  ·  ',
+                            style: TextStyle(color: AppColors.textMuted),
+                          ),
+                          Flexible(child: OpenStatus(hours: hours)),
+                        ],
                       ],
                     ),
                   ],

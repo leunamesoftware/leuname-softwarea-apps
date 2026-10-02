@@ -45,7 +45,17 @@ class ApiClient {
       _send('PATCH', path, body);
   Future<dynamic> delete(String path) => _send('DELETE', path);
 
-  Future<dynamic> _send(String method, String path, [Object? body]) async {
+  /// Envia um arquivo (ex.: foto) como corpo bruto da requisição.
+  Future<dynamic> putBytes(String path, List<int> bytes, String contentType) =>
+      _send('PUT', path, null, bytes, contentType);
+
+  Future<dynamic> _send(
+    String method,
+    String path, [
+    Object? body,
+    List<int>? bytes,
+    String? contentType,
+  ]) async {
     final request = http.Request(method, Uri.parse('$baseUrl$path'));
     request.headers['Accept'] = 'application/json';
     final token = await tokens.read();
@@ -53,6 +63,9 @@ class ApiClient {
     if (body != null) {
       request.headers['Content-Type'] = 'application/json';
       request.body = jsonEncode(body);
+    } else if (bytes != null) {
+      request.headers['Content-Type'] = contentType!;
+      request.bodyBytes = bytes;
     }
 
     final http.Response response;

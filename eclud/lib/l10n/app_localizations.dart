@@ -1275,6 +1275,126 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Google Play no está disponible en este dispositivo.'**
   String get storeUnavailable;
+
+  /// No description provided for @openNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Abierto'**
+  String get openNow;
+
+  /// No description provided for @closedNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrado'**
+  String get closedNow;
+
+  /// No description provided for @opensAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Abre a las {time}'**
+  String opensAt(String time);
+
+  /// No description provided for @hours.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario'**
+  String get hours;
+
+  /// No description provided for @closedAllDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrado'**
+  String get closedAllDay;
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Opiniones'**
+  String get reviewsTitle;
+
+  /// No description provided for @noReviews.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay opiniones.'**
+  String get noReviews;
+
+  /// No description provided for @rate.
+  ///
+  /// In es, this message translates to:
+  /// **'Valorar'**
+  String get rate;
+
+  /// No description provided for @yourRating.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu valoración'**
+  String get yourRating;
+
+  /// No description provided for @commentLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Comentario (opcional)'**
+  String get commentLabel;
+
+  /// No description provided for @send.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get send;
+
+  /// No description provided for @thanksReview.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Gracias por tu opinión!'**
+  String get thanksReview;
+
+  /// No description provided for @starsA11y.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} de 5 estrellas'**
+  String starsA11y(int count);
+
+  /// No description provided for @photoLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Foto del establecimiento'**
+  String get photoLabel;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar foto'**
+  String get changePhoto;
+
+  /// No description provided for @photoUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Foto actualizada.'**
+  String get photoUpdated;
+
+  /// No description provided for @photoTooLarge.
+  ///
+  /// In es, this message translates to:
+  /// **'La foto es demasiado grande (máximo 2 MB).'**
+  String get photoTooLarge;
+
+  /// No description provided for @openingHoursLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario de apertura'**
+  String get openingHoursLabel;
+
+  /// No description provided for @addShift.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir turno'**
+  String get addShift;
+
+  /// No description provided for @removeShift.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar turno'**
+  String get removeShift;
 }
 
 class _AppLocalizationsDelegate

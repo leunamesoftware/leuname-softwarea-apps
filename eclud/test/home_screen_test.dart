@@ -1,6 +1,5 @@
 import 'package:eclud/app.dart';
 import 'package:eclud/data/models/partner.dart';
-import 'package:eclud/data/repositories/partner_repository.dart';
 import 'package:eclud/demo/demo_partner_repository.dart';
 import 'package:eclud/features/location/location_providers.dart';
 import 'package:eclud/features/partners/partner_providers.dart';
@@ -12,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _InstantRepository implements PartnerRepository {
+class _InstantRepository extends DemoPartnerRepository {
   @override
   Future<List<Partner>> fetchPartners() =>
       Future.value(DemoPartnerRepository.partners);

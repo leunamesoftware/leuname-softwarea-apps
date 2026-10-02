@@ -1,5 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
+import 'opening_hours.dart';
 import 'partner_category.dart';
 
 /// Estabelecimento parceiro que oferece desconto aos membros.
@@ -19,6 +20,7 @@ class Partner {
     this.reviewCount = 0,
     this.menuUrl,
     this.discountRule,
+    this.openingHours,
   }) : assert(priceLevel >= 1 && priceLevel <= 3),
        assert(discountPercent > 0 && discountPercent <= 100);
 
@@ -45,6 +47,9 @@ class Partner {
   /// Regra específica do desconto; sem ela, o app usa o texto padrão.
   final String? discountRule;
 
+  /// `null` enquanto o lojista não informar o horário.
+  final OpeningHours? openingHours;
+
   String get priceLabel => '€' * priceLevel;
 
   factory Partner.fromJson(Map<String, dynamic> json) => Partner(
@@ -65,6 +70,9 @@ class Partner {
     reviewCount: json['reviewCount'] as int? ?? 0,
     menuUrl: json['menuUrl'] as String?,
     discountRule: json['discountRule'] as String?,
+    openingHours: json['openingHours'] == null
+        ? null
+        : OpeningHours.fromJson(json['openingHours'] as Map<String, dynamic>),
   );
 }
 

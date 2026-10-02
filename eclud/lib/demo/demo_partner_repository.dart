@@ -1,6 +1,8 @@
 import 'package:latlong2/latlong.dart';
 
+import '../data/models/opening_hours.dart';
 import '../data/models/partner.dart';
+import '../data/models/review.dart';
 import '../data/models/partner_category.dart';
 import '../data/repositories/partner_repository.dart';
 
@@ -13,6 +15,60 @@ class DemoPartnerRepository implements PartnerRepository {
     return partners;
   }
 
+  final _reviews = <String, List<Review>>{
+    'p1': [
+      Review(
+        rating: 5,
+        author: 'Carmen',
+        createdAt: DateTime(2026, 9, 28),
+        comment: 'La pasta, espectacular. El descuento se aplicó sin problema.',
+      ),
+      Review(rating: 4, author: 'Javier', createdAt: DateTime(2026, 9, 20)),
+    ],
+  };
+
+  @override
+  Future<List<Review>> fetchReviews(String partnerId) async =>
+      List.of(_reviews[partnerId] ?? const []);
+
+  @override
+  Future<void> submitReview(
+    String partnerId,
+    int rating,
+    String? comment,
+  ) async {
+    _reviews
+        .putIfAbsent(partnerId, () => [])
+        .insert(
+          0,
+          Review(
+            rating: rating,
+            author: 'Tú',
+            createdAt: DateTime.now(),
+            comment: comment,
+          ),
+        );
+  }
+
+  // Horário típico espanhol: almoço e jantar, com descanso à tarde.
+  static const _restaurant = OpeningHours({
+    1: [TimeRange(13 * 60, 16 * 60), TimeRange(20 * 60, 23 * 60 + 30)],
+    2: [TimeRange(13 * 60, 16 * 60), TimeRange(20 * 60, 23 * 60 + 30)],
+    3: [TimeRange(13 * 60, 16 * 60), TimeRange(20 * 60, 23 * 60 + 30)],
+    4: [TimeRange(13 * 60, 16 * 60), TimeRange(20 * 60, 23 * 60 + 30)],
+    5: [TimeRange(13 * 60, 16 * 60), TimeRange(20 * 60, 60)],
+    6: [TimeRange(13 * 60, 16 * 60 + 30), TimeRange(20 * 60, 60)],
+  });
+  static const _allDay = OpeningHours({
+    1: [TimeRange(8 * 60, 21 * 60)],
+    2: [TimeRange(8 * 60, 21 * 60)],
+    3: [TimeRange(8 * 60, 21 * 60)],
+    4: [TimeRange(8 * 60, 21 * 60)],
+    5: [TimeRange(8 * 60, 21 * 60)],
+    6: [TimeRange(9 * 60, 21 * 60)],
+    7: [TimeRange(9 * 60, 15 * 60)],
+  });
+
   static const partners = [
     Partner(
       id: 'p1',
@@ -24,6 +80,7 @@ class DemoPartnerRepository implements PartnerRepository {
       address: 'Calle del Arenal, 12',
       city: 'Madrid',
       country: 'España',
+      openingHours: _restaurant,
       rating: 4.8,
       reviewCount: 124,
       menuUrl: 'https://example.com/carta',
@@ -38,6 +95,7 @@ class DemoPartnerRepository implements PartnerRepository {
       address: 'Calle de las Huertas, 8',
       city: 'Madrid',
       country: 'España',
+      openingHours: _allDay,
       rating: 4.6,
       reviewCount: 89,
       menuUrl: 'https://example.com/carta',
@@ -68,6 +126,7 @@ class DemoPartnerRepository implements PartnerRepository {
       address: 'Calle de Toledo, 40',
       city: 'Madrid',
       country: 'España',
+      openingHours: _restaurant,
       rating: 4.5,
       reviewCount: 210,
       menuUrl: 'https://example.com/carta',
@@ -82,6 +141,7 @@ class DemoPartnerRepository implements PartnerRepository {
       address: 'Plaza de Isabel II, 3',
       city: 'Madrid',
       country: 'España',
+      openingHours: _allDay,
       rating: 4.4,
       reviewCount: 46,
       menuUrl: 'https://example.com/carta',
@@ -148,6 +208,7 @@ class DemoPartnerRepository implements PartnerRepository {
       address: 'Calle Mayor, 55',
       city: 'Madrid',
       country: 'España',
+      openingHours: _allDay,
       rating: 4.6,
       reviewCount: 72,
     ),

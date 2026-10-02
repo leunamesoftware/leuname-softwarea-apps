@@ -17,6 +17,8 @@ import '../../widgets/discount_badge.dart';
 import '../../widgets/primary_button.dart';
 import '../favorites/favorite_providers.dart';
 import '../partners/partner_providers.dart';
+import 'widgets/hours_section.dart';
+import 'widgets/reviews_section.dart';
 
 /// Tela 4 — detalhes do parceiro: endereço, cardápio e regra do desconto.
 class PartnerDetailScreen extends ConsumerWidget {
@@ -129,6 +131,10 @@ class _Details extends ConsumerWidget {
                         errorMessage: l10n.linkError,
                       ),
                     ),
+                    if (partner.openingHours case final hours?) ...[
+                      const _Separator(),
+                      HoursSection(hours: hours),
+                    ],
                     if (menuUrl != null) ...[
                       const _Separator(),
                       _InfoRow(
@@ -152,6 +158,8 @@ class _Details extends ConsumerWidget {
                             Formatters.percent(partner.discountPercent),
                           ),
                     ),
+                    const SizedBox(height: 24),
+                    ReviewsSection(partnerId: partner.id),
                   ],
                 ),
               ),

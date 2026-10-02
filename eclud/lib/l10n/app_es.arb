@@ -310,5 +310,39 @@
       }
     }
   },
-  "storeUnavailable": "Google Play no está disponible en este dispositivo."
+  "storeUnavailable": "Google Play no está disponible en este dispositivo.",
+  "openNow": "Abierto",
+  "closedNow": "Cerrado",
+  "opensAt": "Abre a las {time}",
+  "@opensAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hours": "Horario",
+  "closedAllDay": "Cerrado",
+  "reviewsTitle": "Opiniones",
+  "noReviews": "Aún no hay opiniones.",
+  "rate": "Valorar",
+  "yourRating": "Tu valoración",
+  "commentLabel": "Comentario (opcional)",
+  "send": "Enviar",
+  "thanksReview": "¡Gracias por tu opinión!",
+  "starsA11y": "{count} de 5 estrellas",
+  "@starsA11y": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photoLabel": "Foto del establecimiento",
+  "changePhoto": "Cambiar foto",
+  "photoUpdated": "Foto actualizada.",
+  "photoTooLarge": "La foto es demasiado grande (máximo 2 MB).",
+  "openingHoursLabel": "Horario de apertura",
+  "addShift": "Añadir turno",
+  "removeShift": "Quitar turno"
 }

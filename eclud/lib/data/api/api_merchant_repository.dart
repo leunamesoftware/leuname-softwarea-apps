@@ -14,6 +14,10 @@ class ApiMerchantRepository implements MerchantRepository {
       );
 
   @override
+  Future<void> uploadPhoto(List<int> bytes, String contentType) =>
+      _api.putBytes('/merchant/photo', bytes, contentType);
+
+  @override
   Future<void> saveSettings(MerchantSettings settings) =>
       _api.put('/merchant/settings', settings.toJson());
 }
