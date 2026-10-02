@@ -10,6 +10,11 @@ database_name = "eclud-db"
 database_id = "8d4e3bc8-65b0-4e32-9b35-2622865cdcbb"
 migrations_dir = "migrations"
 
+# Fotos dos estabelecimentos.
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "eclud-files"
+
 [vars]
 ENVIRONMENT = "production"
 # Origens autorizadas a chamar a API pelo navegador (versão PC/web).
@@ -18,3 +23,7 @@ ALLOWED_ORIGINS = "https://eclud.pages.dev"
 # Enquanto o pagamento não estiver integrado, "false" deixa qualquer
 # membro usar descontos. Em produção, com pagamento ativo, use "true".
 REQUIRE_SUBSCRIPTION = "false"
+PLAY_PACKAGE_NAME = "com.leunamesoftwares.eclud"
+EMAIL_FROM = "Eclud <no-reply@leunamesoftware.com>"
+# Segredos (wrangler secret put): JWT_SECRET, GOOGLE_SERVICE_ACCOUNT,
+# PLAY_RTDN_TOKEN, RESEND_API_KEY.

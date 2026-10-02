@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../auth';
 import { hashSecret } from '../crypto';
-import { currentMonth, fail, isHttpsUrl, isPin, isString, readJson } from '../http';
+import { currentMonth, fail, isHttpsUrl, isOpeningHours, isPin, isString, readJson } from '../http';
 import type { AppEnv } from '../types';
 import { MERCHANT_COLUMNS, toPartner, type MerchantRow } from './partners';
 
@@ -102,11 +102,13 @@ merchant.put('/merchant/settings', async (c) => {
     discountRule: string | null;
     menuUrl: string | null;
     newPin: string | null;
+    openingHours: Record<string, [string, string][]> | null;
   }>(c);
   const percent = body?.discountPercent;
   const rule = body?.discountRule ?? null;
   const menuUrl = body?.menuUrl ?? null;
   const newPin = body?.newPin ?? null;
+  const hours = body?.openingHours ?? null;
   if (
     !body ||
     typeof body.isActive !== 'boolean' ||
@@ -116,15 +118,17 @@ merchant.put('/merchant/settings', async (c) => {
     percent > 50 ||
     (rule !== null && rule !== '' && !isString(rule, 1, 200)) ||
     (menuUrl !== null && !isHttpsUrl(menuUrl)) ||
-    (newPin !== null && !isPin(newPin))
+    (newPin !== null && !isPin(newPin)) ||
+    (hours !== null && !isOpeningHours(hours))
   ) {
     return fail(c, 400, 'invalid_input');
   }
 
   const statements = [
     c.env.DB.prepare(
-      'UPDATE merchants SET is_active = ?, discount_percent = ?, discount_rule = ?, menu_url = ? WHERE id = ?',
-    ).bind(body.isActive ? 1 : 0, percent, rule || null, menuUrl, row.id),
+      `UPDATE merchants SET is_active = ?, discount_percent = ?, discount_rule = ?, menu_url = ?, opening_hours = ?
+       WHERE id = ?`,
+    ).bind(body.isActive ? 1 : 0, percent, rule || null, menuUrl, hours ? JSON.stringify(hours) : null, row.id),
   ];
   if (newPin !== null) {
     statements.push(
@@ -133,4 +137,29 @@ merchant.put('/merchant/settings', async (c) => {
   }
   await c.env.DB.batch(statements);
   return c.body(null, 204);
+});
+
+const PHOTO_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
+
+/** Foto do estabelecimento: corpo da requisição = imagem (até 2 MB). */
+merchant.put('/merchant/photo', async (c) => {
+  const row = await ownMerchant(c.env.DB, c.get('user').id);
+  if (!row) return fail(c, 404, 'not_found');
+  const type = (c.req.header('Content-Type') ?? '').split(';')[0].trim();
+  const ext = PHOTO_TYPES[type];
+  if (!ext) return fail(c, 415, 'unsupported_type');
+  const declared = Number(c.req.header('Content-Length') ?? '0');
+  if (declared > MAX_PHOTO_BYTES) return fail(c, 413, 'too_large');
+  const data = await c.req.arrayBuffer();
+  if (data.byteLength === 0 || data.byteLength > MAX_PHOTO_BYTES) return fail(c, 413, 'too_large');
+
+  // Nome novo a cada envio: o cache longo nunca mostra foto velha.
+  const key = `${row.id}-${crypto.randomUUID()}.${ext}`;
+  await c.env.FILES.put(`photos/${key}`, data, { httpMetadata: { contentType: type } });
+  const url = `${new URL(c.req.url).origin}/files/${key}`;
+  const old = row.image_url;
+  await c.env.DB.prepare('UPDATE merchants SET image_url = ? WHERE id = ?').bind(url, row.id).run();
+  if (old?.includes('/files/')) await c.env.FILES.delete(`photos/${old.split('/files/')[1]}`);
+  return c.json({ imageUrl: url });
 });

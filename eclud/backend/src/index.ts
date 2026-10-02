@@ -4,6 +4,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { fail } from './http';
 import { account } from './routes/account';
 import { admin } from './routes/admin';
+import { billing } from './routes/billing';
 import { merchant } from './routes/merchant';
 import { partners } from './routes/partners';
 import { redemptions } from './routes/redemptions';
@@ -35,6 +36,7 @@ app.route('/', partners);
 app.route('/', redemptions);
 app.route('/', merchant);
 app.route('/', admin);
+app.route('/', billing);
 
 app.notFound((c) => fail(c, 404, 'not_found'));
 app.onError((err, c) => {

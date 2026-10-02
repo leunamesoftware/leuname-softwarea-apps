@@ -45,3 +45,23 @@ export const isPin = (v: unknown): v is string => typeof v === 'string' && /^\d{
 export function currentMonth(now = new Date()): string {
   return now.toISOString().slice(0, 7);
 }
+
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+/**
+ * Horário semanal: {"1": [["13:00","16:00"], ["20:00","23:30"]], ...}.
+ * Dias 1 (segunda) a 7 (domingo), até 2 turnos por dia; dia ausente = fechado.
+ */
+export function isOpeningHours(v: unknown): v is Record<string, [string, string][]> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+  return Object.entries(v as Record<string, unknown>).every(
+    ([day, ranges]) =>
+      /^[1-7]$/.test(day) &&
+      Array.isArray(ranges) &&
+      ranges.length <= 2 &&
+      ranges.every(
+        (r) => Array.isArray(r) && r.length === 2 && typeof r[0] === 'string' && typeof r[1] === 'string' &&
+          TIME.test(r[0]) && TIME.test(r[1]) && r[0] !== r[1],
+      ),
+  );
+}
