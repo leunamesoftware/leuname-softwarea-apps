@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.7';
+const VERSAO_APP = '2.8';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -727,10 +727,6 @@ tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
 tela.addEventListener('click', aoClicarCalculo);
 if ('serviceWorker' in navigator) {
-  // Versão nova publicada: quando ela assume, recarrega uma vez para o cliente já ver a novidade.
-  const jaTinha = Boolean(navigator.serviceWorker.controller);
-  let recarregou = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (jaTinha && !recarregou) { recarregou = true; location.reload(); } });
   navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
 }
 async function compraGuardada() {
