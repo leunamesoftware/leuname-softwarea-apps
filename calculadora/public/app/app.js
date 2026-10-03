@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '1.5';
+const VERSAO_APP = '1.6';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
