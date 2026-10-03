@@ -105,60 +105,203 @@ function abrir(aba, extra) {
   abas.hidden = false;
   abas.querySelectorAll('button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
   window.scrollTo(0, 0);
-  ({ receitas: telaReceitas, receita: telaReceita, calcular: telaCalcular, ingredientes: telaIngredientes, historico: telaHistorico })[aba](extra);
+  ({ receitas: telaReceitas, calcular: telaCalcular, ingredientes: telaIngredientes, historico: telaHistorico })[aba](extra);
 }
-abas.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) abrir(b.dataset.aba); });
+abas.addEventListener('click', (ev) => {
+  const b = ev.target.closest('button');
+  if (!b) return;
+  if (b.dataset.aba === 'receitas' && estado.aba === 'receitas') livro.aberto = false;
+  abrir(b.dataset.aba);
+});
 
-// ---------- receitas ----------
+// ---------- livro de receitas ----------
 function textoRendimento(r) {
   const o = r.rendimentoObservado || { tipo: 'inicial', min: r.rendimento.faixa[0], max: r.rendimento.faixa[1] };
   return `${o.min} a ${o.max} unidades`;
 }
 
-function telaReceitas() {
-  const lista = estado.receitas.map((r) => `
-    <button class="cartao receita" data-id="${esc(r.id)}">
-      <img src="${esc(r.foto)}" alt="" loading="lazy">
-      <span><span class="etiqueta">${esc(r.categoria)}</span><strong>${esc(r.nome)}</strong>
-      <small class="sub">Rende ${textoRendimento(r)}</small></span>
-    </button>`).join('');
+// Páginas: 0 = sumário, 1..N = receitas, N+1 = contracapa.
+const livro = { aberto: false, pagina: ler('pagina', 0), mini: ler('mini', {}) };
+const totalPaginas = () => estado.receitas.length + 2;
+
+function telaReceitas(extra) {
+  if (extra?.receitaId) {
+    const i = estado.receitas.findIndex((r) => r.id === extra.receitaId);
+    if (i >= 0) { livro.aberto = true; livro.pagina = i + 1; }
+  }
+  if (livro.aberto) return mostrarPagina();
+  const n = estado.receitas.length;
   tela.innerHTML = `
-    <h1>Receitas para vender</h1>
-    <p class="sub">Receita completa, quanto rende e quanto você lucra. Toda receita nova do canal aparece aqui.</p>
-    ${lista || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
-    <button class="botao sec" id="nova">＋ Calcular uma receita minha</button>`;
-  tela.querySelectorAll('.receita').forEach((b) => b.addEventListener('click', () => abrir('receita', b.dataset.id)));
-  document.getElementById('nova').addEventListener('click', () => { novaConta(); abrir('calcular'); });
+    <section class="estante">
+      <button class="livro-capa" id="capa" aria-label="Abrir o livro de receitas">
+        <span class="capa-faixa">Calculadora inclusa</span>
+        <span class="capa-titulo">Receitas<br><em>que Vendem</em></span>
+        <img src="/img/logo.webp" alt="">
+        <span class="capa-texto">As receitas e a calculadora estão dentro deste livro</span>
+        <span class="capa-qtd">${n ? `${n} ${n === 1 ? 'receita' : 'receitas'} · e sempre chegam mais` : 'Conecte-se para baixar as receitas'}</span>
+        <span class="capa-autor">LeuName Softwares</span>
+      </button>
+      <p class="toque">👆 Clique no livro e veja as receitas</p>
+    </section>`;
+  document.getElementById('capa').addEventListener('click', (ev) => {
+    ev.currentTarget.classList.add('abrindo');
+    setTimeout(() => { livro.aberto = true; mostrarPagina('abrir'); }, 650);
+  });
 }
 
-function telaReceita(id) {
-  const r = estado.receitas.find((x) => x.id === id);
-  if (!r) return abrir('receitas');
+function irPara(pagina, direcao) {
+  livro.pagina = Math.max(0, Math.min(totalPaginas() - 1, pagina));
+  gravar('pagina', livro.pagina);
+  mostrarPagina(direcao);
+}
+
+function mostrarPagina(efeito) {
+  if (livro.pagina >= totalPaginas()) livro.pagina = 0;
+  const p = livro.pagina, ultima = totalPaginas() - 1;
+  const r = p >= 1 && p < ultima ? estado.receitas[p - 1] : null;
+  const rotulo = p === 0 ? 'Sumário' : r ? `Receita ${p} de ${estado.receitas.length}` : 'Fim — por enquanto';
+  tela.innerHTML = `
+    <div class="livro-barra">
+      <button class="seta" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
+      <button class="link" id="fechar">📕 Fechar livro</button>
+      <span>${rotulo}</span>
+      <button class="seta" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
+    </div>
+    <article class="pagina ${efeito ? 'virar-' + efeito : ''}" id="pagina">
+      ${p === 0 ? htmlSumario() : r ? htmlPaginaReceita(r) : htmlContracapa()}
+      <div class="pagina-num">— ${p + 1} —</div>
+    </article>
+    <p class="dica-arraste">Arraste para o lado para passar a página</p>`;
+  tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras')));
+  document.getElementById('fechar').addEventListener('click', () => { livro.aberto = false; telaReceitas(); });
+  tela.querySelectorAll('[data-pagina]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.pagina, 'frente')));
+  document.getElementById('nova')?.addEventListener('click', () => { novaConta(); abrir('calcular'); });
+  if (r) ligarMiniCalculadora(r);
+}
+
+function htmlSumario() {
+  return `
+    <h1 class="pagina-titulo">Sumário</h1>
+    <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
+    <ol class="sumario">${estado.receitas.map((r, i) => `
+      <li><button data-pagina="${i + 1}"><img src="${esc(r.foto)}" alt="" loading="lazy">
+        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
+        <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
+    </ol>`;
+}
+
+function htmlContracapa() {
+  return `
+    <div class="contracapa">
+      <img src="/img/logo.webp" alt="">
+      <h1 class="pagina-titulo">Este livro não acaba aqui</h1>
+      <p>Toda receita nova do canal <b>Quanto Devo Cobrar?</b> vira uma nova página, já com a calculadora.</p>
+      <button class="botao" id="nova">🧮 Calcular uma receita minha</button>
+      <button class="link" data-pagina="0">← Voltar ao sumário</button>
+    </div>`;
+}
+
+function htmlPaginaReceita(r) {
   const o = r.rendimentoObservado || { tipo: 'inicial' };
   const origem = o.tipo === 'comunidade'
-    ? `Rendimento observado por ${o.registros} pessoas que fizeram esta receita${o.pesoMedioG ? ` (unidades de ~${o.pesoMedioG} g)` : ''}.`
-    : `Estimativa inicial de rendimento${r.rendimento.pesoUnidadeG ? `, com unidades de ~${r.rendimento.pesoUnidadeG} g` : ''}.`;
-  tela.innerHTML = `
-    <button class="link" id="voltar">← Receitas</button>
+    ? `Resultado real de ${o.registros} pessoas que fizeram${o.pesoMedioG ? ` (unidades de ~${o.pesoMedioG} g)` : ''}.`
+    : `Estimativa inicial${r.rendimento.pesoUnidadeG ? `, unidades de ~${r.rendimento.pesoUnidadeG} g` : ''}.`;
+  const m = livro.mini[r.id] || {};
+  return `
     <img class="foto-grande" src="${esc(r.foto)}" alt="">
-    <h1>${esc(r.nome)}</h1>
+    <span class="etiqueta">${esc(r.categoria)}</span>
+    <h1 class="pagina-titulo">${esc(r.nome)}</h1>
     <div class="rendimento">
       <div>Rende aproximadamente</div>
       <div class="num">${textoRendimento(r)}</div>
-      <p class="nota">${origem} É uma estimativa: varia com o tamanho e o peso de cada unidade, a quantidade usada, o modo de preparo e as perdas.</p>
+      <p class="nota">${origem} Varia com o tamanho das unidades, o modo de preparo e as perdas.</p>
     </div>
-    <button class="botao" id="calcular">🧮 Calcular custo, preço e lucro</button>
-    <h2>Ingredientes (receita base)</h2>
-    <ul class="ingred cartao">${r.ingredientes.map((i) => `
+    <h2>Ingredientes</h2>
+    <ul class="ingred">${r.ingredientes.map((i) => `
       <li><span>${esc(i.nome)}<small>${esc(i.caseira || '')}</small></span><b>${qtd(i.qtd, i.unidade)}</b></li>`).join('')}
     </ul>
     <h2>Modo de preparo</h2>
-    <ol class="passos cartao">${r.preparo.map((p) => `<li>${esc(p)}</li>`).join('')}</ol>
-    ${r.embalagemSugerida ? `<h2>Embalagem</h2><p class="cartao">${esc(r.embalagemSugerida)}</p>` : ''}
-    ${r.dicaVenda ? `<h2>Dica para vender mais</h2><p class="cartao">💡 ${esc(r.dicaVenda)}</p>` : ''}`;
-  document.getElementById('voltar').addEventListener('click', () => abrir('receitas'));
-  document.getElementById('calcular').addEventListener('click', () => { contaDaReceita(r); abrir('calcular'); });
+    <ol class="passos">${r.preparo.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+    ${r.dicaVenda ? `<p class="dica">💡 ${esc(r.dicaVenda)}</p>` : ''}
+
+    <section class="mini-calc" aria-label="Calculadora desta receita">
+      <div class="mini-topo">🧮 Calcule aqui</div>
+      <div class="linha">
+        <div><label for="m-quero">Quero fazer (unidades)</label><input id="m-quero" type="number" inputmode="numeric" min="1" value="${m.quero || r.rendimentoObservado?.tipico || r.rendimento.unidades}"></div>
+        <div><label for="m-emb">Embalagem por unidade</label><div class="prefixo"><span>R$</span><input id="m-emb" type="number" inputmode="decimal" step="0.05" min="0" value="${m.emb ?? 0.2}"></div></div>
+      </div>
+      <div id="m-res"></div>
+      <label for="m-preco">Vou vender cada uma por</label>
+      <div class="prefixo"><span>R$</span><input id="m-preco" type="number" inputmode="decimal" step="0.5" min="0" value="${m.preco || ''}" placeholder="Toque num preço acima"></div>
+      <div id="m-lucro"></div>
+      <button class="botao branco" id="m-completa">Ajustar preços e calcular tudo ›</button>
+      <p class="nota">Usa os preços de referência ou os que você salvou. Toque acima para colocar o que você pagou.</p>
+    </section>`;
 }
+
+function calcularMini(r) {
+  const m = livro.mini[r.id] || {};
+  const base = r.rendimentoObservado?.tipico || r.rendimento.unidades;
+  const quero = Math.max(1, Math.round(n(m.quero) || base));
+  return calcularReceita({
+    escala: quero / base, unidades: quero,
+    itens: r.ingredientes.map((i) => {
+      const ing = estado.ingredientes[normalizar(i.nome)];
+      return { ...i, emb: ing?.emb || i.emb || {} };
+    }),
+    gas: { ...(r.gas || {}), precoBotijao: estado.config.precoBotijao },
+    embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco),
+  });
+}
+
+function ligarMiniCalculadora(r) {
+  const atualizar = () => {
+    const res = calcularMini(r);
+    const ativo = n(livro.mini[r.id]?.preco);
+    trocar('m-res', `
+      <div class="mini-numeros">
+        <div>Custo total<b>${brl(res.custoTotal)}</b></div>
+        <div>Custo de cada<b>${brl(res.custoUnidade)}</b></div>
+      </div>
+      <div class="mini-precos">${res.sugestoes.map((s) => `
+        <button class="${ativo === s.preco ? 'ativa' : ''}" data-mpreco="${s.preco}"><small>${s.rotulo}</small><b>${brl(s.preco)}</b></button>`).join('')}
+      </div>`);
+    const v = res.venda;
+    trocar('m-lucro', v ? `
+      <div class="mini-lucro ${v.lucroTotal < 0 ? 'neg' : ''}">
+        <span>${v.lucroTotal < 0 ? 'Prejuízo' : 'Seu lucro'} com ${res.unidades} unidades</span>
+        <b>${brl(v.lucroTotal)}</b>
+        <small>Você recebe ${brl(v.faturamento)} · lucro de ${brl(v.lucroUnidade)} por unidade</small>
+      </div>` : '');
+  };
+  const salvar = (campo, valor) => { livro.mini[r.id] = { ...(livro.mini[r.id] || {}), [campo]: valor }; gravar('mini', livro.mini); atualizar(); };
+  document.getElementById('m-quero').addEventListener('input', (e) => salvar('quero', n(e.target.value)));
+  document.getElementById('m-emb').addEventListener('input', (e) => salvar('emb', n(e.target.value)));
+  document.getElementById('m-preco').addEventListener('input', (e) => salvar('preco', n(e.target.value)));
+  document.getElementById('m-res').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-mpreco]');
+    if (b) { document.getElementById('m-preco').value = b.dataset.mpreco; salvar('preco', n(b.dataset.mpreco)); }
+  });
+  document.getElementById('m-completa').addEventListener('click', () => {
+    const m = livro.mini[r.id] || {};
+    contaDaReceita(r);
+    Object.assign(estado.calc, { quero: Math.round(n(m.quero)) || estado.calc.quero, embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco) });
+    gravar('calc', estado.calc);
+    abrir('calcular');
+  });
+  atualizar();
+}
+
+// Arrastar o dedo para os lados passa a página.
+let toqueX = null, toqueY = null;
+tela.addEventListener('touchstart', (e) => { if (estado.aba === 'receitas' && livro.aberto) { toqueX = e.touches[0].clientX; toqueY = e.touches[0].clientY; } }, { passive: true });
+tela.addEventListener('touchend', (e) => {
+  if (toqueX === null) return;
+  const dx = e.changedTouches[0].clientX - toqueX, dy = e.changedTouches[0].clientY - toqueY;
+  toqueX = null;
+  if (e.target.closest('input, select')) return;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) irPara(livro.pagina + (dx < 0 ? 1 : -1), dx < 0 ? 'frente' : 'tras');
+});
 
 // ---------- calculadora ----------
 function contaDaReceita(r) {
@@ -259,7 +402,7 @@ function telaCalcular() {
     <button class="botao" id="registrar">✅ Fiz esta receita — registrar produção</button>
     <p class="nota" style="text-align:center">Desconta os ingredientes do seu estoque e salva nas suas vendas.</p>`;
 
-  document.getElementById('voltar')?.addEventListener('click', () => abrir('receita', r.id));
+  document.getElementById('voltar')?.addEventListener('click', () => abrir('receitas', { receitaId: r.id }));
   document.getElementById('add-item').addEventListener('click', () => {
     c.itens.push({ nome: '', qtd: 0, unidade: 'g' }); gravar('calc', c); telaCalcular();
     const campos = tela.querySelectorAll('[data-item-nome]'); campos[campos.length - 1]?.focus();
