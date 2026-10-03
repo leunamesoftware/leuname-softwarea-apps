@@ -132,7 +132,14 @@ details p { margin: 0 0 16px; color: var(--suave); }
 .rodape-base { border-top: 1px solid #4A3527; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; padding-top: 18px; padding-bottom: 96px; font-size: 13px; color: #B9A495; }
 .rodape-base p { margin: 0; }
 @media (min-width: 921px) { .rodape-base { padding-bottom: 28px; } }
-@media (max-width: 760px) { .rodape-grade { grid-template-columns: 1fr; gap: 26px; } }
+@media (max-width: 760px) {
+  .rodape-grade { grid-template-columns: 1fr; gap: 26px; text-align: center; }
+  .rodape-marca { display: flex; flex-direction: column; align-items: center; }
+  .rodape-marca p { margin-left: auto; margin-right: auto; }
+  .rodape-col { align-items: center; }
+  .rodape-base { flex-direction: column; align-items: center; text-align: center; gap: 4px; font-size: 12px; }
+  .rodape-base span { display: block; }
+}
 
 .comprar-fixo { display: none; }
 
