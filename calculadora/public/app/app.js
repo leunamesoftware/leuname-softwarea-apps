@@ -18,6 +18,7 @@ const estado = {
   ingredientes: ler('ingredientes', {}),
   config: { precoBotijao: 130, valorHora: 0, metaMensal: 0, ...ler('config', {}) },
   calc: ler('calc', null),
+  minhas: ler('minhas', []),
   aba: 'receitas',
 };
 
@@ -175,7 +176,12 @@ function mostrarPagina(efeito) {
   tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras')));
   document.getElementById('fechar').addEventListener('click', () => { livro.aberto = false; telaReceitas(); });
   tela.querySelectorAll('[data-pagina]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.pagina, 'frente')));
-  document.getElementById('nova')?.addEventListener('click', () => { novaConta(); abrir('calcular'); });
+  tela.querySelectorAll('.nova-receita').forEach((b) => b.addEventListener('click', () => { novaConta(); abrir('calcular'); }));
+  tela.querySelectorAll('[data-minha]').forEach((b) => b.addEventListener('click', () => {
+    const m = estado.minhas.find((x) => x.id === b.dataset.minha);
+    if (m) { estado.calc = JSON.parse(JSON.stringify({ ...m, receitaId: null, minhaId: m.id, quero: m.quero || m.rendimentoBase })); gravar('calc', estado.calc); abrir('calcular'); }
+  }));
+  tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
   if (r) ligarMiniCalculadora(r);
 }
 
@@ -187,7 +193,13 @@ function htmlSumario() {
       <li><button data-pagina="${i + 1}"><img src="${esc(r.foto)}" alt="" loading="lazy">
         <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
-    </ol>`;
+    </ol>
+    <h2>Minhas receitas</h2>
+    ${estado.minhas.length ? `<ul class="minhas">${estado.minhas.map((m) => `
+      <li><button class="minha-abrir" data-minha="${esc(m.id)}"><b>${esc(m.nome || 'Sem nome')}</b><small>Rende ${m.rendimentoBase} un. · ${m.itens.length} ingredientes</small></button>
+        <button class="remover" data-minha-excluir="${esc(m.id)}" aria-label="Excluir ${esc(m.nome)}">🗑️</button></li>`).join('')}</ul>`
+      : '<p class="sub">Calcule e salve as suas próprias receitas. Elas ficam aqui.</p>'}
+    <button class="botao sec nova-receita">＋ Nova receita minha</button>`;
 }
 
 function htmlContracapa() {
@@ -196,7 +208,7 @@ function htmlContracapa() {
       <img src="/img/logo.webp" alt="">
       <h1 class="pagina-titulo">Este livro não acaba aqui</h1>
       <p>Toda receita nova do canal <b>Quanto Devo Cobrar?</b> vira uma nova página, já com a calculadora.</p>
-      <button class="botao" id="nova">🧮 Calcular uma receita minha</button>
+      <button class="botao nova-receita">🧮 Calcular uma receita minha</button>
       <button class="link" data-pagina="0">← Voltar ao sumário</button>
     </div>`;
 }
@@ -399,6 +411,10 @@ function telaCalcular() {
       <div id="lucro"></div>
     </div>
 
+    ${r ? '' : `<div class="linha" style="margin-bottom:12px">
+      <button class="botao sec" id="salvar-minha">💾 ${c.minhaId ? 'Salvar alterações' : 'Salvar minha receita'}</button>
+      ${c.minhaId ? '<button class="botao perigo" id="excluir-minha">🗑️ Excluir receita</button>' : '<button class="botao sec" id="limpar">🧹 Começar do zero</button>'}
+    </div>`}
     <button class="botao" id="registrar">✅ Fiz esta receita — registrar produção</button>
     <p class="nota" style="text-align:center">Desconta os ingredientes do seu estoque e salva nas suas vendas.</p>`;
 
@@ -408,7 +424,34 @@ function telaCalcular() {
     const campos = tela.querySelectorAll('[data-item-nome]'); campos[campos.length - 1]?.focus();
   });
   document.getElementById('registrar').addEventListener('click', abrirRegistro);
+  document.getElementById('salvar-minha')?.addEventListener('click', salvarMinha);
+  document.getElementById('excluir-minha')?.addEventListener('click', () => excluirMinha(c.minhaId, () => { novaConta(); telaCalcular(); }));
+  document.getElementById('limpar')?.addEventListener('click', () => { if (confirm('Apagar o que está preenchido e começar uma receita nova?')) { novaConta(); telaCalcular(); } });
   atualizarResultado();
+}
+
+function salvarMinha() {
+  const c = estado.calc;
+  if (!c.nome.trim()) { aviso('Dê um nome para a receita antes de salvar.'); document.getElementById('nome')?.focus(); return; }
+  if (!c.itens.some((i) => i.nome.trim())) return aviso('Coloque pelo menos um ingrediente.');
+  c.minhaId = c.minhaId || 'm' + Date.now().toString(36);
+  const copia = JSON.parse(JSON.stringify({ ...c, itens: c.itens.filter((i) => i.nome.trim()), atualizado: new Date().toISOString() }));
+  const i = estado.minhas.findIndex((m) => m.id === c.minhaId);
+  copia.id = c.minhaId;
+  if (i >= 0) estado.minhas[i] = copia; else estado.minhas.unshift(copia);
+  gravar('minhas', estado.minhas); gravar('calc', c);
+  aviso('Receita salva! Ela fica no livro, em "Minhas receitas".');
+  telaCalcular();
+}
+
+function excluirMinha(id, depois) {
+  const m = estado.minhas.find((x) => x.id === id);
+  if (!m || !confirm(`Excluir a receita "${m.nome}"? Isso não pode ser desfeito.`)) return;
+  estado.minhas = estado.minhas.filter((x) => x.id !== id);
+  gravar('minhas', estado.minhas);
+  if (estado.calc?.minhaId === id) delete estado.calc.minhaId;
+  aviso('Receita excluída.');
+  depois();
 }
 
 function htmlItem(it, i) {
@@ -561,16 +604,22 @@ function abrirRegistro() {
     const unidades = Math.round(n(fundo.querySelector('#r-un').value));
     const peso = n(fundo.querySelector('#r-peso').value) || null;
     if (unidades < 1) return;
+    const baixas = [];
     if (fundo.querySelector('#r-estoque').checked) {
       for (const x of res.itens) {
         const ing = estado.ingredientes[normalizar(x.nome)];
-        if (ing && !x.erro) ing.restante = Math.max(0, x.sobra);
+        if (ing && !x.erro) {
+          const antes = Number.isFinite(ing.restante) ? ing.restante : n(ing.emb.qtd);
+          ing.restante = Math.max(0, x.sobra);
+          baixas.push({ k: normalizar(x.nome), qtd: antes - ing.restante });
+        }
       }
       gravar('ingredientes', estado.ingredientes);
     }
     const custoUn = res.custoTotal / unidades;
     const historico = ler('historico', []);
     historico.unshift({
+      id: Date.now().toString(36), baixas,
       data: new Date().toISOString(), nome: c.nome || 'Receita', unidades, custoTotal: res.custoTotal,
       precoVenda: n(c.precoVenda), lucroPrevisto: n(c.precoVenda) ? Math.round((n(c.precoVenda) - custoUn) * unidades * 100) / 100 : null,
     });
@@ -583,7 +632,7 @@ function abrirRegistro() {
           if (r) { r.rendimentoObservado = rendimento; gravar('receitas', estado.receitas); }
         }).catch(() => {});
     }
-    aviso('Produção registrada! Obrigado por ajudar a melhorar o rendimento.');
+    aviso(c.receitaId ? 'Produção registrada! Obrigado por ajudar a melhorar o rendimento.' : 'Produção registrada!');
     abrir('historico');
   });
 }
@@ -627,14 +676,34 @@ function telaHistorico() {
     <div class="lucro"><div>Lucro previsto este mês</div><div class="grande">${brl(lucroMes)}</div>
       <div class="kpis"><div>Produções<b>${doMes.length}</b></div><div>Unidades<b>${doMes.reduce((s, x) => s + x.unidades, 0)}</b></div></div></div>
     <h2>Últimas</h2>
-    ${h.length ? h.slice(0, 50).map((x) => `<div class="cartao"><strong>${esc(x.nome)}</strong>
+    ${h.length ? h.slice(0, 50).map((x, i) => `<div class="cartao"><div class="item-topo"><strong>${esc(x.nome)}</strong>
+      <button class="remover" data-excluir-prod="${i}" aria-label="Excluir esta produção">🗑️</button></div>
       <div class="sub" style="margin:2px 0 0">${new Date(x.data).toLocaleDateString('pt-BR')} · ${x.unidades} un. · custo ${brl(x.custoTotal)}${x.lucroPrevisto !== null ? ` · lucro ${brl(x.lucroPrevisto)}` : ''}</div></div>`).join('')
       : '<p class="vazio">Quando fizer uma receita, toque em "Registrar produção".</p>'}
     <button class="link" id="sair" style="width:100%;margin-top:16px">Desconectar esta chave deste aparelho</button>`;
   document.getElementById('sair').addEventListener('click', () => { if (confirm('Desconectar? Você precisará digitar a chave de novo.')) { estado.chave = ''; gravar('chave', ''); telaAtivacao(); } });
+  tela.querySelectorAll('[data-excluir-prod]').forEach((b) => b.addEventListener('click', () => {
+    const lista = ler('historico', []);
+    const x = lista[+b.dataset.excluirProd];
+    if (!x || !confirm(`Excluir a produção de ${x.nome} (${x.unidades} un.)?${x.baixas?.length ? ' Os ingredientes voltam para o seu estoque.' : ''}`)) return;
+    for (const { k, qtd: q } of x.baixas || []) {
+      const ing = estado.ingredientes[k];
+      if (ing && Number.isFinite(ing.restante)) ing.restante += q;
+    }
+    gravar('ingredientes', estado.ingredientes);
+    lista.splice(+b.dataset.excluirProd, 1); gravar('historico', lista);
+    aviso('Produção excluída.'); telaHistorico();
+  }));
 }
 
 // ---------- início ----------
+(function abertura() {
+  const el = document.createElement('div');
+  el.className = 'splash';
+  el.innerHTML = '<img src="/img/logo-grande.webp" alt=""><strong>Calculadora <span>Inteligente</span></strong><small>Do fazer ao vender</small>';
+  document.body.appendChild(el);
+  setTimeout(() => { el.classList.add('sair'); setTimeout(() => el.remove(), 500); }, 1300);
+})();
 tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
 tela.addEventListener('click', aoClicarCalculo);
