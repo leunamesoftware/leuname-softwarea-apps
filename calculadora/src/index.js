@@ -1,8 +1,8 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
+import { licencaAtiva } from './licencas.js';
+import { criarPedido, receberAviso, situacaoPedido } from './pagamento.js';
 
-const FORMATO_CHAVE = /^LEU-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/;
-const CACHE_LICENCA_MS = 24 * 3600 * 1000;
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
 function json(dados, status = 200) {
@@ -22,31 +22,18 @@ async function corpo(req) {
   try { return await req.json(); } catch { return null; }
 }
 
-/** Confere a chave no servidor de licenças da LeuName (com cache de 24 h). Retorna o hash da chave ou null. */
-async function licenca(env, bruta) {
-  const chave = String(bruta || '').trim().toUpperCase();
-  if (!FORMATO_CHAVE.test(chave)) return null;
-  const hash = await sha256('licenca:' + chave);
-  const cache = await env.DB.prepare('SELECT valida_ate FROM licencas_cache WHERE chave_hash = ?').bind(hash).first();
-  if (cache && cache.valida_ate > Date.now()) return hash;
-
-  const r = await env.LICENCAS.fetch('https://licencas/licencas/verificar?chave=' + encodeURIComponent(chave));
-  const d = r.ok ? await r.json() : {};
-  if (!(d.encontrada && d.status === 'ativa' && d.app_id === env.APP_ID)) {
-    await env.DB.prepare('DELETE FROM licencas_cache WHERE chave_hash = ?').bind(hash).run();
-    return null;
-  }
-  await env.DB.prepare('INSERT INTO licencas_cache (chave_hash, valida_ate) VALUES (?, ?) ON CONFLICT(chave_hash) DO UPDATE SET valida_ate = excluded.valida_ate')
-    .bind(hash, Date.now() + CACHE_LICENCA_MS).run();
-  return hash;
-}
-
 const chaveDoPedido = (req) => (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
 
 async function limiteOk(env, req) {
   if (!env.LIMITE) return true;
   const { success } = await env.LIMITE.limit({ key: req.headers.get('CF-Connecting-IP') || 'x' });
   return success;
+}
+
+/** POSTs do navegador só podem vir do próprio site. */
+function mesmaOrigem(req) {
+  const o = req.headers.get('Origin');
+  return !o || o === new URL(req.url).origin;
 }
 
 async function estatisticas(env) {
@@ -59,7 +46,7 @@ async function estatisticas(env) {
   return (receita) => estatisticaRendimento(receita, porReceita.get(receita.id) || []);
 }
 
-async function registrarRendimento(env, hash, d) {
+async function registrarRendimento(env, chave, d) {
   const receita = POR_ID.get(String(d?.receitaId || ''));
   const unidades = Number(d?.unidades), escala = Number(d?.escala) || 1, peso = Number(d?.pesoUnidadeG) || null;
   if (!receita || !Number.isInteger(unidades) || unidades < 1 || unidades > 100000 || escala < 0.1 || escala > 100) {
@@ -67,8 +54,8 @@ async function registrarRendimento(env, hash, d) {
   }
   const unidadesBase = unidades / escala;
   if (rendimentoPlausivel(unidadesBase, receita) && (!peso || (peso >= 1 && peso <= 5000))) {
-    // Autor = hash irreversível (licença + receita): permite 1 resultado por comprador, sem identificar ninguém.
-    const autor = await sha256('rendimento:' + hash + ':' + receita.id);
+    // Autor = hash irreversível (chave + receita): 1 resultado por comprador, sem identificar ninguém.
+    const autor = await sha256('rendimento:' + chave + ':' + receita.id);
     await env.DB.prepare(`INSERT INTO rendimentos (receita_id, autor, unidades_base, peso_unidade_g, criado_em) VALUES (?, ?, ?, ?, ?)
       ON CONFLICT(receita_id, autor) DO UPDATE SET unidades_base = excluded.unidades_base, peso_unidade_g = excluded.peso_unidade_g, criado_em = excluded.criado_em`)
       .bind(receita.id, autor, unidadesBase, peso, new Date().toISOString().slice(0, 10)).run();
@@ -79,25 +66,43 @@ async function registrarRendimento(env, hash, d) {
 
 export default {
   async fetch(req, env) {
-    const { pathname } = new URL(req.url);
+    const url = new URL(req.url);
+    const { pathname } = url;
     const m = req.method;
     try {
-      if (pathname === '/api/saude') return json({ ok: true });
+      if (pathname === '/api/saude') return json({ ok: true, pagamento: Boolean(env.MP_ACCESS_TOKEN) });
 
+      // ---- compra ----
+      if (pathname === '/api/comprar' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const r = await criarPedido(env, url.origin, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+      if (pathname === '/api/mp/aviso' && m === 'POST') {
+        await receberAviso(env, req);
+        return json({ ok: true });
+      }
+      const pedido = pathname.match(/^\/api\/pedido\/([0-9a-f]{36})$/);
+      if (pedido && m === 'GET') {
+        const s = await situacaoPedido(env, pedido[1], url.searchParams.get('pagamento'));
+        return s ? json(s) : json({ erro: 'nao_encontrado' }, 404);
+      }
+
+      // ---- app (exige chave) ----
       if (pathname === '/api/ativar' && m === 'POST') {
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const d = await corpo(req);
-        return (await licenca(env, d?.chave)) ? json({ ok: true }) : json({ erro: 'chave_invalida' }, 401);
+        return (await licencaAtiva(env, d?.chave)) ? json({ ok: true }) : json({ erro: 'chave_invalida' }, 401);
       }
-
       if (pathname.startsWith('/api/')) {
-        const hash = await licenca(env, chaveDoPedido(req));
-        if (!hash) return json({ erro: 'chave_invalida' }, 401);
+        const chave = await licencaAtiva(env, chaveDoPedido(req));
+        if (!chave) return json({ erro: 'chave_invalida' }, 401);
         if (pathname === '/api/receitas' && m === 'GET') {
           const stats = await estatisticas(env);
           return json({ receitas: RECEITAS.map((r) => ({ ...r, rendimentoObservado: stats(r) })) });
         }
-        if (pathname === '/api/rendimento' && m === 'POST') return await registrarRendimento(env, hash, await corpo(req));
+        if (pathname === '/api/rendimento' && m === 'POST') return await registrarRendimento(env, chave, await corpo(req));
         return json({ erro: 'nao_encontrado' }, 404);
       }
       return env.ASSETS.fetch(req);

@@ -1,25 +1,29 @@
 name = "calculadora-receitas"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
+workers_dev = true
+
+routes = [{ pattern = "calculadora.leunamesoftware.com.br", custom_domain = true }]
 
 [assets]
 directory = "public"
 binding = "ASSETS"
 run_worker_first = ["/api/*"]
 
-# Banco gratuito (D1). O id é preenchido na publicação.
+# Banco da calculadora (rendimento anônimo e pedidos).
 [[d1_databases]]
 binding = "DB"
 database_name = "calculadora-receitas"
-database_id = "PREENCHIDO_NA_PUBLICACAO"
+database_id = "7117bdcb-9d07-49ed-88a5-a57502ef1b73"
 migrations_dir = "migrations"
 
-# Servidor de licenças da LeuName (mesma conta, chamada interna gratuita).
-[[services]]
-binding = "LICENCAS"
-service = "leuname-licencas"
+# Banco do servidor de licenças da LeuName: a chave nasce e é bloqueada aqui (aparece no painel de licenças).
+[[d1_databases]]
+binding = "LICDB"
+database_name = "leuname_licencas"
+database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 
-# Proteção contra quem tenta adivinhar chaves.
+# Proteção contra quem tenta adivinhar chaves ou abusar da compra.
 [[ratelimits]]
 name = "LIMITE"
 namespace_id = "4101"
@@ -27,3 +31,5 @@ simple = { limit = 10, period = 60 }
 
 [vars]
 APP_ID = "calculadora-receitas"
+
+# Segredo (nunca no código): MP_ACCESS_TOKEN — Access Token de produção do Mercado Pago.

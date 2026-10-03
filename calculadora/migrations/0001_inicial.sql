@@ -8,7 +8,15 @@ CREATE TABLE rendimentos (
   PRIMARY KEY (receita_id, autor)
 );
 
-CREATE TABLE licencas_cache (
-  chave_hash TEXT PRIMARY KEY,
-  valida_ate INTEGER NOT NULL
+-- Compras pelo Mercado Pago. A chave fica também no banco de licenças (leuname_licencas).
+CREATE TABLE pedidos (
+  id TEXT PRIMARY KEY,
+  nome TEXT NOT NULL,
+  email TEXT NOT NULL,
+  status TEXT NOT NULL,
+  pagamento_id TEXT,
+  chave TEXT,
+  criado_em TEXT NOT NULL,
+  atualizado_em TEXT NOT NULL
 );
+CREATE INDEX pedidos_pagamento ON pedidos (pagamento_id);

@@ -1,0 +1,27 @@
+@font-face { font-family: Poppins; font-weight: 500; font-display: swap; src: url(/fonts/poppins-500.woff2) format('woff2'); }
+@font-face { font-family: Poppins; font-weight: 800; font-display: swap; src: url(/fonts/poppins-800.woff2) format('woff2'); }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; font: 500 16px/1.5 Poppins, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #2B1A10;
+  background: radial-gradient(120% 60% at 50% 0%, #FFB15C 0%, #F26B1D 40%, #C2410C 100%); }
+.caixa { max-width: 460px; margin: 0 auto; padding: 28px 16px 40px; text-align: center; }
+.logo { width: 120px; height: 120px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 14px 30px rgba(124,45,18,.4); }
+h1 { color: #fff; font-size: 26px; font-weight: 800; line-height: 1.15; margin: 14px 0 6px; text-shadow: 0 2px 10px rgba(124,45,18,.35); }
+.preco { color: #FFF3E6; margin: 0 0 14px; } .preco b { color: #FFE38A; font-size: 26px; }
+.sub { color: #FFF3E6; }
+.itens { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.itens li { background: rgba(255,255,255,.16); color: #fff; border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; font-size: 15px; }
+.cartao { background: #fff; border-radius: 22px; padding: 18px; text-align: left; box-shadow: 0 18px 40px rgba(124,45,18,.35); }
+label { display: block; font-size: 14px; font-weight: 800; margin: 8px 0 4px; }
+input { width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; border: 1px solid #FBD5B5; border-radius: 12px; background: #FFF8F1; }
+input:focus { outline: 2px solid #E8590C; border-color: transparent; }
+.botao { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; margin-top: 12px; border: 0; border-radius: 14px; font: inherit; font-weight: 800; font-size: 17px; color: #fff; text-decoration: none; cursor: pointer;
+  background: linear-gradient(90deg, #F97316, #E8590C); box-shadow: 0 8px 18px rgba(232,89,12,.35); }
+.botao.sec { background: #fff; color: #C2410C; box-shadow: none; }
+.botao[disabled] { opacity: .65; }
+.erro { color: #B91C1C; font-weight: 800; min-height: 1.2em; margin: 8px 0 0; font-size: 14px; }
+.seguro { font-size: 13px; color: #7C6A5E; margin: 10px 0 0; }
+#conteudo .seguro { color: #FFF3E6; }
+.chave { background: #fff; border-radius: 16px; padding: 16px; font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #C2410C; margin: 8px 0; user-select: all; }
+.carregando { width: 42px; height: 42px; margin: 18px auto; border-radius: 50%; border: 5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: girar 1s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.rodape { margin-top: 22px; font-size: 14px; color: #FFE8D6; } .rodape a { color: #fff; font-weight: 800; }

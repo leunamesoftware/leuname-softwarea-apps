@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E8590C">
+  <meta name="robots" content="noindex">
+  <title>Sua compra — Calculadora Inteligente</title>
+  <link rel="icon" href="/img/icone-192.png">
+  <link rel="stylesheet" href="/compra.css">
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" src="/img/logo.webp" alt="">
+    <div id="conteudo" aria-live="polite"><p class="sub">Conferindo seu pagamento...</p></div>
+    <p class="rodape">Dúvidas: <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a></p>
+  </main>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const pedido = q.get('p') || '';
+    const pagamento = q.get('payment_id') || q.get('collection_id') || '';
+    const el = document.getElementById('conteudo');
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let tentativas = 0;
+
+    function mostrarChave(nome, chave) {
+      try { localStorage.setItem('calc.chave', JSON.stringify(chave)); } catch {}
+      const texto = encodeURIComponent(`Minha chave da Calculadora Inteligente: ${chave}\nAbrir: ${location.origin}/app/`);
+      el.innerHTML = `
+        <h1>Pagamento aprovado, ${esc(nome)}! 🎉</h1>
+        <p class="sub">Esta é a sua chave de acesso vitalício:</p>
+        <div class="chave" id="chave">${esc(chave)}</div>
+        <button class="botao sec" id="copiar" type="button">Copiar chave</button>
+        <a class="botao sec" href="https://wa.me/?text=${texto}">Guardar no meu WhatsApp</a>
+        <a class="botao" href="/app/">Abrir minha calculadora</a>
+        <p class="seguro">Guarde a chave. Com ela você entra em qualquer celular ou computador.</p>`;
+      document.getElementById('copiar').addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(chave); document.getElementById('copiar').textContent = 'Chave copiada ✓'; } catch {}
+      });
+    }
+
+    async function conferir() {
+      if (!/^[0-9a-f]{36}$/.test(pedido)) { el.innerHTML = '<h1>Pedido não encontrado</h1><p class="sub">Abra o link que apareceu depois do pagamento.</p>'; return; }
+      try {
+        const r = await fetch(`/api/pedido/${pedido}${pagamento && tentativas === 0 ? `?pagamento=${encodeURIComponent(pagamento)}` : ''}`);
+        const d = await r.json();
+        if (d.chave) return mostrarChave(d.nome, d.chave);
+        if (d.status === 'rejected' || d.status === 'cancelled') {
+          el.innerHTML = '<h1>Pagamento não aprovado</h1><p class="sub">Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.</p><a class="botao" href="/comprar">Tentar de novo</a>';
+          return;
+        }
+        el.innerHTML = `<h1>Aguardando o pagamento</h1><p class="sub">${d.status === 'aguardando' ? 'Se você já pagou o Pix, a confirmação chega em instantes.' : 'Seu pagamento está em análise.'} Esta página atualiza sozinha.</p><div class="carregando"></div>`;
+      } catch {
+        el.innerHTML = '<h1>Sem conexão</h1><p class="sub">Tentando de novo...</p>';
+      }
+      tentativas++;
+      if (tentativas < 120) setTimeout(conferir, tentativas < 20 ? 3000 : 10000);
+    }
+    conferir();
+  </script>
+</body>
+</html>

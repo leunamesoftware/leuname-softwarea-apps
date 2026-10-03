@@ -1,6 +1,6 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
-const LINK_COMPRA = 'https://leunamesoftware.com.br/producto.html?id=calculadora-receitas';
+const LINK_COMPRA = '/comprar';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 

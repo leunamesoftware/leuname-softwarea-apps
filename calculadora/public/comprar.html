@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E8590C">
+  <title>Comprar — Calculadora Inteligente</title>
+  <link rel="icon" href="/img/icone-192.png">
+  <link rel="stylesheet" href="/compra.css">
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" src="/img/logo.webp" alt="">
+    <h1>Calculadora Inteligente de Receitas</h1>
+    <p class="preco"><b>R$ 20</b> · pagamento único · acesso para sempre</p>
+    <ul class="itens">
+      <li>📖 Livro de receitas que vendem, com receitas novas sempre</li>
+      <li>🧮 Custo, preço certo e lucro de cada receita</li>
+      <li>✖️ Calcula para 10, 50, 100 ou 200 unidades</li>
+    </ul>
+    <form id="form" class="cartao" novalidate>
+      <label for="nome">Seu nome</label>
+      <input id="nome" autocomplete="name" required maxlength="80">
+      <label for="email">Seu e-mail</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" required maxlength="120">
+      <p class="erro" id="erro" role="alert"></p>
+      <button class="botao" type="submit">Pagar R$ 20 com Pix ou cartão</button>
+      <p class="seguro">🔒 Pagamento seguro pelo Mercado Pago. Sua chave de acesso aparece na tela assim que o pagamento é aprovado.</p>
+    </form>
+    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a></p>
+  </main>
+  <script>
+    document.getElementById('form').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const erro = document.getElementById('erro'), botao = ev.target.querySelector('button');
+      const nome = document.getElementById('nome').value.trim(), email = document.getElementById('email').value.trim();
+      if (nome.length < 2) { erro.textContent = 'Digite seu nome.'; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
+      erro.textContent = ''; botao.disabled = true; botao.textContent = 'Abrindo o pagamento...';
+      try {
+        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email }) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || !d.url) throw new Error(d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
+        location.href = d.url;
+      } catch (e) {
+        erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';
+        botao.disabled = false; botao.textContent = 'Pagar R$ 20 com Pix ou cartão';
+      }
+    });
+  </script>
+</body>
+</html>
