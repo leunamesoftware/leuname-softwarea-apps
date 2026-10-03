@@ -74,6 +74,18 @@ export default {
     const { pathname } = url;
     const m = req.method;
     try {
+      if ((pathname === '/baixar' || pathname === '/baixar/') && (m === 'GET' || m === 'HEAD')) {
+        const apk = env.DOWNLOADS && (m === 'HEAD' ? await env.DOWNLOADS.head('quantocobrar.apk') : await env.DOWNLOADS.get('quantocobrar.apk'));
+        if (!apk) return new Response('Download indisponível no momento.', { status: 404 });
+        return new Response(m === 'HEAD' ? null : apk.body, {
+          headers: {
+            'Content-Type': 'application/vnd.android.package-archive',
+            'Content-Disposition': 'attachment; filename="QuantoCobrar.apk"',
+            'Content-Length': String(apk.size),
+            'Cache-Control': 'no-store',
+          },
+        });
+      }
       if (pathname === '/api/saude') return json({ ok: true, pagamento: Boolean(env.MP_ACCESS_TOKEN) });
 
       // ---- compra ----

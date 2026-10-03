@@ -1,5 +1,5 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v22';
+const VERSAO = 'calc-v23';
 const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
@@ -13,7 +13,7 @@ self.addEventListener('activate', (e) => {
 // Rede primeiro (sempre a versão mais nova); sem internet, usa o que está guardado.
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
+  if (e.request.method !== 'GET' || url.origin !== location.origin || (url.pathname.startsWith('/api/') || url.pathname.startsWith('/baixar'))) return;
   e.respondWith(
     fetch(e.request, { cache: 'no-cache' })
       .then((r) => {

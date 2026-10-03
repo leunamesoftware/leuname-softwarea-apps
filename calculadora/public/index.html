@@ -103,6 +103,7 @@
       <div>
         <h2>Instale o app no seu aparelho</h2>
         <p class="sub sub-clara">Não precisa da loja de aplicativos. Ele fica na tela inicial como qualquer app e funciona até sem internet.</p>
+        <a class="btn btn-branco btn-grande" href="/baixar" id="baixar-android">🤖 Baixar o app para Android</a>
         <button class="btn btn-branco btn-grande" id="instalar-btn" hidden>📲 Instalar o app agora</button>
         <p class="instalado" id="instalado" hidden>✅ App instalado! Abra pelo ícone <b>Quanto Cobrar</b>.</p>
         <a class="btn btn-borda" href="/app/">Abrir o app no navegador</a>
@@ -114,10 +115,10 @@
           <button role="tab" aria-selected="false" data-guia="pc">Computador</button>
         </div>
         <ol class="guia-passos" data-painel="android">
-          <li>Abra este site no <b>Chrome</b>.</li>
-          <li>Toque nos <b>três pontinhos ⋮</b> no canto de cima.</li>
-          <li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li>
-          <li>Abra o ícone <b>Quanto Cobrar</b> e digite a sua chave.</li>
+          <li>Toque em <b>Baixar o app para Android</b>.</li>
+          <li>Abra o arquivo <b>QuantoCobrar.apk</b> que baixou.</li>
+          <li>Se o celular pedir, toque em <b>Configurações → Permitir desta fonte</b> e volte.</li>
+          <li>Toque em <b>Instalar</b>, abra o <b>Quanto Cobrar</b> e digite a sua chave.</li>
         </ol>
         <ol class="guia-passos" data-painel="iphone" hidden>
           <li>Abra este site no <b>Safari</b>.</li>
@@ -196,7 +197,8 @@
     // Instalar com um toque onde o navegador permite (Android e computador com Chrome/Edge).
     let pedido = null;
     const botao = document.getElementById('instalar-btn');
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; botao.hidden = false; });
+    const android = /Android/.test(navigator.userAgent);
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; if (!android) botao.hidden = false; });
     botao.addEventListener('click', async () => { if (!pedido) return; pedido.prompt(); await pedido.userChoice; pedido = null; botao.hidden = true; });
     window.addEventListener('appinstalled', () => { botao.hidden = true; document.getElementById('instalado').hidden = false; });
 
@@ -209,6 +211,7 @@
     abas.forEach((a) => a.addEventListener('click', () => mostrar(a.dataset.guia)));
     const ua = navigator.userAgent;
     mostrar(/iPhone|iPad|iPod/.test(ua) ? 'iphone' : /Android/.test(ua) ? 'android' : 'pc');
+    if (/iPhone|iPad|iPod/.test(ua)) document.getElementById('baixar-android').hidden = true;
 
     // Comprou neste aparelho e saiu antes de ver a chave? Mostra o atalho.
     try {

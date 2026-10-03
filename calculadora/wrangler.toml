@@ -27,6 +27,11 @@ binding = "LICDB"
 database_name = "leuname_licencas"
 database_id = "4f3f9185-7743-4c36-b86e-92c557847c1e"
 
+# APK do app Android (mesmo bucket dos downloads da LeuName).
+[[r2_buckets]]
+binding = "DOWNLOADS"
+bucket_name = "leuname-downloads"
+
 # Proteção contra quem tenta adivinhar chaves ou abusar da compra.
 [[ratelimits]]
 name = "LIMITE"
