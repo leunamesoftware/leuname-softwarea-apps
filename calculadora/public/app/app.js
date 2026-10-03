@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.3';
+const VERSAO_APP = '2.6';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -147,7 +147,7 @@ function telaReceitas(extra) {
     </section>`;
   document.getElementById('capa').addEventListener('click', (ev) => {
     ev.currentTarget.classList.add('abrindo');
-    setTimeout(() => { livro.aberto = true; mostrarPagina('abrir'); }, 650);
+    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('pagina', livro.pagina); mostrarPagina('abrir'); }, 650);
   });
 }
 
@@ -158,23 +158,31 @@ function irPara(pagina, direcao) {
 }
 
 function mostrarPagina(efeito) {
+  const antiga = document.getElementById('pagina');
+  const htmlAntigo = antiga && (efeito === 'frente' || efeito === 'tras') ? antiga.outerHTML : null;
   if (livro.pagina >= totalPaginas()) livro.pagina = 0;
   const p = livro.pagina, ultima = totalPaginas() - 1;
   const r = p >= 1 && p < ultima ? estado.receitas[p - 1] : null;
-  const rotulo = p === 0 ? 'Sumário' : r ? `Receita ${p} de ${estado.receitas.length}` : 'Fim — por enquanto';
+  const rotulo = 'Sumário';
   tela.innerHTML = `
     <div class="livro-barra">
-      <button class="seta" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
       <button class="link" id="fechar">📕 Fechar livro</button>
-      <span>${rotulo}</span>
-      <button class="seta" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
+      ${p === 0 ? `<span>${rotulo}</span>` : `<button class="link" data-pagina="0">📑 Sumário</button>`}
     </div>
-    <article class="pagina ${efeito ? 'virar-' + efeito : ''}" id="pagina">
+    <div class="livro-folhas" id="folhas">
+    <article class="pagina ${efeito === 'abrir' ? 'virar-abrir' : ''}" id="pagina">
       ${p === 0 ? htmlSumario() : r ? htmlPaginaReceita(r) : htmlContracapa()}
-      <div class="pagina-num">— ${p + 1} —</div>
+      <div class="pagina-num">${r ? `Receita ${p} de ${estado.receitas.length}` : p === 0 ? 'Sumário' : 'Fim'}</div>
     </article>
-    <p class="dica-arraste">Arraste para o lado para passar a página</p>`;
-  tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras')));
+    </div>
+    <p class="dica-arraste">Toque nas setas ou arraste para o lado para virar a página</p>
+    <div class="livro-nav">
+      <button class="seta-livro" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
+      <span>${r ? `Receita ${p} de ${estado.receitas.length}` : p === 0 ? 'Sumário' : 'Fim do livro'}</span>
+      <button class="seta-livro ${ler('virou', false) || p === ultima ? '' : 'chamar'}" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
+    </div>`;
+  tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { gravar('virou', true); irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras'); }));
+  if (htmlAntigo) virarFolha(htmlAntigo, efeito);
   document.getElementById('fechar').addEventListener('click', () => { livro.aberto = false; telaReceitas(); });
   tela.querySelectorAll('[data-pagina]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.pagina, 'frente')));
   tela.querySelectorAll('.nova-receita').forEach((b) => b.addEventListener('click', () => { novaConta(); abrir('calcular'); }));
@@ -184,6 +192,25 @@ function mostrarPagina(efeito) {
   }));
   tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
   if (r) ligarMiniCalculadora(r);
+}
+
+// Efeito de livro: a folha gira pela lombada (esquerda) revelando a outra página.
+function virarFolha(htmlAntigo, efeito) {
+  const nova = document.getElementById('pagina');
+  const folha = document.createElement('div');
+  folha.className = 'folha';
+  folha.innerHTML = htmlAntigo;
+  folha.firstElementChild.removeAttribute('id');
+  folha.firstElementChild.classList.remove('virar-abrir');
+  if (efeito === 'frente') {
+    folha.style.height = nova.offsetHeight + 'px';
+    folha.classList.add('folha-sai');
+    document.getElementById('folhas').appendChild(folha);
+    folha.addEventListener('animationend', () => folha.remove());
+  } else {
+    nova.classList.add('folha-volta');
+    nova.addEventListener('animationend', () => nova.classList.remove('folha-volta'), { once: true });
+  }
 }
 
 function htmlSumario() {
@@ -206,11 +233,8 @@ function htmlSumario() {
 function htmlContracapa() {
   return `
     <div class="contracapa">
-      <img src="/img/logo.webp" alt="">
-      <h1 class="pagina-titulo">Este livro não acaba aqui</h1>
-      <p>Toda receita nova do canal <b>Quanto Devo Cobrar?</b> vira uma nova página, já com a calculadora.</p>
-      <button class="botao nova-receita">🧮 Calcular uma receita minha</button>
-      <button class="link" data-pagina="0">← Voltar ao sumário</button>
+      <h1 class="pagina-titulo fim">Fim do livro</h1>
+      <button class="botao sec" data-pagina="1">↺ Voltar à primeira receita</button>
     </div>`;
 }
 
