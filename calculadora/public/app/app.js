@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '1.3';
+const VERSAO_APP = '1.4';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -700,11 +700,9 @@ function telaHistorico() {
 
 // ---------- início ----------
 (function abertura() {
-  const el = document.createElement('div');
-  el.className = 'splash';
-  el.innerHTML = '<img src="/img/logo-grande.webp" alt=""><strong>Calculadora <span>Inteligente</span></strong><small>Do fazer ao vender</small>';
-  document.body.appendChild(el);
-  setTimeout(() => { el.classList.add('sair'); setTimeout(() => el.remove(), 500); }, 1300);
+  const el = document.getElementById('splash');
+  if (!el) return;
+  setTimeout(() => { el.classList.add('sair'); document.getElementById('fundo-abertura')?.remove(); setTimeout(() => el.remove(), 500); }, 1400);
 })();
 tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
