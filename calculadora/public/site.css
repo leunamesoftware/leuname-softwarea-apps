@@ -175,3 +175,5 @@ details p { margin: 0 0 16px; color: var(--suave); }
 }
 
 .aviso-compra { display: block; text-align: center; background: var(--verde); color: #fff; font-weight: 800; padding: 12px 16px; text-decoration: none; }
+
+.apk { margin: 18px 0 0; font-size: 14px; color: #FFE8D6; } .apk a { color: #fff; font-weight: 800; }

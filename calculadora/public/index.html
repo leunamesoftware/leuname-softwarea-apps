@@ -103,10 +103,10 @@
       <div>
         <h2>Instale o app no seu aparelho</h2>
         <p class="sub sub-clara">Não precisa da loja de aplicativos. Ele fica na tela inicial como qualquer app e funciona até sem internet.</p>
-        <a class="btn btn-branco btn-grande" href="/baixar" id="baixar-android">🤖 Baixar o app para Android</a>
-        <button class="btn btn-branco btn-grande" id="instalar-btn" hidden>📲 Instalar o app agora</button>
+        <button class="btn btn-branco btn-grande" id="instalar-btn" hidden>📲 Instalar o app (1 toque)</button>
         <p class="instalado" id="instalado" hidden>✅ App instalado! Abra pelo ícone <b>Quanto Cobrar</b>.</p>
         <a class="btn btn-borda" href="/app/">Abrir o app no navegador</a>
+        <p class="apk" id="baixar-android">Prefere o arquivo de instalação? <a href="/baixar">Baixar APK para Android</a></p>
       </div>
       <div class="guia">
         <div class="abas" role="tablist">
@@ -115,10 +115,9 @@
           <button role="tab" aria-selected="false" data-guia="pc">Computador</button>
         </div>
         <ol class="guia-passos" data-painel="android">
-          <li>Toque em <b>Baixar o app para Android</b>.</li>
-          <li>Abra o arquivo <b>QuantoCobrar.apk</b> que baixou.</li>
-          <li>Se o celular pedir, toque em <b>Configurações → Permitir desta fonte</b> e volte.</li>
-          <li>Toque em <b>Instalar</b>, abra o <b>Quanto Cobrar</b> e digite a sua chave.</li>
+          <li>Toque em <b>Instalar o app (1 toque)</b> e confirme. Se o botão não aparecer, abra este site no <b>Chrome</b>, toque nos <b>três pontinhos ⋮</b> e em <b>Instalar app</b>.</li>
+          <li>Abra o ícone <b>Quanto Cobrar</b> na tela do celular.</li>
+          <li>Digite a sua chave e pronto.</li>
         </ol>
         <ol class="guia-passos" data-painel="iphone" hidden>
           <li>Abra este site no <b>Safari</b>.</li>
@@ -198,7 +197,7 @@
     let pedido = null;
     const botao = document.getElementById('instalar-btn');
     const android = /Android/.test(navigator.userAgent);
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; if (!android) botao.hidden = false; });
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; botao.hidden = false; });
     botao.addEventListener('click', async () => { if (!pedido) return; pedido.prompt(); await pedido.userChoice; pedido = null; botao.hidden = true; });
     window.addEventListener('appinstalled', () => { botao.hidden = true; document.getElementById('instalado').hidden = false; });
 
