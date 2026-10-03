@@ -111,6 +111,5 @@ Primeiro administrador: crie a conta no app e rode uma vez
 | Conta de serviço com acesso à Play (JSON) → secret `GOOGLE_SERVICE_ACCOUNT` | Google Cloud + Play Console → Usuários | API confirmar compras |
 | Tópico Pub/Sub + push para `/billing/google/rtdn?token=…` → secret `PLAY_RTDN_TOKEN` | Google Cloud + Play Console | Renovações e cancelamentos |
 | Chave do Resend + domínio verificado → secret `RESEND_API_KEY` | resend.com (DNS do leunamesoftware.com) | E-mail de recuperar senha |
-| `REQUIRE_SUBSCRIPTION = "true"` | `backend/wrangler.toml` | Exigir assinatura ao lançar |
 | Chave de envio (upload key) do Android | Play Console / esteira | Publicar o AAB |
 | Dados da empresa nas páginas legais | `web/legal/*.html` | Publicação |

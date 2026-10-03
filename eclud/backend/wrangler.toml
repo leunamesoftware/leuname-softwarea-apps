@@ -22,7 +22,7 @@ ENVIRONMENT = "production"
 ALLOWED_ORIGINS = "https://eclud.pages.dev"
 # Enquanto o pagamento não estiver integrado, "false" deixa qualquer
 # membro usar descontos. Em produção, com pagamento ativo, use "true".
-REQUIRE_SUBSCRIPTION = "false"
+REQUIRE_SUBSCRIPTION = "true"
 PLAY_PACKAGE_NAME = "com.leunamesoftwares.eclud"
 EMAIL_FROM = "Eclud <no-reply@leunamesoftware.com>"
 # Segredos (wrangler secret put): JWT_SECRET, GOOGLE_SERVICE_ACCOUNT,
