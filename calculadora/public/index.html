@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#E8590C">
-  <title>Calculadora Inteligente de Receitas — LeuName</title>
+  <title>Quanto Cobrar — calculadora inteligente de receitas</title>
   <meta name="description" content="Descubra quanto custa, quanto cobrar e quanto você lucra em cada receita. Pagamento único de R$ 20, acesso para sempre.">
-  <meta property="og:title" content="Calculadora Inteligente de Receitas">
+  <meta property="og:title" content="Quanto Cobrar — calculadora inteligente de receitas">
   <meta property="og:description" content="Quanto rende, quanto custa, quanto cobrar e quanto você lucra. R$ 20, pagamento único.">
   <meta property="og:image" content="/img/icone-512-v2.png">
   <link rel="icon" href="/img/icone-192-v2.png">
   <link rel="apple-touch-icon" href="/img/icone-apple-180-v2.png">
-  <link rel="manifest" href="/manifest.webmanifest?v=2">
+  <link rel="manifest" href="/manifest.webmanifest?v=3">
   <style>
     :root { --laranja: #E8590C; --forte: #C2410C; --claro: #FFEDD5; --fundo: #FFF8F1; --texto: #2B1A10; --suave: #7C6A5E; }
     * { box-sizing: border-box; }
@@ -36,6 +36,8 @@
     .passos { counter-reset: p; list-style: none; padding: 0; }
     .passos li { counter-increment: p; padding-left: 44px; position: relative; margin-bottom: 14px; }
     .passos li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--laranja); color: #fff; font-weight: 800; display: grid; place-items: center; }
+    .marca { font-size: 30px; font-weight: 900; color: var(--forte); margin: 14px 0 0; line-height: 1.1; }
+    .marca span { display: block; font-size: 15px; font-weight: 600; color: var(--suave); }
     footer { text-align: center; color: var(--suave); font-size: 14px; padding: 24px 16px 40px; }
     footer a { color: var(--forte); }
   </style>
@@ -43,7 +45,8 @@
 <body>
   <main>
     <section class="hero">
-      <img src="/img/logo.webp" alt="Do fazer ao vender: calculadora inteligente">
+      <img src="/img/logo.webp" alt="Quanto Cobrar">
+      <p class="marca">Quanto Cobrar<span>calculadora inteligente de receitas</span></p>
       <h1>Saiba quanto custa, quanto cobrar e quanto você lucra em cada receita</h1>
       <p class="sub">Para quem quer ganhar dinheiro vendendo doces, salgados e marmitas — sem prejuízo e sem chute.</p>
       <p class="preco"><b>R$ 20</b><br>pagamento único · acesso para sempre</p>

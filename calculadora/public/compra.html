@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#E8590C">
   <meta name="robots" content="noindex">
-  <title>Sua compra — Calculadora Inteligente</title>
+  <title>Sua compra — Quanto Cobrar</title>
   <link rel="icon" href="/img/icone-192-v2.png">
   <link rel="stylesheet" href="/compra.css">
 </head>
@@ -25,7 +25,7 @@
 
     function mostrarChave(nome, chave) {
       try { localStorage.setItem('calc.chave', JSON.stringify(chave)); } catch {}
-      const texto = encodeURIComponent(`Minha chave da Calculadora Inteligente: ${chave}\nAbrir: ${location.origin}/app/`);
+      const texto = encodeURIComponent(`Minha chave do app Quanto Cobrar: ${chave}\nAbrir: ${location.origin}/app/`);
       el.innerHTML = `
         <h1>Pagamento aprovado, ${esc(nome)}! 🎉</h1>
         <p class="sub">Esta é a sua chave de acesso vitalício:</p>

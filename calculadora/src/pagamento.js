@@ -31,7 +31,7 @@ export async function criarPedido(env, origem, d) {
     method: 'POST',
     headers: { 'X-Idempotency-Key': id },
     body: JSON.stringify({
-      items: [{ id: env.APP_ID, title: 'Calculadora Inteligente de Receitas — acesso vitalício', quantity: 1, unit_price: PRECO, currency_id: 'BRL' }],
+      items: [{ id: env.APP_ID, title: 'Quanto Cobrar — calculadora de receitas (acesso vitalício)', quantity: 1, unit_price: PRECO, currency_id: 'BRL' }],
       payer: { name: nome, email },
       external_reference: id,
       notification_url: `${origem}/api/mp/aviso`,

@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.0';
+const VERSAO_APP = '2.1';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -54,7 +54,7 @@ function telaAtivacao(erro = '') {
   tela.innerHTML = `
     <section class="capa">
       <img class="capa-logo" src="/img/logo.webp" alt="">
-      <h1 class="capa-nome">Calculadora <span>Inteligente</span></h1>
+      <h1 class="capa-nome">Quanto <span>Cobrar?</span></h1>
       <p class="capa-lema">Do fazer ao vender: calcule certo e lucre mais.</p>
       <div class="capa-beneficios"><span>📦 Quanto rende</span><span>🧮 Quanto custa</span><span>💰 Quanto cobrar</span><span>📈 Quanto lucra</span></div>
       <form id="form-ativar" class="capa-cartao">

@@ -1,6 +1,6 @@
 {
-  "name": "Calculadora Inteligente de Receitas",
-  "short_name": "Calculadora",
+  "name": "Quanto Cobrar — Calculadora de Receitas",
+  "short_name": "Quanto Cobrar",
   "description": "Quanto rende, quanto custa, quanto cobrar e quanto você lucra em cada receita.",
   "lang": "pt-BR",
   "start_url": "/app/",
