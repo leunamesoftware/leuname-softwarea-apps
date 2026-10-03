@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.2';
+const VERSAO_APP = '2.3';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -63,7 +63,7 @@ function telaAtivacao(erro = '') {
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
       </form>
-      <div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a></div>
+      <div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
   document.getElementById('form-ativar').addEventListener('submit', async (ev) => {
@@ -709,7 +709,19 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (jaTinha && !recarregou) { recarregou = true; location.reload(); } });
   navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
 }
-if (!estado.chave) telaAtivacao();
+async function compraGuardada() {
+  let pedido = '';
+  try { pedido = JSON.parse(localStorage.getItem('calc.pedido') || '""'); } catch { return false; }
+  if (!/^[0-9a-f]{36}$/.test(pedido)) return false;
+  try {
+    const d = await (await fetch('/api/pedido/' + pedido)).json();
+    if (!d.chave) return false;
+    estado.chave = d.chave; gravar('chave', d.chave); localStorage.removeItem('calc.pedido');
+    await carregarReceitas(); abrir('receitas'); aviso('Compra encontrada! Sua chave: ' + d.chave);
+    return true;
+  } catch { return false; }
+}
+if (!estado.chave) { telaAtivacao(); compraGuardada(); }
 else {
   abrir('receitas');
   carregarReceitas().then(() => { if (estado.aba === 'receitas' && estado.chave) telaReceitas(); });

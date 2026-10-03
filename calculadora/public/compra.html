@@ -17,14 +17,15 @@
   </main>
   <script>
     const q = new URLSearchParams(location.search);
-    const pedido = q.get('p') || '';
+    let guardado = ''; try { guardado = JSON.parse(localStorage.getItem('calc.pedido') || '""'); } catch {}
+    const pedido = q.get('p') || guardado || '';
     const pagamento = q.get('payment_id') || q.get('collection_id') || '';
     const el = document.getElementById('conteudo');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let tentativas = 0;
 
     function mostrarChave(nome, chave) {
-      try { localStorage.setItem('calc.chave', JSON.stringify(chave)); } catch {}
+      try { localStorage.setItem('calc.chave', JSON.stringify(chave)); localStorage.removeItem('calc.pedido'); } catch {}
       const texto = encodeURIComponent(`Minha chave do app Quanto Cobrar: ${chave}\nAbrir: ${location.origin}/app/`);
       el.innerHTML = `
         <h1>Pagamento aprovado, ${esc(nome)}! 🎉</h1>

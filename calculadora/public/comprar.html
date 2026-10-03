@@ -28,7 +28,7 @@
       <button class="botao" type="submit">Pagar R$ 20 com Pix ou cartão</button>
       <p class="seguro">🔒 Pagamento seguro pelo Mercado Pago. Sua chave de acesso aparece na tela assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="/termos">Termos de uso</a> (7 dias para desistir).</p>
     </form>
-    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></p>
+    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/recuperar">Recuperar minha chave</a></p>
   </main>
   <script>
     document.getElementById('form').addEventListener('submit', async (ev) => {
@@ -42,6 +42,7 @@
         const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok || !d.url) throw new Error(d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
+        try { localStorage.setItem('calc.pedido', JSON.stringify(d.pedido)); } catch {}
         location.href = d.url;
       } catch (e) {
         erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';

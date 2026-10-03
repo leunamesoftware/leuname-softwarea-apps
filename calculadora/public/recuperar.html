@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E8590C">
+  <meta name="robots" content="noindex">
+  <title>Recuperar minha chave — Quanto Cobrar</title>
+  <link rel="icon" href="/img/icone-192-v2.png">
+  <link rel="stylesheet" href="/compra.css">
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" src="/img/logo.webp" alt="">
+    <h1>Recuperar minha chave</h1>
+    <p class="sub">Pagou e não viu a chave? Use o e-mail da compra e o <b>número da operação</b> que está no comprovante do Mercado Pago (chegou no seu e-mail ou no app do banco).</p>
+    <div id="resultado" aria-live="polite"></div>
+    <form id="form" class="cartao" novalidate>
+      <label for="email">E-mail usado na compra</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" required>
+      <label for="operacao">Número da operação</label>
+      <input id="operacao" inputmode="numeric" placeholder="Ex.: 123456789012" required>
+      <p class="erro" id="erro" role="alert"></p>
+      <button class="botao" type="submit">Recuperar chave</button>
+      <p class="seguro">Não achou o número? Escreva para <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a> com o seu nome e o e-mail da compra.</p>
+    </form>
+    <p class="rodape"><a href="/">← Voltar</a></p>
+  </main>
+  <script>
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    document.getElementById('form').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const erro = document.getElementById('erro'), botao = ev.target.querySelector('button');
+      const email = document.getElementById('email').value.trim(), operacao = document.getElementById('operacao').value.trim();
+      if (!email || !operacao) { erro.textContent = 'Preencha o e-mail e o número da operação.'; return; }
+      botao.disabled = true; botao.textContent = 'Procurando...'; erro.textContent = '';
+      try {
+        const r = await fetch('/api/recuperar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, operacao }) });
+        const d = await r.json().catch(() => ({}));
+        if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto.');
+        if (!d.chave) throw new Error('Não encontramos uma compra paga com esses dados. Confira e tente de novo.');
+        try { localStorage.setItem('calc.chave', JSON.stringify(d.chave)); } catch {}
+        ev.target.hidden = true;
+        document.getElementById('resultado').innerHTML = `<p class="sub">Sua chave de acesso:</p><div class="chave">${esc(d.chave)}</div><a class="botao" href="/app/">Abrir meu app</a>`;
+      } catch (e) {
+        erro.textContent = navigator.onLine ? e.message : 'Sem internet.';
+        botao.disabled = false; botao.textContent = 'Recuperar chave';
+      }
+    });
+  </script>
+</body>
+</html>

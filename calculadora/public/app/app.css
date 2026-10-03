@@ -186,3 +186,5 @@ body.abertura main { max-width: none; padding: 0; }
 .minha-abrir { flex: 1; text-align: left; background: none; border: 0; padding: 6px 0; cursor: pointer; }
 .minha-abrir b { display: block; } .minha-abrir small { color: var(--suave); font-size: 13px; }
 .botao.perigo { background: var(--vermelho-claro); color: var(--vermelho); }
+
+.capa-recuperar { background: none !important; box-shadow: none !important; color: #fff !important; text-decoration: underline; font-weight: 700 !important; padding: 6px !important; }

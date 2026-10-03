@@ -1,7 +1,7 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { criarPedido, receberAviso, situacaoPedido } from './pagamento.js';
+import { criarPedido, receberAviso, recuperarChave, situacaoPedido } from './pagamento.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
@@ -82,6 +82,12 @@ export default {
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const r = await criarPedido(env, url.origin, await corpo(req));
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+      if (pathname === '/api/recuperar' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const chave = await recuperarChave(env, await corpo(req));
+        return chave ? json({ chave }) : json({ erro: 'nao_encontrado' }, 404);
       }
       if (pathname === '/api/mp/aviso' && m === 'POST') {
         await receberAviso(env, req);

@@ -5,88 +5,220 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#E8590C">
   <title>Quanto Cobrar — calculadora inteligente de receitas</title>
-  <meta name="description" content="Descubra quanto custa, quanto cobrar e quanto você lucra em cada receita. Pagamento único de R$ 20, acesso para sempre.">
+  <meta name="description" content="Saiba quanto rende, quanto custa, quanto cobrar e quanto você lucra em cada receita. Livro de receitas que vendem com calculadora em cada página. R$ 20, pagamento único.">
   <meta property="og:title" content="Quanto Cobrar — calculadora inteligente de receitas">
-  <meta property="og:description" content="Quanto rende, quanto custa, quanto cobrar e quanto você lucra. R$ 20, pagamento único.">
+  <meta property="og:description" content="Quanto rende, quanto custa, quanto cobrar e quanto você lucra. R$ 20, pagamento único, acesso para sempre.">
   <meta property="og:image" content="/img/icone-512-v2.png">
   <link rel="icon" href="/img/icone-192-v2.png">
   <link rel="apple-touch-icon" href="/img/icone-apple-180-v2.png">
   <link rel="manifest" href="/manifest.webmanifest?v=3">
-  <style>
-    :root { --laranja: #E8590C; --forte: #C2410C; --claro: #FFEDD5; --fundo: #FFF8F1; --texto: #2B1A10; --suave: #7C6A5E; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--texto); background: var(--fundo); }
-    main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
-    .hero { text-align: center; }
-    .hero img { width: 200px; height: 200px; border-radius: 50%; box-shadow: 0 10px 30px rgba(232,89,12,.25); }
-    h1 { font-size: 30px; line-height: 1.15; margin: 18px 0 10px; }
-    h2 { font-size: 22px; margin: 32px 0 12px; }
-    .sub { color: var(--suave); font-size: 18px; margin: 0 0 20px; }
-    .botao { display: block; text-align: center; background: var(--laranja); color: #fff; font-weight: 800; font-size: 19px; padding: 16px; border-radius: 14px; text-decoration: none; }
-    .botao:active { background: var(--forte); }
-    .botao.sec { background: var(--claro); color: var(--forte); font-size: 16px; padding: 12px; margin-top: 10px; }
-    .preco { text-align: center; margin: 10px 0 4px; color: var(--suave); }
-    .preco b { font-size: 34px; color: var(--texto); }
-    ul.lista { list-style: none; padding: 0; margin: 0; }
-    ul.lista li { background: #fff; border: 1px solid #F1E4D8; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; }
-    ul.lista span { font-size: 26px; line-height: 1; }
-    .exemplo { background: #2B1A10; color: #fff; border-radius: 16px; padding: 18px; }
-    .exemplo table { width: 100%; border-collapse: collapse; } .exemplo td { padding: 6px 0; border-bottom: 1px solid #4A3527; } .exemplo td:last-child { text-align: right; font-weight: 700; }
-    .exemplo .verde { color: #86EFAC; }
-    .passos { counter-reset: p; list-style: none; padding: 0; }
-    .passos li { counter-increment: p; padding-left: 44px; position: relative; margin-bottom: 14px; }
-    .passos li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--laranja); color: #fff; font-weight: 800; display: grid; place-items: center; }
-    .marca { font-size: 30px; font-weight: 900; color: var(--forte); margin: 14px 0 0; line-height: 1.1; }
-    .marca span { display: block; font-size: 15px; font-weight: 600; color: var(--suave); }
-    footer { text-align: center; color: var(--suave); font-size: 14px; padding: 24px 16px 40px; }
-    footer a { color: var(--forte); }
-    h1, p { text-wrap: balance; }
-  </style>
+  <link rel="stylesheet" href="/site.css">
 </head>
 <body>
-  <main>
-    <section class="hero">
-      <img src="/img/logo.webp" alt="Quanto Cobrar">
-      <p class="marca">Quanto Cobrar<span>calculadora inteligente de receitas</span></p>
-      <h1>Saiba quanto custa, quanto cobrar e quanto você lucra em cada receita</h1>
-      <p class="sub">Para quem quer ganhar dinheiro vendendo doces, salgados e marmitas — sem prejuízo e sem chute.</p>
-      <p class="preco"><b>R$ 20</b><br>pagamento único · acesso para sempre</p>
-      <a class="botao" href="/comprar">Quero minha calculadora</a>
-      <a class="botao sec" href="/app/">Já comprei — entrar com minha chave</a>
-    </section>
-
-    <h2>O que ela faz por você</h2>
-    <ul class="lista">
-      <li><span>📦</span><div><b>Quanto rende cada receita</b><br>Rendimento de cada receita do canal, ajustado com o resultado real de quem já fez.</div></li>
-      <li><span>🧮</span><div><b>Custo exato do que você usou</b><br>Pagou R$ 6 no litro de óleo e usou 50 ml? Ela calcula: R$ 0,30. Faz isso com todos os ingredientes, o gás e a embalagem.</div></li>
-      <li><span>💰</span><div><b>Preço certo e lucro real</b><br>Sugere o preço de venda e mostra quanto você lucra por unidade e na fornada inteira.</div></li>
-      <li><span>✖️</span><div><b>Quer fazer 50, 100, 200?</b><br>Digite a quantidade e ela multiplica todos os ingredientes e custos na hora.</div></li>
-      <li><span>🛒</span><div><b>Controle do que sobrou</b><br>Mostra quanto sobrou de cada ingrediente e quanto vale, para a próxima receita.</div></li>
-    </ul>
-
-    <h2>Veja um exemplo</h2>
-    <div class="exemplo">
-      <table>
-        <tr><td>Cocada queimada — 25 unidades</td><td></td></tr>
-        <tr><td>Ingredientes usados</td><td>R$ 16,43</td></tr>
-        <tr><td>Gás (35 min)</td><td>R$ 0,47</td></tr>
-        <tr><td>Embalagens (R$ 0,20 cada)</td><td>R$ 5,00</td></tr>
-        <tr><td>Custo por unidade</td><td>R$ 0,88</td></tr>
-        <tr><td>Vendendo a R$ 2,50</td><td class="verde">lucro de R$ 40,60</td></tr>
-      </table>
+  <header class="nav">
+    <div class="nav-dentro">
+      <a class="marca" href="/"><img src="/img/logo.webp" alt="" width="40" height="40"><span>Quanto Cobrar</span></a>
+      <nav class="links" aria-label="Seções">
+        <a href="#recursos">O que tem</a><a href="#exemplo">Exemplo</a><a href="#como">Como funciona</a><a href="#instalar">Instalar</a><a href="#duvidas">Dúvidas</a>
+      </nav>
+      <a class="btn btn-peq" href="/comprar">Comprar</a>
     </div>
-    <p class="sub" style="font-size:14px;margin-top:8px">Exemplo com preços de referência. No app você coloca o que pagou.</p>
+  </header>
 
-    <h2>Como funciona</h2>
-    <ol class="passos">
-      <li>Pague R$ 20 com Pix ou cartão (Mercado Pago).</li>
-      <li>Receba sua chave de acesso na confirmação da compra.</li>
-      <li>Abra a calculadora, digite a chave e pronto: é sua para sempre, com todas as receitas novas.</li>
-    </ol>
-    <a class="botao" href="/comprar">Comprar agora por R$ 20</a>
-  </main>
-  <footer>
-    LeuName Softwares · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos e reembolso</a> · <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a>
+  <section class="hero">
+    <div class="dentro hero-grade">
+      <div class="hero-texto">
+        <span class="selo">🧮 Calculadora inteligente de receitas</span>
+        <h1>Saiba quanto cobrar e quanto você <em>lucra</em> em cada receita</h1>
+        <p class="lead">Um livro de receitas que vendem, com uma calculadora em cada página. Você coloca o que pagou nos ingredientes e o app mostra o custo, o preço certo e o seu lucro.</p>
+        <div class="acoes">
+          <a class="btn btn-grande" href="/comprar">Quero o meu por R$ 20</a>
+          <a class="btn btn-claro" href="#instalar">Já comprei · instalar</a>
+        </div>
+        <ul class="confianca">
+          <li>✅ Pagamento único</li><li>⚡ Chave na hora</li><li>🔒 Pix ou cartão</li><li>↩️ 7 dias de garantia</li>
+        </ul>
+      </div>
+      <div class="hero-celulares" aria-hidden="true">
+        <div class="celular celular-tras"><img src="/img/telas/livro.webp" alt=""></div>
+        <div class="celular celular-frente"><img src="/img/telas/calculo.webp" alt=""></div>
+        <div class="balao">Lucro com 100 cocadas<b>R$ 163,86</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="faixa">
+    <div class="dentro faixa-grade">
+      <div><b>📦</b>Quanto rende</div><div><b>🧮</b>Quanto custa</div><div><b>🏷️</b>Quanto cobrar</div><div><b>📈</b>Quanto lucra</div>
+    </div>
+  </section>
+
+  <section id="recursos" class="secao">
+    <div class="dentro">
+      <h2>Tudo o que você precisa para vender sem prejuízo</h2>
+      <p class="sub">Feito para quem vende doces, salgados, bolos e marmitas, em casa ou na rua.</p>
+      <div class="cartoes">
+        <article class="cartao"><span class="ic">📖</span><h3>Livro de receitas que vendem</h3><p>Receitas completas com quanto rende cada uma. Toda receita nova do canal vira uma página nova, sem pagar nada a mais.</p></article>
+        <article class="cartao"><span class="ic">🧮</span><h3>Calculadora em cada página</h3><p>Pagou R$ 6 no litro de óleo e usou 50 ml? Ela calcula: R$ 0,30. Faz isso com todos os ingredientes, o gás e a embalagem.</p></article>
+        <article class="cartao"><span class="ic">✖️</span><h3>Faz 10, 50, 100 ou 200</h3><p>Digite quantas unidades quer produzir e ela multiplica todos os ingredientes e custos, e avisa o que vai faltar comprar.</p></article>
+        <article class="cartao"><span class="ic">💰</span><h3>Preço certo e lucro real</h3><p>Três sugestões de preço, o lucro por unidade e da fornada inteira, e quantas vender para bater a sua meta do mês.</p></article>
+        <article class="cartao"><span class="ic">🛒</span><h3>Controle do que sobrou</h3><p>Mostra quanto sobrou de cada ingrediente e quanto vale, para usar na próxima receita.</p></article>
+        <article class="cartao"><span class="ic">📊</span><h3>Suas receitas e vendas</h3><p>Salve as suas próprias receitas e acompanhe as produções e o lucro do mês.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="exemplo" class="secao secao-clara">
+    <div class="dentro duas-colunas">
+      <div class="celular celular-solo" aria-hidden="true"><img src="/img/telas/receita.webp" alt=""></div>
+      <div>
+        <span class="selo selo-claro">Exemplo real do app</span>
+        <h2>Cocada queimada: 100 unidades</h2>
+        <table class="tabela">
+          <tr><td>Custo de tudo (ingredientes, gás e embalagem)</td><td>R$ 86,14</td></tr>
+          <tr><td>Custo de cada cocada</td><td>R$ 0,86</td></tr>
+          <tr><td>Preço recomendado</td><td>R$ 2,50</td></tr>
+          <tr><td>Você recebe</td><td>R$ 250,00</td></tr>
+          <tr class="destaque"><td>Seu lucro</td><td>R$ 163,86</td></tr>
+        </table>
+        <p class="nota">Com preços de referência. No app você coloca o que você pagou.</p>
+        <a class="btn" href="/comprar">Quero calcular as minhas receitas</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="como" class="secao">
+    <div class="dentro">
+      <h2>Como funciona</h2>
+      <ol class="passos">
+        <li><span>1</span><h3>Pague R$ 20</h3><p>Pix ou cartão pelo Mercado Pago. Uma vez só, sem mensalidade.</p></li>
+        <li><span>2</span><h3>Receba sua chave</h3><p>Ela aparece na tela assim que o pagamento é aprovado. Guarde no WhatsApp com um toque.</p></li>
+        <li><span>3</span><h3>Instale e entre</h3><p>Instale o app no celular ou no computador, digite a chave e pronto: é seu para sempre.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="instalar" class="secao secao-laranja">
+    <div class="dentro duas-colunas">
+      <div>
+        <h2>Instale o app no seu aparelho</h2>
+        <p class="sub sub-clara">Não precisa da loja de aplicativos. Ele fica na tela inicial como qualquer app e funciona até sem internet.</p>
+        <button class="btn btn-branco btn-grande" id="instalar-btn" hidden>📲 Instalar o app agora</button>
+        <p class="instalado" id="instalado" hidden>✅ App instalado! Abra pelo ícone <b>Quanto Cobrar</b>.</p>
+        <a class="btn btn-borda" href="/app/">Abrir o app no navegador</a>
+      </div>
+      <div class="guia">
+        <div class="abas" role="tablist">
+          <button role="tab" aria-selected="true" data-guia="android">Android</button>
+          <button role="tab" aria-selected="false" data-guia="iphone">iPhone</button>
+          <button role="tab" aria-selected="false" data-guia="pc">Computador</button>
+        </div>
+        <ol class="guia-passos" data-painel="android">
+          <li>Abra este site no <b>Chrome</b>.</li>
+          <li>Toque nos <b>três pontinhos ⋮</b> no canto de cima.</li>
+          <li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li>
+          <li>Abra o ícone <b>Quanto Cobrar</b> e digite a sua chave.</li>
+        </ol>
+        <ol class="guia-passos" data-painel="iphone" hidden>
+          <li>Abra este site no <b>Safari</b>.</li>
+          <li>Toque em <b>Compartilhar</b> (o quadrado com a seta ↑).</li>
+          <li>Toque em <b>Adicionar à Tela de Início</b>.</li>
+          <li>Abra o ícone <b>Quanto Cobrar</b> e digite a sua chave.</li>
+        </ol>
+        <ol class="guia-passos" data-painel="pc" hidden>
+          <li>Abra este site no <b>Chrome</b> ou no <b>Edge</b>.</li>
+          <li>Clique no ícone de <b>instalar</b> na barra de endereço (um monitor com uma seta).</li>
+          <li>Clique em <b>Instalar</b>.</li>
+          <li>Abra o <b>Quanto Cobrar</b> e digite a sua chave.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="preco" class="secao">
+    <div class="dentro">
+      <div class="preco-cartao">
+        <img src="/img/logo.webp" alt="" width="96" height="96">
+        <h2>Quanto Cobrar</h2>
+        <p class="preco"><small>R$</small>20<span>pagamento único</span></p>
+        <ul>
+          <li>Livro de receitas que vendem, com receitas novas sempre</li>
+          <li>Calculadora de custo, preço e lucro em cada receita</li>
+          <li>Suas receitas, seu estoque e suas vendas do mês</li>
+          <li>Funciona no celular e no computador, até sem internet</li>
+          <li>7 dias para desistir, com o dinheiro de volta</li>
+        </ul>
+        <a class="btn btn-grande" href="/comprar">Comprar agora · Pix ou cartão</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="duvidas" class="secao secao-clara">
+    <div class="dentro estreito">
+      <h2>Dúvidas frequentes</h2>
+      <details><summary>Preciso pagar todo mês?</summary><p>Não. Você paga R$ 20 uma vez só e usa para sempre, com todas as receitas novas incluídas.</p></details>
+      <details><summary>Como recebo o acesso?</summary><p>Assim que o pagamento é aprovado, sua chave aparece na tela. No Pix isso leva segundos. Você pode copiar a chave ou guardar no seu WhatsApp.</p></details>
+      <details><summary>Funciona sem internet?</summary><p>Sim. Depois de entrar com a chave pela primeira vez, a calculadora funciona sem internet. Para baixar receitas novas, é só conectar.</p></details>
+      <details><summary>Posso usar no celular e no computador?</summary><p>Pode, com a mesma chave. Os seus cálculos ficam salvos em cada aparelho.</p></details>
+      <details><summary>E se eu não gostar?</summary><p>Você tem 7 dias para desistir. Escreva para contato@leunamesoftware.com.br e devolvemos o valor.</p></details>
+      <details><summary>Os cálculos são exatos?</summary><p>O custo é calculado com os preços que você informa. O rendimento é uma estimativa e varia com o tamanho das porções e o modo de preparo, por isso o app melhora a estimativa com o resultado real de quem já fez.</p></details>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <div class="dentro rodape-grade">
+      <div class="rodape-marca">
+        <a class="marca" href="/"><img src="/img/logo.webp" alt="" width="44" height="44"><span>Quanto Cobrar</span></a>
+        <p>Calcule certo e lucre mais. Receitas que vendem, com o custo, o preço e o lucro de cada uma.</p>
+        <span class="loja-selo" aria-label="Em breve no Google Play">
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#34D399" d="M4 2.5v19l10-9.5z"/><path fill="#60A5FA" d="M14 12 4 21.5l12.5-7z"/><path fill="#F87171" d="M14 12 4 2.5l12.5 7z"/><path fill="#FBBF24" d="M16.5 9.5 14 12l2.5 2.5L21 12z"/></svg>
+          <span><small>EM BREVE NO</small>Google Play</span>
+        </span>
+      </div>
+      <nav class="rodape-col" aria-label="App">
+        <h4>App</h4>
+        <a href="/comprar">Comprar por R$ 20</a><a href="#instalar">Instalar</a><a href="/app/">Entrar com a chave</a><a href="#duvidas">Dúvidas</a>
+      </nav>
+      <nav class="rodape-col" aria-label="Empresa">
+        <h4>LeuName Softwares</h4>
+        <a href="/termos">Termos e reembolso</a><a href="/privacidade">Privacidade</a><a href="/recuperar">Recuperar minha chave</a><a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a>
+      </nav>
+    </div>
+    <div class="dentro rodape-base">
+      <p>© 2026 LeuName Softwares. Todos os direitos reservados.</p>
+      <p>Pagamentos processados com segurança pelo Mercado Pago.</p>
+    </div>
   </footer>
+
+  <a class="comprar-fixo" href="/comprar">Comprar por R$ 20</a>
+
+  <script>
+    // Instalar com um toque onde o navegador permite (Android e computador com Chrome/Edge).
+    let pedido = null;
+    const botao = document.getElementById('instalar-btn');
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; botao.hidden = false; });
+    botao.addEventListener('click', async () => { if (!pedido) return; pedido.prompt(); await pedido.userChoice; pedido = null; botao.hidden = true; });
+    window.addEventListener('appinstalled', () => { botao.hidden = true; document.getElementById('instalado').hidden = false; });
+
+    // Abre o passo a passo do aparelho da pessoa.
+    const abas = document.querySelectorAll('[data-guia]');
+    function mostrar(qual) {
+      abas.forEach((a) => a.setAttribute('aria-selected', String(a.dataset.guia === qual)));
+      document.querySelectorAll('[data-painel]').forEach((p) => { p.hidden = p.dataset.painel !== qual; });
+    }
+    abas.forEach((a) => a.addEventListener('click', () => mostrar(a.dataset.guia)));
+    const ua = navigator.userAgent;
+    mostrar(/iPhone|iPad|iPod/.test(ua) ? 'iphone' : /Android/.test(ua) ? 'android' : 'pc');
+
+    // Comprou neste aparelho e saiu antes de ver a chave? Mostra o atalho.
+    try {
+      const p = JSON.parse(localStorage.getItem('calc.pedido') || '""');
+      if (/^[0-9a-f]{36}$/.test(p)) {
+        const a = document.createElement('a'); a.className = 'aviso-compra'; a.href = '/compra?p=' + p;
+        a.textContent = '🔑 Você fez uma compra neste aparelho. Toque para ver sua chave.'; document.body.prepend(a);
+      }
+    } catch {}
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+  </script>
 </body>
 </html>

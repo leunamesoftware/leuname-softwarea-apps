@@ -41,7 +41,7 @@ export async function criarPedido(env, origem, d) {
       statement_descriptor: 'LEUNAME',
     }),
   });
-  return { url: pref.init_point };
+  return { url: pref.init_point, pedido: id };
 }
 
 /** Consulta o pagamento no Mercado Pago e aplica: aprovado → emite a chave; estornado/contestado → bloqueia. */
@@ -91,6 +91,15 @@ export async function receberAviso(env, req) {
       }
     }
   }
+}
+
+/** Recupera a chave pelo e-mail da compra + número da operação do Mercado Pago (está no comprovante). */
+export async function recuperarChave(env, d) {
+  const email = String(d?.email || '').trim().toLowerCase();
+  const operacao = String(d?.operacao || '').replace(/\D/g, '');
+  if (!EMAIL.test(email) || !operacao) return null;
+  const p = await env.DB.prepare("SELECT chave FROM pedidos WHERE email = ? AND pagamento_id = ? AND status = 'pago'").bind(email, operacao).first();
+  return p?.chave || null;
 }
 
 export async function situacaoPedido(env, id, pagamentoId) {
