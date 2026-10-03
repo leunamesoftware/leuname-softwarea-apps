@@ -48,19 +48,21 @@ async function api(caminho, opcoes = {}) {
 // ---------- ativação ----------
 function telaAtivacao(erro = '') {
   abas.hidden = true;
+  document.body.classList.add('abertura');
   tela.innerHTML = `
-    <section class="ativacao">
-      <img src="/img/logo.webp" alt="">
-      <h1>Ative sua Calculadora Inteligente</h1>
-      <p class="sub">Digite a chave que você recebeu na compra.</p>
-      <form id="form-ativar" class="cartao">
-        <label for="chave">Chave de acesso</label>
+    <section class="capa">
+      <img class="capa-logo" src="/img/logo.webp" alt="">
+      <h1 class="capa-nome">Calculadora <span>Inteligente</span></h1>
+      <p class="capa-lema">Do fazer ao vender: calcule certo e lucre mais.</p>
+      <div class="capa-beneficios"><span>📦 Quanto rende</span><span>🧮 Quanto custa</span><span>💰 Quanto cobrar</span><span>📈 Quanto lucra</span></div>
+      <form id="form-ativar" class="capa-cartao">
+        <label for="chave">Digite sua chave de acesso</label>
         <input id="chave" placeholder="LEU-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
-        <button class="botao" type="submit">Ativar</button>
+        <button class="botao" type="submit">Entrar</button>
       </form>
-      <p class="sub">Ainda não tem a chave?</p>
-      <a class="botao sec" href="${LINK_COMPRA}">Comprar por R$ 20 — acesso vitalício</a>
+      <div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a></div>
+      <p class="capa-rodape">LeuName Softwares</p>
     </section>`;
   document.getElementById('form-ativar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -77,7 +79,7 @@ function telaAtivacao(erro = '') {
       aviso('Calculadora ativada! Bom trabalho e boas vendas.');
     } catch (e) {
       document.getElementById('erro-ativar').textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se para ativar.';
-      botao.disabled = false; botao.textContent = 'Ativar';
+      botao.disabled = false; botao.textContent = 'Entrar';
     }
   });
 }
@@ -99,6 +101,7 @@ async function carregarReceitas() {
 // ---------- navegação ----------
 function abrir(aba, extra) {
   estado.aba = aba;
+  document.body.classList.remove('abertura');
   abas.hidden = false;
   abas.querySelectorAll('button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
   window.scrollTo(0, 0);
