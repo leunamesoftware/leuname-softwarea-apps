@@ -3,12 +3,16 @@ main = "src/index.js"
 compatibility_date = "2026-09-01"
 workers_dev = true
 
-routes = [{ pattern = "calculadora.leunamesoftware.com.br", custom_domain = true }]
+routes = [
+  { pattern = "quantocobrar.leunamesoftware.com.br", custom_domain = true },
+  # endereço antigo: só redireciona para o novo
+  { pattern = "calculadora.leunamesoftware.com.br", custom_domain = true },
+]
 
 [assets]
 directory = "public"
 binding = "ASSETS"
-run_worker_first = ["/api/*"]
+run_worker_first = true
 
 # Banco da calculadora (rendimento anônimo e pedidos).
 [[d1_databases]]

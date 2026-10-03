@@ -67,6 +67,10 @@ async function registrarRendimento(env, chave, d) {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    if (url.hostname === 'calculadora.leunamesoftware.com.br' && url.pathname !== '/api/mp/aviso') {
+      url.hostname = 'quantocobrar.leunamesoftware.com.br';
+      return Response.redirect(url.toString(), 301);
+    }
     const { pathname } = url;
     const m = req.method;
     try {
