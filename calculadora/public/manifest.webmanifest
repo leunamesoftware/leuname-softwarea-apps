@@ -6,7 +6,7 @@
   "start_url": "/app/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#E8590C",
+  "background_color": "#FFF8F1",
   "theme_color": "#E8590C",
   "icons": [
     {
@@ -27,5 +27,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "orientation": "any"
 }
