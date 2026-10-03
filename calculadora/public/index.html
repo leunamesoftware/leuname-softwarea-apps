@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E8590C">
+  <title>Calculadora Inteligente de Receitas — LeuName</title>
+  <meta name="description" content="Descubra quanto custa, quanto cobrar e quanto você lucra em cada receita. Pagamento único de R$ 20, acesso para sempre.">
+  <meta property="og:title" content="Calculadora Inteligente de Receitas">
+  <meta property="og:description" content="Quanto rende, quanto custa, quanto cobrar e quanto você lucra. R$ 20, pagamento único.">
+  <meta property="og:image" content="/img/icone-512.png">
+  <link rel="icon" href="/img/icone-192.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <style>
+    :root { --laranja: #E8590C; --forte: #C2410C; --claro: #FFEDD5; --fundo: #FFF8F1; --texto: #2B1A10; --suave: #7C6A5E; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--texto); background: var(--fundo); }
+    main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+    .hero { text-align: center; }
+    .hero img { width: 200px; height: 200px; border-radius: 50%; box-shadow: 0 10px 30px rgba(232,89,12,.25); }
+    h1 { font-size: 30px; line-height: 1.15; margin: 18px 0 10px; }
+    h2 { font-size: 22px; margin: 32px 0 12px; }
+    .sub { color: var(--suave); font-size: 18px; margin: 0 0 20px; }
+    .botao { display: block; text-align: center; background: var(--laranja); color: #fff; font-weight: 800; font-size: 19px; padding: 16px; border-radius: 14px; text-decoration: none; }
+    .botao:active { background: var(--forte); }
+    .botao.sec { background: var(--claro); color: var(--forte); font-size: 16px; padding: 12px; margin-top: 10px; }
+    .preco { text-align: center; margin: 10px 0 4px; color: var(--suave); }
+    .preco b { font-size: 34px; color: var(--texto); }
+    ul.lista { list-style: none; padding: 0; margin: 0; }
+    ul.lista li { background: #fff; border: 1px solid #F1E4D8; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; }
+    ul.lista span { font-size: 26px; line-height: 1; }
+    .exemplo { background: #2B1A10; color: #fff; border-radius: 16px; padding: 18px; }
+    .exemplo table { width: 100%; border-collapse: collapse; } .exemplo td { padding: 6px 0; border-bottom: 1px solid #4A3527; } .exemplo td:last-child { text-align: right; font-weight: 700; }
+    .exemplo .verde { color: #86EFAC; }
+    .passos { counter-reset: p; list-style: none; padding: 0; }
+    .passos li { counter-increment: p; padding-left: 44px; position: relative; margin-bottom: 14px; }
+    .passos li::before { content: counter(p); position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--laranja); color: #fff; font-weight: 800; display: grid; place-items: center; }
+    footer { text-align: center; color: var(--suave); font-size: 14px; padding: 24px 16px 40px; }
+    footer a { color: var(--forte); }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <img src="/img/logo.webp" alt="Do fazer ao vender: calculadora inteligente">
+      <h1>Saiba quanto custa, quanto cobrar e quanto você lucra em cada receita</h1>
+      <p class="sub">Para quem quer ganhar dinheiro vendendo doces, salgados e marmitas — sem prejuízo e sem chute.</p>
+      <p class="preco"><b>R$ 20</b><br>pagamento único · acesso para sempre</p>
+      <a class="botao" href="https://leunamesoftware.com.br/producto.html?id=calculadora-receitas">Quero minha calculadora</a>
+      <a class="botao sec" href="/app/">Já comprei — entrar com minha chave</a>
+    </section>
+
+    <h2>O que ela faz por você</h2>
+    <ul class="lista">
+      <li><span>📦</span><div><b>Quanto rende cada receita</b><br>Rendimento de cada receita do canal, ajustado com o resultado real de quem já fez.</div></li>
+      <li><span>🧮</span><div><b>Custo exato do que você usou</b><br>Pagou R$ 6 no litro de óleo e usou 50 ml? Ela calcula: R$ 0,30. Faz isso com todos os ingredientes, o gás e a embalagem.</div></li>
+      <li><span>💰</span><div><b>Preço certo e lucro real</b><br>Sugere o preço de venda e mostra quanto você lucra por unidade e na fornada inteira.</div></li>
+      <li><span>✖️</span><div><b>Quer fazer 50, 100, 200?</b><br>Digite a quantidade e ela multiplica todos os ingredientes e custos na hora.</div></li>
+      <li><span>🛒</span><div><b>Controle do que sobrou</b><br>Mostra quanto sobrou de cada ingrediente e quanto vale, para a próxima receita.</div></li>
+    </ul>
+
+    <h2>Veja um exemplo</h2>
+    <div class="exemplo">
+      <table>
+        <tr><td>Cocada queimada — 25 unidades</td><td></td></tr>
+        <tr><td>Ingredientes usados</td><td>R$ 16,43</td></tr>
+        <tr><td>Gás (35 min)</td><td>R$ 0,47</td></tr>
+        <tr><td>Embalagens (R$ 0,20 cada)</td><td>R$ 5,00</td></tr>
+        <tr><td>Custo por unidade</td><td>R$ 0,88</td></tr>
+        <tr><td>Vendendo a R$ 2,50</td><td class="verde">lucro de R$ 40,60</td></tr>
+      </table>
+    </div>
+    <p class="sub" style="font-size:14px;margin-top:8px">Exemplo com preços de referência. No app você coloca o que pagou.</p>
+
+    <h2>Como funciona</h2>
+    <ol class="passos">
+      <li>Compre por R$ 20 no site da LeuName.</li>
+      <li>Receba sua chave de acesso na confirmação da compra.</li>
+      <li>Abra a calculadora, digite a chave e pronto: é sua para sempre, com todas as receitas novas.</li>
+    </ol>
+    <a class="botao" href="https://leunamesoftware.com.br/producto.html?id=calculadora-receitas">Comprar agora por R$ 20</a>
+  </main>
+  <footer>
+    LeuName Softwares · <a href="/privacidade">Privacidade</a> · <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a>
+  </footer>
+</body>
+</html>

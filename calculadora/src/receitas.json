@@ -1,0 +1,27 @@
+[
+  {
+    "id": "cocada-queimada",
+    "nome": "Cocada Queimada",
+    "categoria": "Doces",
+    "foto": "/img/receitas/cocada-queimada.jpg",
+    "rendimento": { "unidades": 25, "pesoUnidadeG": 35, "faixa": [20, 30] },
+    "gas": { "minutos": 35, "chama": "baixa" },
+    "embalagemSugerida": "Saquinho de celofane ou forminha (R$ 0,15 a R$ 0,30 cada)",
+    "ingredientes": [
+      { "nome": "Açúcar", "qtd": 400, "unidade": "g", "caseira": "2 xícaras", "emb": { "qtd": 1, "unidade": "kg", "preco": 5.49 } },
+      { "nome": "Água", "qtd": 200, "unidade": "ml", "caseira": "1 copo americano", "emb": { "qtd": 1, "unidade": "L", "preco": 0 } },
+      { "nome": "Vinagre de álcool", "qtd": 30, "unidade": "ml", "caseira": "2 colheres de sopa", "emb": { "qtd": 750, "unidade": "ml", "preco": 3.49 } },
+      { "nome": "Cravo-da-índia", "qtd": 2, "unidade": "g", "caseira": "cerca de 10 cravos", "emb": { "qtd": 10, "unidade": "g", "preco": 3.99 } },
+      { "nome": "Coco ralado fresco", "qtd": 350, "unidade": "g", "caseira": "cerca de 3½ xícaras", "emb": { "qtd": 1, "unidade": "kg", "preco": 28 } },
+      { "nome": "Leite condensado", "qtd": 197, "unidade": "g", "caseira": "½ caixinha", "emb": { "qtd": 395, "unidade": "g", "preco": 6.99 } }
+    ],
+    "preparo": [
+      "Coloque o açúcar, a água e o vinagre em uma panela e misture só para incorporar. Leve ao fogo baixo, sem mexer, até formar um caramelo dourado.",
+      "Acrescente os cravos-da-índia e deixe cozinhar por alguns minutos.",
+      "Junte o coco ralado e misture bem para envolver no caramelo.",
+      "Quando começar a desgrudar do fundo da panela, acrescente o leite condensado e mexa por cerca de 3 minutos, até ficar cremoso e brilhante.",
+      "Coloque porções sobre papel-manteiga untado e deixe esfriar completamente até firmar."
+    ],
+    "dicaVenda": "Porções de 30 a 40 g vendem bem em saquinho individual. Ofereça kit com 3 unidades com um pequeno desconto para aumentar o valor de cada venda."
+  }
+]

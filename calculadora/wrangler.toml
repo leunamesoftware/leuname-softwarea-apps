@@ -1,0 +1,29 @@
+name = "calculadora-receitas"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+# Banco gratuito (D1). O id é preenchido na publicação.
+[[d1_databases]]
+binding = "DB"
+database_name = "calculadora-receitas"
+database_id = "PREENCHIDO_NA_PUBLICACAO"
+migrations_dir = "migrations"
+
+# Servidor de licenças da LeuName (mesma conta, chamada interna gratuita).
+[[services]]
+binding = "LICENCAS"
+service = "leuname-licencas"
+
+# Proteção contra quem tenta adivinhar chaves.
+[[ratelimits]]
+name = "LIMITE"
+namespace_id = "4101"
+simple = { limit = 10, period = 60 }
+
+[vars]
+APP_ID = "calculadora-receitas"
