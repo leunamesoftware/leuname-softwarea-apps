@@ -1,6 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
+const VERSAO_APP = '1.3';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -63,7 +64,7 @@ function telaAtivacao(erro = '') {
         <button class="botao" type="submit">Entrar</button>
       </form>
       <div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a></div>
-      <p class="capa-rodape">LeuName Softwares</p>
+      <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
   document.getElementById('form-ativar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -680,7 +681,8 @@ function telaHistorico() {
       <button class="remover" data-excluir-prod="${i}" aria-label="Excluir esta produção">🗑️</button></div>
       <div class="sub" style="margin:2px 0 0">${new Date(x.data).toLocaleDateString('pt-BR')} · ${x.unidades} un. · custo ${brl(x.custoTotal)}${x.lucroPrevisto !== null ? ` · lucro ${brl(x.lucroPrevisto)}` : ''}</div></div>`).join('')
       : '<p class="vazio">Quando fizer uma receita, toque em "Registrar produção".</p>'}
-    <button class="link" id="sair" style="width:100%;margin-top:16px">Desconectar esta chave deste aparelho</button>`;
+    <button class="link" id="sair" style="width:100%;margin-top:16px">Desconectar esta chave deste aparelho</button>
+    <p class="nota" style="text-align:center">Versão ${VERSAO_APP}</p>`;
   document.getElementById('sair').addEventListener('click', () => { if (confirm('Desconectar? Você precisará digitar a chave de novo.')) { estado.chave = ''; gravar('chave', ''); telaAtivacao(); } });
   tela.querySelectorAll('[data-excluir-prod]').forEach((b) => b.addEventListener('click', () => {
     const lista = ler('historico', []);
@@ -707,7 +709,13 @@ function telaHistorico() {
 tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
 tela.addEventListener('click', aoClicarCalculo);
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+if ('serviceWorker' in navigator) {
+  // Versão nova publicada: quando ela assume, recarrega uma vez para o cliente já ver a novidade.
+  const jaTinha = Boolean(navigator.serviceWorker.controller);
+  let recarregou = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (jaTinha && !recarregou) { recarregou = true; location.reload(); } });
+  navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
+}
 if (!estado.chave) telaAtivacao();
 else {
   abrir('receitas');

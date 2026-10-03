@@ -1,5 +1,5 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v4';
+const VERSAO = 'calc-v5';
 const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/logo-grande.webp', '/img/icone-192.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
@@ -15,7 +15,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' })
       .then((r) => {
         if (r.ok) { const copia = r.clone(); caches.open(VERSAO).then((c) => c.put(e.request, copia)); }
         return r;
