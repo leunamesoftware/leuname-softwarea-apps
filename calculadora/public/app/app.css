@@ -16,6 +16,7 @@ img { max-width: 100%; }
 .topo img { border-radius: 50%; border: 2px solid #fff; }
 .topo strong { font-weight: 800; letter-spacing: .2px; }
 main { max-width: 720px; margin: 0 auto; padding: 16px; }
+h1, h2, p, .capa-lema { text-wrap: balance; }
 h1 { font-size: 24px; margin: 4px 0 12px; line-height: 1.2; }
 h2 { font-size: 18px; margin: 20px 0 10px; }
 .sub { color: var(--suave); margin: 0 0 14px; }

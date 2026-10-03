@@ -5,6 +5,7 @@ body { margin: 0; min-height: 100vh; font: 500 16px/1.5 Poppins, system-ui, -app
   background: radial-gradient(120% 60% at 50% 0%, #FFB15C 0%, #F26B1D 40%, #C2410C 100%); }
 .caixa { max-width: 460px; margin: 0 auto; padding: 28px 16px 40px; text-align: center; }
 .logo { width: 120px; height: 120px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 14px 30px rgba(124,45,18,.4); }
+h1, p { text-wrap: balance; }
 h1 { color: #fff; font-size: 26px; font-weight: 800; line-height: 1.15; margin: 14px 0 6px; text-shadow: 0 2px 10px rgba(124,45,18,.35); }
 .preco { color: #FFF3E6; margin: 0 0 14px; } .preco b { color: #FFE38A; font-size: 26px; }
 .sub { color: #FFF3E6; }
