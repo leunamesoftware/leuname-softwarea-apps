@@ -1,7 +1,7 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.6';
+const VERSAO_APP = '2.7';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -147,7 +147,7 @@ function telaReceitas(extra) {
     </section>`;
   document.getElementById('capa').addEventListener('click', (ev) => {
     ev.currentTarget.classList.add('abrindo');
-    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('pagina', livro.pagina); mostrarPagina('abrir'); }, 650);
+    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('pagina', livro.pagina); mostrarPagina('abrir'); }, 280);
   });
 }
 
