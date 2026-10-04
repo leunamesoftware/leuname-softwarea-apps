@@ -1,11 +1,27 @@
-# LeuApps — vitrine de aplicativos da LeuName Softwares (só arquivos estáticos).
+# LeuApps — central oficial de aplicativos da LeuName Softwares.
+# Endereço principal: www.leunamesoftware.com.br (também apps.leunamesoftware.com.br).
 name = "leuapps"
+main = "src/index.js"
 compatibility_date = "2026-09-01"
 
+# Arquivos da loja são servidos direto; o que não existir aqui passa pelo src/index.js.
 [assets]
 directory = "public"
-not_found_handling = "404-page"
+binding = "ASSETS"
+
+# Site antigo (painel, licenças e páginas antigas) continua respondendo pelos endereços dele.
+[[services]]
+binding = "SITE_ANTIGO"
+service = "leuname-site-br"
 
 [[routes]]
 pattern = "apps.leunamesoftware.com.br"
+custom_domain = true
+
+[[routes]]
+pattern = "www.leunamesoftware.com.br"
+custom_domain = true
+
+[[routes]]
+pattern = "leunamesoftware.com.br"
 custom_domain = true

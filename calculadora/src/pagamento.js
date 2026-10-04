@@ -59,7 +59,7 @@ export async function criarPedido(env, origem, d) {
       notification_url: `${origem}/api/mp/aviso`,
       back_urls: { success: volta, pending: volta, failure: volta },
       auto_return: 'approved',
-      payment_methods: { installments: 1 }, // sempre à vista (Pix ou cartão em 1x)
+      payment_methods: { installments: plano === 'anual' ? 3 : 1 }, // anual: cartão em até 3x; básico: à vista
       statement_descriptor: 'LEUNAME',
     }),
   });

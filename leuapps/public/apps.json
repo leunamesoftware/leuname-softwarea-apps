@@ -6,7 +6,30 @@
     "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
     "icone": "/img/quantocobrar-192.png",
     "url": "https://quantocobrar.leunamesoftware.com.br/app/",
-    "preco": "2 receitas grátis"
+    "preco": "2 receitas grátis · planos a partir de R$ 2,99",
+    "planos": [
+      {
+        "nome": "Básico",
+        "tipo": "unico",
+        "preco": "R$ 9,99",
+        "detalhe": "Pagamento único, acesso para sempre · 30 receitas + calculadora · Pix ou cartão à vista",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=basico"
+      },
+      {
+        "nome": "👑 Pro anual",
+        "tipo": "unico",
+        "preco": "R$ 29,90",
+        "detalhe": "Paga uma vez, vale 1 ano · todas as receitas · Pix ou cartão em até 3x",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=anual"
+      },
+      {
+        "nome": "👑 Pro mensal",
+        "tipo": "assinatura",
+        "preco": "R$ 2,99/mês",
+        "detalhe": "Assinatura: cobra todo mês no cartão, cancele quando quiser · todas as receitas",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal"
+      }
+    ]
   },
   {
     "id": "gestacell",
@@ -15,7 +38,7 @@
     "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
     "icone": "/img/gestacell-192.png",
     "url": "/gestacell/",
-    "preco": "7 dias grátis"
+    "preco": "7 dias grátis para testar"
   },
   {
     "id": "radar",

@@ -50,6 +50,18 @@
     .botoes { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
     button.abrir { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
     .tirar { border: 0; background: none; font: inherit; font-size: 12px; color: var(--suave); text-decoration: underline; cursor: pointer; }
+    .abrir.ouro { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #3B2300; box-shadow: 0 6px 14px rgba(245,158,11,.32); }
+    .folha-fundo { position: fixed; inset: 0; background: rgba(5,10,30,.55); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+    .folha { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--fundo); border-radius: 22px 22px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
+    .folha h3 { margin: 0 0 4px; font-size: 19px; }
+    .folha .sub { margin: 0 0 14px; color: var(--suave); font-size: 14px; }
+    .plano { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+    .plano b { font-size: 16px; } .plano .valor { font-size: 18px; font-weight: 900; color: var(--azul); text-align: right; }
+    .plano p { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--suave); }
+    .plano .abrir { grid-column: 1 / -1; }
+    .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; vertical-align: middle; }
+    .selo-tipo.unico { background: #DCFCE7; color: #166534; } .selo-tipo.assinatura { background: #E0E7FF; color: #3730A3; }
+    .fechar-folha { width: 100%; margin-top: 4px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--suave); padding: 10px; cursor: pointer; }
     .rodape { margin-top: 32px; text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
     @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
   </style>
@@ -105,8 +117,10 @@
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span></div>
           <div class="botoes">${tem
-            ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
-            : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}</div>
+            ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>`
+            : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
+            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
+            ${tem ? `<button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>` : ''}</div>
         </li>`;
     }
     function mostrar(filtro = '') {
@@ -126,7 +140,19 @@
       document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
       document.getElementById('descubra').hidden = !resto.length;
     }
+    function planos(id) {
+      const a = apps.find((x) => x.id === id); if (!a || !a.planos) return;
+      const f = document.createElement('div'); f.className = 'folha-fundo';
+      f.innerHTML = `<div class="folha" role="dialog" aria-label="Planos ${esc(a.nome)}">
+        <h3>${esc(a.nome)}</h3><p class="sub">Escolha como quer pagar. Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
+        ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo ${esc(p.tipo)}">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
+          <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p><a class="abrir" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
+        <button class="fechar-folha" type="button">Fechar</button></div>`;
+      f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha')) f.remove(); });
+      document.body.appendChild(f);
+    }
     function aoClicar(e) {
+      const cmp = e.target.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
       if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = '✓ Instalado'; ins.classList.add('verde'); setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
       if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
