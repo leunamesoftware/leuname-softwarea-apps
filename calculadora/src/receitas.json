@@ -238,5 +238,89 @@
       "Depois de frio, finalize com coco ralado por cima."
     ],
     "dicaVenda": "Copinho de 50 ml é doce de festa e de lanche: venda avulso ou em kit com 3 ou 6 unidades. Mantenha na geladeira e capriche no coco por cima, que é o que chama a atenção."
+  },
+  {
+    "id": "sorvete-coco",
+    "nome": "Sorvete Caseiro de Coco",
+    "categoria": "Sorvetes",
+    "foto": "/img/receitas/sorvete-coco.jpg",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 100,
+      "faixa": [
+        10,
+        14
+      ]
+    },
+    "gas": {
+      "minutos": 0,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Pote de 150 ml com tampa e colherzinha (R$ 0,40 a R$ 0,70 cada)",
+    "ingredientes": [
+      {
+        "nome": "Creme de leite",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 caixinhas",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 copos americanos e meio",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Coco ralado",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 pacotinho",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Emulsificante",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      }
+    ],
+    "preparo": [
+      "Bata o leite, o leite condensado e o creme de leite no liquidificador até ficar bem homogêneo.",
+      "Acrescente o coco ralado e misture delicadamente.",
+      "Passe para um recipiente com tampa e leve ao congelador até começar a firmar.",
+      "Tire do congelador, coloque na batedeira, junte o emulsificante e bata até ficar cremoso, leve e aerado.",
+      "Volte para o recipiente, tampe e leve ao congelador até ficar completamente firme."
+    ],
+    "dicaVenda": "Sorvete não vai ao fogo e tem custo baixo. Venda em potes de 150 ml no calor, ou no quilo para festas; coco ralado por cima deixa com cara de sorveteria."
   }
 ]

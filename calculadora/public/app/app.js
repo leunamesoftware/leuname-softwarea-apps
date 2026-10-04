@@ -6,9 +6,11 @@ const RAIZ = location.pathname.replace(/\/app(\/.*)?$/, '');
 // Compra e "esqueci a senha" ficam sempre no site do Quanto Cobrar (o Mercado Pago volta para lá).
 const PAGINAS = RAIZ ? 'https://quantocobrar.leunamesoftware.com.br' : '';
 const LINK_COMPRA = PAGINAS + '/comprar';
+// Fotos das receitas vêm com caminho do site; dentro da loja ganham o começo /quantocobrar.
+const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.3';
+const VERSAO_APP = '5.4';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -355,8 +357,8 @@ function htmlSumario() {
     ${faixaGratis()}
     <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
-      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(r.foto)}" alt="" loading="lazy">
-        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
+      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r))}" alt="" loading="lazy">
+        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
     </ol>
     <h2>Minhas receitas</h2>
@@ -391,7 +393,7 @@ function htmlPaginaBloqueada(r) {
   const basico = estado.acesso?.plano === 'basico';
   return `
     <div class="bloqueada">
-      <img class="foto-grande" src="${esc(r.foto)}" alt="">
+      <img class="foto-grande" src="${esc(fotoDe(r))}" alt="">
       <span class="cadeado" aria-hidden="true">🔒</span>
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
@@ -426,7 +428,7 @@ function htmlParteReceita(r, parte) {
       ? `Resultado real de ${o.registros} pessoas que fizeram${o.pesoMedioG ? ` (unidades de ~${o.pesoMedioG} g)` : ''}.`
       : `Estimativa inicial${r.rendimento.pesoUnidadeG ? `, unidades de ~${r.rendimento.pesoUnidadeG} g` : ''}.`;
     return `
-      <img class="foto-grande" src="${esc(r.foto)}" alt="">
+      <img class="foto-grande" src="${esc(fotoDe(r))}" alt="">
       <div class="capa-info">
         <span class="etiqueta">${esc(r.categoria)}</span>
         <h1 class="pagina-titulo">${esc(r.nome)}</h1>

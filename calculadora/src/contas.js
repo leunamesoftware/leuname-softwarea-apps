@@ -35,6 +35,8 @@ export async function contaParaCompra(env, email, nome, senha) {
   const conta = { id: crypto.randomUUID(), email: normalizarEmail(email), nome: String(nome || '').slice(0, 80), senha_hash: await derivar(senha, sal), senha_sal: sal };
   await env.DB.prepare('INSERT INTO contas (id, email, nome, senha_hash, senha_sal, criado_em) VALUES (?, ?, ?, ?, ?, ?)')
     .bind(conta.id, conta.email, conta.nome, conta.senha_hash, conta.senha_sal, new Date().toISOString()).run();
+  // Compras antigas feitas com este e-mail (antes de existir a conta) passam a ser desta conta.
+  await env.DB.prepare('UPDATE pedidos SET conta_id = ? WHERE email = ? AND conta_id IS NULL').bind(conta.id, conta.email).run();
   return { conta };
 }
 
