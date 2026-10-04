@@ -1,0 +1,6 @@
+{
+  "name": "leuapps",
+  "private": true,
+  "scripts": { "dev": "wrangler dev" },
+  "devDependencies": { "wrangler": "^4.40.0" }
+}

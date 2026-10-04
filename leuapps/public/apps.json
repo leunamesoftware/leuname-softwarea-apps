@@ -1,0 +1,29 @@
+[
+  {
+    "id": "quantocobrar",
+    "nome": "Quanto Cobrar",
+    "categoria": "Receitas e vendas",
+    "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
+    "icone": "/img/quantocobrar-192.png",
+    "url": "https://quantocobrar.leunamesoftware.com.br/app/",
+    "preco": "2 receitas grátis"
+  },
+  {
+    "id": "gestacell",
+    "nome": "Gestacell",
+    "categoria": "Gestão de loja",
+    "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
+    "icone": "/img/gestacell-192.png",
+    "url": "/gestacell/",
+    "preco": "7 dias grátis"
+  },
+  {
+    "id": "radar",
+    "nome": "Radar Preventivo",
+    "categoria": "Documentos e prazos",
+    "resumo": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
+    "icone": "/img/radar-192.png",
+    "url": "https://radar-preventivo.emanuelantunes2024.workers.dev",
+    "preco": "Grátis para começar"
+  }
+]

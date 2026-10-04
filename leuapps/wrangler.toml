@@ -1,0 +1,11 @@
+# LeuApps — vitrine de aplicativos da LeuName Softwares (só arquivos estáticos).
+name = "leuapps"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "public"
+not_found_handling = "404-page"
+
+[[routes]]
+pattern = "apps.leunamesoftware.com.br"
+custom_domain = true
