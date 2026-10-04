@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '4.0';
+const VERSAO_APP = '4.1';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -176,14 +176,25 @@ function textoRendimento(r) {
   return `${o.min} a ${o.max} unidades`;
 }
 
-// Páginas: 0 = sumário, 1..N = receitas, N+1 = contracapa.
-const livro = { aberto: false, pagina: ler('pagina', 0), mini: ler('mini', {}) };
-const totalPaginas = () => estado.receitas.length + 2;
+// Cada receita é dividida em folhas que cabem na tela (sem rolar): foto, ingredientes, preparo e preço.
+const PARTES = [['📷', 'Receita'], ['🥚', 'Ingredientes'], ['👩‍🍳', 'Preparo'], ['🧮', 'Preço']];
+const livro = { aberto: false, pagina: ler('folha', 0), mini: ler('mini', {}) };
+function folhas() {
+  const f = [{ tipo: 'sumario' }];
+  estado.receitas.forEach((r, i) => {
+    if (r.bloqueada) f.push({ tipo: 'bloqueada', r, i });
+    else PARTES.forEach((_, parte) => f.push({ tipo: 'receita', r, i, parte }));
+  });
+  f.push({ tipo: 'fim' });
+  return f;
+}
+const totalPaginas = () => folhas().length;
+const inicioDaReceita = (i) => folhas().findIndex((x) => x.i === i);
 
 function telaReceitas(extra) {
   if (extra?.receitaId) {
     const i = estado.receitas.findIndex((r) => r.id === extra.receitaId);
-    if (i >= 0) { livro.aberto = true; livro.pagina = i + 1; }
+    if (i >= 0) { livro.aberto = true; livro.pagina = inicioDaReceita(i); }
   }
   if (livro.aberto) return mostrarPagina();
   const n = estado.receitas.length;
@@ -201,44 +212,48 @@ function telaReceitas(extra) {
     </section>`;
   document.getElementById('capa').addEventListener('click', (ev) => {
     ev.currentTarget.classList.add('abrindo');
-    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('pagina', livro.pagina); mostrarPagina('abrir'); }, 280);
+    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('folha', livro.pagina); mostrarPagina('abrir'); }, 280);
   });
 }
 
 function irPara(pagina, direcao) {
   livro.pagina = Math.max(0, Math.min(totalPaginas() - 1, pagina));
-  gravar('pagina', livro.pagina);
+  gravar('folha', livro.pagina);
   mostrarPagina(direcao);
 }
 
 function mostrarPagina(efeito) {
   const antiga = document.getElementById('pagina');
   const htmlAntigo = antiga && (efeito === 'frente' || efeito === 'tras') ? antiga.outerHTML : null;
-  if (livro.pagina >= totalPaginas()) livro.pagina = 0;
-  const p = livro.pagina, ultima = totalPaginas() - 1;
-  const r = p >= 1 && p < ultima ? estado.receitas[p - 1] : null;
-  const rotulo = 'Sumário';
+  const lista = folhas();
+  if (livro.pagina >= lista.length) livro.pagina = 0;
+  const p = livro.pagina, ultima = lista.length - 1, f = lista[p];
+  const r = f.r || null, total = estado.receitas.length;
+  const conteudo = f.tipo === 'sumario' ? htmlSumario() : f.tipo === 'fim' ? htmlContracapa()
+    : f.tipo === 'bloqueada' ? htmlPaginaBloqueada(r) : htmlParteReceita(r, f.parte);
+  const inicio = r ? p - (f.parte || 0) : 0;
   tela.innerHTML = `
     <div class="livro-barra">
       <button class="link" id="fechar">📕 Fechar livro</button>
-      ${p === 0 ? `<span>${rotulo}</span>` : `<button class="link" data-pagina="0">📑 Sumário</button>`}
+      ${p === 0 ? '<span>Sumário</span>' : '<button class="link" data-pagina="0">📑 Sumário</button>'}
     </div>
+    ${f.tipo === 'receita' ? `<div class="partes" role="tablist">${PARTES.map(([ic, nome], k) => `
+      <button role="tab" aria-selected="${k === f.parte}" class="${k === f.parte ? 'ativa' : ''}" data-pagina="${inicio + k}"><span>${ic}</span>${nome}</button>`).join('')}</div>` : ''}
     <div class="livro-folhas" id="folhas">
-    <article class="pagina ${efeito === 'abrir' ? 'virar-abrir' : ''}" id="pagina">
-      ${p === 0 ? htmlSumario() : r ? (r.bloqueada ? htmlPaginaBloqueada(r) : htmlPaginaReceita(r)) : htmlContracapa()}
-      <div class="pagina-num">${r ? `Receita ${p} de ${estado.receitas.length}` : p === 0 ? 'Sumário' : 'Fim'}</div>
+    <article class="pagina ${f.tipo === 'receita' && f.parte === 0 ? 'pagina-capa' : ''} ${efeito === 'abrir' ? 'virar-abrir' : ''}" id="pagina">
+      <div class="pagina-corpo">${conteudo}</div>
     </article>
     </div>
-    <p class="dica-arraste">Toque nas setas ou arraste para o lado para virar a página</p>
     <div class="livro-nav">
       <button class="seta-livro" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
-      <span>${r ? `Receita ${p} de ${estado.receitas.length}` : p === 0 ? 'Sumário' : 'Fim do livro'}</span>
+      <span>${r ? `Receita ${f.i + 1} de ${total}${f.tipo === 'receita' ? `<small>${PARTES[f.parte][1]} · ${f.parte + 1} de ${PARTES.length}</small>` : ''}` : p === 0 ? 'Sumário' : 'Fim do livro'}</span>
       <button class="seta-livro ${ler('virou', false) || p === ultima ? '' : 'chamar'}" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
     </div>`;
+  ajustarFolha();
   tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { gravar('virou', true); irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras'); }));
   if (htmlAntigo) virarFolha(htmlAntigo, efeito);
   document.getElementById('fechar').addEventListener('click', () => { livro.aberto = false; telaReceitas(); });
-  tela.querySelectorAll('[data-pagina]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.pagina, 'frente')));
+  tela.querySelectorAll('[data-pagina]').forEach((b) => b.addEventListener('click', () => irPara(+b.dataset.pagina, +b.dataset.pagina < p ? 'tras' : 'frente')));
   tela.querySelectorAll('.nova-receita').forEach((b) => b.addEventListener('click', () => { novaConta(); abrir('calcular'); }));
   tela.querySelectorAll('[data-minha]').forEach((b) => b.addEventListener('click', () => {
     const m = estado.minhas.find((x) => x.id === b.dataset.minha);
@@ -246,7 +261,7 @@ function mostrarPagina(efeito) {
   }));
   tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
   tela.querySelectorAll('[data-tenho-chave]').forEach((b) => b.addEventListener('click', () => telaAtivacao()));
-  if (r && !r.bloqueada) ligarMiniCalculadora(r);
+  if (f.tipo === 'receita' && f.parte === 3) ligarMiniCalculadora(r);
 }
 
 // Efeito de livro: a folha gira pela lombada (esquerda) revelando a outra página.
@@ -274,7 +289,7 @@ function htmlSumario() {
     ${faixaGratis()}
     <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
-      <li><button data-pagina="${i + 1}"><img src="${esc(r.foto)}" alt="" loading="lazy">
+      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(r.foto)}" alt="" loading="lazy">
         <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
     </ol>
@@ -321,35 +336,47 @@ function htmlContracapa() {
   return `
     <div class="contracapa">
       <h1 class="pagina-titulo fim">Fim do livro</h1>
-      <button class="botao sec" data-pagina="1">↺ Voltar à primeira receita</button>
+      <button class="botao sec" data-pagina="${inicioDaReceita(0)}">↺ Voltar à primeira receita</button>
     </div>`;
 }
 
-function htmlPaginaReceita(r) {
-  const o = r.rendimentoObservado || { tipo: 'inicial' };
-  const origem = o.tipo === 'comunidade'
-    ? `Resultado real de ${o.registros} pessoas que fizeram${o.pesoMedioG ? ` (unidades de ~${o.pesoMedioG} g)` : ''}.`
-    : `Estimativa inicial${r.rendimento.pesoUnidadeG ? `, unidades de ~${r.rendimento.pesoUnidadeG} g` : ''}.`;
-  const m = livro.mini[r.id] || {};
-  return `
-    <img class="foto-grande" src="${esc(r.foto)}" alt="">
-    <span class="etiqueta">${esc(r.categoria)}</span>
-    <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <div class="rendimento">
-      <div>Rende aproximadamente</div>
-      <div class="num">${textoRendimento(r)}</div>
-      <p class="nota">${origem} Varia com o tamanho das unidades, o modo de preparo e as perdas.</p>
-    </div>
-    <h2>Ingredientes</h2>
+// A folha ocupa exatamente o espaço entre o topo e as setas; só o miolo rola se não couber.
+function ajustarFolha() {
+  const pg = document.getElementById('pagina'), nav = tela.querySelector('.livro-nav');
+  if (!pg || !nav) return;
+  const livre = innerHeight - pg.getBoundingClientRect().top - nav.offsetHeight - abas.offsetHeight - 14;
+  pg.style.height = Math.max(300, livre) + 'px';
+}
+addEventListener('resize', () => { if (estado.aba === 'receitas' && livro.aberto) ajustarFolha(); });
+
+function htmlParteReceita(r, parte) {
+  const cabeca = `<p class="folha-receita">${esc(r.nome)}</p>`;
+  if (parte === 0) {
+    const o = r.rendimentoObservado || { tipo: 'inicial' };
+    const origem = o.tipo === 'comunidade'
+      ? `Resultado real de ${o.registros} pessoas que fizeram${o.pesoMedioG ? ` (unidades de ~${o.pesoMedioG} g)` : ''}.`
+      : `Estimativa inicial${r.rendimento.pesoUnidadeG ? `, unidades de ~${r.rendimento.pesoUnidadeG} g` : ''}.`;
+    return `
+      <img class="foto-grande" src="${esc(r.foto)}" alt="">
+      <div class="capa-info">
+        <span class="etiqueta">${esc(r.categoria)}</span>
+        <h1 class="pagina-titulo">${esc(r.nome)}</h1>
+        <div class="rendimento"><span>Rende aproximadamente</span><b class="num">${textoRendimento(r)}</b>
+          <p class="nota">${origem} Varia com o tamanho, o preparo e as perdas.</p></div>
+      </div>`;
+  }
+  if (parte === 1) return `${cabeca}<h2>🥚 Ingredientes</h2>
     <ul class="ingred">${r.ingredientes.map((i) => `
       <li><span>${esc(i.nome)}<small>${esc(i.caseira || '')}</small></span><b>${qtd(i.qtd, i.unidade)}</b></li>`).join('')}
     </ul>
-    <h2>Modo de preparo</h2>
+    ${r.embalagemSugerida ? `<p class="nota">📦 Embalagem: ${esc(r.embalagemSugerida)}</p>` : ''}`;
+  if (parte === 2) return `${cabeca}<h2>👩‍🍳 Modo de preparo</h2>
     <ol class="passos">${r.preparo.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
-    ${r.dicaVenda ? `<p class="dica">💡 ${esc(r.dicaVenda)}</p>` : ''}
-
+    ${r.dicaVenda ? `<p class="dica">💡 ${esc(r.dicaVenda)}</p>` : ''}`;
+  const m = livro.mini[r.id] || {};
+  return `${cabeca}
     <section class="mini-calc" aria-label="Calculadora desta receita">
-      <div class="mini-topo">🧮 Calcule aqui</div>
+      <div class="mini-topo">🧮 Quanto cobrar</div>
       <div class="linha">
         <div><label for="m-quero">Quero fazer (unidades)</label><input id="m-quero" type="number" inputmode="numeric" min="1" value="${m.quero || r.rendimentoObservado?.tipico || r.rendimento.unidades}"></div>
         <div><label for="m-emb">Embalagem por unidade</label><div class="prefixo"><span>R$</span><input id="m-emb" type="number" inputmode="decimal" step="0.05" min="0" value="${m.emb ?? 0.2}"></div></div>
@@ -359,7 +386,6 @@ function htmlPaginaReceita(r) {
       <div class="prefixo"><span>R$</span><input id="m-preco" type="number" inputmode="decimal" step="0.5" min="0" value="${m.preco || ''}" placeholder="Toque num preço acima"></div>
       <div id="m-lucro"></div>
       <button class="botao branco" id="m-completa">Ajustar preços e calcular tudo ›</button>
-      <p class="nota">Usa os preços de referência ou os que você salvou. Toque acima para colocar o que você pagou.</p>
     </section>`;
 }
 

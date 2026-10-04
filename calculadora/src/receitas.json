@@ -4,16 +4,86 @@
     "nome": "Cocada Queimada",
     "categoria": "Doces",
     "foto": "/img/receitas/cocada-queimada.jpg",
-    "rendimento": { "unidades": 25, "pesoUnidadeG": 35, "faixa": [20, 30] },
-    "gas": { "minutos": 35, "chama": "baixa" },
+    "rendimento": {
+      "unidades": 25,
+      "pesoUnidadeG": 35,
+      "faixa": [
+        20,
+        30
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "baixa"
+    },
     "embalagemSugerida": "Saquinho de celofane ou forminha (R$ 0,15 a R$ 0,30 cada)",
     "ingredientes": [
-      { "nome": "Açúcar", "qtd": 400, "unidade": "g", "caseira": "2 xícaras", "emb": { "qtd": 1, "unidade": "kg", "preco": 5.49 } },
-      { "nome": "Água", "qtd": 200, "unidade": "ml", "caseira": "1 copo americano", "emb": { "qtd": 1, "unidade": "L", "preco": 0 } },
-      { "nome": "Vinagre de álcool", "qtd": 30, "unidade": "ml", "caseira": "2 colheres de sopa", "emb": { "qtd": 750, "unidade": "ml", "preco": 3.49 } },
-      { "nome": "Cravo-da-índia", "qtd": 2, "unidade": "g", "caseira": "cerca de 10 cravos", "emb": { "qtd": 10, "unidade": "g", "preco": 3.99 } },
-      { "nome": "Coco ralado fresco", "qtd": 350, "unidade": "g", "caseira": "cerca de 3½ xícaras", "emb": { "qtd": 1, "unidade": "kg", "preco": 28 } },
-      { "nome": "Leite condensado", "qtd": 197, "unidade": "g", "caseira": "½ caixinha", "emb": { "qtd": 395, "unidade": "g", "preco": 6.99 } }
+      {
+        "nome": "Açúcar",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Água",
+        "qtd": 200,
+        "unidade": "ml",
+        "caseira": "1 copo americano",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 0
+        }
+      },
+      {
+        "nome": "Vinagre de álcool",
+        "qtd": 30,
+        "unidade": "ml",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 750,
+          "unidade": "ml",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Cravo-da-índia",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "cerca de 10 cravos",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Coco ralado fresco",
+        "qtd": 350,
+        "unidade": "g",
+        "caseira": "cerca de 3½ xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 28
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 197,
+        "unidade": "g",
+        "caseira": "½ caixinha",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      }
     ],
     "preparo": [
       "Coloque o açúcar, a água e o vinagre em uma panela e misture só para incorporar. Leve ao fogo baixo, sem mexer, até formar um caramelo dourado.",
@@ -23,5 +93,66 @@
       "Coloque porções sobre papel-manteiga untado e deixe esfriar completamente até firmar."
     ],
     "dicaVenda": "Porções de 30 a 40 g vendem bem em saquinho individual. Ofereça kit com 3 unidades com um pequeno desconto para aumentar o valor de cada venda."
+  },
+  {
+    "id": "mousse-maracuja",
+    "nome": "Mousse de Maracujá Fácil",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/mousse-maracuja.jpg",
+    "rendimento": {
+      "unidades": 7,
+      "pesoUnidadeG": 100,
+      "faixa": [
+        6,
+        8
+      ]
+    },
+    "gas": {
+      "minutos": 0,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Copinho de 100 ml com tampa e colherzinha (R$ 0,30 a R$ 0,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Suco de maracujá concentrado",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara (natural ou de garrafinha)",
+        "emb": {
+          "qtd": 500,
+          "unidade": "ml",
+          "preco": 8.99
+        }
+      }
+    ],
+    "preparo": [
+      "Coloque o leite condensado, o creme de leite e o suco de maracujá no liquidificador.",
+      "Bata por cerca de 1 minuto, até ficar bem cremoso.",
+      "Despeje em uma travessa ou em taças (ou copinhos, para vender).",
+      "Leve à geladeira por pelo menos 2 horas, até firmar."
+    ],
+    "dicaVenda": "Não vai ao fogo: custo baixo e pronto em minutos. Venda em copinhos de 100 ml com tampa; decorar com um pouco da polpa com sementes por cima valoriza o doce e permite cobrar mais."
   }
 ]

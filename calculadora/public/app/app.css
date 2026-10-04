@@ -212,7 +212,27 @@ body.abertura main { max-width: none; padding: 0; }
 .seta-livro[disabled] { background: #EAD9CA; box-shadow: none; cursor: default; }
 .seta-livro.chamar { animation: chamar 1.4s ease-in-out infinite; }
 @keyframes chamar { 50% { transform: scale(1.12); box-shadow: 0 0 0 10px rgba(249,115,22,.25), 0 8px 18px rgba(124,45,18,.35); } }
-.pagina { margin-bottom: 84px; }
+.pagina { margin-bottom: 0; display: flex; flex-direction: column; overflow: hidden; }
+.pagina-corpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; }
+.pagina-corpo > * { flex-shrink: 0; }
+/* Folha de abertura da receita: a foto ocupa o espaço que sobra. */
+.pagina-capa .pagina-corpo { overflow: hidden; }
+.pagina-capa .foto-grande { flex: 1 1 0; min-height: 110px; height: 0; object-fit: cover; margin-bottom: 10px; }
+.pagina-capa .pagina-titulo { font-size: 24px; margin: 6px 0 8px; line-height: 1.15; }
+.pagina-capa .rendimento { margin: 0; padding: 10px 12px; }
+.pagina-capa .rendimento span { display: block; font-size: 14px; }
+.pagina-capa .rendimento .num { display: block; font-size: 24px; line-height: 1.2; }
+.pagina-capa .rendimento .nota { margin: 4px 0 0; font-size: 12px; color: var(--suave); }
+.folha-receita { margin: 0; font-size: 13px; font-weight: 700; color: #C9A487; letter-spacing: .5px; text-transform: uppercase; }
+.pagina-corpo > h2:first-of-type { margin-top: 4px; }
+.pagina .mini-calc { margin: 8px 0 0; }
+.partes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: -4px 0 10px; }
+.partes button { border: 1px solid var(--linha); background: #fff; border-radius: 12px; padding: 5px 2px; font-size: 12px; font-weight: 700; color: var(--suave); cursor: pointer; line-height: 1.2; }
+.partes button span { display: block; font-size: 18px; }
+.partes button.ativa { background: var(--laranja); border-color: var(--laranja); color: #fff; }
+.livro-nav span { text-align: center; line-height: 1.2; }
+.livro-nav small { display: block; font-size: 12px; font-weight: 700; color: var(--suave); }
+.livro-barra { margin-bottom: 8px; padding: 6px 12px; }
 
 .capa-teste { margin-top: 14px; width: 100%; max-width: 400px; min-height: 50px; border: 2px solid #fff; border-radius: 12px; background: transparent; color: #fff; font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; }
 .capa-teste[disabled] { opacity: .6; }
@@ -223,3 +243,6 @@ body.abertura main { max-width: none; padding: 0; }
 .capa-esqueci { display: block; margin-top: 10px; text-align: center; color: var(--laranja-forte); font-weight: 700; font-size: 14px; }
 .capa-chave { margin-top: 8px; border: 0; background: none !important; font: inherit; cursor: pointer; font-size: 13px !important; opacity: .85; }
 .capa-cartao input[type="email"], .capa-cartao input[type="password"] { text-transform: none; letter-spacing: 0; font-size: 17px; text-align: left; font-weight: 600; }
+.pagina { padding-top: 14px; padding-bottom: 14px; }
+.pagina ol.passos li { font-size: 15px; margin-bottom: 8px; }
+.pagina .ingred li { padding: 8px 0; }
