@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1B3FD6">
+  <title>Comprar — LeuApps</title>
+  <link rel="icon" href="/img/leuapps-192.png">
+  <link rel="stylesheet" href="/loja/compra.css">
+  <style>
+    body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
+    .logo { border-radius: 26px; background: #fff; }
+    h1 { text-shadow: 0 2px 10px rgba(15,30,90,.35); }
+    .preco, .sub, .rodape { color: #E6EDFF; } .preco b { color: #FFE38A; }
+    .itens li { color: #fff; }
+    .rodape a { color: #fff; }
+    .entrar { display: none; } .entrar.aberto { display: block; }
+    .trocar { display: block; width: 100%; margin-top: 12px; background: none; border: 0; color: #1B3FD6; font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; }
+    .botao { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; box-shadow: 0 10px 22px rgba(27,63,214,.35) !important; }
+    .unico { display: inline-block; margin: 0 0 12px; padding: 4px 12px; border-radius: 99px; background: #E8F7EE; color: #15803D; font-size: 13px; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" id="icone" src="/img/leuapps-192.png" alt="">
+    <h1 id="titulo">LeuApps</h1>
+    <p class="preco" id="resumo"></p>
+    <ul class="itens" id="itens"></ul>
+
+    <form id="form" class="cartao" novalidate>
+      <span class="unico">✅ Pagamento único · sem mensalidade</span>
+      <label for="nome">Seu nome</label>
+      <input id="nome" autocomplete="name" required maxlength="80">
+      <label for="email">Seu e-mail</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" required maxlength="120">
+      <label for="senha">Crie uma senha para entrar no app</label>
+      <input id="senha" type="password" autocomplete="new-password" required minlength="6" maxlength="100" placeholder="Mínimo 6 caracteres">
+      <p class="dica-senha">Já tem conta na LeuName? Use o mesmo e-mail e a mesma senha.</p>
+      <p class="erro" id="erro" role="alert"></p>
+      <div class="aviso-recebedor">
+        <span class="atencao">⚠️ COMUNICADO</span>
+        <p class="aviso-titulo">Não estranhe o nome no pagamento</p>
+        <p class="aviso-texto">Nossa empresa é a <b>LeuName Softwares</b>. Por enquanto, o pagamento é recebido pelo CNPJ da nossa empresa, que está trocando de nome. Por isso, no Pix, aparece:</p>
+        <p class="aviso-nome">TRANS ANTUNES</p>
+        <p class="aviso-rodape">Pode pagar tranquilo ✅</p>
+      </div>
+      <button class="botao" type="submit" id="pagar">Pagar com Pix ou cartão</button>
+      <div class="selos" aria-label="Segurança">
+        <span class="selo-item"><b>🔒</b><span>Conexão<br>segura</span></span>
+        <span class="selo-item"><b>🛡️</b><span>Mercado<br>Pago</span></span>
+        <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
+      </div>
+      <p class="seguro">Pagamento seguro pelo Mercado Pago. O app é liberado na sua conta assim que o pagamento é aprovado. Atualizações futuras são opcionais e cobradas à parte, só se você quiser. 7 dias para desistir.</p>
+      <button class="trocar" type="button" data-trocar>Já comprei: entrar com minha conta</button>
+    </form>
+
+    <form id="entrar" class="cartao entrar" novalidate>
+      <h2 style="margin:0 0 6px;font-size:20px">Entrar com sua conta</h2>
+      <label for="e-email">E-mail da compra</label>
+      <input id="e-email" type="email" inputmode="email" autocomplete="email" required maxlength="120">
+      <label for="e-senha">Senha</label>
+      <input id="e-senha" type="password" autocomplete="current-password" required maxlength="100">
+      <p class="erro" id="e-erro" role="alert"></p>
+      <button class="botao" type="submit">Entrar</button>
+      <a class="trocar" href="https://quantocobrar.leunamesoftware.com.br/recuperar">Esqueci a senha</a>
+      <button class="trocar" type="button" data-trocar>Ainda não comprei</button>
+    </form>
+
+    <p class="rodape"><a href="/">← Voltar à loja</a> · <a href="https://quantocobrar.leunamesoftware.com.br/privacidade">Privacidade</a> · <a href="https://quantocobrar.leunamesoftware.com.br/termos">Termos</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
+  </main>
+  <script>
+    // O preço que vale é o do servidor (planos.js); aqui é só a apresentação.
+    const PRODUTOS = {
+      gestacell: { nome: 'Gestacell', preco: 'R$ 30,00', parcelas: 'Pix ou cartão em até 3x', url: '/gestacell/',
+        itens: ['🧾 Vendas, ordens de serviço (OS) e orçamentos', '📦 Estoque, clientes e financeiro da loja', '🔄 Funciona sem internet e sincroniza entre aparelhos'] },
+      radar: { nome: 'Radar Preventivo', preco: 'R$ 20,00', parcelas: 'Pix ou cartão em até 2x', url: 'https://radar.leunamesoftware.com.br',
+        itens: ['📅 Avisa antes de vencer documentos, contas e prazos', '🏢 Tudo da empresa organizado num lugar só', '🔔 Lembretes para nunca perder um prazo'] },
+    };
+    const app = new URLSearchParams(location.search).get('app');
+    const P = PRODUTOS[app];
+    if (!P) location.replace('/');
+    document.title = `Comprar ${P.nome} — LeuApps`;
+    document.getElementById('icone').src = `/img/${app}-192.png`;
+    document.getElementById('titulo').textContent = P.nome;
+    document.getElementById('resumo').innerHTML = `Licença vitalícia por <b style="white-space:nowrap">${P.preco}</b><br>${P.parcelas}`;
+    document.getElementById('itens').innerHTML = P.itens.map((t) => `<li>${t}</li>`).join('');
+    const pagar = document.getElementById('pagar');
+    pagar.textContent = `Pagar ${P.preco} com Pix ou cartão`;
+    const formCompra = document.getElementById('form'), formEntrar = document.getElementById('entrar');
+    document.querySelectorAll('[data-trocar]').forEach((b) => b.addEventListener('click', () => {
+      formCompra.style.display = formCompra.style.display === 'none' ? '' : 'none';
+      formEntrar.classList.toggle('aberto');
+    }));
+    if (new URLSearchParams(location.search).get('entrar') === '1') { formCompra.style.display = 'none'; formEntrar.classList.add('aberto'); }
+    const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const post = (url, dados) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+
+    formCompra.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const erro = document.getElementById('erro');
+      const nome = document.getElementById('nome').value.trim(), email = document.getElementById('email').value.trim(), senha = document.getElementById('senha').value;
+      if (nome.length < 2) { erro.textContent = 'Digite seu nome.'; return; }
+      if (!EMAIL.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
+      if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
+      erro.textContent = ''; pagar.disabled = true; pagar.textContent = 'Abrindo o pagamento...';
+      try {
+        const r = await post('/loja-api/comprar', { nome, email, senha, plano: app });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || !d.url) throw new Error(d.erro === 'senha_incorreta' ? 'Este e-mail já tem conta e a senha não confere. Use a senha da sua conta ou toque em "Esqueci a senha".' : d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
+        try { localStorage.setItem('loja.pedido', JSON.stringify(d.pedido)); } catch {}
+        location.href = d.url;
+      } catch (e) {
+        erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';
+        pagar.disabled = false; pagar.textContent = `Pagar ${P.preco} com Pix ou cartão`;
+      }
+    });
+
+    formEntrar.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const erro = document.getElementById('e-erro'), botao = ev.target.querySelector('.botao');
+      const email = document.getElementById('e-email').value.trim(), senha = document.getElementById('e-senha').value;
+      if (!EMAIL.test(email) || !senha) { erro.textContent = 'Digite o e-mail e a senha.'; return; }
+      botao.disabled = true; erro.textContent = '';
+      try {
+        const r = await post('/loja-api/conta/entrar', { email, senha });
+        if (!r.ok) throw new Error(r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : 'E-mail ou senha não conferem.');
+        const d = await (await fetch('/loja-api/conta/apps')).json();
+        if (d.apps?.[app]) { location.href = P.url; return; }
+        erro.textContent = `Você entrou, mas esta conta ainda não comprou o ${P.nome}.`;
+        formEntrar.classList.remove('aberto'); formCompra.style.display = '';
+        document.getElementById('email').value = email;
+      } catch (e) {
+        erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';
+      }
+      botao.disabled = false;
+    });
+  </script>
+</body>
+</html>

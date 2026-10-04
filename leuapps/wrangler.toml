@@ -14,6 +14,11 @@ binding = "ASSETS"
 binding = "SITE_ANTIGO"
 service = "leuname-site-br"
 
+# Servidor de vendas e contas (worker do Quanto Cobrar): /loja/* e /loja-api/*.
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
+
 [[routes]]
 pattern = "apps.leunamesoftware.com.br"
 custom_domain = true

@@ -49,7 +49,11 @@
     .grade img { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 4px 12px rgba(10,20,60,.18); }
     .botoes { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
     button.abrir { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
-    .tirar { border: 0; background: none; font: inherit; font-size: 12px; color: var(--suave); text-decoration: underline; cursor: pointer; }
+    .tirar { min-height: 42px; border: 1.5px solid #F3C4C4; border-radius: 14px; background: #fff; font: inherit; font-size: 15px; font-weight: 800; color: #B42318; cursor: pointer; }
+    /* Todos os botões do cartão com a mesma largura, altura e letra. */
+    .botoes { width: 124px; }
+    .botoes > * { width: 100%; min-width: 0; min-height: 42px; margin: 0; padding: 0 10px; font-size: 15px; box-sizing: border-box; }
+    button.abrir { font-size: 15px; }
     .abrir.ouro { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #3B2300; box-shadow: 0 6px 14px rgba(245,158,11,.32); }
     .folha-fundo { position: fixed; inset: 0; background: rgba(5,10,30,.55); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
     .folha { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--fundo); border-radius: 22px 22px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
@@ -59,11 +63,13 @@
     .plano b { font-size: 16px; } .plano .valor { font-size: 18px; font-weight: 900; color: var(--azul); text-align: right; }
     .plano p { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--suave); }
     .plano .abrir { grid-column: 1 / -1; }
+    .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: #1B3FD6; font-weight: 800; }
     .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; vertical-align: middle; }
     .selo-tipo.unico { background: #DCFCE7; color: #166534; } .selo-tipo.assinatura { background: #E0E7FF; color: #3730A3; }
     .fechar-folha { width: 100%; margin-top: 4px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--suave); padding: 10px; cursor: pointer; }
     .rodape { margin-top: 32px; text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
     @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
+    @media (max-width: 380px) { .botoes { grid-column: 1 / -1; width: 100%; } }
   </style>
 </head>
 <body>
@@ -140,13 +146,14 @@
       document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
       document.getElementById('descubra').hidden = !resto.length;
     }
-    function planos(id) {
+    function planos(id, paraAbrir) {
       const a = apps.find((x) => x.id === id); if (!a || !a.planos) return;
       const f = document.createElement('div'); f.className = 'folha-fundo';
       f.innerHTML = `<div class="folha" role="dialog" aria-label="Planos ${esc(a.nome)}">
-        <h3>${esc(a.nome)}</h3><p class="sub">Escolha como quer pagar. Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
+        <h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
         ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo ${esc(p.tipo)}">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
           <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p><a class="abrir" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
+        ${a.planos[0].url.startsWith('/loja/') ? `<a class="ja-comprei" href="${esc(a.planos[0].url)}&entrar=1">Já comprei: entrar com minha conta</a>` : ''}
         <button class="fechar-folha" type="button">Fechar</button></div>`;
       f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha')) f.remove(); });
       document.body.appendChild(f);
@@ -157,6 +164,15 @@
       if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = '✓ Instalado'; ins.classList.add('verde'); setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
       if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
     }
+    // Apps que só abrem depois de comprados (exigeCompra): confere a conta antes de abrir.
+    document.addEventListener('click', async (e) => {
+      const el = e.target.closest('a[href]'); if (!el) return;
+      const a = apps.find((x) => x.exigeCompra && el.href.startsWith(x.url)); if (!a) return;
+      e.preventDefault();
+      let tem = false;
+      try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
+      if (tem) location.href = el.href; else planos(a.id, true);
+    }, true);
     lista.addEventListener('click', aoClicar);
     document.getElementById('sugestoes').addEventListener('click', aoClicar);
     function aba(qual) {

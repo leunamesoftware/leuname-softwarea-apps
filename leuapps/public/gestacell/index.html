@@ -852,48 +852,72 @@ function authFooterHTML(){
   return `<p class="small center muted" style="margin-top:22px;opacity:.55;letter-spacing:.3px;">LeuName Softwares</p>`;
 }
 
+/* Compra pela loja LeuApps (www.leunamesoftware.com.br): a licença fica na conta (e-mail + senha)
+   do cliente. Entrou na conta -> o app busca a chave dela sozinho. Chave antiga continua valendo. */
+const LOJA_COMPRA='/loja/comprar?app=gestacell';
+async function chaveDaConta(){
+  try{
+    const r=await fetch('/loja-api/conta/apps',{cache:'no-store',credentials:'same-origin'});
+    if(!r.ok) return false;
+    const chave=(await r.json())?.apps?.gestacell?.chave;
+    if(!chave||!(await licenseKeyValid(chave))) return false;
+    lsSet(LICENSE_LS_KEY,chave); lsSet(LICENSE_REVOKED_LS_KEY,'');
+    return true;
+  }catch(e){ return false; }
+}
 function renderLicenseGate(errMsg){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
   root.innerHTML=`
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
-    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Ativação da licença</h2>
-    <p class="muted small center" style="margin:6px 0 18px;">Para usar o Gestacell, digite a chave de licença enviada pela LeuName Softwares.</p>
-    <div class="field"><label>Chave de licença <span class="req">*</span></label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;" autofocus></div>
-    ${errMsg?`<div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
-    <button class="btn primary" id="lic-activate" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Ativar licença</button>
-    <p class="muted small center" style="margin-top:14px;">Sem a chave? Fale com a LeuName Softwares para receber sua licença.</p>
+    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Gestacell</h2>
+    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br><b>Pagamento único de R$ 30</b>, sem mensalidade.</p>
+    ${errMsg?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
+    <a class="btn primary" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;">🛒 Comprar o Gestacell · R$ 30</a>
+    <div class="divider" style="margin:18px 0 12px;"></div>
+    <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Já comprou? Entre com a sua conta</p>
+    <div class="field"><label>E-mail da compra</label><input id="cg-email" type="email" autocomplete="username" placeholder="voce@email.com"></div>
+    <div class="field" style="margin-top:10px;"><label>Senha</label><input id="cg-senha" type="password" autocomplete="current-password"></div>
+    <div id="cg-erro" class="callout warn hidden" style="margin-top:10px;"></div>
+    <button class="btn outline" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:11px;">Entrar</button>
+    <p class="small center" style="margin-top:12px;"><a href="https://quantocobrar.leunamesoftware.com.br/recuperar">Esqueci a senha</a> · <a href="#" id="cg-chave">Tenho uma chave de licença</a></p>
+    <div id="cg-chave-box" class="hidden" style="margin-top:10px;">
+      <div class="field"><label>Chave de licença</label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;"></div>
+      <button class="btn outline" id="lic-activate" style="width:100%;justify-content:center;margin-top:10px;padding:11px;">Ativar chave</button>
+    </div>
     ${authFooterHTML()}
   </div></div>`;
-  const input=document.getElementById('lic-key');
+  const erro=(t)=>{ const b=document.getElementById('cg-erro'); b.textContent=t; b.classList.remove('hidden'); };
+  const entrar=async()=>{
+    const email=document.getElementById('cg-email').value.trim(), senha=document.getElementById('cg-senha').value;
+    if(!email||!senha){ erro('Digite o e-mail e a senha.'); return; }
+    const btn=document.getElementById('cg-entrar'); btn.disabled=true; btn.textContent='Entrando...';
+    try{
+      const r=await fetch('/loja-api/conta/entrar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})});
+      if(!r.ok) throw new Error(r.status===429?'Muitas tentativas. Espere um minuto.':'E-mail ou senha não conferem.');
+      if(!(await chaveDaConta())) throw new Error('Esta conta ainda não comprou o Gestacell.');
+      toast('Gestacell liberado!','success');
+      __booted=false; boot();
+    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); btn.disabled=false; btn.textContent='Entrar'; }
+  };
+  document.getElementById('cg-entrar').onclick=entrar;
+  document.getElementById('cg-senha').addEventListener('keydown',(e)=>{ if(e.key==='Enter') entrar(); });
+  document.getElementById('cg-chave').onclick=(e)=>{ e.preventDefault(); document.getElementById('cg-chave-box').classList.toggle('hidden'); document.getElementById('lic-key').focus(); };
   const doActivate=async()=>{
     const btn=document.getElementById('lic-activate');
-    const raw=input.value.trim().toUpperCase();
+    const raw=document.getElementById('lic-key').value.trim().toUpperCase();
     if(!raw){ renderLicenseGate('Digite a chave de licença.'); return; }
+    if(isTrialKey(raw)){ renderLicenseGate('O teste grátis terminou. Compre a licença para continuar.'); return; }
     btn.disabled=true; btn.textContent='Verificando...';
     const valid=await licenseKeyValid(raw);
     if(!valid){ renderLicenseGate('Chave de licença inválida. Verifique e tente novamente.'); return; }
     lsSet(LICENSE_LS_KEY,raw);
-    if(isTrialKey(raw) && !lsGet(TRIAL_INICIO_LS_KEY)){ lsSet(TRIAL_INICIO_LS_KEY,String(Date.now())); }
     toast('Licença ativada com sucesso!','success');
     __booted=false; boot();
   };
   document.getElementById('lic-activate').onclick=doActivate;
-  input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
-  input.focus();
-}
-
-function renderTrialExpirado(){
-  document.getElementById('app-root').classList.remove('ready');
-  const root=document.getElementById('auth-root');
-  root.innerHTML=`
-  <div class="auth-screen"><div class="auth-card">
-    ${authBrandHTML()}
-    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Período de teste encerrado</h2>
-    <div class="callout warn" style="margin-top:10px;"><span>${ic('warn',15)}</span><span>Seu período de teste do Gestacell terminou. Gostou do sistema? Fale com a LeuName Softwares pra adquirir a licença completa.</span></div>
-    ${authFooterHTML()}
-  </div></div>`;
+  document.getElementById('lic-key').addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
 }
 
 function renderLicenseRevoked(){
@@ -2701,18 +2725,6 @@ function trialExpirado(){
   const dias = inicio < TRIAL_MUDOU_EM ? TRIAL_DIAS_ANTIGO : TRIAL_DIAS;
   return (Date.now()-inicio) > dias*86400000;
 }
-/* Instalação nova, sem nenhuma chave ainda: libera os 7 dias de teste na hora,
-   sem pedir nada -- pensado pra quem instala pelo teste fechado da Play Store
-   (testadores desconhecidos, inclusive de outros países, que não teriam como
-   receber uma chave manualmente). Quem já comprou licença continua podendo
-   ativá-la a qualquer momento em Configurações → Licença. */
-async function ativarTrialAutomatico(){
-  const alfabeto='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const g2=Array.from({length:4},()=>alfabeto[Math.floor(Math.random()*alfabeto.length)]).join('');
-  const checksum=await licenseChecksum('TRIA',g2);
-  lsSet(LICENSE_LS_KEY,`LEU-TRIA-${g2}-${checksum}`);
-  lsSet(TRIAL_INICIO_LS_KEY,String(Date.now()));
-}
 const LICENSE_REVOKED_LS_KEY='leuname_licenca_revogada';
 /* Consulta o servidor de licencas para saber se a chave foi revogada (ex:
    cliente inadimplente). So bloqueia com confirmacao explicita do servidor
@@ -2842,7 +2854,7 @@ VIEWS.configuracoes = {
       const lic=cfg.licenca;
       body=`<div class="panel"><div class="panel-body">
       <div class="flex-between">
-        <div><b>Status</b><br><span class="chip ${lic.status==='ativada_local'?'green':'amber'}" style="margin-top:4px;">${lic.status==='ativada_local'?'Licença ativada (validação local)':'Modo avaliação'}</span></div>
+        <div><b>Status</b><br><span class="chip ${lic.status==='ativada_local'?'green':'amber'}" style="margin-top:4px;">${lic.status==='ativada_local'?'Licença ativada (validação local)':'Sem licença'}</span></div>
         <div class="right"><b>Dispositivos</b><br><span class="mono">${lic.dispositivosMax||LICENSE_MAX_DEVICES_DEFAULT} permitidos</span></div>
       </div>
       <div class="divider"></div>
@@ -3054,8 +3066,10 @@ async function boot(){
   try{ await openDB(); }catch(e){ console.error('Falha ao abrir banco local',e); }
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
-  if(!(await isLicenseActivated())){ await ativarTrialAutomatico(); }
-  if(trialExpirado()){ renderTrialExpirado(); return; }
+  // Sem teste grátis: só abre com licença (comprada na loja LeuApps ou chave antiga).
+  if(!(await isLicenseActivated()) || trialExpirado()){
+    if(!(await chaveDaConta())){ renderLicenseGate(trialExpirado()?'Seu período de teste terminou. Para continuar usando, compre a licença.':''); return; }
+  }
   if(lsGet(LICENSE_REVOKED_LS_KEY)==='1'){
     renderLicenseRevoked();
     checkLicenseRevoked().then(revoked=>{ if(!revoked){ __booted=false; boot(); } });

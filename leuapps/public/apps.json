@@ -38,7 +38,16 @@
     "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
     "icone": "/img/gestacell-192.png",
     "url": "/gestacell/",
-    "preco": "7 dias grátis para testar"
+    "preco": "R$ 30 · pagamento único",
+    "planos": [
+      {
+        "nome": "Licença vitalícia",
+        "tipo": "unico",
+        "preco": "R$ 30,00",
+        "detalhe": "Paga uma vez, usa para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x · atualizações futuras opcionais, pagas à parte só se quiser",
+        "url": "/loja/comprar?app=gestacell"
+      }
+    ]
   },
   {
     "id": "radar",
@@ -47,6 +56,16 @@
     "resumo": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
     "icone": "/img/radar-192.png",
     "url": "https://radar.leunamesoftware.com.br",
-    "preco": "Grátis para começar"
+    "preco": "R$ 20 · pagamento único",
+    "exigeCompra": true,
+    "planos": [
+      {
+        "nome": "Licença vitalícia",
+        "tipo": "unico",
+        "preco": "R$ 20,00",
+        "detalhe": "Paga uma vez, usa para sempre · avisos de documentos, contas e prazos · Pix ou cartão em até 2x · atualizações futuras opcionais, pagas à parte só se quiser",
+        "url": "/loja/comprar?app=radar"
+      }
+    ]
   }
 ]

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1B3FD6">
+  <meta name="robots" content="noindex">
+  <title>Sua compra — LeuApps</title>
+  <link rel="icon" href="/img/leuapps-192.png">
+  <link rel="stylesheet" href="/loja/compra.css">
+  <style>
+    body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
+    .logo { border-radius: 26px; background: #fff; }
+    .botao:not(.sec) { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; }
+    .sub, .rodape { color: #E6EDFF; } .rodape a { color: #fff; }
+  </style>
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" id="icone" src="/img/leuapps-192.png" alt="">
+    <div id="conteudo" aria-live="polite"><p class="sub">Conferindo seu pagamento...</p></div>
+    <p class="rodape"><a href="/">← Voltar à loja</a><br>Dúvidas: <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a></p>
+  </main>
+  <script>
+    const APPS = { gestacell: { nome: 'Gestacell', url: '/gestacell/' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br' } };
+    const q = new URLSearchParams(location.search);
+    let guardado = ''; try { guardado = JSON.parse(localStorage.getItem('loja.pedido') || '""'); } catch {}
+    const pedido = q.get('p') || guardado || '';
+    const pagamento = q.get('payment_id') || q.get('collection_id') || '';
+    const el = document.getElementById('conteudo');
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let tentativas = 0;
+
+    function mostrarAprovado(d) {
+      try { localStorage.removeItem('loja.pedido'); } catch {}
+      const a = APPS[d.app] || { nome: 'seu app', url: '/' };
+      if (APPS[d.app]) document.getElementById('icone').src = `/img/${d.app}-192.png`;
+      el.innerHTML = `
+        <h1>Pagamento aprovado, ${esc(d.nome)}! 🎉</h1>
+        <p class="sub"><b>${esc(a.nome)}</b> liberado na sua conta, <b>para sempre</b>.</p>
+        <ol class="passos-compra">
+          <li><b>1. Abra o app</b>
+            <a class="botao" href="${a.url}">Abrir o ${esc(a.nome)}</a>
+            <p class="dica">Em outro aparelho, toque em <b>Entrar com minha conta</b> e use o <b>e-mail e a senha</b> que você criou.</p></li>
+          <li><b>2. Tenha sempre à mão</b>
+            <a class="botao sec" href="/">📲 Ir para o LeuApps</a>
+            <p class="dica">No LeuApps ficam todos os nossos aplicativos.</p></li>
+        </ol>
+        <p class="seguro">O comprovante do Mercado Pago chega no seu e-mail.</p>`;
+    }
+
+    async function conferir() {
+      if (!/^[0-9a-f]{36}$/.test(pedido)) { el.innerHTML = '<h1>Pedido não encontrado</h1><p class="sub">Abra o link que apareceu depois do pagamento.</p>'; return; }
+      try {
+        const r = await fetch(`/loja-api/pedido/${pedido}${pagamento && tentativas === 0 ? `?pagamento=${encodeURIComponent(pagamento)}` : ''}`);
+        const d = await r.json();
+        if (d.pago) return mostrarAprovado(d);
+        if (d.status === 'rejected' || d.status === 'cancelled') {
+          el.innerHTML = `<h1>Pagamento não aprovado</h1><p class="sub">Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.</p><a class="botao" href="/loja/comprar?app=${esc(d.app || '')}">Tentar de novo</a>`;
+          return;
+        }
+        el.innerHTML = `<h1>Aguardando o pagamento</h1><p class="sub">${d.status === 'aguardando' ? 'Se você já pagou o Pix, a confirmação chega em instantes.' : 'Seu pagamento está em análise.'} Esta página atualiza sozinha.</p><div class="carregando"></div>`;
+      } catch {
+        el.innerHTML = '<h1>Sem conexão</h1><p class="sub">Tentando de novo...</p>';
+      }
+      tentativas++;
+      if (tentativas < 120) setTimeout(conferir, tentativas < 20 ? 3000 : 10000);
+    }
+    conferir();
+  </script>
+</body>
+</html>

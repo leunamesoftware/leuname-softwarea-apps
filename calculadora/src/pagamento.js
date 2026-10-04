@@ -35,7 +35,9 @@ export async function criarPedido(env, origem, d, req) {
   const agora = new Date().toISOString();
   await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, conta_id, criado_em, atualizado_em) VALUES (?, ?, ?, 'aguardando', ?, ?, ?, ?)")
     .bind(id, nome, email, plano, c.conta.id, agora, agora).run();
-  const volta = `${origem}/compra?p=${id}`;
+  // Outros apps compram pela loja (www.../loja/comprar): a volta é a página da loja.
+  const volta = P.app === 'quantocobrar' ? `${origem}/compra?p=${id}` : `${origem}/loja/compra?p=${id}`;
+  const aviso = `${env.URL_AVISO || origem}/api/mp/aviso`;
 
   if (P.assinatura) {
     // Assinatura sem plano prévio: o Mercado Pago devolve o link para o cliente cadastrar o cartão.
@@ -62,10 +64,10 @@ export async function criarPedido(env, origem, d, req) {
       items: [{ id: `${env.APP_ID}-${plano}`, title: P.titulo, quantity: 1, unit_price: P.preco, currency_id: 'BRL' }],
       payer: { name: nome, email },
       external_reference: id,
-      notification_url: `${origem}/api/mp/aviso`,
+      notification_url: aviso,
       back_urls: { success: volta, pending: volta, failure: volta },
       auto_return: 'approved',
-      payment_methods: { installments: plano === 'anual' ? 3 : 1 }, // anual: cartão em até 3x; básico: à vista
+      payment_methods: { installments: plano === 'anual' ? 3 : P.parcelas || 1 }, // anual: cartão em até 3x; básico: à vista
       statement_descriptor: 'LEUNAME',
     }),
   });
@@ -83,7 +85,7 @@ async function aplicarPagamento(env, pedido, pagamentoId, valor) {
   try {
     let chave = pedido.chave;
     if (!chave) {
-      chave = await emitirLicenca(env, pedido.nome, pedido.email);
+      chave = await emitirLicenca(env, pedido.nome, pedido.email, P.licenca);
       await env.DB.prepare("UPDATE pedidos SET status = 'pago', chave = ?, pagamento_id = ?, atualizado_em = ? WHERE id = ?")
         .bind(chave, String(pagamentoId), agora, pedido.id).run();
     }
@@ -179,5 +181,5 @@ export async function situacaoPedido(env, id, pagamentoId) {
   // Na volta do Mercado Pago, confere na hora (não depende de o aviso já ter chegado).
   if (pagamentoId && env.MP_ACCESS_TOKEN) await processarPagamento(env, pagamentoId).catch(() => {});
   const p = await env.DB.prepare('SELECT p.status, p.nome, p.plano, a.expira_em FROM pedidos p LEFT JOIN acessos a ON a.chave = p.chave WHERE p.id = ?').bind(id).first();
-  return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, expiraEm: p.expira_em || null } : null;
+  return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, app: PLANOS[p.plano]?.app, expiraEm: p.expira_em || null } : null;
 }

@@ -1,7 +1,7 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { RECEITAS_GRATIS, acessoDaChave, acessoDaConta } from './planos.js';
+import { RECEITAS_GRATIS, acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
 import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao } from './contas.js';
 
@@ -130,6 +130,11 @@ export default {
         const conta = await contaDaSessao(env, req);
         if (!conta) return json({ conta: null });
         return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
+      }
+      // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
+      if (pathname === '/api/conta/apps' && m === 'GET') {
+        const conta = await contaDaSessao(env, req);
+        return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id) }) : json({ conta: null, apps: {} });
       }
 
       // ---- app (conta ou chave antiga: o plano dela; sem nada: degustação) ----

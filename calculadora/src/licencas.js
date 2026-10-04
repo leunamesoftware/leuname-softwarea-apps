@@ -29,11 +29,11 @@ export async function licencaAtiva(env, bruta) {
   return l && l.status === 'ativa' && l.app_id === env.APP_ID ? chave : null;
 }
 
-export async function emitirLicenca(env, nome, email) {
+export async function emitirLicenca(env, nome, email, appId = env.APP_ID) {
   const chave = await gerarChave();
   await env.LICDB.prepare(`INSERT INTO licencas (id, app_id, chave, cliente_nome, cliente_contato, origem, status, criado_em)
     VALUES (?, ?, ?, ?, ?, 'mercadopago', 'ativa', datetime('now'))`)
-    .bind(crypto.randomUUID(), env.APP_ID, chave, nome, email).run();
+    .bind(crypto.randomUUID(), appId, chave, nome, email).run();
   return chave;
 }
 
