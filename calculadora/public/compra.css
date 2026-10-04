@@ -36,10 +36,9 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .plano em { display: block; margin-top: 6px; font-style: normal; font-size: 13px; font-weight: 800; color: #C2410C; }
 .aviso-recebedor { color: #1F1A17; background: #F5ECD7; border: 2px solid #D6C3A0; border-radius: 14px; padding: 12px 14px; margin: 14px 0 0; text-align: center; }
 .aviso-titulo { margin: 8px 0 6px; font-size: 15px; font-weight: 800; }
-.aviso-recebedor ul { list-style: none; padding: 0; margin: 0; }
-.aviso-recebedor li { display: grid; grid-template-columns: 90px 1fr; align-items: center; background: #fff; border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; text-align: left; }
-.aviso-recebedor li span { color: #6B5B4E; font-size: 13px; font-weight: 700; }
-.aviso-recebedor li b { color: #000; font-size: 16px; font-weight: 800; letter-spacing: .3px; }
+.aviso-texto { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }
+.aviso-texto b { color: #000; }
+.aviso-nome { margin: 0 0 8px; padding: 10px; background: #fff; border-radius: 10px; font-size: 18px; font-weight: 800; letter-spacing: .5px; color: #000; }
 .aviso-rodape { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
 .atencao { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #DC2626; color: #fff; font-weight: 800; font-size: 13px; animation: piscar 1.2s ease-in-out infinite; }
 @keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
