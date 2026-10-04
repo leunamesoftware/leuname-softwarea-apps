@@ -503,5 +503,79 @@
       "Deixe esfriar e leve à geladeira por algumas horas antes de desenformar."
     ],
     "dicaVenda": "Venda inteiro por encomenda ou em fatias no pote. Mini pudins em forminhas individuais valorizam o produto e vendem bem em festas e marmitas de sobremesa."
+  },
+  {
+    "id": "trufa-chocolate",
+    "nome": "Trufa de Chocolate Cremosa",
+    "categoria": "Doces",
+    "foto": "/img/receitas/trufa-chocolate.jpg",
+    "rendimento": {
+      "unidades": 25,
+      "pesoUnidadeG": 22,
+      "faixa": [
+        22,
+        30
+      ]
+    },
+    "gas": {
+      "minutos": 10,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Forminha + papel chumbo ou caixinha individual (R$ 0,15 a R$ 0,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Chocolate meio amargo (recheio)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "3 barras de 100 g",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "¾ de caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Chocolate para cobertura",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 barras de 100 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 45
+        }
+      }
+    ],
+    "preparo": [
+      "Pique os 300 g de chocolate e coloque em uma tigela.",
+      "Aqueça o creme de leite com a manteiga, sem deixar ferver. Despeje sobre o chocolate e misture até formar um creme liso.",
+      "Leve à geladeira até o recheio ficar firme o suficiente para modelar.",
+      "Faça pequenas porções e modele as trufas.",
+      "Derreta o chocolate da cobertura e banhe as trufas.",
+      "Coloque sobre papel-manteiga e deixe o chocolate firmar."
+    ],
+    "dicaVenda": "Trufa vende muito em datas especiais (Páscoa, Dia das Mães, Natal). Varie a cobertura (granulado, amendoim, fios de chocolate branco) e venda em caixinhas com 4, 6 ou 12 unidades."
   }
 ]
