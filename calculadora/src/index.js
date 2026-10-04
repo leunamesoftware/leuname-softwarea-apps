@@ -2,6 +2,7 @@ import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { criarPedido, receberAviso, recuperarChave, situacaoPedido } from './pagamento.js';
+import { ehTeste, iniciarTeste, situacaoTeste, RECEITAS_NO_TESTE } from './testes.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
@@ -115,20 +116,44 @@ export default {
         return s ? json(s) : json({ erro: 'nao_encontrado' }, 404);
       }
 
-      // ---- app (exige chave) ----
+      // ---- teste grátis ----
+      if (pathname === '/api/teste' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const d = await corpo(req);
+        const r = await iniciarTeste(env, d?.aparelho, req.headers.get('CF-Connecting-IP') || 'x');
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+
+      // ---- app (exige chave ou teste em dia) ----
       if (pathname === '/api/ativar' && m === 'POST') {
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const d = await corpo(req);
         return (await licencaAtiva(env, d?.chave)) ? json({ ok: true }) : json({ erro: 'chave_invalida' }, 401);
       }
       if (pathname.startsWith('/api/')) {
-        const chave = await licencaAtiva(env, chaveDoPedido(req));
-        if (!chave) return json({ erro: 'chave_invalida' }, 401);
+        const bruta = chaveDoPedido(req);
+        let chave = null, teste = null;
+        if (ehTeste(bruta)) {
+          teste = await situacaoTeste(env, bruta);
+          if (!teste) return json({ erro: 'chave_invalida' }, 401);
+          if (!teste.ativo) return json({ erro: 'teste_acabou' }, 401);
+        } else {
+          chave = await licencaAtiva(env, bruta);
+          if (!chave) return json({ erro: 'chave_invalida' }, 401);
+        }
         if (pathname === '/api/receitas' && m === 'GET') {
           const stats = await estatisticas(env);
-          return json({ receitas: RECEITAS.map((r) => ({ ...r, rendimentoObservado: stats(r) })) });
+          const receitas = RECEITAS.map((r, i) => (teste && i >= RECEITAS_NO_TESTE
+            ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
+            : { ...r, rendimentoObservado: stats(r) }));
+          return json({ receitas, teste: teste && { expiraEm: teste.expiraEm } });
         }
-        if (pathname === '/api/rendimento' && m === 'POST') return await registrarRendimento(env, chave, await corpo(req));
+        if (pathname === '/api/rendimento' && m === 'POST') {
+          // Rendimento só entra na média quando vem de quem comprou (evita dados de testes repetidos).
+          if (teste) return json({ ok: true });
+          return await registrarRendimento(env, chave, await corpo(req));
+        }
         return json({ erro: 'nao_encontrado' }, 404);
       }
       return env.ASSETS.fetch(req);
