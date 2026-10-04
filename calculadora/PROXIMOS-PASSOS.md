@@ -26,3 +26,10 @@ Site (canal do WhatsApp) — PRONTO (v3.3): Básico R$ 9,99 e Pro anual R$ 29,90
   assinatura conferida ao abrir o app (renovação/cancelamento automáticos).
 - `/api/receitas`: grátis → 2, básico → 30, pro/chave → todas.
 - Novo AAB → produção → enviar para revisão.
+
+## Google Play — conta removida (4/out/2026)
+- Motivo: DDA 11.4 (informações inconsistentes) — conta bancária da PJ (Trans Antunes) no perfil de pagamentos PF.
+- Contestação enviada em 4/out/2026 09:56 — tíquete **1-1772000041037**, com PDF de documentos (identidade, alteração JUCERJA, D-U-N-S 928262790).
+- Pedido: reativar a conta ou autorizar conta de organização (D-U-N-S) e fechar a PF.
+- Enquanto isso: NÃO criar conta nova; robô do Android não envia para a Play (trilha padrão "nenhuma").
+- Vendas seguem pelo site (Mercado Pago) + APK em /baixar.
