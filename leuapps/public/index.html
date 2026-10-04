@@ -30,17 +30,17 @@
     .app .cat { font-size: 13px; color: var(--suave); font-weight: 600; }
     .app .resumo { margin: 2px 0 0; font-size: 13px; color: var(--suave); line-height: 1.35; }
     .app .preco { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 800; color: #0F8A4B; }
-    .abrir { min-width: 82px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--azul); color: #fff; font-weight: 800; text-decoration: none; padding: 0 16px; }
+    .abrir { min-width: 82px; min-height: 40px; text-align: center; line-height: 1.15; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--azul); color: #fff; font-weight: 800; text-decoration: none; padding: 0 16px; }
     .vazio { color: var(--suave); text-align: center; padding: 24px 0; }
     .instalar { display: none; margin: 0 0 16px; padding: 14px; border-radius: 18px; background: var(--cartao); border: 2px solid var(--azul); }
     .instalar b { display: block; }
     .instalar p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
     .instalar button { border: 0; font: inherit; cursor: pointer; }
-    body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
-    .abas { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; background: var(--cartao); border-top: 1px solid var(--linha); padding-bottom: env(safe-area-inset-bottom); z-index: 3; }
-    .abas button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--suave); padding: 10px 0 12px; cursor: pointer; }
-    .abas button span { display: block; font-size: 22px; line-height: 1.2; }
-    .abas button[aria-selected="true"] { color: var(--azul); }
+    .abas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; max-width: 720px; margin: 12px auto 0; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.14); }
+    .abas button { border: 0; border-radius: 999px; background: none; font: inherit; font-weight: 800; font-size: 14px; color: #fff; padding: 9px 2px; white-space: nowrap; cursor: pointer; }
+    .abas button[aria-selected="true"] { background: #fff; color: var(--azul-escuro); }
+    .secao-titulo { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .secao-titulo small { color: var(--suave); font-weight: 700; font-size: 13px; }
     .grade { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 18px 10px; }
     .grade a { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: var(--texto); font-size: 13px; font-weight: 700; text-align: center; }
     .grade img { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 4px 12px rgba(10,20,60,.18); }
@@ -54,6 +54,11 @@
 <body>
   <header class="topo">
     <div class="marca"><img src="/img/leuapps-192.png" alt=""><div><b>LeuApps</b><small>Aplicativos LeuName Softwares</small></div></div>
+    <nav class="abas" role="tablist">
+      <button role="tab" id="tab-loja" aria-selected="true">🛍️ Loja</button>
+      <button role="tab" id="tab-meus" aria-selected="false">📱 Meus apps</button>
+      <button role="tab" id="tab-tela" aria-selected="false">📲 Tela inicial</button>
+    </nav>
     <div class="busca"><input id="busca" type="search" placeholder="Buscar aplicativo" aria-label="Buscar aplicativo" autocomplete="off"></div>
   </header>
   <main>
@@ -66,16 +71,21 @@
       <h2>Loja</h2>
       <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
     </section>
+    <section id="aba-tela" hidden>
+      <h2>Colocar na tela inicial</h2>
+      <p class="resumo" style="margin:-6px 0 14px;color:var(--suave)">Escolha os apps que você quer como ícone na tela do celular, como um app instalado.</p>
+      <ul class="lista" id="tela"></ul>
+    </section>
     <section id="aba-meus" hidden>
       <h2>Meus apps</h2>
       <ul class="grade" id="meus"></ul>
+      <div id="descubra">
+        <h2 class="secao-titulo" style="margin-top:28px">Descubra mais <small>toque em Instalar</small></h2>
+        <ul class="lista" id="sugestoes"></ul>
+      </div>
     </section>
   </main>
-  <p class="rodape">LeuName Softwares · Todos os aplicativos sempre na versão mais nova.</p>
-  <nav class="abas" role="tablist">
-    <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
-    <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
-  </nav>
+  <p class="rodape">© 2026 LeuName Softwares · Todos os direitos reservados.<br>Aplicativos sempre na versão mais nova.</p>
   <script>
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const lista = document.getElementById('lista');
@@ -84,31 +94,47 @@
     const ler = () => { try { return JSON.parse(localStorage.getItem('leuapps.meus') || '[]'); } catch { return []; } };
     const gravar = (v) => { try { localStorage.setItem('leuapps.meus', JSON.stringify(v)); } catch {} };
     let meus = ler();
-    function mostrar(filtro = '') {
-      const f = filtro.trim().toLowerCase();
-      const vis = apps.filter((a) => !f || (a.nome + ' ' + a.categoria + ' ' + a.resumo).toLowerCase().includes(f));
-      lista.innerHTML = vis.map((a) => {
-        const tem = meus.includes(a.id);
-        return `
+    const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
+    function cartao(a) {
+      const tem = meus.includes(a.id);
+      return `
         <li class="app">
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span></div>
           <div class="botoes">${tem
-            ? `<a class="abrir" href="${esc(a.url)}">Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
-            : `<button class="abrir instalar-app" data-instalar="${esc(a.id)}">Instalar</button>`}</div>
-        </li>`; }).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
-      const mi = apps.filter((a) => meus.includes(a.id));
-      document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(a.url)}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
-        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Vá na Loja e toque em Instalar.</li>';
+            ? `<a class="abrir" href="${esc(link(a))}">Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
+            : `<button class="abrir" data-instalar="${esc(a.id)}">Instalar</button>`}</div>
+        </li>`;
     }
-    lista.addEventListener('click', (e) => {
+    function mostrar(filtro = '') {
+      const f = filtro.trim().toLowerCase();
+      const vis = apps.filter((a) => !f || (a.nome + ' ' + a.categoria + ' ' + a.resumo).toLowerCase().includes(f));
+      lista.innerHTML = vis.map(cartao).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
+      const mi = apps.filter((a) => meus.includes(a.id));
+      document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(link(a))}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
+        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Escolha abaixo e toque em Instalar.</li>';
+      document.getElementById('tela').innerHTML = mi.map((a) => `
+        <li class="app">
+          <img src="${esc(a.icone)}" alt="" loading="lazy">
+          <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div></div>
+          <div class="botoes"><a class="abrir" href="${esc(link(a))}&atalho=1">Colocar na<br>tela inicial</a></div>
+        </li>`).join('') || '<li class="vazio">Instale um app na Loja primeiro. Depois ele aparece aqui.</li>';
+      const resto = apps.filter((a) => !meus.includes(a.id));
+      document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
+      document.getElementById('descubra').hidden = !resto.length;
+    }
+    function aoClicar(e) {
       const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
       if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = 'Instalado ✓'; setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
       if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
-    });
+    }
+    lista.addEventListener('click', aoClicar);
+    document.getElementById('sugestoes').addEventListener('click', aoClicar);
     function aba(qual) {
       document.getElementById('aba-loja').hidden = qual !== 'loja';
       document.getElementById('aba-meus').hidden = qual !== 'meus';
+      document.getElementById('aba-tela').hidden = qual !== 'tela';
+      document.getElementById('tab-tela').setAttribute('aria-selected', qual === 'tela');
       document.getElementById('tab-loja').setAttribute('aria-selected', qual === 'loja');
       document.getElementById('tab-meus').setAttribute('aria-selected', qual === 'meus');
       document.querySelector('.busca').style.display = qual === 'loja' ? '' : 'none';
@@ -116,7 +142,8 @@
     }
     document.getElementById('tab-loja').addEventListener('click', () => aba('loja'));
     document.getElementById('tab-meus').addEventListener('click', () => aba('meus'));
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = 'loja'; try { a = localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(a); })
+    document.getElementById('tab-tela').addEventListener('click', () => aba('tela'));
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela'].includes(a) ? a : 'loja'); })
       .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
     document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
 
