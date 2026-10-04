@@ -19,14 +19,14 @@
         "nome": "👑 Pro anual",
         "tipo": "unico",
         "preco": "R$ 29,90",
-        "detalhe": "Paga uma vez, vale 1 ano · todas as receitas · Pix ou cartão em até 3x",
+        "detalhe": "Paga uma vez, vale 1 ano · receitas ilimitadas + atualizações · receitas novas de diversos países · Pix ou cartão em até 3x",
         "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=anual"
       },
       {
         "nome": "👑 Pro mensal",
         "tipo": "assinatura",
         "preco": "R$ 2,99/mês",
-        "detalhe": "Assinatura: cobra todo mês no cartão, cancele quando quiser · todas as receitas",
+        "detalhe": "Assinatura: cobra todo mês no cartão, cancele quando quiser · receitas ilimitadas + atualizações · receitas novas de diversos países",
         "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal"
       }
     ]
