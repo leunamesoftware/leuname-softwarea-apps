@@ -13,7 +13,7 @@
     :root { --fundo: #F4F6FB; --cartao: #fff; --texto: #10162B; --suave: #5B6478; --linha: #E3E7F0; --azul: #1B4DFF; --azul-escuro: #071A5C; }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fundo: #0B1022; --cartao: #141B33; --texto: #EEF1F8; --suave: #A3ACC2; --linha: #232C4A; } }
     * { box-sizing: border-box; }
-    body { margin: 0; font: 500 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
+    body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; margin: 0; font: 500 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
     .topo { position: sticky; top: 0; z-index: 2; background: linear-gradient(135deg, #071A5C, #1B3FD6); color: #fff; padding: calc(14px + env(safe-area-inset-top)) 16px 16px; }
     .marca { display: flex; align-items: center; gap: 10px; max-width: 720px; margin: 0 auto; }
     .marca img { width: 40px; height: 40px; border-radius: 11px; }
@@ -21,7 +21,7 @@
     .marca small { display: block; font-size: 12px; opacity: .8; font-weight: 600; }
     .busca { max-width: 720px; margin: 12px auto 0; }
     .busca input { width: 100%; min-height: 46px; border: 0; border-radius: 999px; padding: 0 18px; font: inherit; font-size: 16px; background: rgba(255,255,255,.95); color: #10162B; }
-    main { max-width: 720px; margin: 0 auto; padding: 16px 16px 40px; }
+    main { flex: 1; width: 100%; max-width: 720px; margin: 0 auto; padding: 16px 16px 40px; }
     h2 { font-size: 17px; margin: 8px 0 12px; }
     .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
     .app { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 12px; }
@@ -30,7 +30,10 @@
     .app .cat { font-size: 13px; color: var(--suave); font-weight: 600; }
     .app .resumo { margin: 2px 0 0; font-size: 13px; color: var(--suave); line-height: 1.35; }
     .app .preco { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 800; color: #0F8A4B; }
-    .abrir { min-width: 82px; min-height: 40px; text-align: center; line-height: 1.15; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--azul); color: #fff; font-weight: 800; text-decoration: none; padding: 0 16px; }
+    .abrir { min-width: 104px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: linear-gradient(135deg, #2F6BFF, #1B3FD6); color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; padding: 0 16px; box-shadow: 0 6px 14px rgba(27,63,214,.32); transition: transform .12s, box-shadow .12s; white-space: nowrap; }
+    .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
+    .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
+    .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
     .vazio { color: var(--suave); text-align: center; padding: 24px 0; }
     .instalar { display: none; margin: 0 0 16px; padding: 14px; border-radius: 18px; background: var(--cartao); border: 2px solid var(--azul); }
     .instalar b { display: block; }
@@ -47,7 +50,7 @@
     .botoes { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
     button.abrir { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
     .tirar { border: 0; background: none; font: inherit; font-size: 12px; color: var(--suave); text-decoration: underline; cursor: pointer; }
-    .rodape { text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
+    .rodape { margin-top: 32px; text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
     @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
   </style>
 </head>
@@ -102,8 +105,8 @@
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span></div>
           <div class="botoes">${tem
-            ? `<a class="abrir" href="${esc(link(a))}">Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
-            : `<button class="abrir" data-instalar="${esc(a.id)}">Instalar</button>`}</div>
+            ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
+            : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}</div>
         </li>`;
     }
     function mostrar(filtro = '') {
@@ -117,7 +120,7 @@
         <li class="app">
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div></div>
-          <div class="botoes"><a class="abrir" href="${esc(link(a))}&atalho=1">Colocar na<br>tela inicial</a></div>
+          <div class="botoes"><a class="abrir claro" href="${esc(link(a))}&atalho=1">📲 Adicionar</a></div>
         </li>`).join('') || '<li class="vazio">Instale um app na Loja primeiro. Depois ele aparece aqui.</li>';
       const resto = apps.filter((a) => !meus.includes(a.id));
       document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
@@ -125,7 +128,7 @@
     }
     function aoClicar(e) {
       const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
-      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = 'Instalado ✓'; setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
+      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = '✓ Instalado'; ins.classList.add('verde'); setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
       if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
     }
     lista.addEventListener('click', aoClicar);
