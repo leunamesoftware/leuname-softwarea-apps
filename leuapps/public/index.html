@@ -36,6 +36,17 @@
     .instalar b { display: block; }
     .instalar p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
     .instalar button { border: 0; font: inherit; cursor: pointer; }
+    body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    .abas { position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; background: var(--cartao); border-top: 1px solid var(--linha); padding-bottom: env(safe-area-inset-bottom); z-index: 3; }
+    .abas button { border: 0; background: none; font: inherit; font-weight: 800; color: var(--suave); padding: 10px 0 12px; cursor: pointer; }
+    .abas button span { display: block; font-size: 22px; line-height: 1.2; }
+    .abas button[aria-selected="true"] { color: var(--azul); }
+    .grade { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 18px 10px; }
+    .grade a { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: var(--texto); font-size: 13px; font-weight: 700; text-align: center; }
+    .grade img { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 4px 12px rgba(10,20,60,.18); }
+    .botoes { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+    button.abrir { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
+    .tirar { border: 0; background: none; font: inherit; font-size: 12px; color: var(--suave); text-decoration: underline; cursor: pointer; }
     .rodape { text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
     @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
   </style>
@@ -51,25 +62,61 @@
       <p>Um ícone só, com todos os nossos aplicativos sempre atualizados.</p>
       <button class="abrir" id="instalar-btn" type="button">Instalar</button>
     </div>
-    <h2>Aplicativos</h2>
-    <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
+    <section id="aba-loja">
+      <h2>Loja</h2>
+      <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
+    </section>
+    <section id="aba-meus" hidden>
+      <h2>Meus apps</h2>
+      <ul class="grade" id="meus"></ul>
+    </section>
   </main>
   <p class="rodape">LeuName Softwares · Todos os aplicativos sempre na versão mais nova.</p>
+  <nav class="abas" role="tablist">
+    <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
+    <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
+  </nav>
   <script>
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const lista = document.getElementById('lista');
     let apps = [];
+    // Apps instalados ficam guardados neste aparelho.
+    const ler = () => { try { return JSON.parse(localStorage.getItem('leuapps.meus') || '[]'); } catch { return []; } };
+    const gravar = (v) => { try { localStorage.setItem('leuapps.meus', JSON.stringify(v)); } catch {} };
+    let meus = ler();
     function mostrar(filtro = '') {
       const f = filtro.trim().toLowerCase();
       const vis = apps.filter((a) => !f || (a.nome + ' ' + a.categoria + ' ' + a.resumo).toLowerCase().includes(f));
-      lista.innerHTML = vis.map((a) => `
+      lista.innerHTML = vis.map((a) => {
+        const tem = meus.includes(a.id);
+        return `
         <li class="app">
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span></div>
-          <a class="abrir" href="${esc(a.url)}">Abrir</a>
-        </li>`).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
+          <div class="botoes">${tem
+            ? `<a class="abrir" href="${esc(a.url)}">Abrir</a><button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
+            : `<button class="abrir instalar-app" data-instalar="${esc(a.id)}">Instalar</button>`}</div>
+        </li>`; }).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
+      const mi = apps.filter((a) => meus.includes(a.id));
+      document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(a.url)}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
+        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Vá na Loja e toque em Instalar.</li>';
     }
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); })
+    lista.addEventListener('click', (e) => {
+      const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
+      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = 'Instalado ✓'; setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
+      if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
+    });
+    function aba(qual) {
+      document.getElementById('aba-loja').hidden = qual !== 'loja';
+      document.getElementById('aba-meus').hidden = qual !== 'meus';
+      document.getElementById('tab-loja').setAttribute('aria-selected', qual === 'loja');
+      document.getElementById('tab-meus').setAttribute('aria-selected', qual === 'meus');
+      document.querySelector('.busca').style.display = qual === 'loja' ? '' : 'none';
+      try { localStorage.setItem('leuapps.aba', qual); } catch {}
+    }
+    document.getElementById('tab-loja').addEventListener('click', () => aba('loja'));
+    document.getElementById('tab-meus').addEventListener('click', () => aba('meus'));
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = 'loja'; try { a = localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(a); })
       .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
     document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
 
