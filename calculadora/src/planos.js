@@ -9,12 +9,30 @@ export const PLANOS = {
   mensal: { preco: 2.99, receitas: Infinity, dias: 33, assinatura: true, titulo: 'Quanto Cobrar Pro — todas as receitas + calculadora (mensal)' },
 };
 
+// Tolerância depois do vencimento: o cliente tem até o dia seguinte para pagar.
+const TOLERANCIA_MS = 864e5;
+
+function avaliar(a) {
+  const venceu = Boolean(a.expira_em && new Date(a.expira_em).getTime() + TOLERANCIA_MS < Date.now());
+  return { plano: a.plano, expiraEm: a.expira_em, venceu, receitas: venceu ? RECEITAS_GRATIS : PLANOS[a.plano]?.receitas ?? Infinity };
+}
+
 /** O que a chave libera agora. Sem linha em "acessos" (chave manual) = tudo. */
 export async function acessoDaChave(env, chave) {
   const a = await env.DB.prepare('SELECT plano, expira_em FROM acessos WHERE chave = ?').bind(chave).first();
-  if (!a) return { plano: 'completo', receitas: Infinity };
-  const venceu = Boolean(a.expira_em && a.expira_em < new Date().toISOString());
-  return { plano: a.plano, expiraEm: a.expira_em, venceu, receitas: venceu ? RECEITAS_GRATIS : PLANOS[a.plano]?.receitas ?? Infinity };
+  return a ? avaliar(a) : { plano: 'completo', receitas: Infinity };
+}
+
+/** O melhor acesso entre as compras pagas da conta (ou null se ela ainda não comprou nada). */
+export async function acessoDaConta(env, contaId) {
+  const { results } = await env.DB.prepare("SELECT a.plano, a.expira_em FROM pedidos p JOIN acessos a ON a.chave = p.chave WHERE p.conta_id = ? AND p.status = 'pago'")
+    .bind(contaId).all();
+  if (!results.length) return null;
+  const todos = results.map(avaliar);
+  const ativos = todos.filter((x) => !x.venceu);
+  const lista = ativos.length ? ativos : todos;
+  lista.sort((x, y) => (y.receitas - x.receitas) || String(y.expiraEm || '9999').localeCompare(String(x.expiraEm || '9999')));
+  return lista[0];
 }
 
 /** Grava o plano da chave; planos com prazo somam dias a partir do maior entre hoje e o vencimento atual. */

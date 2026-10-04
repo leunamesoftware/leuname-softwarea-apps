@@ -1,5 +1,5 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v31';
+const VERSAO = 'calc-v32';
 const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {

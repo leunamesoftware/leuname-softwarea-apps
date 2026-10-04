@@ -33,6 +33,9 @@
       <input id="nome" autocomplete="name" required maxlength="80">
       <label for="email">Seu e-mail</label>
       <input id="email" type="email" inputmode="email" autocomplete="email" required maxlength="120">
+      <label for="senha">Crie uma senha para entrar no app</label>
+      <input id="senha" type="password" autocomplete="new-password" required minlength="6" maxlength="100" placeholder="Mínimo 6 caracteres">
+      <p class="dica-senha">Já tem conta? Use o mesmo e-mail e a mesma senha.</p>
       <p class="erro" id="erro" role="alert"></p>
       <div class="aviso-recebedor">
         <span class="atencao">⚠️ COMUNICADO</span>
@@ -47,9 +50,9 @@
         <span class="selo-item"><b>🛡️</b><span>Mercado<br>Pago</span></span>
         <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
       </div>
-      <p class="seguro">Pagamento seguro pelo Mercado Pago. Sua chave de acesso aparece na tela assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="/termos">Termos de uso</a> (7 dias para desistir).</p>
+      <p class="seguro">Pagamento seguro pelo Mercado Pago. Seu acesso é liberado assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="/termos">Termos de uso</a> (7 dias para desistir).</p>
     </form>
-    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/recuperar">Recuperar minha chave</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
+    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/recuperar">Esqueci a senha</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
   </main>
   <script>
     const TEXTO = { basico: 'Pagar R$ 9,99 com Pix ou cartão', anual: 'Pagar R$ 29,90 com Pix ou cartão', mensal: 'Assinar por R$ 2,99/mês no cartão' };
@@ -71,11 +74,13 @@
       const nome = document.getElementById('nome').value.trim(), email = document.getElementById('email').value.trim();
       if (nome.length < 2) { erro.textContent = 'Digite seu nome.'; return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
+      const senha = document.getElementById('senha').value;
+      if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
       erro.textContent = ''; botao.disabled = true; botao.textContent = 'Abrindo o pagamento...';
       try {
-        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, plano: planoEscolhido() }) });
+        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, plano: planoEscolhido() }) });
         const d = await r.json().catch(() => ({}));
-        if (!r.ok || !d.url) throw new Error(d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
+        if (!r.ok || !d.url) throw new Error(d.erro === 'senha_incorreta' ? 'Este e-mail já tem conta e a senha não confere. Use a senha da sua conta ou toque em "Esqueci a senha".' : d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
         try { localStorage.setItem('calc.pedido', JSON.stringify(d.pedido)); } catch {}
         location.href = d.url;
       } catch (e) {

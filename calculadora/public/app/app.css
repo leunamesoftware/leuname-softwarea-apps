@@ -220,3 +220,6 @@ body.abertura main { max-width: none; padding: 0; }
 .bloqueada { position: relative; }
 .bloqueada .foto-grande { filter: grayscale(.6) blur(2px); opacity: .7; }
 .bloqueada .cadeado { position: absolute; inset: 0; display: grid; place-items: center; font-size: 56px; }
+.capa-esqueci { display: block; margin-top: 10px; text-align: center; color: var(--laranja-forte); font-weight: 700; font-size: 14px; }
+.capa-chave { margin-top: 8px; border: 0; background: none !important; font: inherit; cursor: pointer; font-size: 13px !important; opacity: .85; }
+.capa-cartao input[type="email"], .capa-cartao input[type="password"] { text-transform: none; letter-spacing: 0; font-size: 17px; text-align: left; font-weight: 600; }

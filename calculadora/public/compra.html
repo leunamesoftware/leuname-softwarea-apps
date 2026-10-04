@@ -24,30 +24,22 @@
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let tentativas = 0;
 
-    function mostrarChave(nome, chave) {
-      try { localStorage.setItem('calc.chave', JSON.stringify(chave)); localStorage.removeItem('calc.pedido'); } catch {}
-      const texto = encodeURIComponent(`Minha chave do app Quanto Cobrar: ${chave}\nAbrir: ${location.origin}/app/`);
-      const android = /Android/i.test(navigator.userAgent);
+    const NOMES = { basico: 'Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste' };
+    function mostrarAprovado(d) {
+      try { localStorage.removeItem('calc.pedido'); } catch {}
+      const validade = d.expiraEm ? `válido até <b>${new Date(d.expiraEm).toLocaleDateString('pt-BR')}</b>` : '<b>para sempre</b>';
       el.innerHTML = `
-        <h1>Pagamento aprovado, ${esc(nome)}! 🎉</h1>
+        <h1>Pagamento aprovado, ${esc(d.nome)}! 🎉</h1>
+        <p class="sub">Plano <b>${esc(NOMES[d.plano] || d.plano)}</b> · ${validade}</p>
         <ol class="passos-compra">
-          <li><b>1. Copie a sua chave</b>
-            <div class="chave" id="chave">${esc(chave)}</div>
-            <button class="botao sec" id="copiar" type="button">Copiar chave</button>
-            <a class="botao sec" href="https://wa.me/?text=${texto}">Guardar no meu WhatsApp</a></li>
-          <li><b>2. ${android ? 'Baixe e instale o app' : 'Abra o app'}</b>
-            ${android ? `<a class="botao" href="/baixar">📲 Baixar o app Quanto Cobrar</a>
-            <p class="dica">Abra o arquivo baixado e toque em <b>Instalar</b>. Se o celular avisar sobre "fontes desconhecidas", toque em <b>Configurações → Permitir</b> e volte.</p>`
-            : `<a class="botao" href="/app/">Abrir o Quanto Cobrar</a>
-            <p class="dica">No iPhone, toque em Compartilhar → "Adicionar à Tela de Início" para virar um app.</p>`}</li>
-          <li><b>3. Cole a chave</b>
-            <p class="dica">Abra o app, cole a chave no campo e toque em <b>Entrar</b>. Pronto!</p>
-            ${android ? '<a class="link-simples" href="/app/">Ou use direto no navegador, sem instalar</a>' : ''}</li>
+          <li><b>1. Abra o app</b>
+            <a class="botao" href="/app/">Abrir o Quanto Cobrar</a>
+            <p class="dica">Neste aparelho você já está conectado. Em outro celular, entre com o seu <b>e-mail e a senha</b> que você criou.</p></li>
+          <li><b>2. Tenha sempre à mão</b>
+            <a class="botao sec" href="https://www.leunamesoftware.com.br">📲 Instalar o LeuApps</a>
+            <p class="dica">No LeuApps ficam todos os nossos aplicativos, sempre atualizados.</p></li>
         </ol>
-        <p class="seguro">Guarde a chave: com ela você entra em qualquer celular ou computador.</p>`;
-      document.getElementById('copiar').addEventListener('click', async () => {
-        try { await navigator.clipboard.writeText(chave); document.getElementById('copiar').textContent = 'Chave copiada ✓'; } catch {}
-      });
+        <p class="seguro">O comprovante do Mercado Pago chega no seu e-mail.</p>`;
     }
 
     async function conferir() {
@@ -55,7 +47,7 @@
       try {
         const r = await fetch(`/api/pedido/${pedido}${pagamento && tentativas === 0 ? `?pagamento=${encodeURIComponent(pagamento)}` : ''}`);
         const d = await r.json();
-        if (d.chave) return mostrarChave(d.nome, d.chave);
+        if (d.pago) return mostrarAprovado(d);
         if (d.status === 'rejected' || d.status === 'cancelled') {
           el.innerHTML = '<h1>Pagamento não aprovado</h1><p class="sub">Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.</p><a class="botao" href="/comprar">Tentar de novo</a>';
           return;

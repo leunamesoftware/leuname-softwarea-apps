@@ -3,6 +3,7 @@
 // (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
+import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -17,18 +18,23 @@ async function mp(env, caminho, opcoes = {}) {
   return r.json();
 }
 
-export async function criarPedido(env, origem, d) {
+export async function criarPedido(env, origem, d, req) {
   if (!env.MP_ACCESS_TOKEN) return { erro: 'pagamento_indisponivel', status: 503 };
   const nome = String(d?.nome || '').trim().slice(0, 80);
   const email = String(d?.email || '').trim().toLowerCase().slice(0, 120);
   const plano = String(d?.plano || 'basico');
   if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano]) return { erro: 'dados_invalidos', status: 400 };
+  if (!senhaValida(d?.senha)) return { erro: 'senha_curta', status: 400 };
   const P = PLANOS[plano];
+  // A compra fica ligada à conta (e-mail + senha): o app libera pela conta, sem chave.
+  const c = await contaParaCompra(env, email, nome, d.senha);
+  if (c.erro) return { erro: c.erro, status: 409 };
+  const sessao = await abrirSessao(env, c.conta.id, req);
 
   const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
   const agora = new Date().toISOString();
-  await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, criado_em, atualizado_em) VALUES (?, ?, ?, 'aguardando', ?, ?, ?)")
-    .bind(id, nome, email, plano, agora, agora).run();
+  await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, conta_id, criado_em, atualizado_em) VALUES (?, ?, ?, 'aguardando', ?, ?, ?, ?)")
+    .bind(id, nome, email, plano, c.conta.id, agora, agora).run();
   const volta = `${origem}/compra?p=${id}`;
 
   if (P.assinatura) {
@@ -46,7 +52,7 @@ export async function criarPedido(env, origem, d) {
       }),
     });
     await env.DB.prepare('UPDATE pedidos SET assinatura_id = ? WHERE id = ?').bind(String(a.id), id).run();
-    return { url: a.init_point, pedido: id };
+    return { url: a.init_point, pedido: id, sessao };
   }
 
   const pref = await mp(env, '/checkout/preferences', {
@@ -63,7 +69,7 @@ export async function criarPedido(env, origem, d) {
       statement_descriptor: 'LEUNAME',
     }),
   });
-  return { url: pref.init_point, pedido: id };
+  return { url: pref.init_point, pedido: id, sessao };
 }
 
 /** Pagamento aprovado: emite a chave (na primeira vez) e aplica o plano. Cada pagamento conta uma vez só. */
@@ -153,19 +159,25 @@ export async function receberAviso(env, req) {
   }
 }
 
-/** Recupera a chave pelo e-mail da compra + número da operação do Mercado Pago (está no comprovante). */
-export async function recuperarChave(env, d) {
+/** Esqueci a senha: e-mail da compra + número da operação do Mercado Pago (está no comprovante) → senha nova. */
+export async function recuperarConta(env, d, req) {
   const email = String(d?.email || '').trim().toLowerCase();
   const operacao = String(d?.operacao || '').replace(/\D/g, '');
-  if (!EMAIL.test(email) || !operacao) return null;
-  const p = await env.DB.prepare("SELECT chave FROM pedidos WHERE email = ? AND pagamento_id = ? AND status = 'pago'").bind(email, operacao).first();
-  return p?.chave || null;
+  if (!EMAIL.test(email) || !operacao || !senhaValida(d?.senha)) return null;
+  const p = await env.DB.prepare("SELECT id, nome, conta_id FROM pedidos WHERE email = ? AND pagamento_id = ? AND status = 'pago'").bind(email, operacao).first();
+  if (!p) return null;
+  let conta = await buscarConta(env, email);
+  if (conta) await trocarSenha(env, conta.id, d.senha);
+  else conta = (await contaParaCompra(env, email, p.nome, d.senha)).conta;
+  // Compras antigas do mesmo e-mail passam a ser desta conta.
+  await env.DB.prepare('UPDATE pedidos SET conta_id = ? WHERE email = ? AND conta_id IS NULL').bind(conta.id, email).run();
+  return abrirSessao(env, conta.id, req);
 }
 
 export async function situacaoPedido(env, id, pagamentoId) {
   if (!/^[0-9a-f]{36}$/.test(id)) return null;
   // Na volta do Mercado Pago, confere na hora (não depende de o aviso já ter chegado).
   if (pagamentoId && env.MP_ACCESS_TOKEN) await processarPagamento(env, pagamentoId).catch(() => {});
-  const p = await env.DB.prepare('SELECT status, chave, nome, plano FROM pedidos WHERE id = ?').bind(id).first();
-  return p ? { status: p.status, chave: p.status === 'pago' ? p.chave : null, nome: p.nome.split(' ')[0], plano: p.plano } : null;
+  const p = await env.DB.prepare('SELECT p.status, p.nome, p.plano, a.expira_em FROM pedidos p LEFT JOIN acessos a ON a.chave = p.chave WHERE p.id = ?').bind(id).first();
+  return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, expiraEm: p.expira_em || null } : null;
 }

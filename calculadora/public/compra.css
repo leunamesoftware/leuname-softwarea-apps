@@ -53,3 +53,4 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .passos-compra .dica { margin: 8px 0 0; font-size: 14px; color: #FFF3E6; }
 .passos-compra .dica b { color: #fff; }
 .link-simples { display: block; margin-top: 8px; color: #fff; font-weight: 800; font-size: 14px; }
+.dica-senha { margin: 4px 0 0; font-size: 12px; color: #7C6A5E; }

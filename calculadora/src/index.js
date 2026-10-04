@@ -1,16 +1,16 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { RECEITAS_GRATIS, acessoDaChave } from './planos.js';
-import { criarPedido, receberAviso, recuperarChave, situacaoPedido } from './pagamento.js';
+import { RECEITAS_GRATIS, acessoDaChave, acessoDaConta } from './planos.js';
+import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
+import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
-function json(dados, status = 200) {
-  return new Response(JSON.stringify(dados), {
-    status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
-  });
+function json(dados, status = 200, cookie = null) {
+  const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
+  if (cookie) headers['Set-Cookie'] = cookie;
+  return new Response(JSON.stringify(dados), { status, headers });
 }
 
 async function sha256(texto) {
@@ -97,14 +97,14 @@ export default {
       if (pathname === '/api/comprar' && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
-        const r = await criarPedido(env, url.origin, await corpo(req));
-        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+        const r = await criarPedido(env, url.origin, await corpo(req), req);
+        return r.erro ? json({ erro: r.erro }, r.status) : json({ url: r.url, pedido: r.pedido }, 200, r.sessao);
       }
       if (pathname === '/api/recuperar' && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
-        const chave = await recuperarChave(env, await corpo(req));
-        return chave ? json({ chave }) : json({ erro: 'nao_encontrado' }, 404);
+        const sessao = await recuperarConta(env, await corpo(req), req);
+        return sessao ? json({ ok: true }, 200, sessao) : json({ erro: 'nao_encontrado' }, 404);
       }
       if (pathname === '/api/mp/aviso' && m === 'POST') {
         await receberAviso(env, req);
@@ -116,19 +116,37 @@ export default {
         return s ? json(s) : json({ erro: 'nao_encontrado' }, 404);
       }
 
-      // ---- app (com chave: tudo; sem chave: degustação) ----
+      // ---- conta (e-mail + senha) ----
+      if (pathname === '/api/conta/entrar' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const d = await corpo(req);
+        const conta = await buscarConta(env, d?.email);
+        if (!conta || !(await senhaConfere(conta, d?.senha))) return json({ erro: 'login_invalido' }, 401);
+        return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
+      }
+      if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
+      if (pathname === '/api/conta' && m === 'GET') {
+        const conta = await contaDaSessao(env, req);
+        if (!conta) return json({ conta: null });
+        return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
+      }
+
+      // ---- app (conta ou chave antiga: o plano dela; sem nada: degustação) ----
       if (pathname === '/api/ativar' && m === 'POST') {
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const d = await corpo(req);
         return (await licencaAtiva(env, d?.chave)) ? json({ ok: true }) : json({ erro: 'chave_invalida' }, 401);
       }
       if (pathname.startsWith('/api/')) {
-        const bruta = chaveDoPedido(req);
-        // Sem chave = grátis (2 receitas). Com chave: o plano dela (básico 30, pro tudo; vencido volta a 2).
+        const conta = await contaDaSessao(env, req);
+        const bruta = conta ? '' : chaveDoPedido(req);
+        // Conta: o melhor plano pago dela. Chave antiga: o plano da chave. Sem nada: grátis (2 receitas).
         const chave = bruta ? await licencaAtiva(env, bruta) : null;
         if (bruta && !chave) return json({ erro: 'chave_invalida' }, 401);
+        const acessoConta = conta ? await acessoDaConta(env, conta.id) : null;
         if (pathname === '/api/receitas' && m === 'GET') {
-          const acesso = chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: RECEITAS_GRATIS };
+          const acesso = acessoConta || (chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: RECEITAS_GRATIS });
           const stats = await estatisticas(env);
           const receitas = RECEITAS.map((r, i) => (i >= acesso.receitas
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
@@ -137,8 +155,9 @@ export default {
         }
         if (pathname === '/api/rendimento' && m === 'POST') {
           // Rendimento só entra na média quando vem de quem comprou.
-          if (!chave) return json({ erro: 'chave_invalida' }, 401);
-          return await registrarRendimento(env, chave, await corpo(req));
+          const autor = chave || (acessoConta && !acessoConta.venceu ? 'conta:' + conta.id : null);
+          if (!autor) return json({ erro: 'chave_invalida' }, 401);
+          return await registrarRendimento(env, autor, await corpo(req));
         }
         return json({ erro: 'nao_encontrado' }, 404);
       }

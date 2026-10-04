@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '3.3';
+const VERSAO_APP = '4.0';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -23,6 +23,7 @@ const estado = {
   calc: ler('calc', null),
   minhas: ler('minhas', []),
   acesso: ler('acesso', {}),
+  conta: ler('conta', null),
   aba: 'receitas',
 };
 
@@ -45,12 +46,15 @@ async function api(caminho, opcoes = {}) {
     headers: { 'Content-Type': 'application/json', ...(estado.chave ? { Authorization: 'Bearer ' + estado.chave } : {}), ...(opcoes.headers || {}) },
   });
   const dados = await r.json().catch(() => ({}));
-  if (r.status === 401 && caminho !== '/api/ativar') { sair(); throw new Error('chave'); }
+  if (r.status === 401 && caminho !== '/api/ativar') { sair('Sua chave não está mais ativa.'); throw new Error('chave'); }
   if (!r.ok) throw Object.assign(new Error(dados.erro || 'erro'), { status: r.status });
   return dados;
 }
 
-// ---------- ativação ----------
+// ---------- entrar (conta: e-mail + senha) ----------
+const logado = () => Boolean(estado.conta || estado.chave);
+const dataBR = (iso) => new Date(iso).toLocaleDateString('pt-BR');
+
 function telaAtivacao(erro = '') {
   abas.hidden = true;
   document.body.classList.add('abertura');
@@ -60,41 +64,77 @@ function telaAtivacao(erro = '') {
       <h1 class="capa-nome">Quanto <span>Cobrar?</span></h1>
       <p class="capa-lema">Calcule certo e lucre mais.</p>
       <div class="capa-beneficios"><span>📦 Quanto rende</span><span>🧮 Quanto custa</span><span>💰 Quanto cobrar</span><span>📈 Quanto lucra</span></div>
-      <form id="form-ativar" class="capa-cartao">
-        <label for="chave">Digite sua chave de acesso</label>
-        <input id="chave" placeholder="LEU-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+      <form id="form-entrar" class="capa-cartao">
+        <label for="email">Entre na sua conta</label>
+        <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="Seu e-mail" required>
+        <input id="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required style="margin-top:8px">
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
+        <a class="capa-esqueci" href="/recuperar">Esqueci a senha</a>
       </form>
       <button class="capa-teste" id="gratis">Ver 2 receitas grátis</button>
-      ${APP_LOJA ? '<div class="capa-comprar">Use a chave que você recebeu.<br><a class="capa-recuperar" href="/recuperar">Perdi a minha chave</a></div>'
-        : `<div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>`}
+      ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
+      <button class="capa-recuperar capa-chave" id="tenho-chave" type="button">Tenho uma chave antiga</button>
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
   document.getElementById('gratis').addEventListener('click', entrarGratis);
-  document.getElementById('form-ativar').addEventListener('submit', async (ev) => {
+  document.getElementById('tenho-chave').addEventListener('click', telaChaveAntiga);
+  document.getElementById('form-entrar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const botao = ev.target.querySelector('button');
-    const chave = document.getElementById('chave').value.trim().toUpperCase().replace(/\s+/g, '');
-    botao.disabled = true; botao.textContent = 'Conferindo...';
+    const email = document.getElementById('email').value.trim(), senha = document.getElementById('senha').value;
+    botao.disabled = true; botao.textContent = 'Entrando...';
     try {
-      const r = await fetch('/api/ativar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave }) });
+      const r = await fetch('/api/conta/entrar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) });
       if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto e tente de novo.');
-      if (!r.ok) throw new Error('Chave não encontrada. Confira as letras e os números.');
-      estado.chave = chave; gravar('chave', chave);
+      if (!r.ok) throw new Error('E-mail ou senha incorretos.');
+      await conferirConta();
       await carregarReceitas();
       abrir('receitas');
-      aviso('Calculadora ativada! Bom trabalho e boas vendas.');
+      aviso(estado.acesso?.plano && estado.acesso.plano !== 'gratis' ? 'Bem-vindo de volta! Seu plano está ativo.' : 'Conta conectada.');
     } catch (e) {
-      document.getElementById('erro-ativar').textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se para ativar.';
+      document.getElementById('erro-ativar').textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se para entrar.';
       botao.disabled = false; botao.textContent = 'Entrar';
     }
   });
 }
 
-function sair() {
+// Quem comprou antes das contas ainda pode entrar com a chave LEU-...
+function telaChaveAntiga() {
+  const form = document.getElementById('form-entrar');
+  form.innerHTML = `
+    <label for="chave">Digite sua chave antiga</label>
+    <input id="chave" placeholder="LEU-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+    <p class="erro" id="erro-ativar"></p>
+    <button class="botao" type="submit">Entrar com a chave</button>`;
+  form.onsubmit = async (ev) => {
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    const botao = form.querySelector('button');
+    const chave = document.getElementById('chave').value.trim().toUpperCase().replace(/\s+/g, '');
+    botao.disabled = true;
+    try {
+      const r = await fetch('/api/ativar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave }) });
+      if (!r.ok) throw new Error(r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : 'Chave não encontrada.');
+      estado.chave = chave; gravar('chave', chave);
+      await carregarReceitas(); abrir('receitas');
+    } catch (e) { document.getElementById('erro-ativar').textContent = e.message; botao.disabled = false; }
+  };
+}
+
+async function conferirConta() {
+  try {
+    const d = await (await fetch('/api/conta', { cache: 'no-store' })).json();
+    estado.conta = d.conta ? { ...d.conta, acesso: d.acesso } : null;
+    gravar('conta', estado.conta);
+  } catch { /* sem internet: fica com o que estava guardado */ }
+  return estado.conta;
+}
+
+async function sair(motivo) {
+  if (estado.conta) await fetch('/api/conta/sair', { method: 'POST' }).catch(() => {});
+  estado.conta = null; gravar('conta', null);
   estado.chave = ''; gravar('chave', ''); gravar('gratis', false);
-  telaAtivacao('Sua chave não está mais ativa. Fale com o suporte se precisar de ajuda.');
+  telaAtivacao(motivo || '');
 }
 
 async function entrarGratis() {
@@ -246,11 +286,10 @@ function htmlSumario() {
     <button class="botao sec nova-receita">＋ Nova receita minha</button>`;
 }
 
-const dataBR = (iso) => new Date(iso).toLocaleDateString('pt-BR');
 
 // Botão das receitas trancadas: sem chave → digitar a chave; com chave → ver planos (só fora do app da Play).
 function botaoDesbloquear(classe) {
-  if (!estado.chave) return `<button class="${classe}" data-tenho-chave>Tenho uma chave</button>`;
+  if (!logado()) return `<button class="${classe}" data-tenho-chave>Entrar ou comprar</button>`;
   return APP_LOJA ? '' : `<a class="${classe}" href="${LINK_COMPRA}">Ver planos</a>`;
 }
 
@@ -261,7 +300,7 @@ function faixaGratis() {
   if (livres === total && !vence) return '';
   const texto = a.venceu ? `Seu plano 👑 Pro venceu em ${dataBR(a.expiraEm)}`
     : vence ? `Seu plano 👑 Pro vence em ${dataBR(a.expiraEm)}`
-    : estado.chave ? 'Plano Básico' : 'Versão grátis';
+    : logado() ? 'Plano Básico' : 'Versão grátis';
   const qtd = livres < total ? ` · ${livres} de ${total} receitas liberadas` : '';
   return `<div class="faixa-teste">${texto}${qtd} ${botaoDesbloquear('link')}</div>`;
 }
@@ -274,7 +313,7 @@ function htmlPaginaBloqueada(r) {
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${estado.chave ? 'no plano 👑 Pro' : 'na versão completa'}.</p>
+    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${logado() ? 'no plano 👑 Pro' : 'na versão completa'}.</p>
     ${botaoDesbloquear('botao')}`;
 }
 
@@ -698,7 +737,7 @@ function abrirRegistro() {
     });
     gravar('historico', historico.slice(0, 300));
     fundo.remove();
-    if (c.receitaId && estado.chave && navigator.onLine) {
+    if (c.receitaId && logado() && navigator.onLine) {
       api('/api/rendimento', { method: 'POST', body: JSON.stringify({ receitaId: c.receitaId, unidades, escala: d.escala, pesoUnidadeG: peso }) })
         .then(({ rendimento }) => {
           const r = estado.receitas.find((x) => x.id === c.receitaId);
@@ -753,11 +792,11 @@ function telaHistorico() {
       <button class="remover" data-excluir-prod="${i}" aria-label="Excluir esta produção">🗑️</button></div>
       <div class="sub" style="margin:2px 0 0">${new Date(x.data).toLocaleDateString('pt-BR')} · ${x.unidades} un. · custo ${brl(x.custoTotal)}${x.lucroPrevisto !== null ? ` · lucro ${brl(x.lucroPrevisto)}` : ''}</div></div>`).join('')
       : '<p class="vazio">Quando fizer uma receita, toque em "Registrar produção".</p>'}
-    <button class="link" id="sair" style="width:100%;margin-top:16px">${estado.chave ? 'Desconectar esta chave deste aparelho' : 'Tenho uma chave'}</button>
+    ${htmlConta()}
     <p class="nota" style="text-align:center">Versão ${VERSAO_APP}</p>`;
   document.getElementById('sair').addEventListener('click', () => {
-    if (!estado.chave) return telaAtivacao();
-    if (confirm('Desconectar? Você precisará digitar a chave de novo.')) { estado.chave = ''; gravar('chave', ''); telaAtivacao(); }
+    if (!logado()) return telaAtivacao();
+    if (confirm('Sair da conta neste aparelho?')) sair();
   });
   tela.querySelectorAll('[data-excluir-prod]').forEach((b) => b.addEventListener('click', () => {
     const lista = ler('historico', []);
@@ -773,6 +812,20 @@ function telaHistorico() {
   }));
 }
 
+const NOMES_PLANO = { basico: 'Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste', completo: 'Completo', gratis: 'Grátis' };
+function htmlConta() {
+  const a = estado.acesso || {};
+  const plano = NOMES_PLANO[a.plano] || 'Grátis';
+  const validade = a.expiraEm ? (a.venceu ? `<b style="color:var(--vermelho)">Venceu em ${dataBR(a.expiraEm)}</b>` : `válido até <b>${dataBR(a.expiraEm)}</b>`) : (a.plano && a.plano !== 'gratis' ? 'para sempre' : '');
+  return `<div class="cartao" style="margin-top:16px">
+      <h2 style="margin:0 0 6px">Minha conta</h2>
+      ${estado.conta ? `<p class="sub" style="margin:0">${esc(estado.conta.email)}</p>` : ''}
+      <p style="margin:6px 0 0">Plano: <b>${esc(plano)}</b>${validade ? ' · ' + validade : ''}</p>
+      ${!APP_LOJA && (a.venceu || !a.plano || a.plano === 'gratis') ? `<a class="botao" style="margin-top:10px" href="${LINK_COMPRA}">${a.venceu ? 'Renovar meu plano' : 'Ver planos'}</a>` : ''}
+      <button class="link" id="sair" style="width:100%;margin-top:10px">${logado() ? 'Sair da conta' : 'Entrar ou comprar'}</button>
+    </div>`;
+}
+
 // ---------- início ----------
 tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
@@ -780,20 +833,9 @@ tela.addEventListener('click', aoClicarCalculo);
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
 }
-async function compraGuardada() {
-  let pedido = '';
-  try { pedido = JSON.parse(localStorage.getItem('calc.pedido') || '""'); } catch { return false; }
-  if (!/^[0-9a-f]{36}$/.test(pedido)) return false;
-  try {
-    const d = await (await fetch('/api/pedido/' + pedido)).json();
-    if (!d.chave) return false;
-    estado.chave = d.chave; gravar('chave', d.chave); localStorage.removeItem('calc.pedido');
-    await carregarReceitas(); abrir('receitas'); aviso('Compra encontrada! Sua chave: ' + d.chave);
-    return true;
-  } catch { return false; }
-}
-if (!estado.chave && !ler('gratis', false)) { telaAtivacao(); compraGuardada(); }
-else {
+(async () => {
+  const conta = navigator.onLine ? await conferirConta() : estado.conta;
+  if (!conta && !estado.chave && !ler('gratis', false)) return telaAtivacao();
   abrir('receitas');
   carregarReceitas().then(() => { if (estado.aba === 'receitas') telaReceitas(); });
-}
+})();
