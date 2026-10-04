@@ -448,6 +448,7 @@ function htmlParteReceita(r, parte) {
     ${r.embalagemSugerida ? `<p class="nota">📦 Embalagem: ${esc(r.embalagemSugerida)}</p>` : ''}`;
   if (parte === 2) return `${cabeca}<h2>👩‍🍳 Modo de preparo</h2>
     <ol class="passos">${r.preparo.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+    ${r.dicas?.length ? `<h2>💡 Dicas</h2><ul class="dicas">${r.dicas.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
     ${r.dicaVenda ? `<p class="dica">💡 ${esc(r.dicaVenda)}</p>` : ''}`;
   const m = livro.mini[r.id] || {};
   return `${cabeca}

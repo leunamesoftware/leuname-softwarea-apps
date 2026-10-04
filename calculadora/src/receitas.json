@@ -886,5 +886,187 @@
       "Tampe e leve à geladeira até ficar bem gelado."
     ],
     "dicaVenda": "Não vai ao fogo e fica pronto rápido: ótimo para vender no calor. Raspas de limão por cima deixam o pote bonito e cheiroso, o que ajuda a vender."
+  },
+  {
+    "id": "joelho-presunto-queijo",
+    "nome": "Joelho de Presunto e Queijo",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/joelho-presunto-queijo.webp",
+    "rendimento": {
+      "unidades": 15,
+      "pesoUnidadeG": 100,
+      "faixa": [
+        14,
+        16
+      ]
+    },
+    "gas": {
+      "minutos": 25,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho de papel ou bandeja com filme (R$ 0,20 a R$ 0,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Leite morno",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Manteiga em ponto de pomada",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovo",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Presunto fatiado (recheio)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "300 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 34.9
+        }
+      },
+      {
+        "nome": "Muçarela fatiada (recheio)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "300 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Orégano (recheio)",
+        "qtd": 1,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Gema (pincelar)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 gema",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Leite (pincelar)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o fermento, o açúcar e o leite morno. Deixe espumar por 5 minutos.",
+      "Em uma tigela, coloque a farinha, o sal, o ovo, o óleo e a manteiga.",
+      "Adicione a mistura do fermento e sove por 10 minutos até ficar lisa e macia.",
+      "Cubra e deixe descansar por 40 minutos.",
+      "Divida em 15 bolinhas.",
+      "Abra cada bolinha em formato oval, coloque presunto, muçarela e orégano. Se quiser, acrescente 2 tomates sem sementes picados (opcional, fora do custo).",
+      "Dobre ao meio e aperte bem as bordas com os dedos ou garfo.",
+      "Coloque em forma untada e deixe descansar mais 20 minutos.",
+      "Pincele com a gema batida com o leite e asse em forno preaquecido a 180 °C por 20 a 25 minutos até dourar."
+    ],
+    "dicas": [
+      "Não use recheio úmido. Escorra bem o tomate para não vazar.",
+      "Feche muito bem a borda para o queijo não escapar no forno.",
+      "Para congelar, congele já assado. Depois é só aquecer por 10 minutos a 180 °C.",
+      "Validade: 3 dias na geladeira ou 90 dias congelado."
+    ],
+    "dicaVenda": "Joelho sai bem em lanchonete, cantina e encomenda para festa. Venda quentinho ou congelado em pacotes para o cliente assar em casa."
   }
 ]
