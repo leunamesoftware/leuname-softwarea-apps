@@ -873,6 +873,7 @@ function renderLicenseGate(errMsg){
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Gestacell</h2>
     <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br><b>Pagamento único de R$ 30</b>, sem mensalidade.</p>
+    <div class="callout info" style="margin-bottom:14px;"><span>${ic('key',15)}</span><span>O app é seu <b>para sempre</b>. As <b>atualizações não estão incluídas</b>: quando sair uma melhoria, você paga por ela só se quiser atualizar.</span></div>
     ${errMsg?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
     <a class="btn primary" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;">🛒 Comprar o Gestacell · R$ 30</a>
     <div class="divider" style="margin:18px 0 12px;"></div>

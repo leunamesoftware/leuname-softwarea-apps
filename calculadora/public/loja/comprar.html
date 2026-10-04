@@ -17,6 +17,7 @@
     .entrar { display: none; } .entrar.aberto { display: block; }
     .trocar { display: block; width: 100%; margin-top: 12px; background: none; border: 0; color: #1B3FD6; font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; }
     .botao { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; box-shadow: 0 10px 22px rgba(27,63,214,.35) !important; }
+    .nota-atualizacao { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #EEF3FF; color: #1F2A44; font-size: 13.5px; line-height: 1.45; }
     .unico { display: inline-block; margin: 0 0 12px; padding: 4px 12px; border-radius: 99px; background: #E8F7EE; color: #15803D; font-size: 13px; font-weight: 800; }
   </style>
 </head>
@@ -29,6 +30,7 @@
 
     <form id="form" class="cartao" novalidate>
       <span class="unico">✅ Pagamento único · sem mensalidade</span>
+      <p class="nota-atualizacao">📌 <b>O app é seu para sempre (vitalício).</b> As <b>atualizações não estão incluídas</b>: quando sair uma melhoria, você paga por ela <b>só se quiser atualizar</b>. Se não quiser, continua usando a versão que comprou.</p>
       <label for="nome">Seu nome</label>
       <input id="nome" autocomplete="name" required maxlength="80">
       <label for="email">Seu e-mail</label>
@@ -50,7 +52,7 @@
         <span class="selo-item"><b>🛡️</b><span>Mercado<br>Pago</span></span>
         <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
       </div>
-      <p class="seguro">Pagamento seguro pelo Mercado Pago. O app é liberado na sua conta assim que o pagamento é aprovado. Atualizações futuras são opcionais e cobradas à parte, só se você quiser. 7 dias para desistir.</p>
+      <p class="seguro">Pagamento seguro pelo Mercado Pago. O app é liberado na sua conta assim que o pagamento é aprovado. 7 dias para desistir.</p>
       <button class="trocar" type="button" data-trocar>Já comprei: entrar com minha conta</button>
     </form>
 
