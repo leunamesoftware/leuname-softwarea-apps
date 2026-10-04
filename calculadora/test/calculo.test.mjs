@@ -53,3 +53,30 @@ test('preço redondo sobe de 50 em 50 centavos', () => {
   assert.equal(precoRedondo(1.01), 1.5);
   assert.equal(precoRedondo(2), 2);
 });
+
+test('mesmo produto em duas linhas divide o pacote: conta o pacote uma vez e a sobra é a final', () => {
+  const leite = { qtd: 1, unidade: 'L', preco: 6 };
+  const r = calcularReceita({
+    unidades: 10,
+    itens: [
+      { nome: 'Leite (massa)', qtd: 250, unidade: 'ml', emb: leite },
+      { nome: 'Leite (pincelar)', qtd: 50, unidade: 'ml', emb: leite },
+    ],
+  });
+  assert.equal(r.compras.totalPago, 6);
+  assert.equal(r.custoIngredientes, 1.8);
+  assert.equal(r.itens[0].ultimo, false);
+  assert.equal(r.itens[1].ultimo, true);
+  assert.ok(Math.abs(r.itens[1].sobra - 0.7) < 1e-9);
+  assert.equal(r.compras.sobraValor, 4.2);
+});
+
+test('estoque guardado: a próxima receita parte do que sobrou', () => {
+  const r = calcularReceita({
+    unidades: 10,
+    itens: [{ nome: 'Óleo', qtd: 100, unidade: 'ml', emb: { qtd: 900, unidade: 'ml', preco: 9 }, restante: 400 }],
+  });
+  assert.equal(r.itens[0].custo, 1);
+  assert.equal(r.itens[0].sobra, 300);
+  assert.equal(r.compras.sobraValor, 3);
+});

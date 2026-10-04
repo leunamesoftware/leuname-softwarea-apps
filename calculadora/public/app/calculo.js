@@ -25,6 +25,11 @@ export function normalizar(nome) {
   return String(nome || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ');
 }
 
+/** Chave do produto no estoque: "Leite (pincelar)" e "Leite (massa)" são o mesmo leite. */
+export function chave(nome) {
+  return normalizar(String(nome || '').replace(/\s*\(.*\)\s*$/, ''));
+}
+
 export function densidade(nome) {
   const n = normalizar(nome);
   const achada = DENSIDADES.find(([chave]) => n.includes(normalizar(chave)));
@@ -64,6 +69,8 @@ export const precoRedondo = (v) => Math.ceil(v * 2 - 1e-9) / 2;
  */
 export function calcularReceita(e) {
   const escala = num(e.escala) > 0 ? num(e.escala) : 1;
+  // O mesmo produto pode aparecer em mais de uma linha (massa e recheio): as linhas dividem o mesmo pacote.
+  const usado = new Map();
   const itens = (e.itens || []).map((it) => {
     const uso = num(it.qtd) * escala;
     const emb = it.emb || {};
@@ -73,10 +80,12 @@ export function calcularReceita(e) {
       return { nome: it.nome, uso, unidade: it.unidade, custo: 0, erro: qtdEmb ? 'unidade' : 'preco' };
     }
     const custo = (preco / qtdEmb) * usoNaEmb;
-    const disponivel = Number.isFinite(it.restante) ? it.restante : qtdEmb;
+    const k = chave(it.nome), ja = usado.get(k) || 0;
+    usado.set(k, ja + usoNaEmb);
+    const disponivel = (Number.isFinite(it.restante) ? it.restante : qtdEmb) - ja;
     const sobra = disponivel - usoNaEmb;
     return {
-      nome: it.nome, uso, unidade: it.unidade, custo: arred(custo), precoPago: preco,
+      nome: it.nome, chave: k, repetido: ja > 0, uso, unidade: it.unidade, custo: arred(custo), precoPago: ja > 0 ? 0 : preco,
       usoNaEmb, unidadeEmb: emb.unidade, sobra, sobraValor: arred(Math.max(sobra, 0) * (preco / qtdEmb)), falta: sobra < 0,
     };
   });
@@ -116,8 +125,10 @@ export function calcularReceita(e) {
     };
   }
 
+  // Sobra de cada produto = a da última linha que usa esse produto.
+  itens.forEach((it, i) => { it.ultimo = !it.erro && !itens.slice(i + 1).some((x) => !x.erro && x.chave === it.chave); });
   const totalPago = arred(itens.reduce((s, i) => s + (i.precoPago || 0), 0));
-  const sobraValor = arred(itens.reduce((s, i) => s + (i.sobraValor || 0), 0));
+  const sobraValor = arred(itens.reduce((s, i) => s + (i.ultimo ? i.sobraValor || 0 : 0), 0));
   return {
     itens, escala, unidades, custoIngredientes, custoGas, custoEmbalagens, custoOutros, custoTotal,
     custoUnidade: arred(custoUnidade), custoTempo, precoMinimo, sugestoes, venda,

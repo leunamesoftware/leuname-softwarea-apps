@@ -929,7 +929,7 @@
         }
       },
       {
-        "nome": "Leite morno",
+        "nome": "Leite (morno)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "1 xícara",
@@ -962,7 +962,7 @@
         }
       },
       {
-        "nome": "Manteiga em ponto de pomada",
+        "nome": "Manteiga (em ponto de pomada)",
         "qtd": 50,
         "unidade": "g",
         "caseira": "3 colheres de sopa",
@@ -1028,7 +1028,7 @@
         }
       },
       {
-        "nome": "Gema (pincelar)",
+        "nome": "Ovo (gema para pincelar)",
         "qtd": 1,
         "unidade": "un",
         "caseira": "1 gema",
@@ -1221,7 +1221,7 @@
         }
       },
       {
-        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "cerca de 1 xícara (use 1 litro na panela)",
@@ -1348,7 +1348,7 @@
         }
       },
       {
-        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "cerca de 1 xícara (use 1 litro na panela)",
@@ -1495,7 +1495,7 @@
         }
       },
       {
-        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "cerca de 1 xícara (use 1 litro na panela)",
@@ -1643,7 +1643,7 @@
         }
       },
       {
-        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "cerca de 1 xícara (use 1 litro na panela)",
@@ -1801,7 +1801,7 @@
         }
       },
       {
-        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "cerca de 1 xícara (use 1 litro na panela)",
@@ -2162,7 +2162,7 @@
         }
       },
       {
-        "nome": "Gema (pincelar)",
+        "nome": "Ovo (gema para pincelar)",
         "qtd": 1,
         "unidade": "un",
         "caseira": "1 gema",
@@ -2232,7 +2232,7 @@
         }
       },
       {
-        "nome": "Leite morno",
+        "nome": "Leite (morno)",
         "qtd": 250,
         "unidade": "ml",
         "caseira": "1 xícara",
@@ -2265,7 +2265,7 @@
         }
       },
       {
-        "nome": "Manteiga em ponto de pomada",
+        "nome": "Manteiga (em ponto de pomada)",
         "qtd": 30,
         "unidade": "g",
         "caseira": "2 colheres de sopa",
@@ -2298,7 +2298,7 @@
         }
       },
       {
-        "nome": "Gema (pincelar)",
+        "nome": "Ovo (gema para pincelar)",
         "qtd": 1,
         "unidade": "un",
         "caseira": "1 gema",

@@ -1,4 +1,4 @@
-import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
+import { calcularReceita, CHAMAS, UNIDADES, normalizar, chave } from './calculo.js';
 
 // O app abre em quantocobrar.leunamesoftware.com.br/app/ e também dentro da loja
 // (www.leunamesoftware.com.br/quantocobrar/app/, sem barra de endereço). RAIZ é o começo do caminho.
@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.8';
+const VERSAO_APP = '5.9';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -34,11 +34,19 @@ const estado = {
   aba: 'receitas',
 };
 
+const nomeProduto = (nome) => String(nome || '').replace(/\s*\(.*\)\s*$/, '');
+for (const k of Object.keys(estado.ingredientes)) {
+  const nova = chave(k);
+  if (nova !== k) { if (!estado.ingredientes[nova]) estado.ingredientes[nova] = { ...estado.ingredientes[k], nome: nomeProduto(estado.ingredientes[k].nome) }; delete estado.ingredientes[k]; gravar('ingredientes', estado.ingredientes); }
+}
+
 // ---------- utilidades ----------
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const brl = (v) => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const n = (v) => { const x = parseFloat(String(v).replace(',', '.')); return Number.isFinite(x) ? x : 0; };
 const qtd = (v, u) => `${(Math.round(v * 100) / 100).toLocaleString('pt-BR')} ${u}`;
+// Sobra em kg/L fica mais clara em g/ml (0,995 kg → 995 g).
+const qtdSobra = (v, u) => (u === 'kg' || u === 'L') && v < 10 ? qtd(Math.round(v * 1000), u === 'kg' ? 'g' : 'ml') : qtd(v, u);
 const opcoesUnidade = (sel) => Object.keys(UNIDADES).map((u) => `<option ${u === sel ? 'selected' : ''}>${u}</option>`).join('');
 
 function aviso(texto) {
@@ -458,11 +466,31 @@ function htmlParteReceita(r, parte) {
         <div><label for="m-quero">Quero fazer (unidades)</label><input id="m-quero" type="number" inputmode="numeric" min="1" value="${m.quero || r.rendimentoObservado?.tipico || r.rendimento.unidades}"></div>
         <div><label for="m-emb">Embalagem por unidade</label><div class="prefixo"><span>R$</span><input id="m-emb" type="number" inputmode="decimal" step="0.05" min="0" value="${m.emb ?? 0.2}"></div></div>
       </div>
+      <h3 class="mini-sub">🛒 Quanto você pagou</h3>
+      <p class="mini-explica">Coloque o preço do pacote que você comprou. O app calcula quanto a receita gastou e quanto sobrou.</p>
+      <div class="mini-itens">${r.ingredientes.map((i, k) => {
+        const ing = estado.ingredientes[chave(i.nome)];
+        const emb = ing?.emb || i.emb || {};
+        const antes = r.ingredientes.slice(0, k).find((x) => chave(x.nome) === chave(i.nome));
+        return `
+        <div class="mini-item">
+          <div class="mini-item-topo"><b>${esc(i.nome)}</b><span id="mi-usa-${k}"></span></div>
+          ${antes ? `<p class="mini-mesmo">Mesmo pacote de ${esc(antes.nome)}, acima.</p>` : `<div class="mini-item-campos">
+            <div class="prefixo"><span>R$</span><input data-mi="${k}" data-campo="preco" type="number" inputmode="decimal" step="0.01" min="0" value="${emb.preco ?? ''}" placeholder="Quanto pagou" aria-label="Preço pago em ${esc(i.nome)}"></div>
+            <span class="mini-por">pacote de</span>
+            <input data-mi="${k}" data-campo="qtd" type="number" inputmode="decimal" step="any" min="0" value="${emb.qtd ?? ''}" aria-label="Tamanho do pacote de ${esc(i.nome)}">
+            <select data-mi="${k}" data-campo="unidade" aria-label="Unidade do pacote de ${esc(i.nome)}">${opcoesUnidade(emb.unidade || i.unidade)}</select>
+          </div>`}
+          <div class="mini-item-res" id="mi-res-${k}"></div>
+        </div>`;
+      }).join('')}</div>
       <div id="m-res"></div>
       <label for="m-preco">Vou vender cada uma por</label>
       <div class="prefixo"><span>R$</span><input id="m-preco" type="number" inputmode="decimal" step="0.5" min="0" value="${m.preco || ''}" placeholder="Toque num preço acima"></div>
       <div id="m-lucro"></div>
-      <button class="botao branco" id="m-completa">Ajustar preços e calcular tudo ›</button>
+      <div id="m-sobras"></div>
+      <button class="botao branco" id="m-fiz">✅ Fiz esta receita: descontar do meu estoque</button>
+      <button class="link mini-mais" id="m-completa">Mais opções (horas de trabalho, outros custos) ›</button>
     </section>`;
 }
 
@@ -473,8 +501,8 @@ function calcularMini(r) {
   return calcularReceita({
     escala: quero / base, unidades: quero,
     itens: r.ingredientes.map((i) => {
-      const ing = estado.ingredientes[normalizar(i.nome)];
-      return { ...i, emb: ing?.emb || i.emb || {} };
+      const ing = estado.ingredientes[chave(i.nome)];
+      return { ...i, emb: ing?.emb || i.emb || {}, restante: Number.isFinite(ing?.restante) ? ing.restante : undefined };
     }),
     gas: { ...(r.gas || {}), precoBotijao: estado.config.precoBotijao },
     embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco),
@@ -485,20 +513,47 @@ function ligarMiniCalculadora(r) {
   const atualizar = () => {
     const res = calcularMini(r);
     const ativo = n(livro.mini[r.id]?.preco);
+    res.itens.forEach((x, k) => {
+      const ing = estado.ingredientes[chave(x.nome)];
+      trocar(`mi-usa-${k}`, `usa <b>${qtd(x.uso, x.unidade)}</b>`);
+      trocar(`mi-res-${k}`, x.erro === 'preco' ? 'Coloque quanto você pagou.'
+        : x.erro === 'unidade' ? `<span class="falta">Use uma unidade parecida com ${esc(x.unidade)} (g com kg, ml com L).</span>`
+        : `Gastou <b>${brl(x.custo)}</b>${x.falta ? ` · <span class="falta">faltam ${qtd(-x.sobra, x.unidadeEmb)}: compre mais</span>`
+          : x.ultimo ? ` · sobra <b>${qtdSobra(x.sobra, x.unidadeEmb)}</b> (${brl(x.sobraValor)})` : ''}${Number.isFinite(ing?.restante) ? ' · já contando o que estava guardado' : ''}${!ing || ing.referencia ? ' · <i>preço de referência: troque pelo seu</i>' : ''}`);
+    });
     trocar('m-res', `
+      <div class="mini-resumo">
+        <div><span>Você pagou nos pacotes</span><b>${brl(res.compras.totalPago)}</b></div>
+        <div><span>Material gasto nesta receita</span><b>${brl(res.custoIngredientes)}</b></div>
+        <div><span>Gás</span><b>${brl(res.custoGas)}</b></div>
+        <div><span>Embalagens</span><b>${brl(res.custoEmbalagens)}</b></div>
+        <div class="total"><span>Custo total · ${res.unidades} unidades</span><b>${brl(res.custoTotal)}</b></div>
+      </div>
       <div class="mini-numeros">
-        <div>Custo total<b>${brl(res.custoTotal)}</b></div>
+        <div>Rende<b>${res.unidades} un.</b></div>
         <div>Custo de cada<b>${brl(res.custoUnidade)}</b></div>
       </div>
+      <p class="mini-explica">Preço sugerido por unidade (toque para escolher):</p>
       <div class="mini-precos">${res.sugestoes.map((s) => `
         <button class="${ativo === s.preco ? 'ativa' : ''}" data-mpreco="${s.preco}"><small>${s.rotulo}</small><b>${brl(s.preco)}</b></button>`).join('')}
       </div>`);
     const v = res.venda;
     trocar('m-lucro', v ? `
       <div class="mini-lucro ${v.lucroTotal < 0 ? 'neg' : ''}">
-        <span>${v.lucroTotal < 0 ? 'Prejuízo' : 'Seu lucro'} com ${res.unidades} unidades</span>
+        <span>${v.lucroTotal < 0 ? 'Prejuízo' : 'Seu lucro final'} com ${res.unidades} unidades</span>
         <b>${brl(v.lucroTotal)}</b>
-        <small>Você recebe ${brl(v.faturamento)} · lucro de ${brl(v.lucroUnidade)} por unidade</small>
+        <div class="mini-kpis">
+          <div>Você recebe<strong>${brl(v.faturamento)}</strong></div>
+          <div>Lucro por unidade<strong>${brl(v.lucroUnidade)}</strong></div>
+          <div>Margem<strong>${v.margem}%</strong></div>
+        </div>
+      </div>` : '');
+    const sobras = res.itens.filter((x) => x.ultimo && x.sobra > 0);
+    trocar('m-sobras', sobras.length ? `
+      <div class="mini-sobras">
+        <b>🧺 Sobrou material: ${brl(res.compras.sobraValor)}</b>
+        <ul>${sobras.map((x) => `<li>${esc(nomeProduto(x.nome))}: ${qtdSobra(x.sobra, x.unidadeEmb)} <span>(${brl(x.sobraValor)})</span></li>`).join('')}</ul>
+        <p>Guarde esse material separado para a próxima receita. Toque em <b>"Fiz esta receita"</b> e o app desconta o que você usou: na próxima vez ele já calcula com o que sobrou. Quando acabar e você comprar de novo, é só colocar aqui o preço novo.</p>
       </div>` : '');
   };
   const salvar = (campo, valor) => { livro.mini[r.id] = { ...(livro.mini[r.id] || {}), [campo]: valor }; gravar('mini', livro.mini); atualizar(); };
@@ -509,12 +564,25 @@ function ligarMiniCalculadora(r) {
     const b = e.target.closest('[data-mpreco]');
     if (b) { document.getElementById('m-preco').value = b.dataset.mpreco; salvar('preco', n(b.dataset.mpreco)); }
   });
-  document.getElementById('m-completa').addEventListener('click', () => {
+  const levarParaConta = () => {
     const m = livro.mini[r.id] || {};
     contaDaReceita(r);
     Object.assign(estado.calc, { quero: Math.round(n(m.quero)) || estado.calc.quero, embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco) });
     gravar('calc', estado.calc);
-    abrir('calcular');
+  };
+  document.getElementById('m-completa').addEventListener('click', () => { levarParaConta(); abrir('calcular'); });
+  document.getElementById('m-fiz').addEventListener('click', () => { levarParaConta(); abrirRegistro(); });
+  // Preço pago e tamanho do pacote: vale para todas as receitas que usam o ingrediente.
+  // Mudou o pacote = comprou de novo, então o estoque guardado volta a ser o pacote cheio.
+  tela.querySelector('.mini-itens').addEventListener('input', (e) => {
+    const el = e.target.closest('[data-mi]');
+    if (!el) return;
+    const i = r.ingredientes[+el.dataset.mi], k = chave(i.nome);
+    const ing = estado.ingredientes[k] || (estado.ingredientes[k] = { nome: nomeProduto(i.nome), emb: { ...(i.emb || { unidade: i.unidade }) } });
+    ing.emb[el.dataset.campo] = el.dataset.campo === 'unidade' ? el.value : n(el.value);
+    delete ing.referencia; delete ing.restante;
+    gravar('ingredientes', estado.ingredientes);
+    atualizar();
   });
   atualizar();
 }
@@ -525,8 +593,8 @@ function contaDaReceita(r) {
   estado.calc = {
     receitaId: r.id, nome: r.nome, rendimentoBase: base, quero: base,
     itens: r.ingredientes.map((i) => {
-      if (!estado.ingredientes[normalizar(i.nome)] && i.emb) {
-        estado.ingredientes[normalizar(i.nome)] = { nome: i.nome, emb: { ...i.emb }, referencia: true };
+      if (!estado.ingredientes[chave(i.nome)] && i.emb) {
+        estado.ingredientes[chave(i.nome)] = { nome: i.nome, emb: { ...i.emb }, referencia: true };
       }
       return { nome: i.nome, qtd: i.qtd, unidade: i.unidade };
     }),
@@ -553,7 +621,7 @@ function dadosDoCalculo() {
     escala,
     unidades: c.quero,
     itens: c.itens.filter((i) => i.nome.trim()).map((i) => {
-      const ing = estado.ingredientes[normalizar(i.nome)];
+      const ing = estado.ingredientes[chave(i.nome)];
       return { ...i, emb: ing?.emb || {}, restante: Number.isFinite(ing?.restante) ? ing.restante : undefined };
     }),
     gas: { ...c.gas, precoBotijao: estado.config.precoBotijao },
@@ -659,7 +727,7 @@ function excluirMinha(id, depois) {
 }
 
 function htmlItem(it, i) {
-  const ing = estado.ingredientes[normalizar(it.nome)] || { emb: { qtd: '', unidade: it.unidade, preco: '' } };
+  const ing = estado.ingredientes[chave(it.nome)] || { emb: { qtd: '', unidade: it.unidade, preco: '' } };
   return `
     <div class="item" data-i="${i}">
       <div class="item-topo">
@@ -700,8 +768,8 @@ function aoDigitar(ev) {
   else if (el.dataset.emb !== undefined) {
     const it = c.itens[+el.dataset.emb];
     if (!it.nome.trim()) return;
-    const k = normalizar(it.nome);
-    const ing = estado.ingredientes[k] || (estado.ingredientes[k] = { nome: it.nome, emb: { unidade: it.unidade } });
+    const k = chave(it.nome);
+    const ing = estado.ingredientes[k] || (estado.ingredientes[k] = { nome: nomeProduto(it.nome), emb: { unidade: it.unidade } });
     ing.emb[el.dataset.campo] = valor; delete ing.referencia; delete ing.restante;
     gravar('ingredientes', estado.ingredientes);
   } else return;
@@ -724,18 +792,18 @@ function atualizarResultado() {
   const esc_ = document.getElementById('escala');
   if (esc_) esc_.textContent = Math.abs(d.escala - 1) > 0.001 ? `Ingredientes multiplicados por ${(Math.round(d.escala * 100) / 100).toLocaleString('pt-BR')}x para ${c.quero} unidades.` : '';
 
-  const porNome = new Map(res.itens.map((x) => [normalizar(x.nome), x]));
+  const porNome = new Map(res.itens.map((x, j) => [j, x]));
   c.itens.forEach((it, i) => {
     const alvo = tela.querySelector(`[data-custo="${i}"]`);
     if (!alvo) return;
-    const x = porNome.get(normalizar(it.nome));
+    const x = porNome.get(c.itens.filter((y) => y.nome.trim()).indexOf(it));
     if (!x || !it.nome.trim()) { alvo.innerHTML = ''; return; }
     const usa = d.escala !== 1 ? `Para ${c.quero} un.: <b>${qtd(x.uso, x.unidade)}</b> · ` : '';
     if (x.erro === 'preco') alvo.innerHTML = `${usa}Informe quanto você pagou.`;
     else if (x.erro === 'unidade') alvo.innerHTML = `${usa}<span class="falta">Não dá para converter ${esc(x.unidade)} na unidade do pacote. Use a mesma unidade (ex.: g e kg).</span>`;
     else alvo.innerHTML = `${usa}Custo: <b>${brl(x.custo)}</b> · ${x.falta
       ? `<span class="falta">Falta ${qtd(-x.sobra, x.unidadeEmb)} — compre mais</span>`
-      : `sobra ${qtd(x.sobra, x.unidadeEmb)} (${brl(x.sobraValor)})`}`;
+      : x.ultimo ? `sobra ${qtd(x.sobra, x.unidadeEmb)} (${brl(x.sobraValor)})` : 'mesmo pacote da linha de cima'}`;
   });
 
   const ativo = n(c.precoVenda);
@@ -811,11 +879,11 @@ function abrirRegistro() {
     const baixas = [];
     if (fundo.querySelector('#r-estoque').checked) {
       for (const x of res.itens) {
-        const ing = estado.ingredientes[normalizar(x.nome)];
+        const ing = estado.ingredientes[chave(x.nome)];
         if (ing && !x.erro) {
           const antes = Number.isFinite(ing.restante) ? ing.restante : n(ing.emb.qtd);
           ing.restante = Math.max(0, x.sobra);
-          baixas.push({ k: normalizar(x.nome), qtd: antes - ing.restante });
+          baixas.push({ k: chave(x.nome), qtd: antes - ing.restante });
         }
       }
       gravar('ingredientes', estado.ingredientes);

@@ -184,6 +184,29 @@ ul.dicas { padding-left: 20px; margin: 0; } ul.dicas li { margin-bottom: 8px; fo
 .mini-lucro small { color: var(--suave); font-size: 12px; }
 .botao.branco { background: #fff; color: var(--laranja-forte); margin-top: 12px; }
 .mini-calc .nota { color: #FFE8D6; }
+.mini-sub { font-size: 17px; font-weight: 800; margin: 18px 0 2px; }
+.mini-explica { font-size: 13px; color: #FFE8D6; margin: 0 0 8px; }
+.mini-itens { display: grid; gap: 8px; }
+.mini-item { background: #fff; color: var(--texto); border-radius: 12px; padding: 10px; }
+.mini-item-topo { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+.mini-item-topo span { color: var(--suave); white-space: nowrap; }
+.mini-item-campos { display: grid; grid-template-columns: auto minmax(0, 1fr) 78px; gap: 6px; align-items: center; margin-top: 6px; }
+.mini-item-campos .prefixo { grid-column: 1 / -1; }
+.mini-item-campos input, .mini-item-campos select { min-height: 40px; padding: 6px 8px; border: 1px solid #E5D3C3; }
+.mini-item-campos .prefixo span { top: 9px; left: 8px; font-size: 14px; } .mini-item-campos .prefixo input { padding-left: 30px; }
+.mini-mesmo { margin: 6px 0 0; font-size: 13px; color: var(--suave); }
+.mini-por { font-size: 13px; color: var(--suave); }
+.mini-item-res { font-size: 13px; color: var(--suave); margin-top: 6px; }
+.mini-item-res b { color: var(--texto); } .mini-item-res .falta { color: var(--vermelho); font-weight: 700; }
+.mini-resumo { background: rgba(255,255,255,.16); border-radius: 12px; padding: 8px 12px; margin-top: 12px; font-size: 14px; }
+.mini-resumo div { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.mini-resumo .total { border-top: 1px solid rgba(255,255,255,.35); margin-top: 4px; padding-top: 6px; font-size: 15px; }
+.mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; color: var(--suave); font-size: 12px; }
+.mini-kpis strong { display: block; color: var(--texto); font-size: 15px; }
+.mini-sobras { margin-top: 12px; background: #FFF6D6; color: var(--texto); border-radius: 14px; padding: 12px; font-size: 14px; }
+.mini-sobras ul { margin: 6px 0; padding-left: 18px; } .mini-sobras li span { color: var(--suave); }
+.mini-sobras p { margin: 6px 0 0; font-size: 13px; color: var(--suave); }
+.mini-mais { display: block; width: 100%; color: #fff; margin-top: 6px; }
 
 .minhas { list-style: none; padding: 0; margin: 0 0 10px; }
 .minhas li { display: flex; gap: 8px; align-items: center; background: #fff; border: 1px solid var(--linha); border-radius: 14px; padding: 6px 6px 6px 12px; margin-bottom: 8px; }
