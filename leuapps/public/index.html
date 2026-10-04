@@ -38,6 +38,26 @@
     .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
     .opcoes li:first-child { background: #EEF3FF; color: #1F2A44; }
     .opcoes b { font-size: 12px; } .opcoes span { font-size: 14px; font-weight: 900; } .opcoes small { font-size: 10.5px; font-weight: 600; opacity: .85; }
+    .ver-mais { display: block; margin-top: 4px; font-size: 12px; font-weight: 800; color: var(--azul); }
+    .detalhe { position: fixed; inset: 0; z-index: 15; overflow-y: auto; background: var(--fundo); }
+    .det-barra { position: sticky; top: 0; z-index: 1; background: linear-gradient(135deg, #071A5C, #1B3FD6); padding: calc(10px + env(safe-area-inset-top)) 12px 10px; }
+    .det-voltar { border: 0; background: rgba(255,255,255,.16); color: #fff; font: inherit; font-weight: 800; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+    .det-corpo { max-width: 720px; margin: 0 auto; padding: 18px 16px 40px; }
+    .det-topo { display: flex; gap: 14px; align-items: center; }
+    .det-topo img { width: 76px; height: 76px; border-radius: 18px; box-shadow: 0 6px 16px rgba(10,20,60,.2); }
+    .det-topo h2 { margin: 0; font-size: 22px; } .det-topo p { margin: 0; }
+    .det-dev { color: var(--azul); font-weight: 800; font-size: 14px; } .detalhe .cat { font-size: 13px; color: var(--suave); font-weight: 600; }
+    .det-preco { margin: 12px 0 10px; font-weight: 800; color: #0F8A4B; font-size: 14px; }
+    .det-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .det-botoes > :only-child { grid-column: 1 / -1; }
+    .det-botoes > * { width: 100%; min-height: 46px; font-size: 15px; }
+    .det-telas { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 18px -16px 6px; padding: 0 16px 8px; }
+    .det-telas img { flex: 0 0 auto; height: 380px; width: auto; border-radius: 16px; border: 1px solid var(--linha); scroll-snap-align: start; background: var(--cartao); }
+    .detalhe h3 { font-size: 17px; margin: 16px 0 6px; }
+    .det-desc { margin: 0 0 10px; color: var(--suave); font-size: 15px; }
+    .det-recursos { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .det-recursos li { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 10px 12px; font-size: 14px; font-weight: 600; }
+    .det-info { margin: 16px 0 0; font-size: 12.5px; color: var(--suave); text-align: center; }
     .vazio { color: var(--suave); text-align: center; padding: 24px 0; }
     .instalar { display: none; margin: 0 0 16px; padding: 14px; border-radius: 18px; background: var(--cartao); border: 2px solid var(--azul); }
     .instalar b { display: block; }
@@ -129,6 +149,7 @@
       </div>
     </section>
   </main>
+  <section id="detalhe" class="detalhe" hidden aria-label="Detalhes do app"></section>
   <p class="rodape">© 2026 LeuName Softwares · Todos os direitos reservados.<br>Aplicativos sempre na versão mais nova.</p>
   <script>
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -143,8 +164,8 @@
       const tem = meus.includes(a.id);
       return `
         <li class="app">
-          <img src="${esc(a.icone)}" alt="" loading="lazy">
-          <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span></div>
+          <img src="${esc(a.icone)}" alt="" loading="lazy" data-detalhe="${esc(a.id)}" style="cursor:pointer">
+          <div data-detalhe="${esc(a.id)}" style="cursor:pointer"><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span><span class="ver-mais">Ver detalhes ›</span></div>
           <div class="botoes">${tem
             ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>`
             : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
@@ -183,6 +204,7 @@
       document.body.appendChild(f);
     }
     function aoClicar(e) {
+      const det = e.target.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
       const cmp = e.target.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
       if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = '✓ Instalado'; ins.classList.add('verde'); setTimeout(() => mostrar(document.getElementById('busca').value), 500); }
@@ -198,6 +220,33 @@
       if (tem) location.href = el.href; else planos(a.id, true);
     }, true);
     lista.addEventListener('click', aoClicar);
+    // Página do app (como na loja do celular): telas, descrição e o que ele faz. Link direto: www.leunamesoftware.com.br/#id
+    const detalhe = document.getElementById('detalhe');
+    function mostrarDetalhe() {
+      const a = apps.find((x) => x.id === location.hash.slice(1));
+      if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
+      const tem = meus.includes(a.id);
+      detalhe.innerHTML = `
+        <div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">‹ Voltar</button></div>
+        <div class="det-corpo">
+          <div class="det-topo"><img src="${esc(a.icone)}" alt=""><div><h2>${esc(a.nome)}</h2><p class="det-dev">LeuName Softwares</p><p class="cat">${esc(a.categoria)}</p></div></div>
+          <p class="det-preco">${esc(a.preco)}</p>
+          <div class="det-botoes">${tem ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>` : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
+            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}</div>
+          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy">`).join('')}</div>` : ''}
+          <h3>Sobre este app</h3><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
+          ${a.recursos ? `<ul class="det-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+          <p class="det-info">Desenvolvedor: LeuName Softwares${a.versao ? ` · Versão ${esc(a.versao)}` : ''} · Funciona no celular e no computador</p>
+        </div>`;
+      detalhe.hidden = false; detalhe.scrollTop = 0; document.body.style.overflow = 'hidden';
+      detalhe.querySelector('.det-voltar').onclick = () => history.length > 1 ? history.back() : (location.hash = '');
+    }
+    detalhe.addEventListener('click', (e) => {
+      const ins = e.target.closest('[data-instalar]');
+      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); mostrar(document.getElementById('busca').value); mostrarDetalhe(); return; }
+      const cmp = e.target.closest('[data-comprar]'); if (cmp) planos(cmp.dataset.comprar);
+    });
+    addEventListener('hashchange', mostrarDetalhe);
     document.getElementById('sugestoes').addEventListener('click', aoClicar);
     function aba(qual) {
       document.getElementById('aba-loja').hidden = qual !== 'loja';
@@ -226,7 +275,7 @@
         </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:700;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
     }).catch(() => {});
     document.getElementById('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela', 'servicos'].includes(a) ? a : 'loja'); })
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); mostrarDetalhe(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela', 'servicos'].includes(a) ? a : 'loja'); })
       .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
     document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
 

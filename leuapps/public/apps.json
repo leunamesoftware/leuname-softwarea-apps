@@ -49,6 +49,21 @@
         "R$ 29,90/ano",
         "todas as receitas"
       ]
+    ],
+    "versao": "5.2",
+    "descricao": "Livro de receitas que vendem com a calculadora em cada página. Você vê quanto rende, quanto custa, quanto cobrar e quanto lucra, sem fazer conta.",
+    "recursos": [
+      "📖 Receitas passo a passo, com foto",
+      "🧮 Custo, preço certo e lucro na hora",
+      "📦 Calcula para 10, 50 ou 200 unidades",
+      "📊 Controle das suas vendas"
+    ],
+    "capturas": [
+      "/img/telas/quantocobrar-1.jpg",
+      "/img/telas/quantocobrar-2.jpg",
+      "/img/telas/quantocobrar-3.jpg",
+      "/img/telas/quantocobrar-4.jpg",
+      "/img/telas/quantocobrar-5.jpg"
     ]
   },
   {
@@ -68,6 +83,19 @@
         "url": "/loja/comprar?app=gestacell",
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
+    ],
+    "descricao": "Sistema completo para loja de celular e assistência técnica. Funciona no celular e no computador, até sem internet.",
+    "recursos": [
+      "🧾 Vendas e ordens de serviço (OS)",
+      "📦 Estoque de produtos e peças",
+      "👥 Clientes e fornecedores",
+      "💰 Financeiro e relatórios"
+    ],
+    "capturas": [
+      "/img/telas/gestacell-2.jpg",
+      "/img/telas/gestacell-3.jpg",
+      "/img/telas/gestacell-4.jpg",
+      "/img/telas/gestacell-1.jpg"
     ]
   },
   {
@@ -88,6 +116,20 @@
         "url": "/loja/comprar?app=radar",
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
+    ],
+    "descricao": "Avisa antes de vencer: documentos, contas e prazos da sua empresa, tudo num lugar só.",
+    "recursos": [
+      "📡 Radar com o que vence primeiro",
+      "🔔 Alertas antes do vencimento",
+      "📄 Documentos organizados",
+      "➕ Cadastro rápido"
+    ],
+    "capturas": [
+      "/img/telas/radar-1.jpg",
+      "/img/telas/radar-2.jpg",
+      "/img/telas/radar-3.jpg",
+      "/img/telas/radar-4.jpg",
+      "/img/telas/radar-5.jpg"
     ]
   }
 ]
