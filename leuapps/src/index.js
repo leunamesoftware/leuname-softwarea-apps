@@ -9,8 +9,10 @@ export default {
     }
     if (env.SITE_ANTIGO && url.hostname !== 'apps.leunamesoftware.com.br') {
       if (url.pathname === '/site-antigo') url.pathname = '/index.html';
-      return env.SITE_ANTIGO.fetch(new Request(url, req));
+      const r = await env.SITE_ANTIGO.fetch(new Request(url, req));
+      const h = new Headers(r.headers); h.set('x-leuapps', 'site-antigo ' + r.status);
+      return new Response(r.body, { status: r.status, headers: h });
     }
-    return new Response('Página não encontrada.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    return new Response('Página não encontrada.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'x-leuapps': 'sem-site-antigo ' + Boolean(env.SITE_ANTIGO) } });
   },
 };
