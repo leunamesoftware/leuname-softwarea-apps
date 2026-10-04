@@ -8,6 +8,9 @@ export default {
       url.hostname = 'www.leunamesoftware.com.br';
       return Response.redirect(url.toString(), 301);
     }
+    // Link curto de receita para o WhatsApp: /r/<id> abre o Quanto Cobrar direto nela.
+    const curto = url.pathname.match(/^\/r\/([a-z0-9-]{2,60})\/?$/);
+    if (curto) return Response.redirect(`${url.origin}/quantocobrar/app/?receita=${curto[1]}&leuapps=1`, 302);
     // Quanto Cobrar dentro da loja (mesmo endereço = abre sem barra de endereço no app instalado).
     if (env.CONTAS && (url.pathname === '/quantocobrar' || url.pathname === '/quantocobrar/')) return Response.redirect(url.origin + '/quantocobrar/app/', 302);
     if (env.CONTAS && url.pathname.startsWith('/quantocobrar/')) {

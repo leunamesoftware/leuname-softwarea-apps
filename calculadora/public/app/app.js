@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.4';
+const VERSAO_APP = '5.5';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -259,7 +259,12 @@ function folhas() {
 const totalPaginas = () => folhas().length;
 const inicioDaReceita = (i) => folhas().findIndex((x) => x.i === i);
 
+// Link direto de uma receita (www.leunamesoftware.com.br/r/<id>): abre o livro nela assim que as receitas chegarem.
+let receitaDoLink = new URLSearchParams(location.search).get('receita');
 function telaReceitas(extra) {
+  if (!extra && receitaDoLink && estado.receitas.some((r) => r.id === receitaDoLink)) {
+    extra = { receitaId: receitaDoLink }; receitaDoLink = null;
+  }
   if (extra?.receitaId) {
     const i = estado.receitas.findIndex((r) => r.id === extra.receitaId);
     if (i >= 0) { livro.aberto = true; livro.pagina = inicioDaReceita(i); }

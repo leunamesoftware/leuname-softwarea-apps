@@ -322,5 +322,113 @@
       "Volte para o recipiente, tampe e leve ao congelador até ficar completamente firme."
     ],
     "dicaVenda": "Sorvete não vai ao fogo e tem custo baixo. Venda em potes de 150 ml no calor, ou no quilo para festas; coco ralado por cima deixa com cara de sorveteria."
+  },
+  {
+    "id": "brownie-chocolate",
+    "nome": "Brownie de Chocolate Fácil",
+    "categoria": "Doces",
+    "foto": "/img/receitas/brownie-chocolate.jpg",
+    "rendimento": {
+      "unidades": 15,
+      "pesoUnidadeG": 55,
+      "faixa": [
+        12,
+        16
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho ou caixinha individual para brownie (R$ 0,30 a R$ 0,80 cada)",
+    "ingredientes": [
+      {
+        "nome": "Chocolate meio amargo",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 barras de 100 g",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "¾ de tablete de 200 g",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 90,
+        "unidade": "g",
+        "caseira": "¾ de xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50%",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 1,
+        "unidade": "g",
+        "caseira": "1 pitada",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      }
+    ],
+    "preparo": [
+      "Derreta o chocolate com a manteiga até ficar liso.",
+      "Misture os ovos com o açúcar. Acrescente o chocolate derretido e misture.",
+      "Junte a farinha, o chocolate em pó e o sal. Misture só até incorporar (se quiser, 1 colher de chá de baunilha).",
+      "Se quiser, acrescente 100 g de chocolate picado ou gotas.",
+      "Coloque em forma forrada com papel-manteiga.",
+      "Asse em forno preaquecido a 180 °C até formar a casquinha e o centro continuar macio (cerca de 30 minutos).",
+      "Deixe esfriar antes de cortar."
+    ],
+    "dicaVenda": "Brownie é campeão de venda avulsa: corte em quadrados iguais e embale um a um. Com gotas de chocolate por dentro, dá para cobrar um pouco mais (lembre de somar o custo delas)."
   }
 ]
