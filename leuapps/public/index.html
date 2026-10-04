@@ -111,7 +111,7 @@
 </head>
 <body>
   <header class="topo">
-    <div class="marca"><img src="/img/leuapps-192.png" alt=""><div><b>LeuApps</b><small>Aplicativos LeuName Softwares</small></div></div>
+    <div class="marca"><img src="/img/leuapps-192.webp" alt="" width="40" height="40"><div><b>LeuApps</b><small>Aplicativos LeuName Softwares</small></div></div>
     <nav class="abas" role="tablist">
       <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
       <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
@@ -233,7 +233,7 @@
           <p class="det-preco">${esc(a.preco)}</p>
           <div class="det-botoes">${tem ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>` : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
             ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}</div>
-          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy">`).join('')}</div>` : ''}
+          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="214" height="380">`).join('')}</div>` : ''}
           <h3>Sobre este app</h3><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
           ${a.recursos ? `<ul class="det-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
           <p class="det-info">Desenvolvedor: LeuName Softwares${a.versao ? ` · Versão ${esc(a.versao)}` : ''} · Funciona no celular e no computador</p>

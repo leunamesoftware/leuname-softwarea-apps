@@ -4,7 +4,7 @@
     "nome": "Quanto Cobrar",
     "categoria": "Receitas e vendas",
     "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
-    "icone": "/img/quantocobrar-192.png",
+    "icone": "/img/quantocobrar-192.webp",
     "url": "/quantocobrar/app/",
     "preco": "2 dias grátis · planos a partir de R$ 2,99",
     "planos": [
@@ -59,11 +59,11 @@
       "📊 Controle das suas vendas"
     ],
     "capturas": [
-      "/img/telas/quantocobrar-1.jpg",
-      "/img/telas/quantocobrar-2.jpg",
-      "/img/telas/quantocobrar-3.jpg",
-      "/img/telas/quantocobrar-4.jpg",
-      "/img/telas/quantocobrar-5.jpg"
+      "/img/telas/quantocobrar-1.webp",
+      "/img/telas/quantocobrar-2.webp",
+      "/img/telas/quantocobrar-3.webp",
+      "/img/telas/quantocobrar-4.webp",
+      "/img/telas/quantocobrar-5.webp"
     ]
   },
   {
@@ -71,7 +71,7 @@
     "nome": "Gestacell",
     "categoria": "Gestão de loja",
     "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
-    "icone": "/img/gestacell-192.png",
+    "icone": "/img/gestacell-192.webp",
     "url": "/gestacell/",
     "preco": "R$ 30 · pagamento único",
     "planos": [
@@ -92,10 +92,10 @@
       "💰 Financeiro e relatórios"
     ],
     "capturas": [
-      "/img/telas/gestacell-2.jpg",
-      "/img/telas/gestacell-3.jpg",
-      "/img/telas/gestacell-4.jpg",
-      "/img/telas/gestacell-1.jpg"
+      "/img/telas/gestacell-2.webp",
+      "/img/telas/gestacell-3.webp",
+      "/img/telas/gestacell-4.webp",
+      "/img/telas/gestacell-1.webp"
     ]
   },
   {
@@ -103,7 +103,7 @@
     "nome": "Radar Preventivo",
     "categoria": "Documentos e prazos",
     "resumo": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
-    "icone": "/img/radar-192.png",
+    "icone": "/img/radar-192.webp",
     "url": "https://radar.leunamesoftware.com.br",
     "preco": "R$ 20 · pagamento único",
     "exigeCompra": true,
@@ -125,11 +125,11 @@
       "➕ Cadastro rápido"
     ],
     "capturas": [
-      "/img/telas/radar-1.jpg",
-      "/img/telas/radar-2.jpg",
-      "/img/telas/radar-3.jpg",
-      "/img/telas/radar-4.jpg",
-      "/img/telas/radar-5.jpg"
+      "/img/telas/radar-1.webp",
+      "/img/telas/radar-2.webp",
+      "/img/telas/radar-3.webp",
+      "/img/telas/radar-4.webp",
+      "/img/telas/radar-5.webp"
     ]
   }
 ]

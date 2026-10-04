@@ -1,5 +1,5 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v41';
+const VERSAO = 'calc-v42';
 // BASE: '' em quantocobrar.leunamesoftware.com.br, '/quantocobrar' dentro da loja (www).
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'].map((a) => BASE + a);
@@ -16,6 +16,14 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin || (url.pathname.startsWith(BASE + '/api/') || url.pathname.startsWith(BASE + '/baixar'))) return;
+  // Imagens: do aparelho primeiro (abre rápido); o resto: rede primeiro, para estar sempre atualizado.
+  if (url.pathname.startsWith(BASE + '/img/') || url.pathname.startsWith('/fonts/')) {
+    e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request).then((resp) => {
+      if (resp.ok) { const copia = resp.clone(); caches.open(VERSAO).then((c) => c.put(e.request, copia)); }
+      return resp;
+    })));
+    return;
+  }
   e.respondWith(
     fetch(e.request, { cache: 'no-cache' })
       .then((r) => {

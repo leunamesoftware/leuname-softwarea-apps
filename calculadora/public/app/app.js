@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.6';
+const VERSAO_APP = '5.7';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -362,7 +362,7 @@ function htmlSumario() {
     ${faixaGratis()}
     <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
-      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r))}" alt="" loading="lazy">
+      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r).replace('/receitas/', '/receitas/mini/'))}" alt="" loading="lazy" width="64" height="64">
         <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
     </ol>

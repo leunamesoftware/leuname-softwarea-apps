@@ -3,7 +3,7 @@
     "id": "cocada-queimada",
     "nome": "Cocada Queimada",
     "categoria": "Doces",
-    "foto": "/img/receitas/cocada-queimada.jpg",
+    "foto": "/img/receitas/cocada-queimada.webp",
     "rendimento": {
       "unidades": 25,
       "pesoUnidadeG": 35,
@@ -98,7 +98,7 @@
     "id": "mousse-maracuja",
     "nome": "Mousse de Maracujá Fácil",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/mousse-maracuja.jpg",
+    "foto": "/img/receitas/mousse-maracuja.webp",
     "rendimento": {
       "unidades": 7,
       "pesoUnidadeG": 100,
@@ -159,7 +159,7 @@
     "id": "beijinho-copinho",
     "nome": "Beijinho Mole de Copinho",
     "categoria": "Doces",
-    "foto": "/img/receitas/beijinho-copinho.jpg",
+    "foto": "/img/receitas/beijinho-copinho.webp",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 55,
@@ -243,7 +243,7 @@
     "id": "sorvete-coco",
     "nome": "Sorvete Caseiro de Coco",
     "categoria": "Sorvetes",
-    "foto": "/img/receitas/sorvete-coco.jpg",
+    "foto": "/img/receitas/sorvete-coco.webp",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 100,
@@ -327,7 +327,7 @@
     "id": "brownie-chocolate",
     "nome": "Brownie de Chocolate Fácil",
     "categoria": "Doces",
-    "foto": "/img/receitas/brownie-chocolate.jpg",
+    "foto": "/img/receitas/brownie-chocolate.webp",
     "rendimento": {
       "unidades": 15,
       "pesoUnidadeG": 55,
@@ -435,7 +435,7 @@
     "id": "pudim-leite-condensado",
     "nome": "Pudim de Leite Condensado",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/pudim-leite-condensado.jpg",
+    "foto": "/img/receitas/pudim-leite-condensado.webp",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 110,
@@ -508,7 +508,7 @@
     "id": "trufa-chocolate",
     "nome": "Trufa de Chocolate Cremosa",
     "categoria": "Doces",
-    "foto": "/img/receitas/trufa-chocolate.jpg",
+    "foto": "/img/receitas/trufa-chocolate.webp",
     "rendimento": {
       "unidades": 25,
       "pesoUnidadeG": 22,
@@ -577,5 +577,89 @@
       "Coloque sobre papel-manteiga e deixe o chocolate firmar."
     ],
     "dicaVenda": "Trufa vende muito em datas especiais (Páscoa, Dia das Mães, Natal). Varie a cobertura (granulado, amendoim, fios de chocolate branco) e venda em caixinhas com 4, 6 ou 12 unidades."
+  },
+  {
+    "id": "morango-creme-travessa",
+    "nome": "Morango com Creme na Travessa",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/morango-creme-travessa.webp",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 150,
+      "faixa": [
+        8,
+        12
+      ]
+    },
+    "gas": {
+      "minutos": 15,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Pote de 250 ml com tampa para vender em porções (R$ 0,50 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Morangos",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "2 caixinhas",
+        "emb": {
+          "qtd": 250,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 caixinhas",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Chocolate ao leite ou meio amargo",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 barra",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Lave, seque e corte os morangos. Reserve alguns inteiros para decorar.",
+      "Em uma panela, coloque o leite condensado, 1 caixa de creme de leite e a manteiga. Cozinhe em fogo baixo, mexendo, até formar um creme levemente espesso.",
+      "Coloque os morangos em uma travessa e cubra com o creme. Leve à geladeira.",
+      "Derreta o chocolate e misture com a outra caixa de creme de leite, formando uma ganache.",
+      "Espalhe a ganache sobre o creme e leve à geladeira até ficar bem gelado."
+    ],
+    "dicaVenda": "Venda a travessa inteira por encomenda ou em potes individuais de 250 ml. Morango bonito por cima chama a atenção na foto: capriche na decoração."
   }
 ]

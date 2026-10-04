@@ -6,7 +6,8 @@
 - Respostas curtas, em português, direto ao ponto.
 
 ## Receitas do Quanto Cobrar (o dono manda foto + texto)
-1. Foto: redimensionar para 1000 px de largura, JPG qualidade 82, em `calculadora/public/img/receitas/<id>.jpg`.
+1. Foto: rodar `python3 scripts/foto_receita.py <foto> <id>` em `calculadora/` (gera a foto leve em WebP e a miniatura do sumário).
+   No JSON: `"foto": "/img/receitas/<id>.webp"`.
 2. Acrescentar no fim de `calculadora/src/receitas.json`, no mesmo formato das outras:
    - quantidades em g/ml/un, com a medida caseira em `caseira`;
    - `emb` com o preço de referência da embalagem;
@@ -16,5 +17,5 @@
 3. Ingrediente opcional fica fora do custo; cite no modo de preparo.
 4. Rodar `node --test test/*.mjs` em `calculadora/`, fazer commit e push no branch `ccr-f58cd13b-ml0bzs`
    e disparar o workflow `calculadora-publicar.yml` no repositório leunamesoftware/Leunamesite.
-5. Responder ao dono com o link da receita: `www.leunamesoftware.com.br/r/<id>`.
-   Link de divulgação (página de venda com Comprar): `www.leunamesoftware.com.br/quantocobrar`.
+5. Responder ao dono com o link único de divulgação (o mesmo para todas as receitas):
+   `www.leunamesoftware.com.br/quantocobrar` (abre a página de venda dentro da loja).

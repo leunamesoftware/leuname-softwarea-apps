@@ -21,10 +21,10 @@ Campos de cada app:
 - `id`, `nome`, `categoria`, `resumo`, `icone`, `url`, `preco`;
 - `planos`: o que aparece em "Comprar";
 - `descricao` e `recursos`: no máximo 4 itens, texto curto, sem poluir;
-- `capturas`: 4 a 6 telas em `/img/telas/<id>-N.jpg`, 540 px de largura;
+- `capturas`: 4 a 6 telas em `/img/telas/<id>-N.webp`, 405 px de largura, WebP qualidade 72 (leve para abrir rápido no 4G);
 - `versao`.
 
-Ícone: `leuapps/public/img/<id>-192.png`.
+Ícone: `leuapps/public/img/<id>-192.webp` (e o `.png` para o manifest).
 Nunca use telas com nome ou dados de cliente real.
 
 ## 4. Venda (mesmo sistema para todos)
