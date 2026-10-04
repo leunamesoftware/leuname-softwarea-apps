@@ -12,7 +12,8 @@ export default {
     const curto = url.pathname.match(/^\/r\/([a-z0-9-]{2,60})\/?$/);
     if (curto) return Response.redirect(`${url.origin}/quantocobrar/app/?receita=${curto[1]}&leuapps=1`, 302);
     // Quanto Cobrar dentro da loja (mesmo endereço = abre sem barra de endereço no app instalado).
-    if (env.CONTAS && (url.pathname === '/quantocobrar' || url.pathname === '/quantocobrar/')) return Response.redirect(url.origin + '/quantocobrar/app/', 302);
+    // Link de divulgação: cai na página de venda do app (fotos, preços e Comprar), não direto no app.
+    if (url.pathname === '/quantocobrar' || url.pathname === '/quantocobrar/') return Response.redirect(url.origin + '/#quantocobrar', 302);
     if (env.CONTAS && url.pathname.startsWith('/quantocobrar/')) {
       url.pathname = url.pathname.slice('/quantocobrar'.length);
       if (url.pathname === '/api/mp/aviso') return new Response('Não encontrado.', { status: 404 });
