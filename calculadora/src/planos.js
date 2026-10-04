@@ -29,15 +29,15 @@ export async function acessoDaChave(env, chave) {
   return a ? avaliar(a) : { plano: 'completo', receitas: Infinity };
 }
 
-// Teste grátis: 7 dias com 2 receitas e a calculadora, contados da criação da conta. Depois, só com compra.
-export const DIAS_TESTE = 7;
+// Teste grátis único: 2 dias com 2 receitas e a calculadora, contados da criação da conta. Depois, só com compra.
+export const DIAS_TESTE = 2;
 export const RECEITAS_POR_PACOTE = 30;
 
 /**
  * O que a conta libera agora:
  * - Pro (anual/mensal) em dia → todas as receitas;
  * - pacotes Básico (pagamento único, vitalício) → 30 receitas por pacote comprado (somam);
- * - sem compra → teste grátis de 7 dias (2 receitas); depois, bloqueado até comprar.
+ * - sem compra → teste grátis de 2 dias (2 receitas); depois, bloqueado até comprar.
  */
 export async function acessoDaConta(env, contaId) {
   const conta = await env.DB.prepare('SELECT criado_em FROM contas WHERE id = ?').bind(contaId).first();

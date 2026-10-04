@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.0';
+const VERSAO_APP = '5.1';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -72,7 +72,7 @@ function telaAtivacao(erro = '') {
         <button class="botao" type="submit">Entrar</button>
         <a class="capa-esqueci" href="/recuperar">Esqueci a senha</a>
       </form>
-      <button class="capa-teste" id="gratis">🎁 Testar grátis por 7 dias</button>
+      <button class="capa-teste" id="gratis">🎁 Testar grátis por 2 dias</button>
       ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
       <button class="capa-recuperar capa-chave" id="tenho-chave" type="button">Tenho uma chave antiga</button>
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
@@ -137,12 +137,12 @@ async function sair(motivo) {
   telaAtivacao(motivo || '');
 }
 
-// Teste grátis: cria a conta (sem pagar nada) e libera 2 receitas + calculadora por 7 dias.
+// Teste grátis: cria a conta (sem pagar nada) e libera 2 receitas + calculadora por 2 dias.
 function telaTesteGratis() {
   const form = document.getElementById('form-entrar');
   form.innerHTML = `
-    <label for="t-nome">Teste grátis por 7 dias</label>
-    <p class="capa-explica">2 receitas completas + a calculadora. Depois dos 7 dias, escolha um plano para continuar.</p>
+    <label for="t-nome">Teste grátis por 2 dias</label>
+    <p class="capa-explica">2 receitas completas + a calculadora. Depois dos 2 dias, escolha um plano para continuar.</p>
     <input id="t-nome" autocomplete="name" placeholder="Seu nome" required maxlength="80">
     <input id="t-email" type="email" inputmode="email" autocomplete="email" placeholder="Seu e-mail" required maxlength="120" style="margin-top:8px">
     <input id="t-senha" type="password" autocomplete="new-password" placeholder="Crie uma senha (mín. 6)" required minlength="6" maxlength="100" style="margin-top:8px">

@@ -125,7 +125,7 @@ export default {
         if (!conta || !(await senhaConfere(conta, d?.senha))) return json({ erro: 'login_invalido' }, 401);
         return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
       }
-      // Conta grátis (sem compra): começa o teste de 7 dias.
+      // Conta grátis (sem compra): começa o teste de 2 dias (um por conta).
       if (pathname === '/api/conta/criar' && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
