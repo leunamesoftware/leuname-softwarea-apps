@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.1';
+const VERSAO_APP = '5.2';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -49,6 +49,13 @@ async function api(caminho, opcoes = {}) {
   if (r.status === 401 && caminho !== '/api/ativar') { sair('Sua chave não está mais ativa.'); throw new Error('chave'); }
   if (!r.ok) throw Object.assign(new Error(dados.erro || 'erro'), { status: r.status });
   return dados;
+}
+
+// Identificador deste aparelho (teste grátis é um só por aparelho).
+function idAparelho() {
+  let id = ler('aparelho', '');
+  if (!/^[0-9a-f]{32}$/.test(id)) { id = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join(''); gravar('aparelho', id); }
+  return id;
 }
 
 // ---------- entrar (conta: e-mail + senha) ----------
@@ -158,7 +165,7 @@ function telaTesteGratis() {
     if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
     botao.disabled = true; botao.textContent = 'Criando sua conta...';
     try {
-      const r = await fetch('/api/conta/criar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha }) });
+      const r = await fetch('/api/conta/criar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, aparelho: idAparelho() }) });
       if (r.status === 409) throw new Error('Este e-mail já tem conta. Volte e entre com a sua senha.');
       if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto.');
       if (!r.ok) throw new Error('Não foi possível criar a conta. Tente de novo.');
@@ -175,8 +182,9 @@ function telaBloqueio() {
   const a = estado.acesso || {};
   abas.hidden = true;
   document.body.classList.add('abertura');
-  const titulo = a.plano === 'gratis' ? 'Seu teste grátis terminou' : 'Seu plano 👑 Pro venceu';
-  const texto = a.plano === 'gratis' ? 'Gostou? Escolha um plano para continuar usando as receitas e a calculadora.' : `Venceu em ${dataBR(a.expiraEm)}. Renove para continuar usando as receitas e a calculadora.`;
+  const titulo = a.semTeste ? 'Teste grátis já usado' : a.plano === 'gratis' ? 'Seu teste grátis terminou' : 'Seu plano 👑 Pro venceu';
+  const texto = a.semTeste ? 'O teste grátis é um só por pessoa, e este aparelho ou esta rede já usou. Para usar o app, escolha um plano.'
+    : a.plano === 'gratis' ? 'Gostou? Escolha um plano para continuar usando as receitas e a calculadora.' : `Venceu em ${dataBR(a.expiraEm)}. Renove para continuar usando as receitas e a calculadora.`;
   tela.innerHTML = `
     <section class="capa">
       <img class="capa-logo" src="/img/logo.webp" alt="">
@@ -195,9 +203,9 @@ function telaBloqueio() {
 
 async function carregarReceitas() {
   try {
-    const { receitas, plano, expiraEm, venceu, bloqueado, testeAte, pacotes } = await api('/api/receitas');
+    const { receitas, plano, expiraEm, venceu, bloqueado, testeAte, pacotes, semTeste } = await api('/api/receitas');
     estado.receitas = receitas; gravar('receitas', receitas);
-    estado.acesso = { plano, expiraEm, venceu, bloqueado, testeAte, pacotes }; gravar('acesso', estado.acesso);
+    estado.acesso = { plano, expiraEm, venceu, bloqueado, testeAte, pacotes, semTeste }; gravar('acesso', estado.acesso);
   } catch (e) {
     if (e.message !== 'chave' && !estado.receitas.length) aviso('Sem internet: as receitas aparecem quando você conectar.');
   }

@@ -83,3 +83,40 @@ export async function fecharSessao(env, req) {
   if (t) await env.DB.prepare('DELETE FROM sessoes WHERE token_hash = ?').bind(await sha256(t)).run();
   return cookie(req, '', 0);
 }
+
+// ---- teste grátis único (por aparelho e por rede) ----
+const APARELHO = 'ln_aparelho';
+const MAX_TESTES_POR_REDE = 3; // folgado: no 4G muitas pessoas saem pelo mesmo IP da operadora
+const DIAS_REDE = 30;
+
+/** Identificador do aparelho: cookie próprio ou o que o app guardou (se o cookie foi apagado). */
+export function aparelhoDoPedido(req, doApp) {
+  const m = (req.headers.get('Cookie') || '').match(new RegExp(`(?:^|;\\s*)${APARELHO}=([0-9a-f]{32})`));
+  const app = /^[0-9a-f]{32}$/.test(String(doApp || '')) ? String(doApp) : null;
+  return { cookie: m ? m[1] : null, app, valor: (m && m[1]) || app || aleatorio(16) };
+}
+
+export function cookieAparelho(req, valor) {
+  const host = new URL(req.url).hostname;
+  const dominio = host.endsWith('leunamesoftware.com.br') ? '; Domain=leunamesoftware.com.br' : '';
+  const seguro = new URL(req.url).protocol === 'https:' ? '; Secure' : '';
+  return `${APARELHO}=${valor}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${2 * 365 * 86400}${dominio}${seguro}`;
+}
+
+/**
+ * Conta nova: anota aparelho e rede (em hash). Se o aparelho já fez teste, ou a rede já teve
+ * muitos testes no último mês, a conta nasce sem teste grátis (só abre comprando).
+ */
+export async function marcarTeste(env, contaId, req, ap) {
+  const rede = await sha256('rede:' + (req.headers.get('CF-Connecting-IP') || 'local'));
+  const ids = [ap.cookie, ap.app, ap.valor].filter(Boolean);
+  const desde = new Date(Date.now() - DIAS_REDE * 864e5).toISOString();
+  const marcas = ids.map(() => '?').join(',');
+  const r = await env.DB.prepare(`SELECT
+      (SELECT COUNT(*) FROM contas WHERE id != ? AND teste_aparelho IN (${marcas})) AS mesmo_aparelho,
+      (SELECT COUNT(*) FROM contas WHERE id != ? AND teste_rede = ? AND criado_em > ?) AS mesma_rede`)
+    .bind(contaId, ...ids, contaId, rede, desde).first();
+  const semTeste = r.mesmo_aparelho > 0 || r.mesma_rede >= MAX_TESTES_POR_REDE ? 1 : 0;
+  await env.DB.prepare('UPDATE contas SET teste_aparelho = ?, teste_rede = ?, sem_teste = ? WHERE id = ?').bind(ap.valor, rede, semTeste, contaId).run();
+  return semTeste;
+}

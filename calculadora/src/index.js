@@ -3,14 +3,15 @@ import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
-import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, EMAIL } from './contas.js';
+import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
 function json(dados, status = 200, cookie = null) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
-  if (cookie) headers['Set-Cookie'] = cookie;
-  return new Response(JSON.stringify(dados), { status, headers });
+  const h = new Headers(headers);
+  for (const c of [].concat(cookie || [])) h.append('Set-Cookie', c);
+  return new Response(JSON.stringify(dados), { status, headers: h });
 }
 
 async function sha256(texto) {
@@ -133,9 +134,12 @@ export default {
         const nome = String(d?.nome || '').trim().slice(0, 80), email = String(d?.email || '').trim().toLowerCase();
         if (nome.length < 2 || !EMAIL.test(email)) return json({ erro: 'dados_invalidos' }, 400);
         if (!senhaValida(d?.senha)) return json({ erro: 'senha_curta' }, 400);
+        const nova = !(await buscarConta(env, email));
         const c = await contaParaCompra(env, email, nome, d.senha);
         if (c.erro) return json({ erro: c.erro }, 409);
-        return json({ ok: true, nome: c.conta.nome }, 200, await abrirSessao(env, c.conta.id, req));
+        const ap = aparelhoDoPedido(req, d?.aparelho);
+        const semTeste = nova ? await marcarTeste(env, c.conta.id, req, ap) : 0;
+        return json({ ok: true, nome: c.conta.nome, semTeste: Boolean(semTeste) }, 200, [await abrirSessao(env, c.conta.id, req), cookieAparelho(req, ap.valor)]);
       }
       if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
       if (pathname === '/api/conta' && m === 'GET') {
@@ -170,7 +174,7 @@ export default {
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
             : { ...r, rendimentoObservado: stats(r) }));
           return json({ receitas, plano: acesso.plano, expiraEm: acesso.expiraEm || null, venceu: Boolean(acesso.venceu),
-            bloqueado: Boolean(acesso.bloqueado || acesso.semConta || acesso.receitas === 0), testeAte: acesso.testeAte || null, pacotes: acesso.pacotes || 0 });
+            bloqueado: Boolean(acesso.bloqueado || acesso.semConta || acesso.receitas === 0), semTeste: Boolean(acesso.semTeste), testeAte: acesso.testeAte || null, pacotes: acesso.pacotes || 0 });
         }
         if (pathname === '/api/rendimento' && m === 'POST') {
           // Rendimento só entra na média quando vem de quem comprou.

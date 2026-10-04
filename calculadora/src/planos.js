@@ -40,7 +40,7 @@ export const RECEITAS_POR_PACOTE = 30;
  * - sem compra → teste grátis de 2 dias (2 receitas); depois, bloqueado até comprar.
  */
 export async function acessoDaConta(env, contaId) {
-  const conta = await env.DB.prepare('SELECT criado_em FROM contas WHERE id = ?').bind(contaId).first();
+  const conta = await env.DB.prepare('SELECT criado_em, sem_teste FROM contas WHERE id = ?').bind(contaId).first();
   const { results: todasCompras } = await env.DB.prepare("SELECT a.plano, a.expira_em FROM pedidos p JOIN acessos a ON a.chave = p.chave WHERE p.conta_id = ? AND p.status = 'pago'")
     .bind(contaId).all();
   const compras = todasCompras.filter((x) => PLANOS_RECEITAS.includes(x.plano)).map(avaliar);
@@ -50,6 +50,8 @@ export async function acessoDaConta(env, contaId) {
   const pacotes = compras.filter((x) => x.plano === 'basico').length;
   if (pacotes) return { plano: 'basico', pacotes, receitas: pacotes * RECEITAS_POR_PACOTE };
   if (pro.length) return { ...pro[0], receitas: 0, bloqueado: true };
+  // Aparelho ou rede que já usou o teste: sem teste grátis.
+  if (conta?.sem_teste) return { plano: 'gratis', receitas: 0, bloqueado: true, semTeste: true };
   const testeAte = new Date(new Date(conta?.criado_em || Date.now()).getTime() + DIAS_TESTE * 864e5).toISOString();
   return new Date(testeAte) > new Date()
     ? { plano: 'gratis', receitas: RECEITAS_GRATIS, testeAte }

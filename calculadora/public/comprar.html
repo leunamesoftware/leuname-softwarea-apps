@@ -78,7 +78,7 @@
       if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
       erro.textContent = ''; botao.disabled = true; botao.textContent = 'Abrindo o pagamento...';
       try {
-        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, plano: planoEscolhido() }) });
+        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, plano: planoEscolhido(), aparelho: (() => { try { return JSON.parse(localStorage.getItem('calc.aparelho') || '""'); } catch { return ''; } })() }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok || !d.url) throw new Error(d.erro === 'senha_incorreta' ? 'Este e-mail já tem conta e a senha não confere. Use a senha da sua conta ou toque em "Esqueci a senha".' : d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
         try { localStorage.setItem('calc.pedido', JSON.stringify(d.pedido)); } catch {}

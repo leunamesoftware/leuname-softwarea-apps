@@ -3,7 +3,7 @@
 // (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
-import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha } from './contas.js';
+import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -27,8 +27,11 @@ export async function criarPedido(env, origem, d, req) {
   if (!senhaValida(d?.senha)) return { erro: 'senha_curta', status: 400 };
   const P = PLANOS[plano];
   // A compra fica ligada à conta (e-mail + senha): o app libera pela conta, sem chave.
+  const nova = !(await buscarConta(env, email));
   const c = await contaParaCompra(env, email, nome, d.senha);
   if (c.erro) return { erro: c.erro, status: 409 };
+  // Conta criada na compra (ainda sem pagar) também conta para o teste grátis único.
+  if (nova) await marcarTeste(env, c.conta.id, req, aparelhoDoPedido(req, d?.aparelho));
   const sessao = await abrirSessao(env, c.conta.id, req);
 
   const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
