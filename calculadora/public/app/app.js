@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '3.1';
+const VERSAO_APP = '3.2';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -41,10 +41,10 @@ function aviso(texto) {
 async function api(caminho, opcoes = {}) {
   const r = await fetch(caminho, {
     ...opcoes,
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + estado.chave, ...(opcoes.headers || {}) },
+    headers: { 'Content-Type': 'application/json', ...(estado.chave ? { Authorization: 'Bearer ' + estado.chave } : {}), ...(opcoes.headers || {}) },
   });
   const dados = await r.json().catch(() => ({}));
-  if (r.status === 401 && caminho !== '/api/ativar') { sair(dados.erro === 'teste_acabou'); throw new Error('chave'); }
+  if (r.status === 401 && caminho !== '/api/ativar') { sair(); throw new Error('chave'); }
   if (!r.ok) throw Object.assign(new Error(dados.erro || 'erro'), { status: r.status });
   return dados;
 }
@@ -65,12 +65,12 @@ function telaAtivacao(erro = '') {
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
       </form>
-      ${ler('testeAcabou', false) ? '' : '<button class="capa-teste" id="testar">Testar grátis por 7 dias</button>'}
+      <button class="capa-teste" id="gratis">Ver 2 receitas grátis</button>
       ${APP_LOJA ? '<div class="capa-comprar">Use a chave que você recebeu.<br><a class="capa-recuperar" href="/recuperar">Perdi a minha chave</a></div>'
         : `<div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>`}
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
-  document.getElementById('testar')?.addEventListener('click', (ev) => comecarTeste(ev.currentTarget));
+  document.getElementById('gratis').addEventListener('click', entrarGratis);
   document.getElementById('form-ativar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const botao = ev.target.querySelector('button');
@@ -91,39 +91,21 @@ function telaAtivacao(erro = '') {
   });
 }
 
-function sair(fimDoTeste = false) {
-  estado.chave = ''; gravar('chave', ''); estado.teste = null;
-  if (fimDoTeste) gravar('testeAcabou', true);
-  telaAtivacao(fimDoTeste ? 'Seu teste grátis de 7 dias terminou. Digite sua chave para continuar.'
-    : 'Sua chave não está mais ativa. Fale com o suporte se precisar de ajuda.');
+function sair() {
+  estado.chave = ''; gravar('chave', ''); gravar('gratis', false);
+  telaAtivacao('Sua chave não está mais ativa. Fale com o suporte se precisar de ajuda.');
 }
 
-async function comecarTeste(botao) {
-  const erro = document.getElementById('erro-ativar');
-  let aparelho = ler('aparelho', '');
-  if (!aparelho) { aparelho = crypto.randomUUID(); gravar('aparelho', aparelho); }
-  botao.disabled = true; botao.textContent = 'Liberando...';
-  try {
-    const r = await fetch('/api/teste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ aparelho }) });
-    const d = await r.json().catch(() => ({}));
-    if (d.erro === 'teste_usado') throw new Error('O teste grátis já foi usado. Digite sua chave para continuar.');
-    if (!r.ok) throw new Error('Não deu para liberar o teste agora. Tente de novo em um minuto.');
-    estado.chave = d.token; gravar('chave', d.token);
-    await carregarReceitas();
-    if (!estado.chave) return; // teste deste aparelho já tinha acabado
-    abrir('receitas');
-    aviso('Teste grátis liberado por 7 dias!');
-  } catch (e) {
-    erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se para testar.';
-    botao.disabled = false; botao.textContent = 'Testar grátis por 7 dias';
-  }
+async function entrarGratis() {
+  gravar('gratis', true);
+  await carregarReceitas();
+  abrir('receitas');
 }
 
 async function carregarReceitas() {
   try {
-    const { receitas, teste } = await api('/api/receitas');
+    const { receitas } = await api('/api/receitas');
     estado.receitas = receitas; gravar('receitas', receitas);
-    estado.teste = teste || null;
   } catch (e) {
     if (e.message !== 'chave' && !estado.receitas.length) aviso('Sem internet: as receitas aparecem quando você conectar.');
   }
@@ -221,6 +203,7 @@ function mostrarPagina(efeito) {
     if (m) { estado.calc = JSON.parse(JSON.stringify({ ...m, receitaId: null, minhaId: m.id, quero: m.quero || m.rendimentoBase })); gravar('calc', estado.calc); abrir('calcular'); }
   }));
   tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
+  tela.querySelectorAll('[data-tenho-chave]').forEach((b) => b.addEventListener('click', () => telaAtivacao()));
   if (r && !r.bloqueada) ligarMiniCalculadora(r);
 }
 
@@ -246,7 +229,7 @@ function virarFolha(htmlAntigo, efeito) {
 function htmlSumario() {
   return `
     <h1 class="pagina-titulo">Sumário</h1>
-    ${faixaTeste()}
+    ${faixaGratis()}
     <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
       <li><button data-pagina="${i + 1}"><img src="${esc(r.foto)}" alt="" loading="lazy">
@@ -261,16 +244,11 @@ function htmlSumario() {
     <button class="botao sec nova-receita">＋ Nova receita minha</button>`;
 }
 
-function diasDeTeste() {
-  return estado.teste ? Math.max(0, Math.ceil((new Date(estado.teste.expiraEm) - Date.now()) / 864e5)) : 0;
-}
-
-function faixaTeste() {
-  if (!estado.teste) return '';
-  const d = diasDeTeste();
+function faixaGratis() {
   const livres = estado.receitas.filter((r) => !r.bloqueada).length;
-  const limite = livres < estado.receitas.length ? ` · ${livres} de ${estado.receitas.length} receitas liberadas` : '';
-  return `<p class="faixa-teste">Teste grátis · ${d <= 1 ? 'último dia' : `faltam ${d} dias`}${limite}</p>`;
+  if (estado.chave || livres === estado.receitas.length) return '';
+  return `<div class="faixa-teste">Versão grátis · ${livres} de ${estado.receitas.length} receitas liberadas
+    <button class="link" data-tenho-chave>Tenho uma chave</button></div>`;
 }
 
 function htmlPaginaBloqueada(r) {
@@ -281,8 +259,8 @@ function htmlPaginaBloqueada(r) {
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada na versão completa. Para ativar, digite a sua chave de acesso.</p>
-    ${faixaTeste()}`;
+    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada na versão completa.</p>
+    <button class="botao" data-tenho-chave>Tenho uma chave</button>`;
 }
 
 function htmlContracapa() {
@@ -705,7 +683,7 @@ function abrirRegistro() {
     });
     gravar('historico', historico.slice(0, 300));
     fundo.remove();
-    if (c.receitaId && navigator.onLine) {
+    if (c.receitaId && estado.chave && navigator.onLine) {
       api('/api/rendimento', { method: 'POST', body: JSON.stringify({ receitaId: c.receitaId, unidades, escala: d.escala, pesoUnidadeG: peso }) })
         .then(({ rendimento }) => {
           const r = estado.receitas.find((x) => x.id === c.receitaId);
@@ -760,9 +738,12 @@ function telaHistorico() {
       <button class="remover" data-excluir-prod="${i}" aria-label="Excluir esta produção">🗑️</button></div>
       <div class="sub" style="margin:2px 0 0">${new Date(x.data).toLocaleDateString('pt-BR')} · ${x.unidades} un. · custo ${brl(x.custoTotal)}${x.lucroPrevisto !== null ? ` · lucro ${brl(x.lucroPrevisto)}` : ''}</div></div>`).join('')
       : '<p class="vazio">Quando fizer uma receita, toque em "Registrar produção".</p>'}
-    <button class="link" id="sair" style="width:100%;margin-top:16px">Desconectar esta chave deste aparelho</button>
+    <button class="link" id="sair" style="width:100%;margin-top:16px">${estado.chave ? 'Desconectar esta chave deste aparelho' : 'Tenho uma chave'}</button>
     <p class="nota" style="text-align:center">Versão ${VERSAO_APP}</p>`;
-  document.getElementById('sair').addEventListener('click', () => { if (confirm('Desconectar? Você precisará digitar a chave de novo.')) { estado.chave = ''; gravar('chave', ''); telaAtivacao(); } });
+  document.getElementById('sair').addEventListener('click', () => {
+    if (!estado.chave) return telaAtivacao();
+    if (confirm('Desconectar? Você precisará digitar a chave de novo.')) { estado.chave = ''; gravar('chave', ''); telaAtivacao(); }
+  });
   tela.querySelectorAll('[data-excluir-prod]').forEach((b) => b.addEventListener('click', () => {
     const lista = ler('historico', []);
     const x = lista[+b.dataset.excluirProd];
@@ -796,8 +777,8 @@ async function compraGuardada() {
     return true;
   } catch { return false; }
 }
-if (!estado.chave) { telaAtivacao(); compraGuardada(); }
+if (!estado.chave && !ler('gratis', false)) { telaAtivacao(); compraGuardada(); }
 else {
   abrir('receitas');
-  carregarReceitas().then(() => { if (estado.aba === 'receitas' && estado.chave) telaReceitas(); });
+  carregarReceitas().then(() => { if (estado.aba === 'receitas') telaReceitas(); });
 }
