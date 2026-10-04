@@ -902,7 +902,7 @@
     },
     "gas": {
       "minutos": 25,
-      "chama": "media"
+      "chama": "forno"
     },
     "embalagemSugerida": "Saquinho de papel ou bandeja com filme (R$ 0,20 a R$ 0,50 cada)",
     "ingredientes": [
@@ -1068,5 +1068,1399 @@
       "Validade: 3 dias na geladeira ou 90 dias congelado."
     ],
     "dicaVenda": "Joelho sai bem em lanchonete, cantina e encomenda para festa. Venda quentinho ou congelado em pacotes para o cliente assar em casa."
+  },
+  {
+    "id": "coxinha-frango",
+    "nome": "Coxinha de Frango",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/coxinha-frango.webp",
+    "rendimento": {
+      "unidades": 60,
+      "pesoUnidadeG": 35,
+      "faixa": [
+        55,
+        70
+      ]
+    },
+    "gas": {
+      "minutos": 60,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Peito de frango",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "1 peito grande",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Leite (massa)",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Ovos (empanar)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de rosca (empanar)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o frango em 1 litro de água com o caldo de galinha por 25 minutos. Reserve 500 ml desse caldo e desfie o frango.",
+      "Refogue a cebola e o alho no óleo, junte o frango desfiado e o cheiro-verde. Acerte o sal e deixe esfriar. Se quiser, misture requeijão cremoso ao recheio (opcional, fora do custo).",
+      "Massa: ferva os 500 ml de caldo reservado com o leite, a manteiga e o sal.",
+      "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela (cerca de 5 minutos).",
+      "Passe a massa para uma superfície untada e sove ainda morna até ficar lisa.",
+      "Pegue porções de massa, abra na mão, recheie e modele em formato de gota.",
+      "Passe no ovo batido e depois na farinha de rosca.",
+      "Frite em óleo quente (cerca de 170 °C), poucas de cada vez, até dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Deixe o recheio esfriar bem antes de modelar. Recheio quente rasga a massa.",
+      "Sove a massa ainda morna: ela fica lisa e não racha na fritura.",
+      "Óleo frio deixa a coxinha encharcada; óleo quente demais doura por fora e deixa crua por dentro.",
+      "Para congelar, congele a coxinha já empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
+      "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
+    ],
+    "dicaVenda": "Coxinha é o salgado que mais sai no cento para festa. No tamanho de lanchonete (cerca de 100 g) a mesma receita rende uns 20: mude o peso no app e veja o novo preço."
+  },
+  {
+    "id": "kibe-frito",
+    "nome": "Kibe Frito",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/kibe-frito.webp",
+    "rendimento": {
+      "unidades": 50,
+      "pesoUnidadeG": 35,
+      "faixa": [
+        45,
+        55
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Trigo para kibe",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "2½ xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Carne moída",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 cebolas médias",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Hortelã",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 maço",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 colheres de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Pimenta síria",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 25,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Lave o trigo, cubra com água e deixe de molho por 1 hora.",
+      "Esprema bem com as mãos até sair toda a água.",
+      "Bata a cebola, o alho e as folhas de hortelã no processador (ou pique bem fino).",
+      "Misture o trigo, a carne crua, a mistura de cebola, o sal e a pimenta síria. Amasse bem até virar uma massa lisa. Se tiver processador, passe a massa nele em partes.",
+      "Com as mãos úmidas, modele os kibes em formato de bola alongada com pontas. Se quiser, recheie com requeijão ou coalhada (opcional, fora do custo).",
+      "Frite em óleo quente (cerca de 170 °C), poucos de cada vez, até ficarem bem dourados. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Esprema muito bem o trigo: água demais faz o kibe abrir no óleo.",
+      "Molhe as mãos em água fria para modelar. A massa não gruda e fica lisinha.",
+      "Antes de modelar tudo, frite um kibe de teste e acerte o sal.",
+      "Para congelar, congele cru, em assadeira, e depois passe para saco. Frite ainda congelado, sem descongelar.",
+      "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
+    ],
+    "dicaVenda": "Kibe tem custo baixo e completa o cento sortido. Mande limão ou coalhada junto na entrega para valorizar."
+  },
+  {
+    "id": "risole-presunto-queijo",
+    "nome": "Risole de Presunto e Queijo",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/risole-presunto-queijo.webp",
+    "rendimento": {
+      "unidades": 50,
+      "pesoUnidadeG": 40,
+      "faixa": [
+        45,
+        60
+      ]
+    },
+    "gas": {
+      "minutos": 45,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite (massa)",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Presunto (recheio)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "250 g em pedacinhos",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 34.9
+        }
+      },
+      {
+        "nome": "Muçarela (recheio)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "250 g em pedacinhos",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Ovos (empanar)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de rosca (empanar)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Ferva o leite, 500 ml de água, a manteiga, o caldo de galinha e o sal.",
+      "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.",
+      "Passe para uma superfície untada e sove ainda morna até ficar lisa. Deixe esfriar coberta.",
+      "Abra a massa com rolo, bem fina, e corte discos com um cortador ou copo.",
+      "Coloque um pedaço de presunto e um de muçarela, feche em meia-lua e aperte bem as bordas.",
+      "Passe no ovo batido e depois na farinha de rosca.",
+      "Frite em óleo quente (cerca de 170 °C), poucos de cada vez, até dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Abra a massa fina: risole bom tem casquinha crocante e bastante recheio.",
+      "Aperte bem a borda com um garfo para o queijo não vazar na fritura.",
+      "Use a muçarela bem gelada: ela não derrete enquanto você modela.",
+      "Para congelar, congele empanado e cru, em assadeira, e depois passe para saco. Frite ainda congelado, sem descongelar.",
+      "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
+    ],
+    "dicaVenda": "Risole entra no cento sortido e também vende bem em porção para bar e lanchonete."
+  },
+  {
+    "id": "bolinha-queijo",
+    "nome": "Bolinha de Queijo",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/bolinha-queijo.webp",
+    "rendimento": {
+      "unidades": 80,
+      "pesoUnidadeG": 25,
+      "faixa": [
+        70,
+        90
+      ]
+    },
+    "gas": {
+      "minutos": 50,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite (massa)",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado (massa)",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Muçarela em cubinhos (recheio)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "400 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Ovos (empanar)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de rosca (empanar)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Ferva o leite, 500 ml de água, a manteiga, o caldo de galinha e o sal.",
+      "Abaixe o fogo, junte o parmesão, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.",
+      "Passe para uma superfície untada e sove ainda morna até ficar lisa. Deixe esfriar coberta.",
+      "Pegue porções pequenas de massa, abra na mão, coloque um cubinho de muçarela e feche bem, formando bolinhas.",
+      "Passe no ovo batido e depois na farinha de rosca.",
+      "Frite em óleo quente (cerca de 170 °C), poucas de cada vez, até dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Muçarela em cubinhos e bem gelada: fecha fácil e derrete por dentro na hora certa.",
+      "Feche a bolinha sem deixar fresta, senão o queijo vaza no óleo.",
+      "Frite poucas de cada vez para o óleo não esfriar.",
+      "Para congelar, congele empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
+      "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
+    ],
+    "dicaVenda": "Bolinha de queijo é a preferida das crianças nas festas. Ofereça o cento só de bolinha ou misture no sortido."
+  },
+  {
+    "id": "pastel-carne",
+    "nome": "Pastel de Carne",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/pastel-carne.webp",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 70,
+      "faixa": [
+        18,
+        24
+      ]
+    },
+    "gas": {
+      "minutos": 45,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho de papel para pastel (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Óleo (massa)",
+        "qtd": 30,
+        "unidade": "ml",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Vinagre (massa)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 750,
+          "unidade": "ml",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Carne moída (recheio)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho (recheio)",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Tomate (recheio)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 tomate",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado (recheio)",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Óleo (recheio)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Misture a farinha e metade do sal. Junte o óleo, o vinagre e cerca de 200 ml de água morna aos poucos, até a massa desgrudar das mãos.",
+      "Sove por 5 minutos, cubra com filme e deixe descansar 30 minutos.",
+      "Recheio: refogue a cebola e o alho no óleo, junte a carne e cozinhe até secar. Acrescente o tomate picado, o cheiro-verde e o resto do sal. Deixe esfriar. Se quiser, junte azeitona picada ou ovo cozido (opcional, fora do custo).",
+      "Abra a massa bem fina com rolo e corte retângulos.",
+      "Coloque o recheio frio, feche e aperte as bordas com um garfo.",
+      "Frite em óleo bem quente (cerca de 180 °C) até formar bolhinhas e dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "O vinagre deixa a massa com bolhinhas e crocante.",
+      "Recheio bem sequinho e frio: o pastel não abre nem fica murcho.",
+      "Tire o ar antes de fechar a borda para não estourar no óleo.",
+      "Para congelar, congele cru, separado por plástico, e frite ainda congelado.",
+      "Validade: frito, venda no mesmo dia; cru, 90 dias congelado."
+    ],
+    "dicaVenda": "Pastel frito na hora vende muito em feira, festa junina e porta de escola. Faça mini pastéis para o cento de festa."
+  },
+  {
+    "id": "esfiha-carne",
+    "nome": "Esfiha Aberta de Carne",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/esfiha-carne.webp",
+    "rendimento": {
+      "unidades": 30,
+      "pesoUnidadeG": 45,
+      "faixa": [
+        26,
+        34
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Bandeja de papelão com tampa ou caixa de esfiha (R$ 1,00 a R$ 2,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo (massa)",
+        "qtd": 60,
+        "unidade": "ml",
+        "caseira": "¼ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 colheres de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Carne moída (recheio)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Tomate (recheio)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 tomates",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado (recheio)",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Limão (recheio)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "suco de 1 limão",
+        "emb": {
+          "qtd": 10,
+          "unidade": "un",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Pimenta síria (recheio)",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 25,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Misture cerca de 250 ml de água morna, o fermento e o açúcar. Deixe espumar por 5 minutos.",
+      "Junte o óleo, metade do sal e a farinha aos poucos. Sove por 10 minutos até ficar lisa.",
+      "Cubra e deixe crescer por 40 minutos.",
+      "Recheio: misture a carne crua, a cebola, os tomates sem sementes e o cheiro-verde bem picados, o suco do limão, o resto do sal e a pimenta síria. Escorra o líquido que soltar.",
+      "Divida a massa em 30 bolinhas, abra cada uma em disco e aperte o centro com os dedos, deixando uma borda.",
+      "Cubra com o recheio, apertando bem sobre a massa.",
+      "Asse em forno preaquecido a 200 °C por 15 a 20 minutos, até a borda dourar."
+    ],
+    "dicas": [
+      "Escorra bem o recheio: tomate e cebola soltam água e deixam a massa mole.",
+      "Aperte o recheio cru sobre a massa para ele não soltar depois de assado.",
+      "Pincele um fio de óleo na borda assim que sair do forno: fica brilhante e macia.",
+      "Para congelar, congele já assada. Depois é só aquecer por 10 minutos a 180 °C.",
+      "Validade: 3 dias na geladeira ou 90 dias congelada."
+    ],
+    "dicaVenda": "Esfiha vende bem em combo (ex.: 10 unidades + refrigerante) e no delivery de fim de semana. Faça também a de queijo com a mesma massa."
+  },
+  {
+    "id": "empada-frango",
+    "nome": "Empada de Frango",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/empada-frango.webp",
+    "rendimento": {
+      "unidades": 35,
+      "pesoUnidadeG": 45,
+      "faixa": [
+        30,
+        40
+      ]
+    },
+    "gas": {
+      "minutos": 40,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Forminha de alumínio descartável nº 2 ou caixa para salgados (R$ 0,15 a R$ 0,40 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Margarina (massa)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "½ pote de 500 g",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 8.99
+        }
+      },
+      {
+        "nome": "Ovo (massa)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Peito de frango (recheio)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "1 peito médio",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho (recheio)",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo (recheio)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Tomate (recheio)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 tomate",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Milho verde (recheio)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 lata escorrida",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 4.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo (recheio)",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Leite (recheio)",
+        "qtd": 150,
+        "unidade": "ml",
+        "caseira": "½ xícara e um pouco",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Requeijão cremoso (recheio)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ copo",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Gema (pincelar)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 gema",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o frango em água com o caldo de galinha por 25 minutos e desfie.",
+      "Refogue a cebola e o alho no óleo, junte o frango, o tomate picado e o milho.",
+      "Dissolva a farinha no leite, junte ao refogado e mexa até engrossar. Desligue, misture o requeijão e deixe esfriar. Se quiser, junte azeitona picada (opcional, fora do custo).",
+      "Massa: misture a farinha, o sal, a margarina e o ovo com a ponta dos dedos, só até unir. Não sove.",
+      "Forre as forminhas com uma camada fina de massa, coloque o recheio frio e cubra com um disco de massa, unindo bem as bordas.",
+      "Pincele com a gema e asse em forno preaquecido a 180 °C por 30 a 35 minutos, até dourar."
+    ],
+    "dicas": [
+      "Não sove a massa de empada: misture só até unir, senão ela fica dura.",
+      "Recheio cremoso e frio. Recheio quente derrete a massa antes de assar.",
+      "Espere 5 minutos fora do forno e desenforme ainda morna, com cuidado.",
+      "Para congelar, congele já assada. Depois é só aquecer por 10 minutos a 180 °C.",
+      "Validade: 3 dias na geladeira ou 90 dias congelada."
+    ],
+    "dicaVenda": "Empada que derrete na boca fideliza cliente. Venda no cento de festa e também em caixinha com 6 para lanche da tarde."
+  },
+  {
+    "id": "enroladinho-salsicha",
+    "nome": "Enroladinho de Salsicha",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/enroladinho-salsicha.webp",
+    "rendimento": {
+      "unidades": 40,
+      "pesoUnidadeG": 45,
+      "faixa": [
+        36,
+        44
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Leite morno",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Manteiga em ponto de pomada",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovo",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Salsicha",
+        "qtd": 1000,
+        "unidade": "g",
+        "caseira": "20 salsichas",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 14.9
+        }
+      },
+      {
+        "nome": "Gema (pincelar)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 gema",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Leite (pincelar)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o fermento, o açúcar e o leite morno. Deixe espumar por 5 minutos.",
+      "Junte a farinha, o sal, o ovo e a manteiga. Sove por 10 minutos até ficar lisa e macia.",
+      "Cubra e deixe crescer por 40 minutos.",
+      "Corte as salsichas ao meio e seque com papel-toalha.",
+      "Divida a massa em 40 bolinhas, faça um rolinho fino com cada uma e enrole em volta de meia salsicha. Se quiser, coloque uma tira de muçarela junto (opcional, fora do custo).",
+      "Coloque em forma untada, com a ponta da massa para baixo, e deixe descansar mais 20 minutos.",
+      "Pincele com a gema batida com o leite e asse em forno preaquecido a 180 °C por 20 a 25 minutos até dourar."
+    ],
+    "dicas": [
+      "Seque bem as salsichas: assim a massa gruda e não escorrega.",
+      "Deixe a ponta da massa virada para baixo na forma para não abrir no forno.",
+      "Não deixe a massa crescer demais antes de assar, senão o enroladinho fica com cara de pão.",
+      "Para congelar, congele já assado. Depois é só aquecer por 10 minutos a 180 °C.",
+      "Validade: 3 dias na geladeira ou 90 dias congelado."
+    ],
+    "dicaVenda": "Enroladinho é barato de fazer e sai muito em festa infantil e cantina. Com a salsicha inteira vira salgado de lanchonete: mude o peso no app."
+  },
+  {
+    "id": "pao-queijo",
+    "nome": "Pão de Queijo",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/pao-queijo.webp",
+    "rendimento": {
+      "unidades": 50,
+      "pesoUnidadeG": 25,
+      "faixa": [
+        45,
+        55
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Saco plástico para congelados de 1 kg ou saquinho de papel (R$ 0,20 a R$ 0,60 cada)",
+    "ingredientes": [
+      {
+        "nome": "Polvilho azedo",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 7.49
+        }
+      },
+      {
+        "nome": "Polvilho doce",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 colheres de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Queijo meia cura ralado",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 42.9
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      }
+    ],
+    "preparo": [
+      "Ferva o leite, o óleo e o sal.",
+      "Despeje sobre os polvilhos e misture bem (é a escaldada). Deixe amornar.",
+      "Junte os ovos um a um, sovando até a massa ficar lisa.",
+      "Acrescente os queijos e amasse até incorporar.",
+      "Com as mãos untadas de óleo, faça bolinhas e coloque na assadeira, com espaço entre elas.",
+      "Asse em forno preaquecido a 180 °C por 25 a 30 minutos, até crescer e dourar."
+    ],
+    "dicas": [
+      "Escalde o polvilho com o líquido fervendo: é isso que deixa o pão de queijo macio por dentro.",
+      "Meio polvilho azedo e meio doce: cresce bem e fica crocante por fora.",
+      "Ponto certo: a massa solta das mãos untadas. Se grudar muito, junte um pouco de polvilho.",
+      "Para congelar, congele as bolinhas cruas em assadeira e depois passe para saco. Asse ainda congeladas, com 5 a 10 minutos a mais.",
+      "Validade: assado, 2 dias em pote fechado; cru, 90 dias congelado."
+    ],
+    "dicaVenda": "Pão de queijo congelado vende muito em pacote de 1 kg. O assado sai bem em café da manhã e coffee break de empresa."
   }
 ]

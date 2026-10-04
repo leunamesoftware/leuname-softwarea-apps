@@ -13,9 +13,12 @@
    - `emb` com o preço de referência da embalagem;
    - `rendimento` (unidades, peso da unidade e faixa);
    - `gas` (minutos e chama);
-   - `dicaVenda`.
+   - `dicas` (lista de dicas de preparo, aparece depois do modo de preparo) e `dicaVenda`.
 3. Ingrediente opcional fica fora do custo; cite no modo de preparo.
 4. Rodar `node --test test/*.mjs` em `calculadora/`, fazer commit e push no branch `ccr-f58cd13b-ml0bzs`
    e disparar o workflow `calculadora-publicar.yml` no repositório leunamesoftware/Leunamesite.
 5. Responder ao dono com o link único de divulgação (o mesmo para todas as receitas):
    `www.leunamesoftware.com.br/quantocobrar` (abre a página de venda dentro da loja).
+6. Quando o dono pedir para o Claude criar as receitas: escrever tudo no JSON, usar foto provisória ("Foto em breve")
+   e entregar em `calculadora/canal/<grupo>.md` o prompt de cada imagem e o texto do canal do WhatsApp
+   (sem quantidades e sem rendimento: isso fica só no app). Publicar só depois que as fotos chegarem.
