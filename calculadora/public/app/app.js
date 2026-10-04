@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.7';
+const VERSAO_APP = '5.8';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -285,7 +285,7 @@ function telaReceitas(extra) {
     </section>`;
   document.getElementById('capa').addEventListener('click', (ev) => {
     ev.currentTarget.classList.add('abrindo');
-    setTimeout(() => { livro.aberto = true; livro.pagina = estado.receitas.length ? 1 : 0; gravar('folha', livro.pagina); mostrarPagina('abrir'); }, 280);
+    setTimeout(() => { livro.aberto = true; livro.pagina = 0; gravar('folha', 0); mostrarPagina('abrir'); }, 280); // abre sempre no sumário
   });
 }
 
@@ -318,9 +318,9 @@ function mostrarPagina(efeito) {
     </article>
     </div>
     <div class="livro-nav">
-      <button class="seta-livro" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
+      <button class="seta-livro ${p === ultima ? 'chamar' : ''}" data-ir="${p - 1}" ${p === 0 ? 'disabled' : ''} aria-label="Página anterior">‹</button>
       <span>${r ? `Receita ${f.i + 1} de ${total}${f.tipo === 'receita' ? `<small>${PARTES[f.parte][1]} · ${f.parte + 1} de ${PARTES.length}</small>` : ''}` : p === 0 ? 'Sumário' : 'Fim do livro'}</span>
-      <button class="seta-livro ${ler('virou', false) || p === ultima ? '' : 'chamar'}" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
+      <button class="seta-livro ${p === ultima ? '' : 'chamar'}" data-ir="${p + 1}" ${p === ultima ? 'disabled' : ''} aria-label="Próxima página">›</button>
     </div>`;
   ajustarFolha();
   tela.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { gravar('virou', true); irPara(+b.dataset.ir, +b.dataset.ir > p ? 'frente' : 'tras'); }));
