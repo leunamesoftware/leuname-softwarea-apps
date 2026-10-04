@@ -430,5 +430,78 @@
       "Deixe esfriar antes de cortar."
     ],
     "dicaVenda": "Brownie é campeão de venda avulsa: corte em quadrados iguais e embale um a um. Com gotas de chocolate por dentro, dá para cobrar um pouco mais (lembre de somar o custo delas)."
+  },
+  {
+    "id": "pudim-leite-condensado",
+    "nome": "Pudim de Leite Condensado",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/pudim-leite-condensado.jpg",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 110,
+      "faixa": [
+        10,
+        14
+      ]
+    },
+    "gas": {
+      "minutos": 70,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Pote de fatia com tampa (R$ 0,40 a R$ 0,80 cada) ou forminha individual para mini pudim",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 790,
+        "unidade": "ml",
+        "caseira": "2 medidas da lata",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Açúcar (calda)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Derreta o açúcar em uma panela até formar um caramelo dourado. Espalhe na forma.",
+      "Bata no liquidificador o leite condensado, o leite e os ovos por cerca de 1 minuto.",
+      "Despeje a mistura na forma caramelizada.",
+      "Cubra com papel-alumínio e asse em banho-maria, em forno preaquecido a 180 °C, até firmar (cerca de 1 hora).",
+      "Deixe esfriar e leve à geladeira por algumas horas antes de desenformar."
+    ],
+    "dicaVenda": "Venda inteiro por encomenda ou em fatias no pote. Mini pudins em forminhas individuais valorizam o produto e vendem bem em festas e marmitas de sobremesa."
   }
 ]
