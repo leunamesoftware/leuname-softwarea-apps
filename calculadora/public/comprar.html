@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#E8590C">
   <title>Comprar — Quanto Cobrar</title>
-  <link rel="icon" href="/img/icone-192-v2.png">
-  <link rel="stylesheet" href="/compra.css">
+  <link rel="icon" href="img/icone-192-v2.png">
+  <link rel="stylesheet" href="compra.css">
 </head>
 <body>
   <main class="caixa">
-    <img class="logo" src="/img/logo.webp" alt="">
+    <img class="logo" src="img/logo.webp" alt="">
     <h1>Quanto Cobrar</h1>
     <p class="preco" style="margin-top:-4px">Calculadora inteligente de receitas</p>
     <p class="preco">Escolha o seu plano</p>
@@ -50,9 +50,9 @@
         <span class="selo-item"><b>🛡️</b><span>Mercado<br>Pago</span></span>
         <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
       </div>
-      <p class="seguro">Pagamento seguro pelo Mercado Pago. Seu acesso é liberado assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="/termos">Termos de uso</a> (7 dias para desistir).</p>
+      <p class="seguro">Pagamento seguro pelo Mercado Pago. Seu acesso é liberado assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="termos">Termos de uso</a> (7 dias para desistir).</p>
     </form>
-    <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/recuperar">Esqueci a senha</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
+    <p class="rodape"><a href="./">← Voltar</a> · <a href="privacidade">Privacidade</a> · <a href="termos">Termos</a> · <a href="recuperar">Esqueci a senha</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
   </main>
   <script>
     const TEXTO = { basico: 'Pagar R$ 9,99 com Pix ou cartão', anual: 'Pagar R$ 29,90 com Pix ou cartão', mensal: 'Assinar por R$ 2,99/mês no cartão' };
@@ -78,7 +78,7 @@
       if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
       erro.textContent = ''; botao.disabled = true; botao.textContent = 'Abrindo o pagamento...';
       try {
-        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, plano: planoEscolhido(), aparelho: (() => { try { return JSON.parse(localStorage.getItem('calc.aparelho') || '""'); } catch { return ''; } })() }) });
+        const r = await fetch('api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, plano: planoEscolhido(), aparelho: (() => { try { return JSON.parse(localStorage.getItem('calc.aparelho') || '""'); } catch { return ''; } })() }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok || !d.url) throw new Error(d.erro === 'senha_incorreta' ? 'Este e-mail já tem conta e a senha não confere. Use a senha da sua conta ou toque em "Esqueci a senha".' : d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
         try { localStorage.setItem('calc.pedido', JSON.stringify(d.pedido)); } catch {}

@@ -3,14 +3,14 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 // O app abre em quantocobrar.leunamesoftware.com.br/app/ e também dentro da loja
 // (www.leunamesoftware.com.br/quantocobrar/app/, sem barra de endereço). RAIZ é o começo do caminho.
 const RAIZ = location.pathname.replace(/\/app(\/.*)?$/, '');
-// Compra e "esqueci a senha" ficam sempre no site do Quanto Cobrar (o Mercado Pago volta para lá).
-const PAGINAS = RAIZ ? 'https://quantocobrar.leunamesoftware.com.br' : '';
+// Compra e "esqueci a senha" ficam no mesmo endereço do app (dentro da loja quando aberto por ela).
+const PAGINAS = RAIZ;
 const LINK_COMPRA = PAGINAS + '/comprar';
 // Fotos das receitas vêm com caminho do site; dentro da loja ganham o começo /quantocobrar.
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.5';
+const VERSAO_APP = '5.6';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 

@@ -13,7 +13,7 @@
         "tipo": "unico",
         "preco": "R$ 9,99",
         "detalhe": "Pagamento único, é seu para sempre · 30 receitas + calculadora · quer mais? Libere +30 receitas por R$ 9,99 quando quiser",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=basico",
+        "url": "/quantocobrar/comprar?plano=basico",
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       },
       {
@@ -21,7 +21,7 @@
         "tipo": "unico",
         "preco": "R$ 29,90",
         "detalhe": "Paga uma vez, vale 1 ano · todas as receitas · receitas novas de diversos países · Pix ou cartão em até 3x",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=anual",
+        "url": "/quantocobrar/comprar?plano=anual",
         "nota": "🔄 Atualizações incluídas durante 1 ano."
       },
       {
@@ -29,7 +29,7 @@
         "tipo": "assinatura",
         "preco": "R$ 2,99/mês",
         "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · todas as receitas · receitas novas de diversos países",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal",
+        "url": "/quantocobrar/comprar?plano=mensal",
         "nota": "🔄 Atualizações incluídas: na assinatura o app atualiza sozinho."
       }
     ],

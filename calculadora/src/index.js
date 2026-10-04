@@ -98,7 +98,9 @@ export default {
       if (pathname === '/api/comprar' && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
-        const r = await criarPedido(env, url.origin, await corpo(req), req);
+        // Dentro da loja (www/quantocobrar) a volta do Mercado Pago precisa do começo /quantocobrar.
+        const base = req.headers.get('X-Loja-Base') === '/quantocobrar' ? '/quantocobrar' : '';
+        const r = await criarPedido(env, url.origin + base, await corpo(req), req);
         return r.erro ? json({ erro: r.erro }, r.status) : json({ url: r.url, pedido: r.pedido }, 200, r.sessao);
       }
       if (pathname === '/api/recuperar' && m === 'POST') {

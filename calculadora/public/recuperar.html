@@ -6,12 +6,12 @@
   <meta name="theme-color" content="#E8590C">
   <meta name="robots" content="noindex">
   <title>Esqueci a senha — Quanto Cobrar</title>
-  <link rel="icon" href="/img/icone-192-v2.png">
-  <link rel="stylesheet" href="/compra.css">
+  <link rel="icon" href="img/icone-192-v2.png">
+  <link rel="stylesheet" href="compra.css">
 </head>
 <body>
   <main class="caixa">
-    <img class="logo" src="/img/logo.webp" alt="">
+    <img class="logo" src="img/logo.webp" alt="">
     <h1>Esqueci a senha</h1>
     <p class="sub">Crie uma senha nova com o e-mail da compra e o <b>número da operação</b> que está no comprovante do Mercado Pago (chegou no seu e-mail ou no app do banco).</p>
     <div id="resultado" aria-live="polite"></div>
@@ -26,7 +26,7 @@
       <button class="botao" type="submit">Criar senha nova</button>
       <p class="seguro">Não achou o número? Escreva para <a href="mailto:contato@leunamesoftware.com.br">contato@leunamesoftware.com.br</a> com o seu nome e o e-mail da compra.</p>
     </form>
-    <p class="rodape"><a href="/">← Voltar</a></p>
+    <p class="rodape"><a href="./">← Voltar</a></p>
   </main>
   <script>
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -37,12 +37,12 @@
       if (!email || !operacao || senha.length < 6) { erro.textContent = 'Preencha o e-mail, o número da operação e uma senha de pelo menos 6 caracteres.'; return; }
       botao.disabled = true; botao.textContent = 'Procurando...'; erro.textContent = '';
       try {
-        const r = await fetch('/api/recuperar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, operacao, senha }) });
+        const r = await fetch('api/recuperar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, operacao, senha }) });
         const d = await r.json().catch(() => ({}));
         if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto.');
         if (!d.ok) throw new Error('Não encontramos uma compra paga com esses dados. Confira e tente de novo.');
         ev.target.hidden = true;
-        document.getElementById('resultado').innerHTML = '<p class="sub">Senha nova criada. Você já está conectado.</p><a class="botao" href="/app/">Abrir meu app</a>';
+        document.getElementById('resultado').innerHTML = '<p class="sub">Senha nova criada. Você já está conectado.</p><a class="botao" href="app/">Abrir meu app</a>';
       } catch (e) {
         erro.textContent = navigator.onLine ? e.message : 'Sem internet.';
         botao.disabled = false; botao.textContent = 'Criar senha nova';
