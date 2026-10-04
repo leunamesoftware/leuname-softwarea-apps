@@ -8,6 +8,13 @@ export default {
       url.hostname = 'www.leunamesoftware.com.br';
       return Response.redirect(url.toString(), 301);
     }
+    // Quanto Cobrar dentro da loja (mesmo endereço = abre sem barra de endereço no app instalado).
+    if (env.CONTAS && (url.pathname === '/quantocobrar' || url.pathname === '/quantocobrar/')) return Response.redirect(url.origin + '/quantocobrar/app/', 302);
+    if (env.CONTAS && url.pathname.startsWith('/quantocobrar/')) {
+      url.pathname = url.pathname.slice('/quantocobrar'.length);
+      if (url.pathname === '/api/mp/aviso') return new Response('Não encontrado.', { status: 404 });
+      return env.CONTAS.fetch(new Request(url, req));
+    }
     // Compra e conta (mesmo sistema de todos os apps): servidor de vendas, pela ligação interna CONTAS.
     // Fica no mesmo endereço da loja para o login valer aqui e nos apps servidos pela loja (Gestacell).
     if (env.CONTAS && (url.pathname.startsWith('/loja/') || url.pathname.startsWith('/loja-api/') || url.pathname.startsWith('/fonts/poppins-'))) {

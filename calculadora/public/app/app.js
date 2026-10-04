@@ -1,9 +1,14 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
-const LINK_COMPRA = '/comprar';
+// O app abre em quantocobrar.leunamesoftware.com.br/app/ e também dentro da loja
+// (www.leunamesoftware.com.br/quantocobrar/app/, sem barra de endereço). RAIZ é o começo do caminho.
+const RAIZ = location.pathname.replace(/\/app(\/.*)?$/, '');
+// Compra e "esqueci a senha" ficam sempre no site do Quanto Cobrar (o Mercado Pago volta para lá).
+const PAGINAS = RAIZ ? 'https://quantocobrar.leunamesoftware.com.br' : '';
+const LINK_COMPRA = PAGINAS + '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.2';
+const VERSAO_APP = '5.3';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -41,7 +46,7 @@ function aviso(texto) {
 }
 
 async function api(caminho, opcoes = {}) {
-  const r = await fetch(caminho, {
+  const r = await fetch(RAIZ + caminho, {
     ...opcoes,
     headers: { 'Content-Type': 'application/json', ...(estado.chave ? { Authorization: 'Bearer ' + estado.chave } : {}), ...(opcoes.headers || {}) },
   });
@@ -67,7 +72,7 @@ function telaAtivacao(erro = '') {
   document.body.classList.add('abertura');
   tela.innerHTML = `
     <section class="capa">
-      <img class="capa-logo" src="/img/logo.webp" alt="">
+      <img class="capa-logo" src="${RAIZ}/img/logo.webp" alt="">
       <h1 class="capa-nome">Quanto <span>Cobrar?</span></h1>
       <p class="capa-lema">Calcule certo e lucre mais.</p>
       <div class="capa-beneficios"><span>📦 Quanto rende</span><span>🧮 Quanto custa</span><span>💰 Quanto cobrar</span><span>📈 Quanto lucra</span></div>
@@ -77,7 +82,7 @@ function telaAtivacao(erro = '') {
         <input id="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required style="margin-top:8px">
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
-        <a class="capa-esqueci" href="/recuperar">Esqueci a senha</a>
+        <a class="capa-esqueci" href="${PAGINAS}/recuperar">Esqueci a senha</a>
       </form>
       <button class="capa-teste" id="gratis">🎁 Testar grátis por 2 dias</button>
       ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
@@ -88,11 +93,12 @@ function telaAtivacao(erro = '') {
   document.getElementById('tenho-chave').addEventListener('click', telaChaveAntiga);
   document.getElementById('form-entrar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
+    if (!document.getElementById('senha')) return; // formulário trocado (teste grátis ou chave antiga)
     const botao = ev.target.querySelector('button');
     const email = document.getElementById('email').value.trim(), senha = document.getElementById('senha').value;
     botao.disabled = true; botao.textContent = 'Entrando...';
     try {
-      const r = await fetch('/api/conta/entrar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) });
+      const r = await fetch(RAIZ + '/api/conta/entrar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha }) });
       if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto e tente de novo.');
       if (!r.ok) throw new Error('E-mail ou senha incorretos.');
       await conferirConta();
@@ -120,7 +126,7 @@ function telaChaveAntiga() {
     const chave = document.getElementById('chave').value.trim().toUpperCase().replace(/\s+/g, '');
     botao.disabled = true;
     try {
-      const r = await fetch('/api/ativar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave }) });
+      const r = await fetch(RAIZ + '/api/ativar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chave }) });
       if (!r.ok) throw new Error(r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : 'Chave não encontrada.');
       estado.chave = chave; gravar('chave', chave);
       await carregarReceitas(); abrir('receitas');
@@ -130,7 +136,7 @@ function telaChaveAntiga() {
 
 async function conferirConta() {
   try {
-    const d = await (await fetch('/api/conta', { cache: 'no-store' })).json();
+    const d = await (await fetch(RAIZ + '/api/conta', { cache: 'no-store' })).json();
     estado.conta = d.conta ? { ...d.conta, acesso: d.acesso } : null;
     gravar('conta', estado.conta);
   } catch { /* sem internet: fica com o que estava guardado */ }
@@ -138,7 +144,7 @@ async function conferirConta() {
 }
 
 async function sair(motivo) {
-  if (estado.conta) await fetch('/api/conta/sair', { method: 'POST' }).catch(() => {});
+  if (estado.conta) await fetch(RAIZ + '/api/conta/sair', { method: 'POST' }).catch(() => {});
   estado.conta = null; gravar('conta', null);
   estado.chave = ''; gravar('chave', ''); estado.acesso = {}; gravar('acesso', {});
   telaAtivacao(motivo || '');
@@ -165,7 +171,7 @@ function telaTesteGratis() {
     if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
     botao.disabled = true; botao.textContent = 'Criando sua conta...';
     try {
-      const r = await fetch('/api/conta/criar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, aparelho: idAparelho() }) });
+      const r = await fetch(RAIZ + '/api/conta/criar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha, aparelho: idAparelho() }) });
       if (r.status === 409) throw new Error('Este e-mail já tem conta. Volte e entre com a sua senha.');
       if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto.');
       if (!r.ok) throw new Error('Não foi possível criar a conta. Tente de novo.');
@@ -187,14 +193,14 @@ function telaBloqueio() {
     : a.plano === 'gratis' ? 'Gostou? Escolha um plano para continuar usando as receitas e a calculadora.' : `Venceu em ${dataBR(a.expiraEm)}. Renove para continuar usando as receitas e a calculadora.`;
   tela.innerHTML = `
     <section class="capa">
-      <img class="capa-logo" src="/img/logo.webp" alt="">
+      <img class="capa-logo" src="${RAIZ}/img/logo.webp" alt="">
       <h1 class="capa-nome" style="font-size:30px">${titulo}</h1>
       <p class="capa-lema">${texto}</p>
       <div class="capa-cartao planos-bloqueio">
         ${APP_LOJA ? '<p>Para continuar, compre um plano no site <b>quantocobrar.leunamesoftware.com.br</b>.</p>' : `
-        <a class="botao" href="/comprar?plano=basico">📦 30 receitas · R$ 9,99<small>pagamento único, vitalício</small></a>
-        <a class="botao" href="/comprar?plano=mensal">👑 Pro · R$ 2,99/mês<small>todas as receitas, assinatura no cartão</small></a>
-        <a class="botao" href="/comprar?plano=anual">👑 Pro anual · R$ 29,90<small>todas as receitas por 1 ano</small></a>`}
+        <a class="botao" href="${PAGINAS}/comprar?plano=basico">📦 30 receitas · R$ 9,99<small>pagamento único, vitalício</small></a>
+        <a class="botao" href="${PAGINAS}/comprar?plano=mensal">👑 Pro · R$ 2,99/mês<small>todas as receitas, assinatura no cartão</small></a>
+        <a class="botao" href="${PAGINAS}/comprar?plano=anual">👑 Pro anual · R$ 29,90<small>todas as receitas por 1 ano</small></a>`}
       </div>
       <button class="capa-recuperar capa-chave" id="sair-bloqueio" type="button">Sair da conta</button>
     </section>`;
@@ -263,7 +269,7 @@ function telaReceitas(extra) {
       <button class="livro-capa" id="capa" aria-label="Abrir o livro de receitas">
         <span class="capa-faixa">Calculadora inclusa</span>
         <span class="capa-titulo">Receitas<br><em>que Vendem</em></span>
-        <img src="/img/logo.webp" alt="">
+        <img src="${RAIZ}/img/logo.webp" alt="">
         <span class="capa-texto">As receitas e a calculadora estão dentro deste livro</span>
         <span class="capa-qtd">${n ? `${n} ${n === 1 ? 'receita' : 'receitas'} · e sempre chegam mais` : 'Conecte-se para baixar as receitas'}</span>
         <span class="capa-autor">LeuName Softwares</span>
@@ -366,7 +372,7 @@ function htmlSumario() {
 function botaoDesbloquear(classe) {
   if (!logado()) return `<button class="${classe}" data-tenho-chave>Entrar ou comprar</button>`;
   if (APP_LOJA) return '';
-  if (estado.acesso?.plano === 'basico') return `<a class="${classe}" href="/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>`;
+  if (estado.acesso?.plano === 'basico') return `<a class="${classe}" href="${PAGINAS}/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>`;
   return `<a class="${classe}" href="${LINK_COMPRA}">Ver planos</a>`;
 }
 
@@ -392,7 +398,7 @@ function htmlPaginaBloqueada(r) {
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
     <p class="sub">${basico ? 'Esta receita está no próximo pacote. Libere <b>mais 30 receitas</b> com um novo pagamento único, ou assine o 👑 Pro e tenha todas.' : 'Esta receita, com o rendimento e a calculadora, fica liberada nos planos.'}</p>
     ${botaoDesbloquear('botao')}
-    ${basico && !APP_LOJA ? `<a class="link" style="display:block;text-align:center;margin-top:8px" href="/comprar?plano=mensal">👑 Ou todas as receitas no Pro · R$ 2,99/mês</a>` : ''}`;
+    ${basico && !APP_LOJA ? `<a class="link" style="display:block;text-align:center;margin-top:8px" href="${PAGINAS}/comprar?plano=mensal">👑 Ou todas as receitas no Pro · R$ 2,99/mês</a>` : ''}`;
 }
 
 function htmlContracapa() {
@@ -902,7 +908,7 @@ function htmlConta() {
       ${estado.conta ? `<p class="sub" style="margin:0">${esc(estado.conta.email)}</p>` : ''}
       <p style="margin:6px 0 0">Plano: <b>${esc(plano)}</b>${validade ? ' · ' + validade : ''}</p>
       ${!APP_LOJA && (a.venceu || !a.plano || a.plano === 'gratis') ? `<a class="botao" style="margin-top:10px" href="${LINK_COMPRA}">${a.venceu ? 'Renovar meu plano' : 'Ver planos'}</a>` : ''}
-      ${!APP_LOJA && a.plano === 'basico' ? `<a class="botao sec" style="margin-top:10px" href="/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>` : ''}
+      ${!APP_LOJA && a.plano === 'basico' ? `<a class="botao sec" style="margin-top:10px" href="${PAGINAS}/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>` : ''}
       <button class="link" id="sair" style="width:100%;margin-top:10px">${logado() ? 'Sair da conta' : 'Entrar ou comprar'}</button>
     </div>`;
 }
@@ -912,7 +918,7 @@ tela.addEventListener('input', aoDigitar);
 tela.addEventListener('change', aoDigitar);
 tela.addEventListener('click', aoClicarCalculo);
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
+  navigator.serviceWorker.register(RAIZ + '/sw.js', { scope: RAIZ + '/' }).then((r) => r.update()).catch(() => {});
 }
 (async () => {
   const conta = navigator.onLine ? await conferirConta() : estado.conta;

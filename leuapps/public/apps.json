@@ -5,7 +5,7 @@
     "categoria": "Receitas e vendas",
     "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
     "icone": "/img/quantocobrar-192.png",
-    "url": "https://quantocobrar.leunamesoftware.com.br/app/",
+    "url": "/quantocobrar/app/",
     "preco": "2 dias grátis · planos a partir de R$ 2,99",
     "planos": [
       {

@@ -1,6 +1,8 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v37';
-const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'];
+const VERSAO = 'calc-v38';
+// BASE: '' em quantocobrar.leunamesoftware.com.br, '/quantocobrar' dentro da loja (www).
+const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, '');
+const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'].map((a) => BASE + a);
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSAO).then((c) => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
@@ -13,13 +15,13 @@ self.addEventListener('activate', (e) => {
 // Rede primeiro (sempre a versão mais nova); sem internet, usa o que está guardado.
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin || (url.pathname.startsWith('/api/') || url.pathname.startsWith('/baixar'))) return;
+  if (e.request.method !== 'GET' || url.origin !== location.origin || (url.pathname.startsWith(BASE + '/api/') || url.pathname.startsWith(BASE + '/baixar'))) return;
   e.respondWith(
     fetch(e.request, { cache: 'no-cache' })
       .then((r) => {
         if (r.ok) { const copia = r.clone(); caches.open(VERSAO).then((c) => c.put(e.request, copia)); }
         return r;
       })
-      .catch(() => caches.match(e.request).then((r) => r || caches.match('/app/'))),
+      .catch(() => caches.match(e.request).then((r) => r || caches.match(BASE + '/app/'))),
   );
 });
