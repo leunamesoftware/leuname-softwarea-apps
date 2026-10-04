@@ -32,6 +32,23 @@
         "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal",
         "nota": "🔄 Atualizações incluídas: na assinatura o app atualiza sozinho."
       }
+    ],
+    "opcoes": [
+      [
+        "📦 Vitalício",
+        "R$ 9,99",
+        "30 receitas · +30 quando quiser"
+      ],
+      [
+        "👑 Pro mensal",
+        "R$ 2,99/mês",
+        "todas as receitas"
+      ],
+      [
+        "👑 Pro anual",
+        "R$ 29,90/ano",
+        "todas as receitas"
+      ]
     ]
   },
   {

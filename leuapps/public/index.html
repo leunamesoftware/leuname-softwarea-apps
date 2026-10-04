@@ -34,6 +34,10 @@
     .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
     .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
     .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
+    .opcoes { grid-column: 1 / -1; list-style: none; margin: 2px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
+    .opcoes li:first-child { background: #EEF3FF; color: #1F2A44; }
+    .opcoes b { font-size: 12px; } .opcoes span { font-size: 14px; font-weight: 900; } .opcoes small { font-size: 10.5px; font-weight: 600; opacity: .85; }
     .vazio { color: var(--suave); text-align: center; padding: 24px 0; }
     .instalar { display: none; margin: 0 0 16px; padding: 14px; border-radius: 18px; background: var(--cartao); border: 2px solid var(--azul); }
     .instalar b { display: block; }
@@ -146,6 +150,7 @@
             : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
             ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
             ${tem ? `<button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>` : ''}</div>
+          ${a.opcoes ? `<ul class="opcoes" aria-label="Opções de plano">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
         </li>`;
     }
     function mostrar(filtro = '') {
