@@ -1,10 +1,10 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
+import { RECEITAS_GRATIS, acessoDaChave } from './planos.js';
 import { criarPedido, receberAviso, recuperarChave, situacaoPedido } from './pagamento.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
-const RECEITAS_GRATIS = 2; // degustação: sem chave, só as primeiras receitas vêm completas
 
 function json(dados, status = 200) {
   return new Response(JSON.stringify(dados), {
@@ -124,15 +124,16 @@ export default {
       }
       if (pathname.startsWith('/api/')) {
         const bruta = chaveDoPedido(req);
-        // Sem chave = versão grátis: só as primeiras receitas vêm completas, as outras com cadeado.
+        // Sem chave = grátis (2 receitas). Com chave: o plano dela (básico 30, pro tudo; vencido volta a 2).
         const chave = bruta ? await licencaAtiva(env, bruta) : null;
         if (bruta && !chave) return json({ erro: 'chave_invalida' }, 401);
         if (pathname === '/api/receitas' && m === 'GET') {
+          const acesso = chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: RECEITAS_GRATIS };
           const stats = await estatisticas(env);
-          const receitas = RECEITAS.map((r, i) => (!chave && i >= RECEITAS_GRATIS
+          const receitas = RECEITAS.map((r, i) => (i >= acesso.receitas
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
             : { ...r, rendimentoObservado: stats(r) }));
-          return json({ receitas, gratis: !chave });
+          return json({ receitas, plano: acesso.plano, expiraEm: acesso.expiraEm || null, venceu: Boolean(acesso.venceu) });
         }
         if (pathname === '/api/rendimento' && m === 'POST') {
           // Rendimento só entra na média quando vem de quem comprou.

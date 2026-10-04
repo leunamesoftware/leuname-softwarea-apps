@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '3.2';
+const VERSAO_APP = '3.3';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -22,6 +22,7 @@ const estado = {
   config: { precoBotijao: 130, valorHora: 0, metaMensal: 0, ...ler('config', {}) },
   calc: ler('calc', null),
   minhas: ler('minhas', []),
+  acesso: ler('acesso', {}),
   aba: 'receitas',
 };
 
@@ -67,7 +68,7 @@ function telaAtivacao(erro = '') {
       </form>
       <button class="capa-teste" id="gratis">Ver 2 receitas grátis</button>
       ${APP_LOJA ? '<div class="capa-comprar">Use a chave que você recebeu.<br><a class="capa-recuperar" href="/recuperar">Perdi a minha chave</a></div>'
-        : `<div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>`}
+        : `<div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>`}
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
   document.getElementById('gratis').addEventListener('click', entrarGratis);
@@ -104,8 +105,9 @@ async function entrarGratis() {
 
 async function carregarReceitas() {
   try {
-    const { receitas } = await api('/api/receitas');
+    const { receitas, plano, expiraEm, venceu } = await api('/api/receitas');
     estado.receitas = receitas; gravar('receitas', receitas);
+    estado.acesso = { plano, expiraEm, venceu }; gravar('acesso', estado.acesso);
   } catch (e) {
     if (e.message !== 'chave' && !estado.receitas.length) aviso('Sem internet: as receitas aparecem quando você conectar.');
   }
@@ -244,11 +246,24 @@ function htmlSumario() {
     <button class="botao sec nova-receita">＋ Nova receita minha</button>`;
 }
 
+const dataBR = (iso) => new Date(iso).toLocaleDateString('pt-BR');
+
+// Botão das receitas trancadas: sem chave → digitar a chave; com chave → ver planos (só fora do app da Play).
+function botaoDesbloquear(classe) {
+  if (!estado.chave) return `<button class="${classe}" data-tenho-chave>Tenho uma chave</button>`;
+  return APP_LOJA ? '' : `<a class="${classe}" href="${LINK_COMPRA}">Ver planos</a>`;
+}
+
 function faixaGratis() {
-  const livres = estado.receitas.filter((r) => !r.bloqueada).length;
-  if (estado.chave || livres === estado.receitas.length) return '';
-  return `<div class="faixa-teste">Versão grátis · ${livres} de ${estado.receitas.length} receitas liberadas
-    <button class="link" data-tenho-chave>Tenho uma chave</button></div>`;
+  const a = estado.acesso || {};
+  const livres = estado.receitas.filter((r) => !r.bloqueada).length, total = estado.receitas.length;
+  const vence = a.expiraEm && !a.venceu && new Date(a.expiraEm) - Date.now() < 7 * 864e5;
+  if (livres === total && !vence) return '';
+  const texto = a.venceu ? `Seu plano Pro venceu em ${dataBR(a.expiraEm)}`
+    : vence ? `Seu plano Pro vence em ${dataBR(a.expiraEm)}`
+    : estado.chave ? 'Plano Básico' : 'Versão grátis';
+  const qtd = livres < total ? ` · ${livres} de ${total} receitas liberadas` : '';
+  return `<div class="faixa-teste">${texto}${qtd} ${botaoDesbloquear('link')}</div>`;
 }
 
 function htmlPaginaBloqueada(r) {
@@ -259,8 +274,8 @@ function htmlPaginaBloqueada(r) {
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada na versão completa.</p>
-    <button class="botao" data-tenho-chave>Tenho uma chave</button>`;
+    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${estado.chave ? 'no plano Pro' : 'na versão completa'}.</p>
+    ${botaoDesbloquear('botao')}`;
 }
 
 function htmlContracapa() {

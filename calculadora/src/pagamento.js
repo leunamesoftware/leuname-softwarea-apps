@@ -1,9 +1,10 @@
-// Venda pelo Mercado Pago (Checkout Pro: Pix e cartão). A chave só é emitida depois que a
-// própria API do Mercado Pago confirma o pagamento; o aviso (webhook) serve só de gatilho.
+// Venda pelo Mercado Pago. Básico e anual: Checkout Pro (Pix e cartão). Mensal: assinatura no cartão.
+// A chave só é emitida depois que a própria API do Mercado Pago confirma o pagamento; o aviso
+// (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
+import { PLANOS, aplicarPlano } from './planos.js';
 
 const MP = 'https://api.mercadopago.com';
-export const PRECO = 20;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const ESTORNO = new Set(['refunded', 'charged_back', 'cancelled']);
 
@@ -20,55 +21,112 @@ export async function criarPedido(env, origem, d) {
   if (!env.MP_ACCESS_TOKEN) return { erro: 'pagamento_indisponivel', status: 503 };
   const nome = String(d?.nome || '').trim().slice(0, 80);
   const email = String(d?.email || '').trim().toLowerCase().slice(0, 120);
-  if (nome.length < 2 || !EMAIL.test(email)) return { erro: 'dados_invalidos', status: 400 };
+  const plano = String(d?.plano || 'basico');
+  if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano]) return { erro: 'dados_invalidos', status: 400 };
+  const P = PLANOS[plano];
 
   const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
   const agora = new Date().toISOString();
-  await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, criado_em, atualizado_em) VALUES (?, ?, ?, 'aguardando', ?, ?)")
-    .bind(id, nome, email, agora, agora).run();
+  await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, criado_em, atualizado_em) VALUES (?, ?, ?, 'aguardando', ?, ?, ?)")
+    .bind(id, nome, email, plano, agora, agora).run();
+  const volta = `${origem}/compra?p=${id}`;
+
+  if (P.assinatura) {
+    // Assinatura sem plano prévio: o Mercado Pago devolve o link para o cliente cadastrar o cartão.
+    const a = await mp(env, '/preapproval', {
+      method: 'POST',
+      headers: { 'X-Idempotency-Key': id },
+      body: JSON.stringify({
+        reason: P.titulo,
+        external_reference: id,
+        payer_email: email,
+        back_url: volta,
+        status: 'pending',
+        auto_recurring: { frequency: 1, frequency_type: 'months', transaction_amount: P.preco, currency_id: 'BRL' },
+      }),
+    });
+    await env.DB.prepare('UPDATE pedidos SET assinatura_id = ? WHERE id = ?').bind(String(a.id), id).run();
+    return { url: a.init_point, pedido: id };
+  }
 
   const pref = await mp(env, '/checkout/preferences', {
     method: 'POST',
     headers: { 'X-Idempotency-Key': id },
     body: JSON.stringify({
-      items: [{ id: env.APP_ID, title: 'Quanto Cobrar — calculadora de receitas (acesso vitalício)', quantity: 1, unit_price: PRECO, currency_id: 'BRL' }],
+      items: [{ id: `${env.APP_ID}-${plano}`, title: P.titulo, quantity: 1, unit_price: P.preco, currency_id: 'BRL' }],
       payer: { name: nome, email },
       external_reference: id,
       notification_url: `${origem}/api/mp/aviso`,
-      back_urls: { success: `${origem}/compra?p=${id}`, pending: `${origem}/compra?p=${id}`, failure: `${origem}/compra?p=${id}` },
+      back_urls: { success: volta, pending: volta, failure: volta },
       auto_return: 'approved',
-      payment_methods: { installments: 1 },
+      payment_methods: { installments: 1 }, // sempre à vista (Pix ou cartão em 1x)
       statement_descriptor: 'LEUNAME',
     }),
   });
   return { url: pref.init_point, pedido: id };
 }
 
-/** Consulta o pagamento no Mercado Pago e aplica: aprovado → emite a chave; estornado/contestado → bloqueia. */
+/** Pagamento aprovado: emite a chave (na primeira vez) e aplica o plano. Cada pagamento conta uma vez só. */
+async function aplicarPagamento(env, pedido, pagamentoId, valor) {
+  const P = PLANOS[pedido.plano] || PLANOS.basico;
+  if (valor < P.preco - 0.001) return;
+  const agora = new Date().toISOString();
+  const r = await env.DB.prepare('INSERT OR IGNORE INTO pagamentos_aplicados (pagamento_id, pedido_id, criado_em) VALUES (?, ?, ?)')
+    .bind(String(pagamentoId), pedido.id, agora).run();
+  if (!r.meta.changes) return;
+  try {
+    let chave = pedido.chave;
+    if (!chave) {
+      chave = await emitirLicenca(env, pedido.nome, pedido.email);
+      await env.DB.prepare("UPDATE pedidos SET status = 'pago', chave = ?, pagamento_id = ?, atualizado_em = ? WHERE id = ?")
+        .bind(chave, String(pagamentoId), agora, pedido.id).run();
+    }
+    await aplicarPlano(env, chave, pedido.plano);
+  } catch (e) {
+    // Deixa o pagamento livre para o próximo aviso tentar de novo.
+    await env.DB.prepare('DELETE FROM pagamentos_aplicados WHERE pagamento_id = ?').bind(String(pagamentoId)).run();
+    throw e;
+  }
+}
+
+/** Consulta o pagamento no Mercado Pago e aplica: aprovado → chave/plano; estornado/contestado → bloqueia. */
 export async function processarPagamento(env, pagamentoId) {
   if (!/^\d{1,20}$/.test(String(pagamentoId))) return;
   const p = await mp(env, `/v1/payments/${pagamentoId}`);
-  const pedido = await env.DB.prepare('SELECT * FROM pedidos WHERE id = ?').bind(String(p.external_reference || '')).first();
+  let pedido = await env.DB.prepare('SELECT * FROM pedidos WHERE id = ?').bind(String(p.external_reference || '')).first();
+  // Cobrança de assinatura: o pagamento aponta para a assinatura.
+  const assinatura = p.metadata?.preapproval_id || p.point_of_interaction?.transaction_data?.subscription_id;
+  if (!pedido && assinatura) pedido = await env.DB.prepare('SELECT * FROM pedidos WHERE assinatura_id = ?').bind(String(assinatura)).first();
   if (!pedido) return;
   const agora = new Date().toISOString();
 
-  if (p.status === 'approved' && p.currency_id === 'BRL' && Number(p.transaction_amount) >= PRECO && !pedido.chave) {
-    // Marca o pedido antes de emitir: dois avisos simultâneos não geram duas chaves.
-    const travado = new Date(Date.now() - 120000).toISOString();
-    const r = await env.DB.prepare("UPDATE pedidos SET status = 'emitindo', pagamento_id = ?, atualizado_em = ? WHERE id = ? AND chave IS NULL AND (status != 'emitindo' OR atualizado_em < ?)")
-      .bind(String(p.id), agora, pedido.id, travado).run();
-    if (!r.meta.changes) return;
-    const chave = await emitirLicenca(env, pedido.nome, pedido.email);
-    await env.DB.prepare("UPDATE pedidos SET status = 'pago', chave = ?, atualizado_em = ? WHERE id = ?").bind(chave, agora, pedido.id).run();
-    return;
-  }
-  if (ESTORNO.has(p.status) && pedido.chave) {
+  if (p.status === 'approved' && p.currency_id === 'BRL') return aplicarPagamento(env, pedido, p.id, Number(p.transaction_amount));
+  if (ESTORNO.has(p.status) && pedido.chave && !PLANOS[pedido.plano]?.assinatura) {
     await revogarLicenca(env, pedido.chave, `mercadopago:${p.status}`);
     await env.DB.prepare('UPDATE pedidos SET status = ?, atualizado_em = ? WHERE id = ?').bind(p.status, agora, pedido.id).run();
     return;
   }
   if (!pedido.chave && ['rejected', 'cancelled', 'pending', 'in_process'].includes(p.status)) {
     await env.DB.prepare('UPDATE pedidos SET status = ?, pagamento_id = ?, atualizado_em = ? WHERE id = ?').bind(p.status, String(p.id), agora, pedido.id).run();
+  }
+}
+
+/** Cobrança mensal da assinatura (aviso "subscription_authorized_payment"). */
+async function processarCobranca(env, id) {
+  if (!/^\d{1,20}$/.test(String(id))) return;
+  const c = await mp(env, `/authorized_payments/${id}`);
+  const pedido = await env.DB.prepare('SELECT * FROM pedidos WHERE assinatura_id = ?').bind(String(c.preapproval_id || '')).first();
+  if (!pedido) return;
+  if (c.payment?.status === 'approved') await aplicarPagamento(env, pedido, c.payment.id, Number(c.transaction_amount));
+}
+
+/** Situação da assinatura (aviso "subscription_preapproval"): guarda o status para o painel; o acesso vence sozinho se parar de pagar. */
+async function processarAssinatura(env, id) {
+  if (!/^[0-9a-zA-Z]{1,64}$/.test(String(id))) return;
+  const a = await mp(env, `/preapproval/${id}`);
+  const pedido = await env.DB.prepare('SELECT id, chave FROM pedidos WHERE assinatura_id = ?').bind(String(a.id)).first();
+  if (pedido && !pedido.chave && ['cancelled', 'paused'].includes(a.status)) {
+    await env.DB.prepare('UPDATE pedidos SET status = ?, atualizado_em = ? WHERE id = ?').bind(a.status, new Date().toISOString(), pedido.id).run();
   }
 }
 
@@ -80,6 +138,8 @@ export async function receberAviso(env, req) {
   const tipo = corpo.type || corpo.topic || url.searchParams.get('type') || url.searchParams.get('topic');
   const id = corpo.data?.id || url.searchParams.get('data.id') || url.searchParams.get('id');
   if (tipo === 'payment' && id) await processarPagamento(env, id);
+  else if (tipo === 'subscription_authorized_payment' && id) await processarCobranca(env, id);
+  else if (tipo === 'subscription_preapproval' && id) await processarAssinatura(env, id);
   else if (tipo === 'chargebacks' && id) {
     // Contestação no cartão: busca o pagamento ligado à contestação e bloqueia a chave.
     const cb = await mp(env, `/v1/chargebacks/${encodeURIComponent(id)}`).catch(() => null);
@@ -106,6 +166,6 @@ export async function situacaoPedido(env, id, pagamentoId) {
   if (!/^[0-9a-f]{36}$/.test(id)) return null;
   // Na volta do Mercado Pago, confere na hora (não depende de o aviso já ter chegado).
   if (pagamentoId && env.MP_ACCESS_TOKEN) await processarPagamento(env, pagamentoId).catch(() => {});
-  const p = await env.DB.prepare('SELECT status, chave, nome FROM pedidos WHERE id = ?').bind(id).first();
-  return p ? { status: p.status, chave: p.status === 'pago' ? p.chave : null, nome: p.nome.split(' ')[0] } : null;
+  const p = await env.DB.prepare('SELECT status, chave, nome, plano FROM pedidos WHERE id = ?').bind(id).first();
+  return p ? { status: p.status, chave: p.status === 'pago' ? p.chave : null, nome: p.nome.split(' ')[0], plano: p.plano } : null;
 }

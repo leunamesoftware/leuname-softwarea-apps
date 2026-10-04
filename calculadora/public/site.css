@@ -177,3 +177,21 @@ details p { margin: 0 0 16px; color: var(--suave); }
 .aviso-compra { display: block; text-align: center; background: var(--verde); color: #fff; font-weight: 800; padding: 12px 16px; text-decoration: none; }
 
 .apk { margin: 18px 0 0; font-size: 14px; color: #FFE8D6; } .apk a { color: #fff; font-weight: 800; }
+
+.sub-secao { text-align: center; color: var(--suave); margin: -6px 0 24px; }
+.planos-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+.plano-cartao { position: relative; display: flex; flex-direction: column; background: #fff; border-radius: 26px; padding: 28px 22px; box-shadow: var(--sombra); border: 2px solid var(--laranja-claro); text-align: center; }
+.plano-cartao.destaque { border-color: var(--laranja); }
+.plano-cartao h3 { margin: 0; font-size: 22px; }
+.plano-selo { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--laranja); color: #fff; font-size: 13px; font-weight: 800; padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+.plano-preco { font-size: 52px; font-weight: 900; line-height: 1; color: var(--laranja-forte); margin: 12px 0 16px; }
+.plano-preco small { font-size: 22px; vertical-align: top; margin-right: 3px; }
+.plano-preco span { display: block; font-size: 14px; color: var(--suave); font-weight: 700; margin-top: 6px; }
+.plano-cartao ul { list-style: none; padding: 0; margin: 0 0 22px; text-align: left; flex: 1; }
+.plano-cartao li { padding: 7px 0 7px 28px; position: relative; border-bottom: 1px solid var(--linha); font-size: 15px; }
+.plano-cartao li::before { content: "✓"; position: absolute; left: 4px; color: var(--verde); font-weight: 900; }
+.plano-cartao .btn { width: 100%; }
+.garantia { text-align: center; font-weight: 700; color: var(--suave); margin-top: 20px; }
+@media (max-width: 860px) { .planos-grade { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; gap: 26px; } }
+.plano-cartao .btn-claro { border: 2px solid var(--laranja); box-shadow: none; }
+#preco h2 { text-align: center; }

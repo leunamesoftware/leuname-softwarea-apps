@@ -13,24 +13,41 @@
     <img class="logo" src="/img/logo.webp" alt="">
     <h1>Quanto Cobrar</h1>
     <p class="preco" style="margin-top:-4px">Calculadora inteligente de receitas</p>
-    <p class="preco"><b>R$ 20</b> · pagamento único · acesso para sempre</p>
+    <p class="preco">Escolha o seu plano</p>
     <ul class="itens">
       <li>📖 Livro de receitas que vendem, com receitas novas sempre</li>
       <li>🧮 Custo, preço certo e lucro de cada receita</li>
       <li>✖️ Calcula para 10, 50, 100 ou 200 unidades</li>
     </ul>
     <form id="form" class="cartao" novalidate>
+      <fieldset class="planos">
+        <legend>Plano</legend>
+        <label class="plano"><input type="radio" name="plano" value="basico" checked>
+          <span><b>Básico · R$ 9,99</b><small>30 receitas + calculadora · pagamento único, acesso vitalício · Pix ou cartão à vista</small></span></label>
+        <label class="plano"><input type="radio" name="plano" value="anual">
+          <span><b>Pro anual · R$ 29,90</b><small>Todas as receitas + calculadora por 1 ano · Pix ou cartão à vista</small></span></label>
+        <label class="plano"><input type="radio" name="plano" value="mensal">
+          <span><b>Pro mensal · R$ 2,99/mês</b><small>Todas as receitas + calculadora · cobrado no cartão todo mês, cancele quando quiser</small></span></label>
+      </fieldset>
       <label for="nome">Seu nome</label>
       <input id="nome" autocomplete="name" required maxlength="80">
       <label for="email">Seu e-mail</label>
       <input id="email" type="email" inputmode="email" autocomplete="email" required maxlength="120">
       <p class="erro" id="erro" role="alert"></p>
-      <button class="botao" type="submit">Pagar R$ 20 com Pix ou cartão</button>
+      <button class="botao" type="submit" id="pagar">Pagar R$ 9,99 com Pix ou cartão</button>
       <p class="seguro">🔒 Pagamento seguro pelo Mercado Pago. Sua chave de acesso aparece na tela assim que o pagamento é aprovado. Ao comprar, você concorda com os <a href="/termos">Termos de uso</a> (7 dias para desistir).</p>
     </form>
     <p class="rodape"><a href="/">← Voltar</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/recuperar">Recuperar minha chave</a></p>
   </main>
   <script>
+    const TEXTO = { basico: 'Pagar R$ 9,99 com Pix ou cartão', anual: 'Pagar R$ 29,90 com Pix ou cartão', mensal: 'Assinar por R$ 2,99/mês no cartão' };
+    const pagar = document.getElementById('pagar');
+    const planoEscolhido = () => document.querySelector('input[name="plano"]:checked').value;
+    const inicial = new URLSearchParams(location.search).get('plano');
+    if (TEXTO[inicial]) document.querySelector(`input[value="${inicial}"]`).checked = true;
+    const atualizar = () => { pagar.textContent = TEXTO[planoEscolhido()]; };
+    document.querySelectorAll('input[name="plano"]').forEach((r) => r.addEventListener('change', atualizar));
+    atualizar();
     document.getElementById('form').addEventListener('submit', async (ev) => {
       ev.preventDefault();
       const erro = document.getElementById('erro'), botao = ev.target.querySelector('button');
@@ -39,14 +56,14 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
       erro.textContent = ''; botao.disabled = true; botao.textContent = 'Abrindo o pagamento...';
       try {
-        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email }) });
+        const r = await fetch('/api/comprar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, plano: planoEscolhido() }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok || !d.url) throw new Error(d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
         try { localStorage.setItem('calc.pedido', JSON.stringify(d.pedido)); } catch {}
         location.href = d.url;
       } catch (e) {
         erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';
-        botao.disabled = false; botao.textContent = 'Pagar R$ 20 com Pix ou cartão';
+        botao.disabled = false; atualizar();
       }
     });
   </script>

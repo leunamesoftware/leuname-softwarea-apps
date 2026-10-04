@@ -26,3 +26,10 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .carregando { width: 42px; height: 42px; margin: 18px auto; border-radius: 50%; border: 5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: girar 1s linear infinite; }
 @keyframes girar { to { transform: rotate(360deg); } }
 .rodape { margin-top: 22px; font-size: 14px; color: #FFE8D6; } .rodape a { color: #fff; font-weight: 800; }
+.planos { border: 0; padding: 0; margin: 0 0 6px; }
+.planos legend { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+.plano { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 8px; padding: 12px; border: 2px solid #FBD5B5; border-radius: 14px; background: #FFF8F1; cursor: pointer; font-weight: 500; }
+.plano:has(input:checked) { border-color: #E8590C; background: #FFF1E6; }
+.plano input { width: 20px; min-height: 20px; padding: 0; margin: 3px 0 0; accent-color: #E8590C; flex: none; }
+.plano b { display: block; font-size: 16px; color: #C2410C; }
+.plano small { display: block; font-size: 13px; color: #7C6A5E; line-height: 1.4; }
