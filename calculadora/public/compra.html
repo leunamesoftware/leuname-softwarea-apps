@@ -27,14 +27,24 @@
     function mostrarChave(nome, chave) {
       try { localStorage.setItem('calc.chave', JSON.stringify(chave)); localStorage.removeItem('calc.pedido'); } catch {}
       const texto = encodeURIComponent(`Minha chave do app Quanto Cobrar: ${chave}\nAbrir: ${location.origin}/app/`);
+      const android = /Android/i.test(navigator.userAgent);
       el.innerHTML = `
         <h1>Pagamento aprovado, ${esc(nome)}! 🎉</h1>
-        <p class="sub">Esta é a sua chave de acesso:</p>
-        <div class="chave" id="chave">${esc(chave)}</div>
-        <button class="botao sec" id="copiar" type="button">Copiar chave</button>
-        <a class="botao sec" href="https://wa.me/?text=${texto}">Guardar no meu WhatsApp</a>
-        <a class="botao" href="/app/">Abrir minha calculadora</a>
-        <p class="seguro">Guarde a chave. Com ela você entra em qualquer celular ou computador.</p>`;
+        <ol class="passos-compra">
+          <li><b>1. Copie a sua chave</b>
+            <div class="chave" id="chave">${esc(chave)}</div>
+            <button class="botao sec" id="copiar" type="button">Copiar chave</button>
+            <a class="botao sec" href="https://wa.me/?text=${texto}">Guardar no meu WhatsApp</a></li>
+          <li><b>2. ${android ? 'Baixe e instale o app' : 'Abra o app'}</b>
+            ${android ? `<a class="botao" href="/baixar">📲 Baixar o app Quanto Cobrar</a>
+            <p class="dica">Abra o arquivo baixado e toque em <b>Instalar</b>. Se o celular avisar sobre "fontes desconhecidas", toque em <b>Configurações → Permitir</b> e volte.</p>`
+            : `<a class="botao" href="/app/">Abrir o Quanto Cobrar</a>
+            <p class="dica">No iPhone, toque em Compartilhar → "Adicionar à Tela de Início" para virar um app.</p>`}</li>
+          <li><b>3. Cole a chave</b>
+            <p class="dica">Abra o app, cole a chave no campo e toque em <b>Entrar</b>. Pronto!</p>
+            ${android ? '<a class="link-simples" href="/app/">Ou use direto no navegador, sem instalar</a>' : ''}</li>
+        </ol>
+        <p class="seguro">Guarde a chave: com ela você entra em qualquer celular ou computador.</p>`;
       document.getElementById('copiar').addEventListener('click', async () => {
         try { await navigator.clipboard.writeText(chave); document.getElementById('copiar').textContent = 'Chave copiada ✓'; } catch {}
       });
