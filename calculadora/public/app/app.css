@@ -184,6 +184,15 @@ ul.dicas { padding-left: 20px; margin: 0; } ul.dicas li { margin-bottom: 8px; fo
 .mini-lucro small { color: var(--suave); font-size: 12px; }
 .botao.branco { background: #fff; color: var(--laranja-forte); margin-top: 12px; }
 .mini-calc .nota { color: #FFE8D6; }
+.mini-base { background: rgba(255,255,255,.16); border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin: 6px 0 4px; }
+.mini-base b { display: block; font-size: 15px; margin-bottom: 2px; }
+.mini-emb { display: grid; grid-template-columns: minmax(0, 1.4fr) auto minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+.mini-calc .mini-por { color: #FFE8D6; }
+.mini-item .mini-por { color: var(--suave); }
+.mini-cada { margin-top: 12px; background: #fff; color: var(--texto); border-radius: 14px; padding: 12px; text-align: center; }
+.mini-cada span { display: block; font-size: 14px; font-weight: 700; color: var(--suave); }
+.mini-cada b { display: block; font-size: 30px; font-weight: 900; color: var(--laranja-forte); }
+.mini-cada small { display: block; font-size: 12.5px; color: var(--suave); margin-top: 2px; }
 .mini-sub { font-size: 17px; font-weight: 800; margin: 18px 0 2px; }
 .mini-explica { font-size: 13px; color: #FFE8D6; margin: 0 0 8px; }
 .mini-itens { display: grid; gap: 8px; }

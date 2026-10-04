@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '5.9';
+const VERSAO_APP = '6.0';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -462,10 +462,21 @@ function htmlParteReceita(r, parte) {
   return `${cabeca}
     <section class="mini-calc" aria-label="Calculadora desta receita">
       <div class="mini-topo">🧮 Quanto cobrar</div>
-      <div class="linha">
-        <div><label for="m-quero">Quero fazer (unidades)</label><input id="m-quero" type="number" inputmode="numeric" min="1" value="${m.quero || r.rendimentoObservado?.tipico || r.rendimento.unidades}"></div>
-        <div><label for="m-emb">Embalagem por unidade</label><div class="prefixo"><span>R$</span><input id="m-emb" type="number" inputmode="decimal" step="0.05" min="0" value="${m.emb ?? 0.2}"></div></div>
+      <div class="mini-base">
+        <b>📘 Nossa receita base rende cerca de ${baseDaReceita(r)} unidades</b>${r.rendimento.pesoUnidadeG ? ` (de ~${r.rendimento.pesoUnidadeG} g cada)` : ''}.
+        Faça a receita com as quantidades da aba Ingredientes e depois coloque aqui quantas rendeu para você.
+        Rendeu mais com o mesmo material? Cada unidade sai mais barata e o seu lucro aumenta.
       </div>
+      <label for="m-rendeu">Quantas unidades rendeu para você?</label>
+      <input id="m-rendeu" type="number" inputmode="numeric" min="1" value="${m.rendeu || baseDaReceita(r)}">
+      <label for="m-emb-preco">Embalagens: quanto você pagou</label>
+      <div class="mini-emb">
+        <div class="prefixo"><span>R$</span><input id="m-emb-preco" type="number" inputmode="decimal" step="0.01" min="0" value="${m.embPreco ?? 10}" aria-label="Valor pago nas embalagens"></div>
+        <span class="mini-por">por</span>
+        <input id="m-emb-qtd" type="number" inputmode="numeric" min="1" value="${m.embQtd ?? 50}" aria-label="Quantidade de embalagens">
+        <span class="mini-por">un.</span>
+      </div>
+      <p class="mini-explica" id="m-emb-cada"></p>
       <h3 class="mini-sub">🛒 Quanto você pagou</h3>
       <p class="mini-explica">Coloque o preço do pacote que você comprou. O app calcula quanto a receita gastou e quanto sobrou.</p>
       <div class="mini-itens">${r.ingredientes.map((i, k) => {
@@ -485,6 +496,8 @@ function htmlParteReceita(r, parte) {
         </div>`;
       }).join('')}</div>
       <div id="m-res"></div>
+      <label for="m-lucro-pct">Ou escolha quanto quer lucrar sobre o custo</label>
+      <div class="mini-emb"><input id="m-lucro-pct" type="number" inputmode="numeric" min="0" step="10" value="${m.lucroPct ?? ''}" placeholder="Ex.: 150"><span class="mini-por">%</span></div>
       <label for="m-preco">Vou vender cada uma por</label>
       <div class="prefixo"><span>R$</span><input id="m-preco" type="number" inputmode="decimal" step="0.5" min="0" value="${m.preco || ''}" placeholder="Toque num preço acima"></div>
       <div id="m-lucro"></div>
@@ -494,25 +507,37 @@ function htmlParteReceita(r, parte) {
     </section>`;
 }
 
-function calcularMini(r) {
+// Rendimento de referência da receita (o real da comunidade, quando já existe).
+const baseDaReceita = (r) => r.rendimentoObservado?.tipico || r.rendimento.unidades;
+// Embalagem: a pessoa diz quanto pagou por quantas; o app acha o preço de cada uma.
+function embalagemCada(m) {
+  const qtdEmb = n(m.embQtd ?? 50);
+  return qtdEmb > 0 ? n(m.embPreco ?? 10) / qtdEmb : 0;
+}
+
+// A receita é feita com as quantidades da base; muda só quantas unidades renderam.
+function calcularMini(r, unidades) {
   const m = livro.mini[r.id] || {};
-  const base = r.rendimentoObservado?.tipico || r.rendimento.unidades;
-  const quero = Math.max(1, Math.round(n(m.quero) || base));
+  const rendeu = unidades || Math.max(1, Math.round(n(m.rendeu) || baseDaReceita(r)));
   return calcularReceita({
-    escala: quero / base, unidades: quero,
+    escala: 1, unidades: rendeu,
     itens: r.ingredientes.map((i) => {
       const ing = estado.ingredientes[chave(i.nome)];
       return { ...i, emb: ing?.emb || i.emb || {}, restante: Number.isFinite(ing?.restante) ? ing.restante : undefined };
     }),
     gas: { ...(r.gas || {}), precoBotijao: estado.config.precoBotijao },
-    embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco),
+    embalagemPorUnidade: embalagemCada(m), precoVenda: n(m.preco),
   });
 }
 
 function ligarMiniCalculadora(r) {
   const atualizar = () => {
+    const m = livro.mini[r.id] || {};
     const res = calcularMini(r);
-    const ativo = n(livro.mini[r.id]?.preco);
+    const base = baseDaReceita(r);
+    const naBase = res.unidades !== base ? calcularMini(r, base) : null;
+    const ativo = n(m.preco);
+    trocar('m-emb-cada', `Sai <b>${brl(embalagemCada(m))}</b> cada embalagem.`);
     res.itens.forEach((x, k) => {
       const ing = estado.ingredientes[chave(x.nome)];
       trocar(`mi-usa-${k}`, `usa <b>${qtd(x.uso, x.unidade)}</b>`);
@@ -529,13 +554,16 @@ function ligarMiniCalculadora(r) {
         <div><span>Embalagens</span><b>${brl(res.custoEmbalagens)}</b></div>
         <div class="total"><span>Custo total · ${res.unidades} unidades</span><b>${brl(res.custoTotal)}</b></div>
       </div>
-      <div class="mini-numeros">
-        <div>Rende<b>${res.unidades} un.</b></div>
-        <div>Custo de cada<b>${brl(res.custoUnidade)}</b></div>
+      <div class="mini-cada">
+        <span>Cada unidade saiu para você por</span>
+        <b>${brl(res.custoUnidade)}</b>
+        ${naBase ? `<small>${res.unidades > base
+          ? `Rendeu ${res.unidades - base} a mais que a base (${base}): na base cada uma sairia ${brl(naBase.custoUnidade)}. Mais lucro para você!`
+          : `Rendeu ${base - res.unidades} a menos que a base (${base}): na base cada uma sairia ${brl(naBase.custoUnidade)}. Confira o tamanho das unidades.`}</small>` : ''}
       </div>
-      <p class="mini-explica">Preço sugerido por unidade (toque para escolher):</p>
+      <p class="mini-explica">Preço base sugerido por unidade (toque para escolher):</p>
       <div class="mini-precos">${res.sugestoes.map((s) => `
-        <button class="${ativo === s.preco ? 'ativa' : ''}" data-mpreco="${s.preco}"><small>${s.rotulo}</small><b>${brl(s.preco)}</b></button>`).join('')}
+        <button class="${ativo === s.preco ? 'ativa' : ''}" data-mpreco="${s.preco}"><small>${s.rotulo} · +${Math.round((s.fator - 1) * 100)}%</small><b>${brl(s.preco)}</b></button>`).join('')}
       </div>`);
     const v = res.venda;
     trocar('m-lucro', v ? `
@@ -545,7 +573,7 @@ function ligarMiniCalculadora(r) {
         <div class="mini-kpis">
           <div>Você recebe<strong>${brl(v.faturamento)}</strong></div>
           <div>Lucro por unidade<strong>${brl(v.lucroUnidade)}</strong></div>
-          <div>Margem<strong>${v.margem}%</strong></div>
+          <div>Lucro sobre o custo<strong>${res.custoUnidade > 0 ? Math.round((v.lucroUnidade / res.custoUnidade) * 100) : 0}%</strong></div>
         </div>
       </div>` : '');
     const sobras = res.itens.filter((x) => x.ultimo && x.sobra > 0);
@@ -557,9 +585,18 @@ function ligarMiniCalculadora(r) {
       </div>` : '');
   };
   const salvar = (campo, valor) => { livro.mini[r.id] = { ...(livro.mini[r.id] || {}), [campo]: valor }; gravar('mini', livro.mini); atualizar(); };
-  document.getElementById('m-quero').addEventListener('input', (e) => salvar('quero', n(e.target.value)));
-  document.getElementById('m-emb').addEventListener('input', (e) => salvar('emb', n(e.target.value)));
+  document.getElementById('m-rendeu').addEventListener('input', (e) => salvar('rendeu', n(e.target.value)));
+  document.getElementById('m-emb-preco').addEventListener('input', (e) => salvar('embPreco', n(e.target.value)));
+  document.getElementById('m-emb-qtd').addEventListener('input', (e) => salvar('embQtd', n(e.target.value)));
   document.getElementById('m-preco').addEventListener('input', (e) => salvar('preco', n(e.target.value)));
+  document.getElementById('m-lucro-pct').addEventListener('input', (e) => {
+    const pct = e.target.value === '' ? null : n(e.target.value);
+    livro.mini[r.id] = { ...(livro.mini[r.id] || {}), lucroPct: pct };
+    if (pct !== null) {
+      const preco = Math.ceil(calcularMini(r).custoUnidade * (1 + pct / 100) * 10 - 1e-9) / 10; // sobe de 10 em 10 centavos
+      document.getElementById('m-preco').value = preco; salvar('preco', preco);
+    } else salvar('lucroPct', null);
+  });
   document.getElementById('m-res').addEventListener('click', (e) => {
     const b = e.target.closest('[data-mpreco]');
     if (b) { document.getElementById('m-preco').value = b.dataset.mpreco; salvar('preco', n(b.dataset.mpreco)); }
@@ -567,7 +604,8 @@ function ligarMiniCalculadora(r) {
   const levarParaConta = () => {
     const m = livro.mini[r.id] || {};
     contaDaReceita(r);
-    Object.assign(estado.calc, { quero: Math.round(n(m.quero)) || estado.calc.quero, embalagemPorUnidade: m.emb ?? 0.2, precoVenda: n(m.preco) });
+    const rendeu = Math.round(n(m.rendeu)) || estado.calc.quero;
+    Object.assign(estado.calc, { rendimentoBase: rendeu, quero: rendeu, embalagemPorUnidade: embalagemCada(m), precoVenda: n(m.preco) });
     gravar('calc', estado.calc);
   };
   document.getElementById('m-completa').addEventListener('click', () => { levarParaConta(); abrir('calcular'); });
