@@ -17,4 +17,4 @@
 4. Rodar `node --test test/*.mjs` em `calculadora/`, fazer commit e push no branch `ccr-f58cd13b-ml0bzs`
    e disparar o workflow `calculadora-publicar.yml` no repositório leunamesoftware/Leunamesite.
 5. Responder ao dono com o link da receita: `www.leunamesoftware.com.br/r/<id>`.
-   Link geral do app: `www.leunamesoftware.com.br/quantocobrar`.
+   Link de divulgação (página de venda com Comprar): `www.leunamesoftware.com.br/quantocobrar`.
