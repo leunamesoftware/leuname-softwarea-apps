@@ -195,3 +195,4 @@ details p { margin: 0 0 16px; color: var(--suave); }
 @media (max-width: 860px) { .planos-grade { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; gap: 26px; } }
 .plano-cartao .btn-claro { border: 2px solid var(--laranja); box-shadow: none; }
 #preco h2 { text-align: center; }
+.plano-aviso { margin: -4px 0 14px; padding: 8px 12px; border-radius: 12px; background: #FFF1E6; color: var(--laranja-forte); font-size: 14px; font-weight: 800; }

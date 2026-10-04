@@ -33,3 +33,4 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .plano input { width: 20px; min-height: 20px; padding: 0; margin: 3px 0 0; accent-color: #E8590C; flex: none; }
 .plano b { display: block; font-size: 16px; color: #C2410C; }
 .plano small { display: block; font-size: 13px; color: #7C6A5E; line-height: 1.4; }
+.plano em { display: block; margin-top: 6px; font-style: normal; font-size: 13px; font-weight: 800; color: #C2410C; }

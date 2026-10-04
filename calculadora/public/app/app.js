@@ -259,8 +259,8 @@ function faixaGratis() {
   const livres = estado.receitas.filter((r) => !r.bloqueada).length, total = estado.receitas.length;
   const vence = a.expiraEm && !a.venceu && new Date(a.expiraEm) - Date.now() < 7 * 864e5;
   if (livres === total && !vence) return '';
-  const texto = a.venceu ? `Seu plano Pro venceu em ${dataBR(a.expiraEm)}`
-    : vence ? `Seu plano Pro vence em ${dataBR(a.expiraEm)}`
+  const texto = a.venceu ? `Seu plano 👑 Pro venceu em ${dataBR(a.expiraEm)}`
+    : vence ? `Seu plano 👑 Pro vence em ${dataBR(a.expiraEm)}`
     : estado.chave ? 'Plano Básico' : 'Versão grátis';
   const qtd = livres < total ? ` · ${livres} de ${total} receitas liberadas` : '';
   return `<div class="faixa-teste">${texto}${qtd} ${botaoDesbloquear('link')}</div>`;
@@ -274,7 +274,7 @@ function htmlPaginaBloqueada(r) {
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${estado.chave ? 'no plano Pro' : 'na versão completa'}.</p>
+    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${estado.chave ? 'no plano 👑 Pro' : 'na versão completa'}.</p>
     ${botaoDesbloquear('botao')}`;
 }
 
