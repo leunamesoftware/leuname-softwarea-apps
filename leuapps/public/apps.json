@@ -6,28 +6,31 @@
     "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
     "icone": "/img/quantocobrar-192.png",
     "url": "https://quantocobrar.leunamesoftware.com.br/app/",
-    "preco": "2 receitas grátis · planos a partir de R$ 2,99",
+    "preco": "7 dias grátis · planos a partir de R$ 2,99",
     "planos": [
       {
-        "nome": "Básico",
+        "nome": "📦 Básico · 30 receitas",
         "tipo": "unico",
         "preco": "R$ 9,99",
-        "detalhe": "Pagamento único, acesso para sempre · 30 receitas + calculadora · Pix ou cartão à vista",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=basico"
+        "detalhe": "Pagamento único, é seu para sempre · 30 receitas + calculadora · quer mais? Libere +30 receitas por R$ 9,99 quando quiser",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=basico",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       },
       {
         "nome": "👑 Pro anual",
         "tipo": "unico",
         "preco": "R$ 29,90",
-        "detalhe": "Paga uma vez, vale 1 ano · receitas ilimitadas + atualizações · receitas novas de diversos países · Pix ou cartão em até 3x",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=anual"
+        "detalhe": "Paga uma vez, vale 1 ano · todas as receitas · receitas novas de diversos países · Pix ou cartão em até 3x",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=anual",
+        "nota": "🔄 Atualizações incluídas durante 1 ano."
       },
       {
         "nome": "👑 Pro mensal",
         "tipo": "assinatura",
         "preco": "R$ 2,99/mês",
-        "detalhe": "Assinatura: cobra todo mês no cartão, cancele quando quiser · receitas ilimitadas + atualizações · receitas novas de diversos países",
-        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal"
+        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · todas as receitas · receitas novas de diversos países",
+        "url": "https://quantocobrar.leunamesoftware.com.br/comprar?plano=mensal",
+        "nota": "🔄 Atualizações incluídas: na assinatura o app atualiza sozinho."
       }
     ]
   },
@@ -41,11 +44,12 @@
     "preco": "R$ 30 · pagamento único",
     "planos": [
       {
-        "nome": "Licença vitalícia",
+        "nome": "Plano único vitalício",
         "tipo": "unico",
         "preco": "R$ 30,00",
-        "detalhe": "Paga uma vez, usa para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x · ⚠️ Atualizações não estão incluídas: quando sair uma melhoria, você paga por ela só se quiser atualizar",
-        "url": "/loja/comprar?app=gestacell"
+        "detalhe": "Paga uma vez, é seu para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=gestacell",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ]
   },
@@ -60,11 +64,12 @@
     "exigeCompra": true,
     "planos": [
       {
-        "nome": "Licença vitalícia",
+        "nome": "Plano único vitalício",
         "tipo": "unico",
         "preco": "R$ 20,00",
-        "detalhe": "Paga uma vez, usa para sempre · avisos de documentos, contas e prazos · Pix ou cartão em até 2x · ⚠️ Atualizações não estão incluídas: quando sair uma melhoria, você paga por ela só se quiser atualizar",
-        "url": "/loja/comprar?app=radar"
+        "detalhe": "Paga uma vez, é seu para sempre · avisos de documentos, contas e prazos · Pix ou cartão em até 2x",
+        "url": "/loja/comprar?app=radar",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ]
   }

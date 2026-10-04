@@ -24,7 +24,7 @@
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let tentativas = 0;
 
-    const NOMES = { basico: 'Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste' };
+    const NOMES = { basico: '📦 Básico · +30 receitas (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste' };
     function mostrarAprovado(d) {
       try { localStorage.removeItem('calc.pedido'); } catch {}
       const validade = d.expiraEm ? `válido até <b>${new Date(d.expiraEm).toLocaleDateString('pt-BR')}</b>` : '<b>para sempre</b>';

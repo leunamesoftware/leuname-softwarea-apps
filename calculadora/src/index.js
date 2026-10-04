@@ -1,9 +1,9 @@
 import RECEITAS from './receitas.json';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { RECEITAS_GRATIS, acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
+import { acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
-import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao } from './contas.js';
+import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, EMAIL } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
@@ -125,6 +125,18 @@ export default {
         if (!conta || !(await senhaConfere(conta, d?.senha))) return json({ erro: 'login_invalido' }, 401);
         return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
       }
+      // Conta grátis (sem compra): começa o teste de 7 dias.
+      if (pathname === '/api/conta/criar' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const d = await corpo(req);
+        const nome = String(d?.nome || '').trim().slice(0, 80), email = String(d?.email || '').trim().toLowerCase();
+        if (nome.length < 2 || !EMAIL.test(email)) return json({ erro: 'dados_invalidos' }, 400);
+        if (!senhaValida(d?.senha)) return json({ erro: 'senha_curta' }, 400);
+        const c = await contaParaCompra(env, email, nome, d.senha);
+        if (c.erro) return json({ erro: c.erro }, 409);
+        return json({ ok: true, nome: c.conta.nome }, 200, await abrirSessao(env, c.conta.id, req));
+      }
       if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
       if (pathname === '/api/conta' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
@@ -151,16 +163,18 @@ export default {
         if (bruta && !chave) return json({ erro: 'chave_invalida' }, 401);
         const acessoConta = conta ? await acessoDaConta(env, conta.id) : null;
         if (pathname === '/api/receitas' && m === 'GET') {
-          const acesso = acessoConta || (chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: RECEITAS_GRATIS });
+          // Sem conta e sem chave: nada liberado (o teste grátis começa ao criar a conta).
+          const acesso = acessoConta || (chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: 0, semConta: true });
           const stats = await estatisticas(env);
           const receitas = RECEITAS.map((r, i) => (i >= acesso.receitas
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
             : { ...r, rendimentoObservado: stats(r) }));
-          return json({ receitas, plano: acesso.plano, expiraEm: acesso.expiraEm || null, venceu: Boolean(acesso.venceu) });
+          return json({ receitas, plano: acesso.plano, expiraEm: acesso.expiraEm || null, venceu: Boolean(acesso.venceu),
+            bloqueado: Boolean(acesso.bloqueado || acesso.semConta || acesso.receitas === 0), testeAte: acesso.testeAte || null, pacotes: acesso.pacotes || 0 });
         }
         if (pathname === '/api/rendimento' && m === 'POST') {
           // Rendimento só entra na média quando vem de quem comprou.
-          const autor = chave || (acessoConta && !acessoConta.venceu ? 'conta:' + conta.id : null);
+          const autor = chave || (acessoConta && acessoConta.plano !== 'gratis' && !acessoConta.bloqueado ? 'conta:' + conta.id : null);
           if (!autor) return json({ erro: 'chave_invalida' }, 401);
           return await registrarRendimento(env, autor, await corpo(req));
         }

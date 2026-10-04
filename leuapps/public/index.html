@@ -63,6 +63,7 @@
     .plano b { font-size: 16px; } .plano .valor { font-size: 18px; font-weight: 900; color: var(--azul); text-align: right; }
     .plano p { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--suave); }
     .plano .abrir { grid-column: 1 / -1; }
+    .nota-plano { grid-column: 1 / -1; margin: 0; padding: 8px 10px; border-radius: 10px; background: #EEF3FF; color: #1F2A44; font-size: 13px; font-weight: 700; }
     .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: #1B3FD6; font-weight: 800; }
     .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; vertical-align: middle; }
     .selo-tipo.unico { background: #DCFCE7; color: #166534; } .selo-tipo.assinatura { background: #E0E7FF; color: #3730A3; }
@@ -152,7 +153,7 @@
       f.innerHTML = `<div class="folha" role="dialog" aria-label="Planos ${esc(a.nome)}">
         <h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
         ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo ${esc(p.tipo)}">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
-          <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p><a class="abrir" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
+          <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p>${p.nota ? `<p class="nota-plano">${esc(p.nota)}</p>` : ''}<a class="abrir" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
         ${a.planos[0].url.startsWith('/loja/') ? `<a class="ja-comprei" href="${esc(a.planos[0].url)}&entrar=1">Já comprei: entrar com minha conta</a>` : ''}
         <button class="fechar-folha" type="button">Fechar</button></div>`;
       f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha')) f.remove(); });

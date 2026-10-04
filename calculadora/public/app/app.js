@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '4.2';
+const VERSAO_APP = '5.0';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -72,12 +72,12 @@ function telaAtivacao(erro = '') {
         <button class="botao" type="submit">Entrar</button>
         <a class="capa-esqueci" href="/recuperar">Esqueci a senha</a>
       </form>
-      <button class="capa-teste" id="gratis">Ver 2 receitas grátis</button>
+      <button class="capa-teste" id="gratis">🎁 Testar grátis por 7 dias</button>
       ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
       <button class="capa-recuperar capa-chave" id="tenho-chave" type="button">Tenho uma chave antiga</button>
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
-  document.getElementById('gratis').addEventListener('click', entrarGratis);
+  document.getElementById('gratis').addEventListener('click', telaTesteGratis);
   document.getElementById('tenho-chave').addEventListener('click', telaChaveAntiga);
   document.getElementById('form-entrar').addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -133,21 +133,71 @@ async function conferirConta() {
 async function sair(motivo) {
   if (estado.conta) await fetch('/api/conta/sair', { method: 'POST' }).catch(() => {});
   estado.conta = null; gravar('conta', null);
-  estado.chave = ''; gravar('chave', ''); gravar('gratis', false);
+  estado.chave = ''; gravar('chave', ''); estado.acesso = {}; gravar('acesso', {});
   telaAtivacao(motivo || '');
 }
 
-async function entrarGratis() {
-  gravar('gratis', true);
-  await carregarReceitas();
-  abrir('receitas');
+// Teste grátis: cria a conta (sem pagar nada) e libera 2 receitas + calculadora por 7 dias.
+function telaTesteGratis() {
+  const form = document.getElementById('form-entrar');
+  form.innerHTML = `
+    <label for="t-nome">Teste grátis por 7 dias</label>
+    <p class="capa-explica">2 receitas completas + a calculadora. Depois dos 7 dias, escolha um plano para continuar.</p>
+    <input id="t-nome" autocomplete="name" placeholder="Seu nome" required maxlength="80">
+    <input id="t-email" type="email" inputmode="email" autocomplete="email" placeholder="Seu e-mail" required maxlength="120" style="margin-top:8px">
+    <input id="t-senha" type="password" autocomplete="new-password" placeholder="Crie uma senha (mín. 6)" required minlength="6" maxlength="100" style="margin-top:8px">
+    <p class="erro" id="erro-ativar"></p>
+    <button class="botao" type="submit">Começar o teste grátis</button>`;
+  document.getElementById('gratis').hidden = true;
+  form.onsubmit = async (ev) => {
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    const botao = form.querySelector('button'), erro = document.getElementById('erro-ativar');
+    const nome = document.getElementById('t-nome').value.trim(), email = document.getElementById('t-email').value.trim(), senha = document.getElementById('t-senha').value;
+    if (nome.length < 2) { erro.textContent = 'Digite seu nome.'; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
+    if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
+    botao.disabled = true; botao.textContent = 'Criando sua conta...';
+    try {
+      const r = await fetch('/api/conta/criar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nome, email, senha }) });
+      if (r.status === 409) throw new Error('Este e-mail já tem conta. Volte e entre com a sua senha.');
+      if (r.status === 429) throw new Error('Muitas tentativas. Espere um minuto.');
+      if (!r.ok) throw new Error('Não foi possível criar a conta. Tente de novo.');
+      await conferirConta(); await carregarReceitas(); abrir('receitas');
+    } catch (e) {
+      erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se para começar.';
+      botao.disabled = false; botao.textContent = 'Começar o teste grátis';
+    }
+  };
+}
+
+// Teste acabou (ou o Pro venceu) sem nenhum pacote comprado: tudo fica bloqueado até comprar.
+function telaBloqueio() {
+  const a = estado.acesso || {};
+  abas.hidden = true;
+  document.body.classList.add('abertura');
+  const titulo = a.plano === 'gratis' ? 'Seu teste grátis terminou' : 'Seu plano 👑 Pro venceu';
+  const texto = a.plano === 'gratis' ? 'Gostou? Escolha um plano para continuar usando as receitas e a calculadora.' : `Venceu em ${dataBR(a.expiraEm)}. Renove para continuar usando as receitas e a calculadora.`;
+  tela.innerHTML = `
+    <section class="capa">
+      <img class="capa-logo" src="/img/logo.webp" alt="">
+      <h1 class="capa-nome" style="font-size:30px">${titulo}</h1>
+      <p class="capa-lema">${texto}</p>
+      <div class="capa-cartao planos-bloqueio">
+        ${APP_LOJA ? '<p>Para continuar, compre um plano no site <b>quantocobrar.leunamesoftware.com.br</b>.</p>' : `
+        <a class="botao" href="/comprar?plano=basico">📦 30 receitas · R$ 9,99<small>pagamento único, vitalício</small></a>
+        <a class="botao" href="/comprar?plano=mensal">👑 Pro · R$ 2,99/mês<small>todas as receitas, assinatura no cartão</small></a>
+        <a class="botao" href="/comprar?plano=anual">👑 Pro anual · R$ 29,90<small>todas as receitas por 1 ano</small></a>`}
+      </div>
+      <button class="capa-recuperar capa-chave" id="sair-bloqueio" type="button">Sair da conta</button>
+    </section>`;
+  document.getElementById('sair-bloqueio').addEventListener('click', () => sair());
 }
 
 async function carregarReceitas() {
   try {
-    const { receitas, plano, expiraEm, venceu } = await api('/api/receitas');
+    const { receitas, plano, expiraEm, venceu, bloqueado, testeAte, pacotes } = await api('/api/receitas');
     estado.receitas = receitas; gravar('receitas', receitas);
-    estado.acesso = { plano, expiraEm, venceu }; gravar('acesso', estado.acesso);
+    estado.acesso = { plano, expiraEm, venceu, bloqueado, testeAte, pacotes }; gravar('acesso', estado.acesso);
   } catch (e) {
     if (e.message !== 'chave' && !estado.receitas.length) aviso('Sem internet: as receitas aparecem quando você conectar.');
   }
@@ -155,6 +205,8 @@ async function carregarReceitas() {
 
 // ---------- navegação ----------
 function abrir(aba, extra) {
+  if (!logado()) return telaAtivacao();
+  if (estado.acesso?.bloqueado) return telaBloqueio();
   estado.aba = aba;
   document.body.classList.remove('abertura');
   abas.hidden = false;
@@ -302,25 +354,27 @@ function htmlSumario() {
 }
 
 
-// Botão das receitas trancadas: sem chave → digitar a chave; com chave → ver planos (só fora do app da Play).
+// Botão das receitas trancadas. Básico: libera mais um pacote de 30. Teste: ver planos. (Nada de venda no app da Play.)
 function botaoDesbloquear(classe) {
   if (!logado()) return `<button class="${classe}" data-tenho-chave>Entrar ou comprar</button>`;
-  return APP_LOJA ? '' : `<a class="${classe}" href="${LINK_COMPRA}">Ver planos</a>`;
+  if (APP_LOJA) return '';
+  if (estado.acesso?.plano === 'basico') return `<a class="${classe}" href="/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>`;
+  return `<a class="${classe}" href="${LINK_COMPRA}">Ver planos</a>`;
 }
 
 function faixaGratis() {
   const a = estado.acesso || {};
   const livres = estado.receitas.filter((r) => !r.bloqueada).length, total = estado.receitas.length;
   const vence = a.expiraEm && !a.venceu && new Date(a.expiraEm) - Date.now() < 7 * 864e5;
+  if (a.plano === 'gratis' && a.testeAte) return `<div class="faixa-teste">🎁 Teste grátis até ${dataBR(a.testeAte)} · ${livres} de ${total} receitas ${botaoDesbloquear('link')}</div>`;
   if (livres === total && !vence) return '';
-  const texto = a.venceu ? `Seu plano 👑 Pro venceu em ${dataBR(a.expiraEm)}`
-    : vence ? `Seu plano 👑 Pro vence em ${dataBR(a.expiraEm)}`
-    : logado() ? 'Plano Básico' : 'Versão grátis';
-  const qtd = livres < total ? ` · ${livres} de ${total} receitas liberadas` : '';
-  return `<div class="faixa-teste">${texto}${qtd} ${botaoDesbloquear('link')}</div>`;
+  const texto = vence ? `Seu plano 👑 Pro vence em ${dataBR(a.expiraEm)}`
+    : a.plano === 'basico' ? `📦 Básico · ${livres} de ${total} receitas liberadas` : 'Versão grátis';
+  return `<div class="faixa-teste">${texto} ${botaoDesbloquear('link')}</div>`;
 }
 
 function htmlPaginaBloqueada(r) {
+  const basico = estado.acesso?.plano === 'basico';
   return `
     <div class="bloqueada">
       <img class="foto-grande" src="${esc(r.foto)}" alt="">
@@ -328,8 +382,9 @@ function htmlPaginaBloqueada(r) {
     </div>
     <span class="etiqueta">${esc(r.categoria)}</span>
     <h1 class="pagina-titulo">${esc(r.nome)}</h1>
-    <p class="sub">Esta receita, com o rendimento e a calculadora, fica liberada ${logado() ? 'no plano 👑 Pro' : 'na versão completa'}.</p>
-    ${botaoDesbloquear('botao')}`;
+    <p class="sub">${basico ? 'Esta receita está no próximo pacote. Libere <b>mais 30 receitas</b> com um novo pagamento único, ou assine o 👑 Pro e tenha todas.' : 'Esta receita, com o rendimento e a calculadora, fica liberada nos planos.'}</p>
+    ${botaoDesbloquear('botao')}
+    ${basico && !APP_LOJA ? `<a class="link" style="display:block;text-align:center;margin-top:8px" href="/comprar?plano=mensal">👑 Ou todas as receitas no Pro · R$ 2,99/mês</a>` : ''}`;
 }
 
 function htmlContracapa() {
@@ -827,16 +882,19 @@ function telaHistorico() {
   }));
 }
 
-const NOMES_PLANO = { basico: 'Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste', completo: 'Completo', gratis: 'Grátis' };
+const NOMES_PLANO = { basico: '📦 Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste', completo: 'Completo', gratis: 'Grátis' };
 function htmlConta() {
   const a = estado.acesso || {};
   const plano = NOMES_PLANO[a.plano] || 'Grátis';
-  const validade = a.expiraEm ? (a.venceu ? `<b style="color:var(--vermelho)">Venceu em ${dataBR(a.expiraEm)}</b>` : `válido até <b>${dataBR(a.expiraEm)}</b>`) : (a.plano && a.plano !== 'gratis' ? 'para sempre' : '');
+  const validade = a.plano === 'gratis' && a.testeAte ? `teste até <b>${dataBR(a.testeAte)}</b>`
+    : a.plano === 'basico' ? `<b>${(a.pacotes || 1) * 30} receitas</b> · para sempre`
+    : a.expiraEm ? (a.venceu ? `<b style="color:var(--vermelho)">Venceu em ${dataBR(a.expiraEm)}</b>` : `válido até <b>${dataBR(a.expiraEm)}</b>`) : (a.plano && a.plano !== 'gratis' ? 'para sempre' : '');
   return `<div class="cartao" style="margin-top:16px">
       <h2 style="margin:0 0 6px">Minha conta</h2>
       ${estado.conta ? `<p class="sub" style="margin:0">${esc(estado.conta.email)}</p>` : ''}
       <p style="margin:6px 0 0">Plano: <b>${esc(plano)}</b>${validade ? ' · ' + validade : ''}</p>
       ${!APP_LOJA && (a.venceu || !a.plano || a.plano === 'gratis') ? `<a class="botao" style="margin-top:10px" href="${LINK_COMPRA}">${a.venceu ? 'Renovar meu plano' : 'Ver planos'}</a>` : ''}
+      ${!APP_LOJA && a.plano === 'basico' ? `<a class="botao sec" style="margin-top:10px" href="/comprar?plano=basico">🔓 Liberar +30 receitas · R$ 9,99</a>` : ''}
       <button class="link" id="sair" style="width:100%;margin-top:10px">${logado() ? 'Sair da conta' : 'Entrar ou comprar'}</button>
     </div>`;
 }
@@ -850,7 +908,7 @@ if ('serviceWorker' in navigator) {
 }
 (async () => {
   const conta = navigator.onLine ? await conferirConta() : estado.conta;
-  if (!conta && !estado.chave && !ler('gratis', false)) return telaAtivacao();
+  if (!conta && !estado.chave) return telaAtivacao();
   abrir('receitas');
-  carregarReceitas().then(() => { if (estado.aba === 'receitas') telaReceitas(); });
+  carregarReceitas().then(() => { if (estado.acesso?.bloqueado) telaBloqueio(); else if (estado.aba === 'receitas') telaReceitas(); });
 })();
