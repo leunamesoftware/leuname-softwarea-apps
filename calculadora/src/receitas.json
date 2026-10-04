@@ -802,5 +802,89 @@
       "Tampe e leve à geladeira."
     ],
     "dicaVenda": "Bolo no pote vende o ano todo e viaja bem. Finalize com cobertura de chocolate e granulado por cima (some esse custo) para ficar igual à foto e cobrar mais."
+  },
+  {
+    "id": "pave-limao-pote",
+    "nome": "Pavê de Limão no Pote",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/pave-limao-pote.webp",
+    "rendimento": {
+      "unidades": 6,
+      "pesoUnidadeG": 180,
+      "faixa": [
+        5,
+        7
+      ]
+    },
+    "gas": {
+      "minutos": 0,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Pote de 250 ml com tampa e colherzinha (R$ 0,50 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Limão (suco e raspas)",
+        "qtd": 4,
+        "unidade": "un",
+        "caseira": "½ xícara de suco (cerca de 4 limões)",
+        "emb": {
+          "qtd": 10,
+          "unidade": "un",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Biscoito maisena",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Leite (para umedecer)",
+        "qtd": 150,
+        "unidade": "ml",
+        "caseira": "cerca de ½ copo",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o leite condensado, o creme de leite e o suco de limão até formar um creme.",
+      "Quebre os biscoitos em pedaços menores e umedeça rapidamente no leite.",
+      "Monte os potes alternando biscoito e creme.",
+      "Finalize com creme e raspas de limão.",
+      "Tampe e leve à geladeira até ficar bem gelado."
+    ],
+    "dicaVenda": "Não vai ao fogo e fica pronto rápido: ótimo para vender no calor. Raspas de limão por cima deixam o pote bonito e cheiroso, o que ajuda a vender."
   }
 ]
