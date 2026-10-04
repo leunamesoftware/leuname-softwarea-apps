@@ -661,5 +661,146 @@
       "Espalhe a ganache sobre o creme e leve à geladeira até ficar bem gelado."
     ],
     "dicaVenda": "Venda a travessa inteira por encomenda ou em potes individuais de 250 ml. Morango bonito por cima chama a atenção na foto: capriche na decoração."
+  },
+  {
+    "id": "bolo-cenoura-pote",
+    "nome": "Bolo de Cenoura no Pote",
+    "categoria": "Bolos",
+    "foto": "/img/receitas/bolo-cenoura-pote.webp",
+    "rendimento": {
+      "unidades": 8,
+      "pesoUnidadeG": 200,
+      "faixa": [
+        7,
+        10
+      ]
+    },
+    "gas": {
+      "minutos": 50,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Pote de 250 ml com tampa e colherzinha (R$ 0,50 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Cenoura",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 cenouras médias",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 270,
+        "unidade": "g",
+        "caseira": "1½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Leite condensado (creme)",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite (creme)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite em pó (creme)",
+        "qtd": 40,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Manteiga (creme)",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      }
+    ],
+    "preparo": [
+      "Bata no liquidificador a cenoura, os ovos, o óleo e o açúcar.",
+      "Misture com a farinha e, por último, o fermento.",
+      "Asse a 180 °C até dourar.",
+      "Creme: cozinhe o leite condensado, o creme de leite, o leite em pó e a manteiga em fogo baixo até engrossar.",
+      "Espere esfriar.",
+      "Monte os potes alternando bolo e creme.",
+      "Tampe e leve à geladeira."
+    ],
+    "dicaVenda": "Bolo no pote vende o ano todo e viaja bem. Finalize com cobertura de chocolate e granulado por cima (some esse custo) para ficar igual à foto e cobrar mais."
   }
 ]
