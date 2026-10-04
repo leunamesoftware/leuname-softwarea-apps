@@ -34,8 +34,13 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .plano b { display: block; font-size: 16px; color: #C2410C; }
 .plano small { display: block; font-size: 13px; color: #7C6A5E; line-height: 1.4; }
 .plano em { display: block; margin-top: 6px; font-style: normal; font-size: 13px; font-weight: 800; color: #C2410C; }
-.aviso-recebedor { font-size: 14px; color: #1F1A17; font-weight: 700; background: #F5ECD7; border: 2px solid #D6C3A0; border-radius: 12px; padding: 12px; margin: 12px 0 0; line-height: 1.45; }
-.aviso-recebedor b { color: #000; }
+.aviso-recebedor { color: #1F1A17; background: #F5ECD7; border: 2px solid #D6C3A0; border-radius: 14px; padding: 12px 14px; margin: 14px 0 0; text-align: center; }
+.aviso-titulo { margin: 8px 0 6px; font-size: 15px; font-weight: 800; }
+.aviso-recebedor ul { list-style: none; padding: 0; margin: 0; }
+.aviso-recebedor li { display: flex; justify-content: space-between; gap: 10px; align-items: center; background: #fff; border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; font-size: 14px; text-align: left; }
+.aviso-recebedor li span { color: #6B5B4E; font-weight: 700; white-space: nowrap; }
+.aviso-recebedor li b { color: #000; font-weight: 800; text-align: right; }
+.aviso-rodape { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
 .atencao { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #DC2626; color: #fff; font-weight: 800; font-size: 13px; animation: piscar 1.2s ease-in-out infinite; }
 @keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 @media (prefers-reduced-motion: reduce) { .atencao { animation: none; } }
