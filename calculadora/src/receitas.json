@@ -154,5 +154,89 @@
       "Leve à geladeira por pelo menos 2 horas, até firmar."
     ],
     "dicaVenda": "Não vai ao fogo: custo baixo e pronto em minutos. Venda em copinhos de 100 ml com tampa; decorar com um pouco da polpa com sementes por cima valoriza o doce e permite cobrar mais."
+  },
+  {
+    "id": "beijinho-copinho",
+    "nome": "Beijinho Mole de Copinho",
+    "categoria": "Doces",
+    "foto": "/img/receitas/beijinho-copinho.jpg",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 55,
+      "faixa": [
+        11,
+        13
+      ]
+    },
+    "gas": {
+      "minutos": 15,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Copinho de 50 ml com tampa e colherzinha (R$ 0,20 a R$ 0,35 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Coco ralado",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 pacotinho",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Coco ralado para decorar",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "um pouco por cima de cada copinho",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Em uma panela, coloque o leite condensado, o creme de leite, o coco ralado e a manteiga. Misture bem.",
+      "Leve ao fogo baixo, mexendo sempre, até engrossar levemente, sem chegar ao ponto de enrolar.",
+      "O ponto certo: cremoso, brilhante e caindo devagar da espátula. Desligue o fogo.",
+      "Espere amornar e distribua nos copinhos.",
+      "Depois de frio, finalize com coco ralado por cima."
+    ],
+    "dicaVenda": "Copinho de 50 ml é doce de festa e de lanche: venda avulso ou em kit com 3 ou 6 unidades. Mantenha na geladeira e capriche no coco por cima, que é o que chama a atenção."
   }
 ]
