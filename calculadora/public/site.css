@@ -196,3 +196,9 @@ details p { margin: 0 0 16px; color: var(--suave); }
 .plano-cartao .btn-claro { border: 2px solid var(--laranja); box-shadow: none; }
 #preco h2 { text-align: center; }
 .plano-aviso { margin: -4px 0 14px; padding: 8px 12px; border-radius: 12px; background: #FFF1E6; color: var(--laranja-forte); font-size: 14px; font-weight: 800; }
+.selos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 0; }
+.selo-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 6px; border-radius: 12px; border: 1px solid #E5D5C3; background: #FFFBF6; font-size: 12px; font-weight: 700; line-height: 1.25; color: #3F2D20; text-align: center; }
+.selo-item b { font-size: 20px; line-height: 1; }
+.selo-item span { display: block; }
+.rodape .selos { max-width: 520px; margin: 0; }
+.rodape .selo-item { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.15); color: #E9D9CC; }

@@ -43,3 +43,7 @@ input:focus { outline: 2px solid #E8590C; border-color: transparent; }
 .atencao { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; background: #DC2626; color: #fff; font-weight: 800; font-size: 13px; animation: piscar 1.2s ease-in-out infinite; }
 @keyframes piscar { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 @media (prefers-reduced-motion: reduce) { .atencao { animation: none; } }
+.selos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 0; }
+.selo-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 6px; border-radius: 12px; border: 1px solid #E5D5C3; background: #FFFBF6; font-size: 12px; font-weight: 700; line-height: 1.25; color: #3F2D20; text-align: center; }
+.selo-item b { font-size: 20px; line-height: 1; }
+.selo-item span { display: block; }
