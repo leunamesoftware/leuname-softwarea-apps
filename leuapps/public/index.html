@@ -39,8 +39,9 @@
     .instalar b { display: block; }
     .instalar p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
     .instalar button { border: 0; font: inherit; cursor: pointer; }
-    .abas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; max-width: 720px; margin: 12px auto 0; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.14); }
-    .abas button { border: 0; border-radius: 999px; background: none; font: inherit; font-weight: 800; font-size: 14px; color: #fff; padding: 9px 2px; white-space: nowrap; cursor: pointer; }
+    .abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; max-width: 720px; margin: 12px auto 0; padding: 4px; border-radius: 18px; background: rgba(255,255,255,.14); }
+    .abas button { border: 0; border-radius: 14px; background: none; font: inherit; font-weight: 800; font-size: 12.5px; line-height: 1.15; color: #fff; padding: 6px 2px 7px; white-space: nowrap; cursor: pointer; }
+    .abas button span { display: block; font-size: 18px; margin-bottom: 2px; }
     .abas button[aria-selected="true"] { background: #fff; color: var(--azul-escuro); }
     .secao-titulo { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
     .secao-titulo small { color: var(--suave); font-weight: 700; font-size: 13px; }
@@ -69,6 +70,17 @@
     .selo-tipo.unico { background: #DCFCE7; color: #166534; } .selo-tipo.assinatura { background: #E0E7FF; color: #3730A3; }
     .fechar-folha { width: 100%; margin-top: 4px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--suave); padding: 10px; cursor: pointer; }
     .rodape { margin-top: 32px; text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
+    /* Serviços sob encomenda */
+    .servico { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 14px; margin-bottom: 14px; }
+    .servico h3 { margin: 0; font-size: 17px; } .servico p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
+    .galeria { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; margin: 0 -2px 10px; }
+    .galeria figure { position: relative; flex: 0 0 auto; margin: 0; scroll-snap-align: start; border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); }
+    .galeria img { display: block; height: 170px; width: auto; pointer-events: none; -webkit-user-drag: none; user-select: none; }
+    .galeria figure::after { content: "DEMONSTRAÇÃO"; position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(7,26,92,.82); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .5px; }
+    .whats { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 14px; background: linear-gradient(135deg, #25D366, #128C4A); color: #fff; font-weight: 800; text-decoration: none; box-shadow: 0 6px 14px rgba(18,140,74,.3); }
+    .servicos-topo { background: linear-gradient(135deg, #071A5C, #1B3FD6); color: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+    .servicos-topo b { font-size: 18px; } .servicos-topo p { margin: 4px 0 0; font-size: 14px; opacity: .9; }
+    .protegido { -webkit-touch-callout: none; user-select: none; }
     @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
     @media (max-width: 380px) { .botoes { grid-column: 1 / -1; width: 100%; } }
   </style>
@@ -77,9 +89,10 @@
   <header class="topo">
     <div class="marca"><img src="/img/leuapps-192.png" alt=""><div><b>LeuApps</b><small>Aplicativos LeuName Softwares</small></div></div>
     <nav class="abas" role="tablist">
-      <button role="tab" id="tab-loja" aria-selected="true">🛍️ Loja</button>
-      <button role="tab" id="tab-meus" aria-selected="false">📱 Meus apps</button>
-      <button role="tab" id="tab-tela" aria-selected="false">📲 Tela inicial</button>
+      <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
+      <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
+      <button role="tab" id="tab-tela" aria-selected="false"><span>📲</span>Tela inicial</button>
+      <button role="tab" id="tab-servicos" aria-selected="false"><span>🎨</span>Serviços</button>
     </nav>
     <div class="busca"><input id="busca" type="search" placeholder="Buscar aplicativo" aria-label="Buscar aplicativo" autocomplete="off"></div>
   </header>
@@ -92,6 +105,11 @@
     <section id="aba-loja">
       <h2>Loja</h2>
       <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
+    </section>
+    <section id="aba-servicos" class="protegido" hidden>
+      <div class="servicos-topo"><b>🎨 Criamos para você</b><p>Logomarca, site e banners sob encomenda. Orçamento grátis, valores a combinar.</p></div>
+      <div id="servicos"><p class="vazio">Carregando…</p></div>
+      <p class="resumo" style="text-align:center;color:var(--suave);font-size:13px">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>
     </section>
     <section id="aba-tela" hidden>
       <h2>Colocar na tela inicial</h2>
@@ -180,6 +198,8 @@
       document.getElementById('aba-loja').hidden = qual !== 'loja';
       document.getElementById('aba-meus').hidden = qual !== 'meus';
       document.getElementById('aba-tela').hidden = qual !== 'tela';
+      document.getElementById('aba-servicos').hidden = qual !== 'servicos';
+      document.getElementById('tab-servicos').setAttribute('aria-selected', qual === 'servicos');
       document.getElementById('tab-tela').setAttribute('aria-selected', qual === 'tela');
       document.getElementById('tab-loja').setAttribute('aria-selected', qual === 'loja');
       document.getElementById('tab-meus').setAttribute('aria-selected', qual === 'meus');
@@ -189,7 +209,19 @@
     document.getElementById('tab-loja').addEventListener('click', () => aba('loja'));
     document.getElementById('tab-meus').addEventListener('click', () => aba('meus'));
     document.getElementById('tab-tela').addEventListener('click', () => aba('tela'));
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela'].includes(a) ? a : 'loja'); })
+    document.getElementById('tab-servicos').addEventListener('click', () => aba('servicos'));
+    // Serviços sob encomenda: exemplos com marca d'água + orçamento grátis pelo WhatsApp.
+    fetch('/servicos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+      const zap = (nome) => `https://wa.me/${d.whatsapp}?text=${encodeURIComponent(`Olá, LeuName Softwares! Vi no LeuApps e quero um orçamento grátis de ${nome}.`)}`;
+      document.getElementById('servicos').innerHTML = d.itens.map((s) => `
+        <article class="servico">
+          <h3>${esc(s.icone)} ${esc(s.nome)}</h3><p>${esc(s.resumo)}</p>
+          <div class="galeria">${s.imagens.map((i) => `<figure><img src="${esc(i)}" alt="Exemplo de ${esc(s.nome)}" loading="lazy" draggable="false"></figure>`).join('')}</div>
+          <a class="whats" href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">💬 Faça seu orçamento grátis</a>
+        </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:700;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
+    }).catch(() => {});
+    document.getElementById('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela', 'servicos'].includes(a) ? a : 'loja'); })
       .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
     document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
 
