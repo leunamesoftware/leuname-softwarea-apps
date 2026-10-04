@@ -3100,7 +3100,7 @@ setInterval(()=>{ syncNow().catch(()=>{}); }, 90000);
       a.href = 'https://apps.leunamesoftware.com.br/?aba=meus';
       a.setAttribute('aria-label', 'Voltar ao LeuApps');
       a.innerHTML = '<img src="https://apps.leunamesoftware.com.br/img/leuapps-192.png" alt="" style="width:100%;height:100%;display:block">';
-      a.style.cssText = 'position:fixed;left:10px;bottom:calc(140px + env(safe-area-inset-bottom));z-index:2147483647;width:46px;height:46px;border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.35);opacity:.95';
+      a.style.cssText = 'position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:2147483647;width:38px;height:38px;border-radius:11px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.35);opacity:.92';
       function por(el) { if (document.body) document.body.appendChild(el); else addEventListener('DOMContentLoaded', function () { document.body.appendChild(el); }); }
       por(a);
       // Veio do "Colocar na tela inicial": explica o atalho do navegador.
