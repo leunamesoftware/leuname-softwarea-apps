@@ -3105,11 +3105,10 @@ setInterval(()=>{ syncNow().catch(()=>{}); }, 90000);
 
 </script>
   <script>
-    // Aberto pelo LeuApps: mostra o atalho para voltar à loja (só nesta sessão).
+    // Botão "Voltar à loja": sempre visível (também quando o app é aberto pelo ícone da tela inicial).
     (function () {
       try {
         if (new URLSearchParams(location.search).get('leuapps') === '1') sessionStorage.setItem('leuapps', '1');
-        if (sessionStorage.getItem('leuapps') !== '1') return;
       } catch (e) { return; }
       var a = document.createElement('a');
       a.href = 'https://www.leunamesoftware.com.br/';
