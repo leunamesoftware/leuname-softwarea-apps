@@ -56,6 +56,11 @@
     const pagar = document.getElementById('pagar');
     const planoEscolhido = () => document.querySelector('input[name="plano"]:checked').value;
     const inicial = new URLSearchParams(location.search).get('plano');
+    if (inicial === 'teste') {
+      // Plano escondido de R$ 1 para testar a compra de ponta a ponta.
+      document.querySelector('.planos').insertAdjacentHTML('beforeend', '<label class="plano"><input type="radio" name="plano" value="teste"><span><b>🧪 Teste de compra · R$ 1,00</b><small>Libera tudo por 1 dia · só para testar o pagamento</small></span></label>');
+      TEXTO.teste = 'Pagar R$ 1,00 (teste)';
+    }
     if (TEXTO[inicial]) document.querySelector(`input[value="${inicial}"]`).checked = true;
     const atualizar = () => { pagar.textContent = TEXTO[planoEscolhido()]; };
     document.querySelectorAll('input[name="plano"]').forEach((r) => r.addEventListener('change', atualizar));
