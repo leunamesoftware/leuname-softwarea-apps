@@ -2,37 +2,41 @@
 
 Os textos do canal não têm quantidades nem rendimento: isso fica só no app.
 
-## 1. Mini Pizza
+## 1. Coxinha de Frango
 
 **Imagem 1** (prompt para gerar a foto)
 
 ```
-Fotografia gastronômica profissional, horizontal (formato 3:2), de mini pizzas redondas de festa, com muçarela derretida e dourada, pedacinhos de presunto e orégano por cima, arrumadas numa assadeira; uma delas em primeiro plano com o queijo escorrendo pela borda. Sobre tábua de madeira rústica, luz natural quente vinda da lateral, fundo de cozinha desfocado com tomates e um pote de orégano. Foco nítido, cores vivas e apetitosas, aparência caseira e real. Sem texto, sem logotipo, sem marca d'água, sem pessoas e sem mãos.
+Fotografia gastronômica profissional, horizontal (formato 3:2), de coxinhas de frango douradas e crocantes, em formato de gota, empilhadas; uma delas cortada ao meio mostrando o recheio cremoso de frango desfiado. Sobre tábua de madeira rústica, luz natural quente vinda da lateral, fundo de cozinha desfocado com uma tigela de frango desfiado e um maço de cheiro-verde. Foco nítido, cores vivas e apetitosas, aparência caseira e real. Sem texto, sem logotipo, sem marca d'água, sem pessoas e sem mãos.
 ```
 
 **Texto do canal 1**
 
 ```
-🍕 *MINI PIZZA*
+🍗 *COXINHA DE FRANGO*
 
 🛒 *Ingredientes*
-Massa: farinha de trigo, fermento biológico seco, açúcar, óleo, sal e água morna.
-Cobertura: molho de tomate, presunto picado, muçarela ralada e orégano.
+Massa: caldo do cozimento do frango, leite, manteiga, sal e farinha de trigo.
+Recheio: peito de frango, caldo de galinha, cebola, alho, óleo e cheiro-verde.
+Para empanar: ovos e farinha de rosca.
+Óleo para fritar.
 
 👩‍🍳 *Modo de fazer*
-1. Misture a água morna, o fermento e o açúcar e deixe espumar.
-2. Junte o óleo, o sal e a farinha. Sove até ficar lisa, cubra e deixe crescer.
-3. Abra a massa com rolo e corte discos com um cortador ou copo.
-4. Coloque os discos em forma untada, fure com um garfo e pré-asse.
-5. Cubra com molho, presunto, muçarela e orégano.
-6. Volte ao forno até o queijo derreter.
+1. Cozinhe o frango com o caldo de galinha. Reserve parte do caldo e desfie o frango.
+2. Refogue a cebola e o alho no óleo, junte o frango e o cheiro-verde. Deixe esfriar.
+3. Ferva o caldo reservado com o leite, a manteiga e o sal.
+4. Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.
+5. Sove a massa ainda morna até ficar lisa.
+6. Abra porções de massa na mão, recheie e modele em formato de gota.
+7. Passe no ovo batido e depois na farinha de rosca.
+8. Frite em óleo quente, poucas de cada vez, até dourar.
 
 💡 *Dicas*
-• Pré-assar os discos evita mini pizza com massa crua embaixo.
-• Fure a massa com o garfo para ela não estufar no forno.
-• Use pouco molho: molho demais amolece a massa.
-• Para congelar, congele já montada e pré-assada. Asse ainda congelada por 10 a 12 minutos a 200 °C.
-• Validade: 3 dias na geladeira ou 60 dias congelada.
+• Deixe o recheio esfriar bem antes de modelar. Recheio quente rasga a massa.
+• Sove a massa ainda morna: ela fica lisa e não racha na fritura.
+• Óleo frio deixa a coxinha encharcada; óleo quente demais doura por fora e deixa crua por dentro.
+• Para congelar, congele a coxinha já empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.
+• Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
 👉 www.leunamesoftware.com.br/quantocobrar

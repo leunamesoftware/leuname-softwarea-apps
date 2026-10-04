@@ -22,5 +22,6 @@
 6. Quando o dono pedir para o Claude criar as receitas: escrever tudo no JSON, usar foto provisória ("Foto em breve")
    e entregar em `calculadora/canal/<grupo>.md` o prompt de cada imagem e o texto do canal do WhatsApp
    (sem quantidades e sem rendimento: isso fica só no app). Publicar só depois que as fotos chegarem.
-7. Prompts de imagem: entregar todos num único bloco para copiar de uma vez, um prompt completo por parágrafo,
-   sem títulos nem instruções extras. Não repetir receita que já existe no app.
+7. Prompts de imagem: um único bloco para copiar de uma vez, neste formato: primeiro a frase "Gere N imagens separadas,
+   uma por vez, na ordem abaixo. Todas no mesmo estilo: ..." e depois uma linha por foto: "IMAGEM 1 – NOME: descrição. Ao fundo, ...".
+   Não repetir receita que já existe no app.

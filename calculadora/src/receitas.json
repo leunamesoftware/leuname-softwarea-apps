@@ -1070,24 +1070,123 @@
     "dicaVenda": "Joelho sai bem em lanchonete, cantina e encomenda para festa. Venda quentinho ou congelado em pacotes para o cliente assar em casa."
   },
   {
-    "id": "mini-pizza",
-    "nome": "Mini Pizza",
+    "id": "coxinha-frango",
+    "nome": "Coxinha de Frango",
     "categoria": "Salgados",
-    "foto": "/img/receitas/mini-pizza.webp",
+    "foto": "/img/receitas/coxinha-frango.webp",
     "rendimento": {
-      "unidades": 40,
-      "pesoUnidadeG": 40,
+      "unidades": 60,
+      "pesoUnidadeG": 35,
       "faixa": [
-        36,
-        44
+        55,
+        70
       ]
     },
     "gas": {
-      "minutos": 30,
-      "chama": "forno"
+      "minutos": 60,
+      "chama": "media"
     },
     "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
     "ingredientes": [
+      {
+        "nome": "Peito de frango",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "1 peito grande",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Leite (massa)",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
       {
         "nome": "Farinha de trigo (massa)",
         "qtd": 500,
@@ -1100,111 +1199,57 @@
         }
       },
       {
-        "nome": "Fermento biológico seco",
-        "qtd": 10,
-        "unidade": "g",
-        "caseira": "1 sachê",
+        "nome": "Ovos (empanar)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
         "emb": {
-          "qtd": 10,
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de rosca (empanar)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 500,
           "unidade": "g",
-          "preco": 2.49
+          "preco": 6.49
         }
       },
       {
-        "nome": "Açúcar",
-        "qtd": 15,
-        "unidade": "g",
-        "caseira": "1 colher de sopa",
-        "emb": {
-          "qtd": 1,
-          "unidade": "kg",
-          "preco": 5.49
-        }
-      },
-      {
-        "nome": "Óleo (massa)",
-        "qtd": 60,
+        "nome": "Óleo para fritar (o que a fritura gasta)",
+        "qtd": 250,
         "unidade": "ml",
-        "caseira": "¼ xícara",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
         "emb": {
           "qtd": 900,
           "unidade": "ml",
           "preco": 7.99
         }
-      },
-      {
-        "nome": "Sal",
-        "qtd": 8,
-        "unidade": "g",
-        "caseira": "1½ colher de chá",
-        "emb": {
-          "qtd": 1,
-          "unidade": "kg",
-          "preco": 3.49
-        }
-      },
-      {
-        "nome": "Molho de tomate (cobertura)",
-        "qtd": 300,
-        "unidade": "g",
-        "caseira": "1 sachê",
-        "emb": {
-          "qtd": 340,
-          "unidade": "g",
-          "preco": 3.49
-        }
-      },
-      {
-        "nome": "Presunto picado (cobertura)",
-        "qtd": 150,
-        "unidade": "g",
-        "caseira": "150 g",
-        "emb": {
-          "qtd": 1,
-          "unidade": "kg",
-          "preco": 34.9
-        }
-      },
-      {
-        "nome": "Muçarela ralada (cobertura)",
-        "qtd": 300,
-        "unidade": "g",
-        "caseira": "300 g",
-        "emb": {
-          "qtd": 1,
-          "unidade": "kg",
-          "preco": 44.9
-        }
-      },
-      {
-        "nome": "Orégano (cobertura)",
-        "qtd": 2,
-        "unidade": "g",
-        "caseira": "2 colheres de chá",
-        "emb": {
-          "qtd": 10,
-          "unidade": "g",
-          "preco": 2.99
-        }
       }
     ],
     "preparo": [
-      "Misture cerca de 250 ml de água morna, o fermento e o açúcar. Deixe espumar por 5 minutos.",
-      "Junte o óleo, o sal e a farinha aos poucos. Sove por 10 minutos até ficar lisa.",
-      "Cubra e deixe crescer por 30 minutos.",
-      "Abra a massa com rolo, com meio centímetro de altura, e corte discos de 6 a 7 cm com um cortador ou copo.",
-      "Coloque os discos em forma untada, fure com um garfo e pré-asse a 200 °C por 8 minutos.",
-      "Cubra cada disco com molho, presunto, muçarela e orégano. Se quiser, coloque uma rodela de tomate ou azeitona (opcional, fora do custo).",
-      "Volte ao forno por 8 a 10 minutos, até o queijo derreter."
+      "Cozinhe o frango em 1 litro de água com o caldo de galinha por 25 minutos. Reserve 500 ml desse caldo e desfie o frango.",
+      "Refogue a cebola e o alho no óleo, junte o frango desfiado e o cheiro-verde. Acerte o sal e deixe esfriar. Se quiser, misture requeijão cremoso ao recheio (opcional, fora do custo).",
+      "Massa: ferva os 500 ml de caldo reservado com o leite, a manteiga e o sal.",
+      "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela (cerca de 5 minutos).",
+      "Passe a massa para uma superfície untada e sove ainda morna até ficar lisa.",
+      "Pegue porções de massa, abra na mão, recheie e modele em formato de gota.",
+      "Passe no ovo batido e depois na farinha de rosca.",
+      "Frite em óleo quente (cerca de 170 °C), poucas de cada vez, até dourar. Escorra em papel-toalha."
     ],
     "dicas": [
-      "Pré-assar os discos evita mini pizza com massa crua embaixo.",
-      "Fure a massa com o garfo para ela não estufar no forno.",
-      "Use pouco molho: molho demais amolece a massa.",
-      "Para congelar, congele já montada e pré-assada. Asse ainda congelada por 10 a 12 minutos a 200 °C.",
-      "Validade: 3 dias na geladeira ou 60 dias congelada."
+      "Deixe o recheio esfriar bem antes de modelar. Recheio quente rasga a massa.",
+      "Sove a massa ainda morna: ela fica lisa e não racha na fritura.",
+      "Óleo frio deixa a coxinha encharcada; óleo quente demais doura por fora e deixa crua por dentro.",
+      "Para congelar, congele a coxinha já empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
+      "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
     ],
-    "dicaVenda": "Mini pizza é campeã em festa infantil. Venda também congelada em pacote para o cliente assar em casa."
+    "dicaVenda": "Coxinha é o salgado que mais sai no cento para festa. No tamanho de lanchonete (cerca de 100 g) a mesma receita rende uns 20: mude o peso no app e veja o novo preço."
   },
   {
     "id": "kibe-frito",
