@@ -3,7 +3,7 @@ import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 const LINK_COMPRA = '/comprar';
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '4.1';
+const VERSAO_APP = '4.2';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -441,17 +441,6 @@ function ligarMiniCalculadora(r) {
   });
   atualizar();
 }
-
-// Arrastar o dedo para os lados passa a página.
-let toqueX = null, toqueY = null;
-tela.addEventListener('touchstart', (e) => { if (estado.aba === 'receitas' && livro.aberto) { toqueX = e.touches[0].clientX; toqueY = e.touches[0].clientY; } }, { passive: true });
-tela.addEventListener('touchend', (e) => {
-  if (toqueX === null) return;
-  const dx = e.changedTouches[0].clientX - toqueX, dy = e.changedTouches[0].clientY - toqueY;
-  toqueX = null;
-  if (e.target.closest('input, select')) return;
-  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) irPara(livro.pagina + (dx < 0 ? 1 : -1), dx < 0 ? 'frente' : 'tras');
-});
 
 // ---------- calculadora ----------
 function contaDaReceita(r) {

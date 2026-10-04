@@ -246,3 +246,7 @@ body.abertura main { max-width: none; padding: 0; }
 .pagina { padding-top: 14px; padding-bottom: 14px; }
 .pagina ol.passos li { font-size: 15px; margin-bottom: 8px; }
 .pagina .ingred li { padding: 8px 0; }
+/* Respiro na lateral direita: gramas e preços não encostam na borda da folha. */
+.pagina { padding-right: 22px; }
+.pagina-corpo { padding-right: 4px; }
+.pagina .ingred li b { flex: none; padding-right: 2px; }

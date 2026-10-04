@@ -32,10 +32,10 @@
         if (sessionStorage.getItem('leuapps') !== '1') return;
       } catch (e) { return; }
       var a = document.createElement('a');
-      a.href = 'https://apps.leunamesoftware.com.br/?aba=meus';
-      a.setAttribute('aria-label', 'Voltar ao LeuApps');
-      a.innerHTML = '<img src="https://apps.leunamesoftware.com.br/img/leuapps-192.png" alt="" style="width:100%;height:100%;display:block">';
-      a.style.cssText = 'position:fixed;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:2147483647;width:38px;height:38px;border-radius:11px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.35);opacity:.92';
+      a.href = 'https://www.leunamesoftware.com.br/';
+      a.setAttribute('aria-label', 'Voltar para a página inicial da loja LeuApps');
+      a.innerHTML = '<img src="https://apps.leunamesoftware.com.br/img/leuapps-192.png" alt="" style="width:26px;height:26px;border-radius:7px;display:block"><span style="line-height:1.1;text-align:left">Voltar<br>à loja</span>';
+      a.style.cssText = 'position:fixed;right:10px;top:calc(9px + env(safe-area-inset-top));z-index:2147483647;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:12px;background:#fff;color:#C2410C;font:800 12px/1.1 Poppins,system-ui,sans-serif;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.28)';
       function por(el) { if (document.body) document.body.appendChild(el); else addEventListener('DOMContentLoaded', function () { document.body.appendChild(el); }); }
       por(a);
       // Veio do "Colocar na tela inicial": explica o atalho do navegador.
