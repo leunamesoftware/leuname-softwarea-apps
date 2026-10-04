@@ -1,7 +1,9 @@
 import { calcularReceita, CHAMAS, UNIDADES, normalizar } from './calculo.js';
 
 const LINK_COMPRA = '/comprar';
-const VERSAO_APP = '2.9';
+// App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
+const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
+const VERSAO_APP = '3.0';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -63,7 +65,8 @@ function telaAtivacao(erro = '') {
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
       </form>
-      <div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>
+      ${APP_LOJA ? '<div class="capa-comprar">Use a chave que você recebeu.<br><a class="capa-recuperar" href="/recuperar">Perdi a minha chave</a></div>'
+        : `<div class="capa-comprar">Ainda não tem a chave?<br><a href="${LINK_COMPRA}">Comprar por R$ 20 · acesso vitalício</a><br><a class="capa-recuperar" href="/recuperar">Já paguei e perdi a chave</a></div>`}
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
     </section>`;
   document.getElementById('form-ativar').addEventListener('submit', async (ev) => {

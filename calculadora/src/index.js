@@ -73,6 +73,10 @@ export default {
     }
     const { pathname } = url;
     const m = req.method;
+    // App da Play Store: a regra do Google não permite vender dentro do app, então a página de vendas não abre nele.
+    if (/QuantoCobrarApp/.test(req.headers.get('User-Agent') || '') && ['/', '/index.html', '/comprar', '/comprar.html'].includes(pathname)) {
+      return Response.redirect(url.origin + '/app/', 302);
+    }
     try {
       if ((pathname === '/baixar' || pathname === '/baixar/') && (m === 'GET' || m === 'HEAD')) {
         const apk = env.DOWNLOADS && (m === 'HEAD' ? await env.DOWNLOADS.head('quantocobrar.apk') : await env.DOWNLOADS.get('quantocobrar.apk'));
