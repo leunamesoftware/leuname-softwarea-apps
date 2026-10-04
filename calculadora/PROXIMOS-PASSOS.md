@@ -13,7 +13,7 @@
 | Básico | R$ 9,99 (uma vez) | 30 receitas + calculadora |
 | Pro | R$ 2,99/mês (assinatura) | todas as receitas (ilimitadas) + calculadora |
 
-O site deve seguir os mesmos planos (hoje vende R$ 20 vitalício tudo — ajustar antes de ligar o Pix).
+Site (canal do WhatsApp) — PRONTO (v3.3): Básico R$ 9,99 e Pro anual R$ 29,90 no Pix ou cartão à vista; Pro mensal R$ 2,99 assinatura no cartão (Mercado Pago `/preapproval`). Falta só o `MP_ACCESS_TOKEN` e um teste real de cada plano.
 
 ## Antes de ligar os planos pagos
 1. Dono: perfil de pagamentos (CNPJ + banco) no Play Console.
