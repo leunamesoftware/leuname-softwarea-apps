@@ -3,7 +3,7 @@
     "id": "cocada-queimada",
     "nome": "Cocada Queimada",
     "categoria": "Doces",
-    "foto": "/img/receitas/cocada-queimada.webp",
+    "foto": "/img/receitas/cocada-queimada.webp?v=428f9ec5",
     "rendimento": {
       "unidades": 25,
       "pesoUnidadeG": 35,
@@ -98,7 +98,7 @@
     "id": "mousse-maracuja",
     "nome": "Mousse de Maracujá Fácil",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/mousse-maracuja.webp",
+    "foto": "/img/receitas/mousse-maracuja.webp?v=2be7013e",
     "rendimento": {
       "unidades": 7,
       "pesoUnidadeG": 100,
@@ -159,7 +159,7 @@
     "id": "beijinho-copinho",
     "nome": "Beijinho Mole de Copinho",
     "categoria": "Doces",
-    "foto": "/img/receitas/beijinho-copinho.webp",
+    "foto": "/img/receitas/beijinho-copinho.webp?v=8f343f98",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 55,
@@ -243,7 +243,7 @@
     "id": "sorvete-coco",
     "nome": "Sorvete Caseiro de Coco",
     "categoria": "Sorvetes",
-    "foto": "/img/receitas/sorvete-coco.webp",
+    "foto": "/img/receitas/sorvete-coco.webp?v=6158dd21",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 100,
@@ -327,7 +327,7 @@
     "id": "brownie-chocolate",
     "nome": "Brownie de Chocolate Fácil",
     "categoria": "Doces",
-    "foto": "/img/receitas/brownie-chocolate.webp",
+    "foto": "/img/receitas/brownie-chocolate.webp?v=737e7ccd",
     "rendimento": {
       "unidades": 15,
       "pesoUnidadeG": 55,
@@ -435,7 +435,7 @@
     "id": "pudim-leite-condensado",
     "nome": "Pudim de Leite Condensado",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/pudim-leite-condensado.webp",
+    "foto": "/img/receitas/pudim-leite-condensado.webp?v=83dfd2dc",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 110,
@@ -508,7 +508,7 @@
     "id": "trufa-chocolate",
     "nome": "Trufa de Chocolate Cremosa",
     "categoria": "Doces",
-    "foto": "/img/receitas/trufa-chocolate.webp",
+    "foto": "/img/receitas/trufa-chocolate.webp?v=7f8794bd",
     "rendimento": {
       "unidades": 25,
       "pesoUnidadeG": 22,
@@ -582,7 +582,7 @@
     "id": "morango-creme-travessa",
     "nome": "Morango com Creme na Travessa",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/morango-creme-travessa.webp",
+    "foto": "/img/receitas/morango-creme-travessa.webp?v=86f838b1",
     "rendimento": {
       "unidades": 10,
       "pesoUnidadeG": 150,
@@ -666,7 +666,7 @@
     "id": "bolo-cenoura-pote",
     "nome": "Bolo de Cenoura no Pote",
     "categoria": "Bolos",
-    "foto": "/img/receitas/bolo-cenoura-pote.webp",
+    "foto": "/img/receitas/bolo-cenoura-pote.webp?v=678939a6",
     "rendimento": {
       "unidades": 8,
       "pesoUnidadeG": 200,
@@ -807,7 +807,7 @@
     "id": "pave-limao-pote",
     "nome": "Pavê de Limão no Pote",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/pave-limao-pote.webp",
+    "foto": "/img/receitas/pave-limao-pote.webp?v=c5fca6ee",
     "rendimento": {
       "unidades": 6,
       "pesoUnidadeG": 180,
@@ -891,7 +891,7 @@
     "id": "joelho-presunto-queijo",
     "nome": "Joelho de Presunto e Queijo",
     "categoria": "Salgados",
-    "foto": "/img/receitas/joelho-presunto-queijo.webp",
+    "foto": "/img/receitas/joelho-presunto-queijo.webp?v=0e2e1b57",
     "rendimento": {
       "unidades": 15,
       "pesoUnidadeG": 100,
@@ -1073,7 +1073,7 @@
     "id": "coxinha-frango",
     "nome": "Coxinha de Frango",
     "categoria": "Salgados",
-    "foto": "/img/receitas/coxinha-frango.webp",
+    "foto": "/img/receitas/coxinha-frango.webp?v=2b07e4e1",
     "rendimento": {
       "unidades": 60,
       "pesoUnidadeG": 35,
@@ -1255,7 +1255,7 @@
     "id": "kibe-frito",
     "nome": "Kibe Frito",
     "categoria": "Salgados",
-    "foto": "/img/receitas/kibe-frito.webp",
+    "foto": "/img/receitas/kibe-frito.webp?v=9e5e709a",
     "rendimento": {
       "unidades": 50,
       "pesoUnidadeG": 35,
@@ -1380,7 +1380,7 @@
     "id": "risole-presunto-queijo",
     "nome": "Risole de Presunto e Queijo",
     "categoria": "Salgados",
-    "foto": "/img/receitas/risole-presunto-queijo.webp",
+    "foto": "/img/receitas/risole-presunto-queijo.webp?v=ee8e74ac",
     "rendimento": {
       "unidades": 50,
       "pesoUnidadeG": 40,
@@ -1528,7 +1528,7 @@
     "id": "bolinha-queijo",
     "nome": "Bolinha de Queijo",
     "categoria": "Salgados",
-    "foto": "/img/receitas/bolinha-queijo.webp",
+    "foto": "/img/receitas/bolinha-queijo.webp?v=3082b8af",
     "rendimento": {
       "unidades": 80,
       "pesoUnidadeG": 25,
@@ -1675,7 +1675,7 @@
     "id": "pastel-carne",
     "nome": "Pastel de Carne",
     "categoria": "Salgados",
-    "foto": "/img/receitas/pastel-carne.webp",
+    "foto": "/img/receitas/pastel-carne.webp?v=8dd22dff",
     "rendimento": {
       "unidades": 20,
       "pesoUnidadeG": 70,
@@ -1833,7 +1833,7 @@
     "id": "esfiha-carne",
     "nome": "Esfiha Aberta de Carne",
     "categoria": "Salgados",
-    "foto": "/img/receitas/esfiha-carne.webp",
+    "foto": "/img/receitas/esfiha-carne.webp?v=c1c6b4d8",
     "rendimento": {
       "unidades": 30,
       "pesoUnidadeG": 45,
@@ -1992,7 +1992,7 @@
     "id": "empada-frango",
     "nome": "Empada de Frango",
     "categoria": "Salgados",
-    "foto": "/img/receitas/empada-frango.webp",
+    "foto": "/img/receitas/empada-frango.webp?v=374c17b0",
     "rendimento": {
       "unidades": 35,
       "pesoUnidadeG": 45,
@@ -2194,7 +2194,7 @@
     "id": "enroladinho-salsicha",
     "nome": "Enroladinho de Salsicha",
     "categoria": "Salgados",
-    "foto": "/img/receitas/enroladinho-salsicha.webp",
+    "foto": "/img/receitas/enroladinho-salsicha.webp?v=07f0ce2f",
     "rendimento": {
       "unidades": 40,
       "pesoUnidadeG": 45,
@@ -2342,7 +2342,7 @@
     "id": "pao-queijo",
     "nome": "Pão de Queijo",
     "categoria": "Salgados",
-    "foto": "/img/receitas/pao-queijo.webp",
+    "foto": "/img/receitas/pao-queijo.webp?v=e6f66a44",
     "rendimento": {
       "unidades": 50,
       "pesoUnidadeG": 25,

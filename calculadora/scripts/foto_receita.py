@@ -2,12 +2,18 @@
 
 Uso: python3 scripts/foto_receita.py <foto-original> <id-da-receita>
 Gera public/img/receitas/<id>.webp e public/img/receitas/mini/<id>.webp
+e atualiza a versão das fotos em src/receitas.json ("foto": "/img/receitas/<id>.webp?v=<código>").
+O código muda quando a foto muda: assim o celular baixa a foto nova em vez da que guardou.
 """
+import hashlib
+import json
 import sys
 from pathlib import Path
 from PIL import Image, ImageEnhance, ImageFilter
 
-PASTA = Path(__file__).resolve().parent.parent / 'public' / 'img' / 'receitas'
+RAIZ = Path(__file__).resolve().parent.parent
+PASTA = RAIZ / 'public' / 'img' / 'receitas'
+RECEITAS = RAIZ / 'src' / 'receitas.json'
 
 
 def preparar(origem, rid):
@@ -24,5 +30,17 @@ def preparar(origem, rid):
     quadrado.resize((160, 160), Image.LANCZOS).save(PASTA / 'mini' / f'{rid}.webp', quality=70, method=6)
 
 
+def versionar():
+    receitas = json.loads(RECEITAS.read_text())
+    for r in receitas:
+        caminho = r['foto'].split('?')[0]
+        arquivo = RAIZ / 'public' / caminho.lstrip('/')
+        if arquivo.exists():
+            r['foto'] = f"{caminho}?v={hashlib.md5(arquivo.read_bytes()).hexdigest()[:8]}"
+    RECEITAS.write_text(json.dumps(receitas, ensure_ascii=False, indent=2) + '\n')
+
+
 if __name__ == '__main__':
-    preparar(sys.argv[1], sys.argv[2])
+    if len(sys.argv) == 3:
+        preparar(sys.argv[1], sys.argv[2])
+    versionar()

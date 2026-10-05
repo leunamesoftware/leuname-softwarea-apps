@@ -7,7 +7,8 @@
 
 ## Receitas do Quanto Cobrar (o dono manda foto + texto)
 1. Foto: rodar `python3 scripts/foto_receita.py <foto> <id>` em `calculadora/` (gera a foto leve em WebP e a miniatura do sumário).
-   No JSON: `"foto": "/img/receitas/<id>.webp"`.
+   O script também põe a versão da foto no JSON (`"foto": "/img/receitas/<id>.webp?v=<código>"`). Sem isso o celular
+   continua mostrando a foto antiga que guardou. Só para atualizar as versões: `python3 scripts/foto_receita.py` (o teste confere).
 2. Acrescentar no fim de `calculadora/src/receitas.json`, no mesmo formato das outras:
    - quantidades em g/ml/un, com a medida caseira em `caseira`;
    - `emb` com o preço de referência da embalagem;
