@@ -167,34 +167,93 @@ async function fotoJpg(p) {
   return new File([blob], p.id.split(':').pop() + '.jpg', { type: 'image/jpeg' });
 }
 
-// TikTok: foto em pé (1080×1920) com fundo desfocado, o nome da receita e o aviso do link na bio.
-async function fotoTikTok(p) {
+// TikTok: duas fotos em pé (1080×1920) — capa limpa e a lista do que vai na receita.
+// Todo texto fica na faixa que o TikTok não cobre: abaixo da busca do topo (y > 260),
+// acima da legenda de baixo (y < 1380) e longe dos botões da direita (x < 940).
+const TT = { W: 1080, H: 1920, topo: 260, fim: 1380, laranja: '#E8590C', letra: 'system-ui, -apple-system, Roboto, sans-serif' };
+
+function quebrar(g, texto, largura) {
+  const linhas = [];
+  let atual = '';
+  for (const palavra of texto.split(' ')) {
+    const tenta = (atual + ' ' + palavra).trim();
+    if (g.measureText(tenta).width > largura && atual) { linhas.push(atual); atual = palavra; } else atual = tenta;
+  }
+  return [...linhas, atual];
+}
+
+function caixa(g, x, y, w, h, r, cor) {
+  g.fillStyle = cor; g.beginPath(); g.roundRect(x, y, w, h, r); g.fill();
+}
+
+async function telaTikTok(p) {
   const img = new Image();
   img.src = BASE + p.foto;
   await img.decode();
-  const W = 1080, H = 1920, c = document.createElement('canvas');
-  c.width = W; c.height = H;
+  const c = document.createElement('canvas');
+  c.width = TT.W; c.height = TT.H;
   const g = c.getContext('2d');
-  const capa = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-  g.filter = 'blur(40px) brightness(0.55)';
-  g.drawImage(img, (W - img.naturalWidth * capa) / 2, (H - img.naturalHeight * capa) / 2, img.naturalWidth * capa, img.naturalHeight * capa);
+  const capa = Math.max(TT.W / img.naturalWidth, TT.H / img.naturalHeight);
+  g.filter = 'blur(40px) brightness(0.45)';
+  g.drawImage(img, (TT.W - img.naturalWidth * capa) / 2, (TT.H - img.naturalHeight * capa) / 2, img.naturalWidth * capa, img.naturalHeight * capa);
   g.filter = 'none';
-  const h = img.naturalHeight * (W / img.naturalWidth), y = 520; // mais para cima: embaixo o TikTok põe nome e legenda
-  g.drawImage(img, 0, y, W, h);
-  g.textAlign = 'center'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 18;
-  const linhas = [];
-  let atual = '';
-  for (const palavra of p.titulo.toUpperCase().split(' ')) {
-    g.font = '900 88px system-ui, -apple-system, Roboto, sans-serif';
-    if (g.measureText((atual + ' ' + palavra).trim()).width > W - 120 && atual) { linhas.push(atual); atual = palavra; } else atual = (atual + ' ' + palavra).trim();
+  return { c, g, img };
+}
+
+const paraArquivo = (c, nome) => new Promise((ok) => c.toBlob((b) => ok(new File([b], nome, { type: 'image/jpeg' })), 'image/jpeg', 0.9));
+
+async function fotoTikTok(p) {
+  const base = p.id.split(':').pop();
+  // 1) Capa: a foto grande e o nome numa faixa laranja logo abaixo.
+  const um = await telaTikTok(p);
+  let { g } = um;
+  const h = Math.min(um.img.naturalHeight * (TT.W / um.img.naturalWidth), 800), y = TT.topo + 30;
+  g.save(); g.beginPath(); g.rect(0, y, TT.W, h); g.clip();
+  g.drawImage(um.img, 0, y + (h - um.img.naturalHeight * (TT.W / um.img.naturalWidth)) / 2, TT.W, um.img.naturalHeight * (TT.W / um.img.naturalWidth));
+  g.restore();
+  let tam = 96, linhas;
+  do { g.font = `900 ${tam}px ${TT.letra}`; linhas = quebrar(g, p.titulo.toUpperCase(), 760); tam -= 6; } while (linhas.length > 2 && tam > 60);
+  tam += 6;
+  const faixa = linhas.length * (tam + 14) + 130;
+  caixa(g, 60, y + h + 40, 880, faixa, 28, TT.laranja);
+  g.textAlign = 'center'; g.fillStyle = '#fff';
+  linhas.forEach((l, i) => g.fillText(l, 500, y + h + 40 + 30 + tam + i * (tam + 14)));
+  g.font = `700 44px ${TT.letra}`; g.fillStyle = '#FFEDD5';
+  g.fillText('arraste para o lado  ➜', 500, y + h + 40 + faixa - 34);
+
+  // 2) O que vai: só os nomes dos ingredientes; o resto fica no canal.
+  const dois = await telaTikTok(p);
+  g = dois.g;
+  const itens = p.itens || [];
+  const cta = 150, larg = 760;
+  let t = 58, blocos;
+  for (; t >= 34; t -= 4) {
+    g.font = `700 ${t}px ${TT.letra}`;
+    blocos = itens.map((i) => quebrar(g, i, larg - 50));
+    const alto = 150 + blocos.flat().length * t * 1.3 + 40 + cta;
+    if (alto <= TT.fim - TT.topo - 20) break;
   }
-  linhas.push(atual);
-  linhas.forEach((l, i) => g.fillText(l, W / 2, y - 60 - (linhas.length - 1 - i) * 100));
-  g.font = '800 54px system-ui, -apple-system, Roboto, sans-serif';
-  g.fillText('Receita completa no canal', W / 2, y + h + 90);
-  g.fillText('👉 link na bio', W / 2, y + h + 170);
-  const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.9));
-  return new File([blob], p.id.split(':').pop() + '-tiktok.jpg', { type: 'image/jpeg' });
+  const alturaLista = blocos.flat().length * t * 1.3;
+  const alto = 150 + alturaLista + 40 + cta, y2 = TT.topo + Math.max(20, (TT.fim - TT.topo - alto) / 2);
+  caixa(g, 60, y2, 880, alto, 32, '#fff');
+  g.textAlign = 'left'; g.fillStyle = '#1C1917';
+  g.font = `900 64px ${TT.letra}`; g.fillText('O que vai', 120, y2 + 100);
+  g.fillStyle = TT.laranja; g.fillRect(120, y2 + 122, 120, 8);
+  g.font = `700 ${t}px ${TT.letra}`;
+  let ly = y2 + 150 + t;
+  for (const b of blocos) {
+    g.fillStyle = TT.laranja; g.beginPath(); g.arc(134, ly - t * 0.35, t * 0.16, 0, 7); g.fill();
+    g.fillStyle = '#1C1917';
+    b.forEach((l) => { g.fillText(l, 170, ly); ly += t * 1.3; });
+  }
+  caixa(g, 60, y2 + alto - cta, 880, cta, 32, TT.laranja);
+  g.fillRect(60, y2 + alto - cta, 880, 32); // canto de cima reto, emendado no cartão
+  g.textAlign = 'center'; g.fillStyle = '#fff';
+  const caber = (peso, px, texto) => { do g.font = `${peso} ${px}px ${TT.letra}`; while (g.measureText(texto).width > 800 && --px > 28); };
+  caber(800, 42, 'Quantidades e modo de fazer no canal'); g.fillText('Quantidades e modo de fazer no canal', 500, y2 + alto - cta + 62);
+  caber(900, 48, 'do WhatsApp 👉 link na bio'); g.fillText('do WhatsApp 👉 link na bio', 500, y2 + alto - cta + 120);
+
+  return [await paraArquivo(um.c, base + '-tiktok-1.jpg'), await paraArquivo(dois.c, base + '-tiktok-2.jpg')];
 }
 
 async function copiar(p) {
@@ -207,13 +266,15 @@ async function enviar(p) {
     // O TikTok ignora o texto: vai só a foto, e a legenda fica copiada para colar.
     const dados = p.rede === 'tiktok' ? {} : { text: p.texto };
     if (p.foto) {
-      const f = p.rede === 'tiktok' ? await fotoTikTok(p) : await fotoJpg(p);
-      if (navigator.canShare && navigator.canShare({ files: [f] })) dados.files = [f];
+      // TikTok: as duas fotos juntas viram um carrossel; se o celular não aceitar duas, vai só a capa.
+      const fs = p.rede === 'tiktok' ? await fotoTikTok(p) : [await fotoJpg(p)];
+      if (navigator.canShare && navigator.canShare({ files: fs })) dados.files = fs;
+      else if (navigator.canShare && navigator.canShare({ files: [fs[0]] })) dados.files = [fs[0]];
     }
     if (!navigator.share) throw Object.assign(new Error('sem compartilhar'), { name: 'SemShare' });
     await navigator.share(dados);
     await marcar(p, true);
-    aviso(p.rede === 'tiktok' ? 'Marcada como enviada. A legenda está copiada: cole no TikTok antes de publicar.' : 'Marcada como enviada. ' + (copiou ? 'O texto também ficou copiado, se precisar colar.' : ''));
+    aviso(p.rede === 'tiktok' ? 'Marcada como enviada. A legenda está copiada: cole no TikTok. Em "Mais opções", ligue "Conteúdo gerado por IA".' : 'Marcada como enviada. ' + (copiou ? 'O texto também ficou copiado, se precisar colar.' : ''));
   } catch (e) {
     if (e.name === 'AbortError') return;
     if (p.foto) window.open(BASE + p.foto, '_blank');

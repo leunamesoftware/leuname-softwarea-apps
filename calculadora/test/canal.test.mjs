@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { postagens, textoDoCanal, textoTikTok } from '../src/canal.js';
+import { itensTikTok, postagens, textoDoCanal, textoTikTok } from '../src/canal.js';
 
 const receitas = JSON.parse(readFileSync(new URL('../src/receitas.json', import.meta.url)));
 const dicas = JSON.parse(readFileSync(new URL('../src/dicas.json', import.meta.url)));
@@ -35,4 +35,14 @@ test('legenda do TikTok: sem quantidade, manda para o link da bio e tem hashtags
     assert.match(t, /#receitas /);
     assert.doesNotMatch(t.replace(/#\S+/g, ''), /\d/, `${r.id}: número na legenda`);
   }
+});
+
+test('2ª foto do TikTok: só nomes dos ingredientes, sem repetir e sem quantidade', () => {
+  for (const r of receitas) {
+    const itens = itensTikTok(r);
+    assert.ok(itens.length > 0, r.id);
+    assert.equal(new Set(itens.map((x) => x.toLowerCase())).size, itens.length, `${r.id}: ingrediente repetido`);
+    for (const i of itens) assert.doesNotMatch(i, /\(|\d+\s*(ml|g|kg)\b/, `${r.id}: ${i}`);
+  }
+  assert.deepEqual(itensTikTok(receitas.find((x) => x.id === 'beijinho-copinho')), ['Leite condensado', 'Creme de leite', 'Coco ralado', 'Manteiga']);
 });

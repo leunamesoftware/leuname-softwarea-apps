@@ -29,6 +29,16 @@ export function textoTikTok(r) {
   ].join('\n');
 }
 
+// Só os nomes dos ingredientes (sem quantidade), para a 2ª foto do TikTok dar vontade de ver o resto no canal.
+export function itensTikTok(r) {
+  const vistos = new Set(), itens = [];
+  for (const i of r.ingredientes || []) {
+    const nome = i.nome.replace(/\s*\(.*?\)/g, '').replace(/\s+para\s.*$/i, '').trim();
+    if (nome && !vistos.has(nome.toLowerCase())) { vistos.add(nome.toLowerCase()); itens.push(nome); }
+  }
+  return itens;
+}
+
 /** Postagens liberadas e com foto de verdade, na ordem, com a dica k depois da receita 10·k. */
 export function postagens(RECEITAS, DICAS, agora = Date.now()) {
   const posts = [];
@@ -37,7 +47,7 @@ export function postagens(RECEITAS, DICAS, agora = Date.now()) {
     const liberada = !r.liberarEm || Date.parse(r.liberarEm) <= agora;
     if (!liberada || r.fotoProvisoria) continue;
     n++;
-    posts.push({ id: 'r:' + r.id, tipo: 'receita', numero: n, titulo: r.nome, foto: r.foto, texto: textoDoCanal(r), tiktok: textoTikTok(r) });
+    posts.push({ id: 'r:' + r.id, tipo: 'receita', numero: n, titulo: r.nome, foto: r.foto, texto: textoDoCanal(r), tiktok: textoTikTok(r), itens: itensTikTok(r) });
     const d = DICAS[n / 10 - 1];
     if (n % 10 === 0 && d) posts.push({ id: 'd:' + n / 10, tipo: 'dica', numero: n / 10, titulo: d.titulo, foto: null, texto: d.texto });
   }
