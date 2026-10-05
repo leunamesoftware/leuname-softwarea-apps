@@ -8,6 +8,22 @@ function seguro(resp) {
   return r;
 }
 
+// Área do Dono (/dono/): só abre para a conta do dono logada (a sessão é a do servidor de vendas, CONTAS).
+// Manifesto e ícones ficam abertos porque o celular os busca sem a sessão na hora de instalar.
+const DONO_LIVRE = /^\/dono\/(manifest\.webmanifest|icone-\d+\.png|sw\.js)$/;
+async function eDono(req, env) {
+  if (!env.CONTAS || !env.DONO_EMAIL) return false;
+  try {
+    const r = await env.CONTAS.fetch(new Request(new URL('/api/conta', req.url), { headers: { Cookie: req.headers.get('Cookie') || '' } }));
+    const d = await r.json();
+    return d?.conta?.email === env.DONO_EMAIL;
+  } catch { return false; }
+}
+const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Área restrita</title></head>
+<body style="font:16px system-ui,sans-serif;background:#F7F5F2;color:#1C1917;display:grid;place-items:center;min-height:100vh;margin:0;padding:16px;text-align:center">
+<div><h1 style="font-size:20px">Área restrita</h1><p>Entre no app com a conta do dono e volte aqui.</p>
+<p><a href="/quantocobrar/app/" style="color:#C2410C;font-weight:700">Entrar com a minha conta</a></p></div></body></html>`;
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
@@ -40,6 +56,10 @@ export default {
       if (url.pathname.startsWith('/loja-api/')) url.pathname = '/api/' + url.pathname.slice('/loja-api/'.length);
       if (url.pathname === '/api/mp/aviso') return new Response('Não encontrado.', { status: 404 });
       return env.CONTAS.fetch(new Request(url, req));
+    }
+    if (url.pathname === '/dono') return Response.redirect(url.origin + '/dono/', 302);
+    if (url.pathname.startsWith('/dono/') && !DONO_LIVRE.test(url.pathname) && !(await eDono(req, env))) {
+      return new Response(RESTRITA, { status: 403, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     }
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);

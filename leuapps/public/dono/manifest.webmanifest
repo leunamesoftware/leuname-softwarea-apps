@@ -1,0 +1,14 @@
+{
+  "id": "/dono/",
+  "name": "LeuName — Área do Dono",
+  "short_name": "Área do Dono",
+  "start_url": "/dono/",
+  "scope": "/dono/",
+  "display": "standalone",
+  "background_color": "#1C1917",
+  "theme_color": "#1C1917",
+  "icons": [
+    { "src": "/dono/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/dono/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

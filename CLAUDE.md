@@ -40,3 +40,6 @@
    com foto real + uma dica de `calculadora/src/dicas.json` a cada 10), botão Enviar para o WhatsApp, marca enviada com data
    (D1 canal_envios) e pede reenvio depois de 30 dias. Texto do canal de cada receita: campo "canal" (emoji, ingredientes,
    preparo) SEM quantidades; o teste test/canal.test.mjs confere. Receita nova sempre com "canal". Acabando as dicas, escreva mais.
+11. Área do Dono: https://www.leunamesoftware.com.br/dono/ (só abre logado com DONO_EMAIL; instala como app no celular).
+   Ferramentas separadas por cor em leuapps/public/dono/index.html: verde = WhatsApp/canais, laranja = apps da loja,
+   azul = lojas de celular, roxo = administração. Ferramenta nova do dono entra lá, na cor certa.

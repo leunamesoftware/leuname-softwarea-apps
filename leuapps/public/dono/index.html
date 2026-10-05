@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1C1917">
+<link rel="manifest" href="/dono/manifest.webmanifest">
+<link rel="icon" href="/dono/icone-192.png">
+<link rel="apple-touch-icon" href="/dono/icone-192.png">
+<title>Área do Dono · LeuName</title>
+<style>
+:root {
+  --fundo: #F7F5F2; --cartao: #fff; --texto: #1C1917; --suave: #6B6259; --linha: #E7E2DC;
+  --verde: #16A34A; --verde-claro: #DCFCE7;
+  --laranja: #E8590C; --laranja-claro: #FFEDD5;
+  --azul: #2563EB; --azul-claro: #DBEAFE;
+  --roxo: #7C3AED; --roxo-claro: #EDE9FE;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font: 500 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
+.topo { background: #1C1917; color: #fff; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px; }
+.topo h1 { margin: 0; font-size: 21px; font-weight: 800; }
+.topo p { margin: 2px 0 0; font-size: 13px; color: #D6D3D1; }
+main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; display: grid; gap: 22px; }
+.instalar { display: flex; align-items: center; gap: 10px; background: var(--cartao); border: 1px dashed var(--linha); border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.instalar button { margin-left: auto; border: 0; border-radius: 10px; background: #1C1917; color: #fff; font: inherit; font-weight: 800; padding: 9px 14px; cursor: pointer; }
+section h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 13px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--suave); }
+section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px; background: var(--cor); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.card { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; background: var(--cartao); border: 1px solid var(--linha); border-left: 5px solid var(--cor); border-radius: 14px; padding: 12px; color: inherit; text-decoration: none; }
+.card:focus-visible { outline: 3px solid var(--cor); outline-offset: 2px; }
+.card .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; background: var(--claro); overflow: hidden; }
+.card .ic img { width: 100%; height: 100%; object-fit: cover; }
+.card b { display: block; font-size: 15px; line-height: 1.25; }
+.card small { display: block; color: var(--suave); font-size: 12.5px; margin-top: 2px; }
+.nota { background: var(--cartao); border: 1px dashed var(--linha); border-left: 5px solid var(--cor); border-radius: 14px; padding: 12px; color: var(--suave); font-size: 14px; margin: 0; }
+.verde { --cor: var(--verde); --claro: var(--verde-claro); }
+.laranja { --cor: var(--laranja); --claro: var(--laranja-claro); }
+.azul { --cor: var(--azul); --claro: var(--azul-claro); }
+.roxo { --cor: var(--roxo); --claro: var(--roxo-claro); }
+</style>
+</head>
+<body>
+<header class="topo">
+  <h1>Área do Dono</h1>
+  <p>Só você vê esta página. As ferramentas ficam separadas por cor.</p>
+</header>
+<main>
+  <div class="instalar" id="instalar" hidden>
+    <span>📲 Instale como app no seu celular.</span>
+    <button id="instalar-btn" type="button">Instalar</button>
+  </div>
+
+  <section class="verde">
+    <h2>WhatsApp · canais</h2>
+    <div class="cards">
+      <a class="card" href="/quantocobrar/canal"><span class="ic">📲</span><span><b>Canal "Quanto Devo Cobrar?"</b><small>Postagens prontas: enviar, marcar enviadas e reenviar depois de 30 dias</small></span></a>
+    </div>
+  </section>
+
+  <section class="laranja">
+    <h2>Apps da loja</h2>
+    <div class="cards" id="apps"><p class="nota">Carregando…</p></div>
+  </section>
+
+  <section class="azul">
+    <h2>Lojas de celular</h2>
+    <p class="nota">Quando um app for para a Play Store ou outra loja de celular, as ferramentas dele entram aqui.</p>
+  </section>
+
+  <section class="roxo">
+    <h2>Administração</h2>
+    <div class="cards">
+      <a class="card" href="/admin-licencas/login.html"><span class="ic">🔑</span><span><b>Painel de licenças</b><small>Chaves e licenças dos programas</small></span></a>
+      <a class="card" href="/"><span class="ic">🏪</span><span><b>Loja LeuApps</b><small>A vitrine como o cliente vê</small></span></a>
+    </div>
+  </section>
+</main>
+<script>
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((apps) => {
+  document.getElementById('apps').innerHTML = apps.map((a) => `
+    <a class="card" href="${esc(a.url)}"><span class="ic"><img src="${esc(a.icone)}" alt=""></span><span><b>${esc(a.nome)}</b><small>${esc(a.categoria || a.resumo || '')}</small></span></a>`).join('');
+}).catch(() => { document.getElementById('apps').innerHTML = '<p class="nota">Sem internet agora.</p>'; });
+
+let pedido = null;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; document.getElementById('instalar').hidden = false; });
+document.getElementById('instalar-btn').addEventListener('click', async () => {
+  if (!pedido) return;
+  pedido.prompt(); await pedido.userChoice; pedido = null;
+  document.getElementById('instalar').hidden = true;
+});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/dono/sw.js', { scope: '/dono/' }).catch(() => {});
+</script>
+</body>
+</html>
