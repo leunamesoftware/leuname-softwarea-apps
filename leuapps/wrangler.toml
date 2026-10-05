@@ -12,7 +12,7 @@ run_worker_first = true
 
 # Conta do dono: única que abre a Área do Dono (/dono/).
 [vars]
-DONO_EMAIL = "emanuelantunes2021@gmail.com"
+DONO_EMAIL = "leunamesoftware@gmail.com"
 
 # Site antigo (painel, licenças e páginas antigas) continua respondendo pelos endereços dele.
 [[services]]
