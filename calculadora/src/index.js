@@ -172,7 +172,13 @@ export default {
           // Sem conta e sem chave: nada liberado (o teste grátis começa ao criar a conta).
           const acesso = acessoConta || (chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: 0, semConta: true });
           const stats = await estatisticas(env);
-          const receitas = RECEITAS.map((r, i) => (i >= acesso.receitas
+          // Receitas agendadas (liberarEm no futuro ou "aguardando-foto") ficam escondidas; só o dono vê, marcadas.
+          const dono = Boolean(conta && env.DONO_EMAIL && conta.email === env.DONO_EMAIL);
+          const agora = Date.now();
+          const liberada = (r) => !r.liberarEm || Date.parse(r.liberarEm) <= agora;
+          const visiveis = RECEITAS.filter((r) => dono || liberada(r))
+            .map((r) => (liberada(r) ? r : { ...r, agendada: r.liberarEm }));
+          const receitas = visiveis.map((r, i) => (i >= acesso.receitas
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
             : { ...r, rendimentoObservado: stats(r) }));
           return json({ receitas, plano: acesso.plano, expiraEm: acesso.expiraEm || null, venceu: Boolean(acesso.venceu),

@@ -33,3 +33,6 @@
    Não repetir receita que já existe no app.
 8. A cada 10 receitas no canal vai uma "💡 DICA" de propaganda (lista em `calculadora/canal/dicas.md`).
    Quando fechar um lote de 10, entregar também a dica seguinte, pronta para copiar.
+9. Receitas agendadas: lote novo entra escondido ("liberarEm": "aguardando-foto", "fotoProvisoria": true). Quando a foto chega:
+   foto_receita.py, tirar "fotoProvisoria" e rodar `python3 scripts/agendar.py` (libera 2 por dia, 8h e 19h de Brasília, sozinho no servidor).
+   O dono (DONO_EMAIL no wrangler.toml) vê as escondidas marcadas no sumário. Numeração dos prompts pula o 13.

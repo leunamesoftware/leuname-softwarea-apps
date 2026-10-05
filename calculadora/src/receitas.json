@@ -2462,5 +2462,4007 @@
       "Validade: assado, 2 dias em pote fechado; cru, 90 dias congelado."
     ],
     "dicaVenda": "Pão de queijo congelado vende muito em pacote de 1 kg. O assado sai bem em café da manhã e coffee break de empresa."
+  },
+  {
+    "id": "brigadeiro-tradicional",
+    "nome": "Brigadeiro Tradicional",
+    "categoria": "Doces",
+    "foto": "/img/receitas/brigadeiro-tradicional.webp?v=07509be2",
+    "rendimento": {
+      "unidades": 50,
+      "pesoUnidadeG": 16,
+      "faixa": [
+        45,
+        58
+      ]
+    },
+    "gas": {
+      "minutos": 20,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Forminha nº 4 (R$ 0,02 a R$ 0,05 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 790,
+        "unidade": "g",
+        "caseira": "2 latas",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50%",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "6 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 11.9
+        }
+      },
+      {
+        "nome": "Granulado de chocolate (para enrolar)",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 150,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Coloque o leite condensado, a manteiga e o chocolate em pó numa panela e misture antes de ligar o fogo.",
+      "Cozinhe em fogo baixo, mexendo sem parar, até desgrudar do fundo da panela (cerca de 15 minutos).",
+      "Passe para um prato untado, cubra com filme encostado na massa e deixe esfriar.",
+      "Com as mãos untadas de manteiga, enrole bolinhas, passe no granulado e coloque nas forminhas."
+    ],
+    "dicas": [
+      "Ponto certo: ao inclinar a panela, a massa desliza inteira e mostra o fundo.",
+      "Filme encostado na massa evita que forme casquinha enquanto esfria.",
+      "Chocolate em pó 50% dá um sabor bem mais gostoso que achocolatado.",
+      "Validade: 3 dias em lugar fresco ou 7 dias na geladeira."
+    ],
+    "dicaVenda": "Brigadeiro é o doce mais pedido do Brasil: venda o cento para festas e caixinhas com 4 ou 6 para presente.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "empanada-argentina",
+    "nome": "Empanada Argentina de Carne",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/empanada-argentina.webp?v=63de55ec",
+    "rendimento": {
+      "unidades": 16,
+      "pesoUnidadeG": 90,
+      "faixa": [
+        14,
+        18
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Saquinho de papel (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ tablete",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovo (massa)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Carne moída (recheio)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 cebolas médias",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Óleo (recheio)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Páprica doce (recheio)",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Cominho (recheio)",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "½ colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Ovo (cozido, para o recheio)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Azeitona verde picada (recheio)",
+        "qtd": 80,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Ovo (gema para pincelar)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 gema",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      }
+    ],
+    "preparo": [
+      "Massa: misture a farinha e metade do sal, junte a manteiga, o ovo e cerca de 200 ml de água morna aos poucos, até ficar lisa. Leve à geladeira por 30 minutos.",
+      "Recheio: refogue a cebola no óleo, junte a carne, a páprica, o cominho e o resto do sal e cozinhe até secar. Deixe esfriar e misture os ovos cozidos picados e a azeitona.",
+      "Abra a massa fina e corte discos de 12 cm.",
+      "Coloque o recheio frio, feche em meia-lua e dobre a borda em pequenas pregas (o \"repulgue\").",
+      "Pincele com a gema e asse em forno preaquecido a 200 °C por 20 a 25 minutos, até dourar."
+    ],
+    "dicas": [
+      "O repulgue (borda dobradinha) é a marca da empanada e impede que ela abra no forno.",
+      "Recheio sempre frio: quente, ele amolece a massa e vaza.",
+      "Com a mesma massa dá para fazer empanada de frango ou de queijo com cebola.",
+      "Para congelar, congele crua e asse ainda congelada, com 10 minutos a mais.",
+      "Validade: 3 dias na geladeira ou 90 dias congelada."
+    ],
+    "dicaVenda": "Empanada é novidade em muitos bairros e chama atenção. Venda quentinha e ofereça um molho chimichurri à parte (some esse custo) para cobrar mais.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "pao-de-mel",
+    "nome": "Pão de Mel",
+    "categoria": "Doces",
+    "foto": "/img/receitas/pao-de-mel.webp?v=d72beb82",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 60,
+      "faixa": [
+        18,
+        24
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Papel chumbo ou saquinho de celofane (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Mel",
+        "qtd": 170,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 300,
+          "unidade": "g",
+          "preco": 14.9
+        }
+      },
+      {
+        "nome": "Açúcar mascavo",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "2½ xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50%",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 11.9
+        }
+      },
+      {
+        "nome": "Canela em pó",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Bicarbonato de sódio",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 80,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Doce de leite (recheio)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "1 pote",
+        "emb": {
+          "qtd": 400,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Chocolate meio amargo (cobertura)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 49.9
+        }
+      }
+    ],
+    "preparo": [
+      "Misture a farinha, o açúcar mascavo, o chocolate em pó, a canela e o bicarbonato.",
+      "Junte o leite e o mel e mexa até ficar uma massa lisa.",
+      "Asse em assadeira untada e enfarinhada, em forno preaquecido a 180 °C, por cerca de 25 minutos.",
+      "Depois de frio, corte discos com um cortador ou copo, abra ao meio e recheie com doce de leite.",
+      "Derreta o chocolate, banhe cada pão de mel e deixe secar sobre papel manteiga."
+    ],
+    "dicas": [
+      "Pão de mel fica mais úmido no dia seguinte: se der, asse a massa na véspera.",
+      "Chocolate com brilho: derreta 2 partes em banho-maria e junte 1 parte picada, mexendo até derreter.",
+      "Embale só quando o chocolate estiver bem seco.",
+      "Validade: 15 dias em lugar fresco e seco."
+    ],
+    "dicaVenda": "Pão de mel é presente fácil: venda em caixas com 4 ou 6 na Páscoa, no Dia das Mães e no Natal.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "torta-frango-liquidificador",
+    "nome": "Torta de Frango de Liquidificador",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/torta-frango-liquidificador.webp?v=901e0724",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 150,
+      "faixa": [
+        10,
+        14
+      ]
+    },
+    "gas": {
+      "minutos": 50,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Embalagem para fatia com tampa (R$ 0,40 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Ovos (massa)",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Leite (massa)",
+        "qtd": 480,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo (massa)",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado (massa)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Fermento em pó (massa)",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Peito de frango (recheio)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "1 peito grande",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Tomate (recheio)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 tomates",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Milho verde (recheio)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 lata escorrida",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 4.49
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado (recheio)",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Requeijão cremoso (recheio)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ copo",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Óleo (recheio)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o frango em água com o caldo de galinha por 25 minutos e desfie.",
+      "Refogue a cebola no óleo, junte o frango, o tomate picado, o milho e o cheiro-verde. Desligue e misture o requeijão.",
+      "Bata no liquidificador os ovos, o leite, o óleo, a farinha, o parmesão e o sal. Por último, misture o fermento com uma colher.",
+      "Numa forma untada, coloque metade da massa, espalhe o recheio e cubra com o resto da massa.",
+      "Asse em forno preaquecido a 180 °C por 40 a 45 minutos, até dourar."
+    ],
+    "dicas": [
+      "Escorra bem o recheio: recheio molhado deixa a torta solada.",
+      "Espere amornar antes de cortar para a fatia sair inteira.",
+      "Para congelar, congele em fatias já assadas e aqueça no forno.",
+      "Validade: 3 dias na geladeira ou 60 dias congelada."
+    ],
+    "dicaVenda": "Venda em fatia para o almoço e o lanche do trabalho, ou a torta inteira por encomenda.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "palha-italiana",
+    "nome": "Palha Italiana",
+    "categoria": "Doces",
+    "foto": "/img/receitas/palha-italiana.webp?v=b8e80e65",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 50,
+      "faixa": [
+        18,
+        24
+      ]
+    },
+    "gas": {
+      "minutos": 20,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Saquinho de celofane com fita (R$ 0,15 a R$ 0,40 cada)",
+    "ingredientes": [
+      {
+        "nome": "Leite condensado",
+        "qtd": 790,
+        "unidade": "g",
+        "caseira": "2 latas",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50%",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "6 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 11.9
+        }
+      },
+      {
+        "nome": "Biscoito maisena",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 4.49
+        }
+      },
+      {
+        "nome": "Açúcar de confeiteiro (para polvilhar)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o leite condensado, a manteiga e o chocolate em fogo baixo, mexendo, até começar a desgrudar da panela (ponto de brigadeiro mole).",
+      "Desligue e misture o biscoito quebrado em pedaços médios.",
+      "Espalhe numa forma untada, alise e leve à geladeira por 2 horas.",
+      "Corte em quadrados e passe no açúcar de confeiteiro."
+    ],
+    "dicas": [
+      "Quebre o biscoito em pedaços médios, não em farelo: os pedacinhos são o charme.",
+      "Corte com faca molhada em água quente para o corte sair limpo.",
+      "Faça também de brigadeiro branco com o mesmo jeito.",
+      "Validade: 5 dias em lugar fresco ou 10 dias na geladeira."
+    ],
+    "dicaVenda": "Palha italiana vende bem em ponto de ônibus, escola e trabalho. Embalagem com laço deixa pronta para presente.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "croquete-carne",
+    "nome": "Croquete de Carne",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/croquete-carne.webp?v=1f634ba3",
+    "rendimento": {
+      "unidades": 40,
+      "pesoUnidadeG": 30,
+      "faixa": [
+        35,
+        45
+      ]
+    },
+    "gas": {
+      "minutos": 40,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Carne moída",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Ovos (empanar)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de rosca (empanar)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1½ xícara",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Refogue a cebola e o alho no óleo, junte a carne e o sal e cozinhe até secar.",
+      "Junte o leite e, aos poucos, a farinha, mexendo até virar uma massa que desgruda da panela. Misture o cheiro-verde.",
+      "Deixe esfriar bem (de preferência na geladeira).",
+      "Com as mãos úmidas, modele rolinhos de cerca de 6 cm.",
+      "Passe no ovo batido e na farinha de rosca e frite em óleo quente até dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Massa bem fria modela fácil: se der, deixe de um dia para o outro na geladeira.",
+      "Empane duas vezes (ovo e rosca de novo) para o croquete não abrir.",
+      "Para congelar, congele empanado e cru e frite ainda congelado.",
+      "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
+    ],
+    "dicaVenda": "Croquete completa o cento sortido e é muito pedido em bar e lanchonete.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "cookies-gotas-chocolate",
+    "nome": "Cookies com Gotas de Chocolate",
+    "categoria": "Doces",
+    "foto": "/img/receitas/cookies-gotas-chocolate.webp?v=e55876c1",
+    "rendimento": {
+      "unidades": 24,
+      "pesoUnidadeG": 50,
+      "faixa": [
+        22,
+        26
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Saquinho individual com fecho ou caixinha com 4 (R$ 0,20 a R$ 0,60 cada)",
+    "ingredientes": [
+      {
+        "nome": "Manteiga (amolecida)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Açúcar mascavo",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Essência de baunilha",
+        "qtd": 5,
+        "unidade": "ml",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "ml",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 360,
+        "unidade": "g",
+        "caseira": "3 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Bicarbonato de sódio",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 80,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 pitada",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Gotas de chocolate",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 xícara e ½",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 22.9
+        }
+      }
+    ],
+    "preparo": [
+      "Bata a manteiga com os dois açúcares até ficar cremoso. Junte os ovos e a baunilha.",
+      "Misture a farinha, o bicarbonato e o sal, e por último as gotas de chocolate.",
+      "Faça bolas de cerca de 50 g e leve à geladeira por 30 minutos.",
+      "Asse em assadeira com papel manteiga, com espaço entre elas, em forno preaquecido a 180 °C por 12 a 14 minutos."
+    ],
+    "dicas": [
+      "Tire do forno com o centro ainda mole: o cookie termina de firmar ao esfriar.",
+      "Massa gelada não espalha demais no forno.",
+      "Dá para congelar as bolinhas cruas e assar na hora da venda.",
+      "Validade: 10 dias em pote ou saquinho bem fechado."
+    ],
+    "dicaVenda": "Cookie grande e recheado vende como lanche em escola e faculdade. Ofereça kits com 4 para presente.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "hamburguer-artesanal",
+    "nome": "Hambúrguer Artesanal",
+    "categoria": "Lanches",
+    "foto": "/img/receitas/hamburguer-artesanal.webp?v=ae536468",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 300,
+      "faixa": [
+        9,
+        11
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa de hambúrguer ou papel acoplado (R$ 0,50 a R$ 1,20 cada)",
+    "ingredientes": [
+      {
+        "nome": "Acém moído",
+        "qtd": 1500,
+        "unidade": "g",
+        "caseira": "1,5 kg",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 34.9
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Pimenta-do-reino",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 pitada generosa",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Pão de hambúrguer",
+        "qtd": 10,
+        "unidade": "un",
+        "caseira": "10 pães",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 9.99
+        }
+      },
+      {
+        "nome": "Muçarela fatiada",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "10 fatias",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Alface",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 pé",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Tomate",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "3 tomates",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Maionese",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "10 colheres de sopa",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 9.99
+        }
+      }
+    ],
+    "preparo": [
+      "Divida a carne em 10 bolas de 150 g e amasse em discos um pouco maiores que o pão (ele encolhe). Não amasse demais a carne.",
+      "Faça um pequeno afundado no centro de cada disco com o dedo.",
+      "Tempere com sal e pimenta só na hora e grelhe em chapa ou frigideira bem quente, 3 a 4 minutos de cada lado.",
+      "Coloque a muçarela por cima no final e tampe para derreter.",
+      "Toste o pão e monte: maionese, alface, tomate e o hambúrguer."
+    ],
+    "dicas": [
+      "Sal só na hora de grelhar: se salgar antes, a carne solta água e fica seca.",
+      "O afundado no centro impede o hambúrguer de estufar.",
+      "Venda também os discos crus congelados, separados por papel manteiga.",
+      "Validade: carne crua 1 dia na geladeira ou 90 dias congelada; o lanche montado é para comer na hora."
+    ],
+    "dicaVenda": "Hambúrguer artesanal vende muito no delivery de sexta e sábado. Monte combo com batata e refrigerante para cobrar mais.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "churros-doce-leite",
+    "nome": "Churros com Doce de Leite",
+    "categoria": "Doces",
+    "foto": "/img/receitas/churros-doce-leite.webp?v=9c72487a",
+    "rendimento": {
+      "unidades": 18,
+      "pesoUnidadeG": 60,
+      "faixa": [
+        16,
+        22
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho de papel para churros (R$ 0,05 a R$ 0,15 cada)",
+    "ingredientes": [
+      {
+        "nome": "Manteiga",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 pitada",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Doce de leite (recheio)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "1 pote",
+        "emb": {
+          "qtd": 400,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Açúcar (para passar)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Canela em pó (para passar)",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "2 colheres de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
+        "qtd": 300,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Ferva 480 ml de água com a manteiga e o sal.",
+      "Desligue, despeje a farinha de uma vez e mexa até virar uma bola lisa. Deixe amornar.",
+      "Coloque a massa num saco de confeitar com bico pitanga grande.",
+      "Faça tiras de 12 cm direto no óleo quente (cerca de 170 °C) e frite até dourar. Escorra.",
+      "Passe no açúcar misturado com a canela e recheie com o doce de leite usando uma bisnaga."
+    ],
+    "dicas": [
+      "O bico pitanga faz as estrias e evita que o churros estoure no óleo.",
+      "Massa morna entra fácil no saco de confeitar; quente, queima a mão.",
+      "Churros frito na hora vende muito mais: vale montar uma barraquinha.",
+      "Para congelar, congele a massa já modelada, crua, e frite congelada. Frito, venda no mesmo dia."
+    ],
+    "dicaVenda": "Churros vende em festa junina, feira, porta de escola e evento. Ofereça recheio de chocolate também.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "sanduiche-natural-frango",
+    "nome": "Sanduíche Natural de Frango",
+    "categoria": "Lanches",
+    "foto": "/img/receitas/sanduiche-natural-frango.webp?v=894955ba",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 140,
+      "faixa": [
+        9,
+        11
+      ]
+    },
+    "gas": {
+      "minutos": 25,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho com fecho ou filme + etiqueta (R$ 0,15 a R$ 0,40 cada)",
+    "ingredientes": [
+      {
+        "nome": "Pão de forma integral",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "20 fatias",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Peito de frango",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "1 peito médio",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Cenoura ralada",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 cenoura grande",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Maionese",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "10 colheres de sopa",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 9.99
+        }
+      },
+      {
+        "nome": "Requeijão cremoso",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ copo",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Milho verde",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 lata escorrida",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 4.49
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Alface",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 pé",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o frango em água com sal por 25 minutos, desfie e deixe esfriar.",
+      "Misture o frango com a maionese, o requeijão, a cenoura, o milho e o cheiro-verde. Acerte o sal.",
+      "Espalhe o recheio em 10 fatias de pão, coloque folhas de alface bem secas e feche com as outras fatias.",
+      "Corte na diagonal e embale com etiqueta e data."
+    ],
+    "dicas": [
+      "Alface bem seca: folha molhada amolece o pão.",
+      "Recheio e frango sempre frios antes de montar.",
+      "Venda gelado, em bolsa térmica.",
+      "Validade: 2 dias na geladeira. Não congele."
+    ],
+    "dicaVenda": "Sanduíche natural vende cedo em academia, escritório e escola. Combine com suco para fazer um combo.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "cinnamon-roll",
+    "nome": "Cinnamon Roll (Rolinho de Canela)",
+    "categoria": "Doces",
+    "foto": "/img/receitas/cinnamon-roll.webp?v=5d56d4cc",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 90,
+      "faixa": [
+        10,
+        14
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Bandeja individual com tampa (R$ 0,40 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Leite (morno)",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar (massa)",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (massa)",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovo",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Manteiga (recheio)",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Açúcar mascavo (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "¾ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Canela em pó (recheio)",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Açúcar de confeiteiro (cobertura)",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Leite (cobertura)",
+        "qtd": 30,
+        "unidade": "ml",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+      "Junte a farinha, o ovo, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+      "Abra num retângulo, espalhe a manteiga mole do recheio e polvilhe o açúcar mascavo com a canela.",
+      "Enrole pelo lado comprido e corte 12 rolinhos com uma linha (ou fio dental sem sabor).",
+      "Coloque numa forma untada, deixe crescer mais 30 minutos e asse a 180 °C por 25 minutos.",
+      "Misture o açúcar de confeiteiro com o leite e cubra os rolinhos ainda mornos."
+    ],
+    "dicas": [
+      "Cortar com linha não amassa o rolinho.",
+      "Cobertura só depois que amornar, senão ela escorre toda.",
+      "Aqueça 10 segundos no micro-ondas antes de comer: fica como saído do forno.",
+      "Validade: 3 dias em pote fechado."
+    ],
+    "dicaVenda": "Cinnamon roll é moda nas cafeterias e quase ninguém vende no bairro. Venda individual e em caixas com 4.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "escondidinho-frango-mandioca",
+    "nome": "Escondidinho de Frango com Mandioca",
+    "categoria": "Marmitas",
+    "foto": "/img/receitas/escondidinho-frango-mandioca.webp?v=25663075",
+    "rendimento": {
+      "unidades": 6,
+      "pesoUnidadeG": 400,
+      "faixa": [
+        5,
+        7
+      ]
+    },
+    "gas": {
+      "minutos": 60,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Marmita de alumínio nº 8 com tampa (R$ 0,80 a R$ 1,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Mandioca",
+        "qtd": 1000,
+        "unidade": "g",
+        "caseira": "1 kg descascada",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Manteiga (purê)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Leite (purê)",
+        "qtd": 200,
+        "unidade": "ml",
+        "caseira": "¾ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Peito de frango (recheio)",
+        "qtd": 600,
+        "unidade": "g",
+        "caseira": "1 peito grande",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 19.9
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Cebola (recheio)",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho (recheio)",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Tomate (recheio)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 tomates",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado (recheio)",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Óleo (recheio)",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Requeijão cremoso (recheio)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 copo",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Muçarela ralada (cobertura)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe a mandioca em água com sal até ficar bem macia, tire a fibra do meio e amasse com a manteiga e o leite até virar um purê.",
+      "Cozinhe o frango em água com o caldo de galinha por 25 minutos e desfie.",
+      "Refogue a cebola e o alho no óleo, junte o frango, o tomate e o cheiro-verde.",
+      "Monte nas marmitas: purê, frango, requeijão, purê e muçarela por cima.",
+      "Gratine em forno a 200 °C por 10 a 15 minutos, ou feche e congele cru para o cliente assar em casa."
+    ],
+    "dicas": [
+      "Mandioca amarelinha cozinha mais rápido e dá purê mais cremoso.",
+      "Para congelar, deixe o purê um pouco mais firme.",
+      "Cole uma etiqueta com \"forno a 200 °C por 25 minutos\" para quem leva congelado.",
+      "Validade: 3 dias na geladeira ou 60 dias congelado."
+    ],
+    "dicaVenda": "Marmita congelada vende por kit semanal (ex.: 5 marmitas). Varie com carne seca ou carne moída para ter cardápio.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "alfajor",
+    "nome": "Alfajor",
+    "categoria": "Doces",
+    "foto": "/img/receitas/alfajor.webp?v=504292c5",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 45,
+      "faixa": [
+        18,
+        24
+      ]
+    },
+    "gas": {
+      "minutos": 25,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Papel chumbo ou saquinho individual (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Amido de milho",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1¼ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ tablete",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 80,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Ovos (só as gemas)",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 gemas",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Essência de baunilha",
+        "qtd": 5,
+        "unidade": "ml",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "ml",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Doce de leite de corte (recheio)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "1 pote",
+        "emb": {
+          "qtd": 400,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Chocolate meio amargo (cobertura)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "400 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 49.9
+        }
+      }
+    ],
+    "preparo": [
+      "Bata a manteiga com o açúcar, as gemas e a baunilha.",
+      "Junte o amido, a farinha e o fermento e misture até virar uma massa lisa.",
+      "Abra com 0,5 cm, corte discos de 5 cm e asse a 180 °C por 10 a 12 minutos, sem deixar dourar.",
+      "Depois de frios, junte os discos de dois em dois com doce de leite.",
+      "Banhe no chocolate derretido e deixe secar sobre papel manteiga."
+    ],
+    "dicas": [
+      "Os discos ficam clarinhos e quebradiços: tire do forno antes de dourar.",
+      "Doce de leite de corte (mais firme) não escorre pelas bordas.",
+      "Manuseie os discos frios, com cuidado, porque quebram fácil.",
+      "Validade: 15 dias em lugar fresco e seco."
+    ],
+    "dicaVenda": "Alfajor caseiro tem cara de doce de padaria fina. Venda individual e em caixas para presente.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "quiche-alho-poro",
+    "nome": "Quiche de Alho-Poró",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/quiche-alho-poro.webp?v=34c803ef",
+    "rendimento": {
+      "unidades": 8,
+      "pesoUnidadeG": 120,
+      "faixa": [
+        8,
+        10
+      ]
+    },
+    "gas": {
+      "minutos": 45,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Embalagem para fatia com tampa (R$ 0,40 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga gelada (massa)",
+        "qtd": 125,
+        "unidade": "g",
+        "caseira": "½ tablete e um pouco",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovo (massa)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 ovo",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 4,
+        "unidade": "g",
+        "caseira": "¾ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Alho-poró (recheio)",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 talos",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Manteiga (recheio)",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovos (recheio)",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Creme de leite (recheio)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite (recheio)",
+        "qtd": 100,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado (recheio)",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Pimenta-do-reino",
+        "qtd": 1,
+        "unidade": "g",
+        "caseira": "1 pitada",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      }
+    ],
+    "preparo": [
+      "Massa: misture a farinha, a manteiga gelada em pedaços e metade do sal com a ponta dos dedos. Junte o ovo e 2 colheres de sopa de água gelada até unir.",
+      "Forre uma forma de fundo removível de 24 cm, fure com garfo e pré-asse a 200 °C por 10 minutos.",
+      "Refogue o alho-poró em rodelas finas na manteiga por 5 minutos.",
+      "Bata os ovos com o creme de leite, o leite, o resto do sal e a pimenta. Junte o alho-poró e o parmesão.",
+      "Despeje na massa e asse a 180 °C por 30 a 35 minutos, até firmar."
+    ],
+    "dicas": [
+      "Pré-assar a massa evita o fundo cru.",
+      "Lave bem o alho-poró: sempre tem terra entre as folhas.",
+      "Fica ótima morna ou fria; venda em fatias no almoço.",
+      "Validade: 3 dias na geladeira ou 30 dias congelada."
+    ],
+    "dicaVenda": "Quiche vende bem em fatia para escritório e inteira para encomendas. Faça também de queijo com tomate seco.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "geladinho-morango",
+    "nome": "Geladinho Gourmet de Morango",
+    "categoria": "Sorvetes",
+    "foto": "/img/receitas/geladinho-morango.webp?v=68440c21",
+    "rendimento": {
+      "unidades": 22,
+      "pesoUnidadeG": 100,
+      "faixa": [
+        20,
+        24
+      ]
+    },
+    "gas": {
+      "minutos": 10,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho para geladinho 5x23 cm (pacote de 100 por R$ 6 a R$ 9)",
+    "ingredientes": [
+      {
+        "nome": "Leite",
+        "qtd": 1000,
+        "unidade": "ml",
+        "caseira": "1 litro",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Amido de milho",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Morango",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "2 bandejas",
+        "emb": {
+          "qtd": 250,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Dissolva o amido em um pouco do leite. Leve ao fogo com o resto do leite e o açúcar, mexendo, até engrossar levemente (cerca de 5 minutos).",
+      "Deixe esfriar.",
+      "Bata no liquidificador com o leite condensado, o creme de leite e os morangos lavados.",
+      "Encha os saquinhos com um funil, deixando espaço, e feche com nó firme.",
+      "Congele deitados por pelo menos 6 horas."
+    ],
+    "dicas": [
+      "O amido cozido deixa o geladinho cremoso, sem pedrinhas de gelo.",
+      "Deixe pedaços de morango picados dentro de alguns: fica mais bonito e vende mais.",
+      "Uma seladora barata deixa o fechamento profissional.",
+      "Validade: 60 dias congelado."
+    ],
+    "dicaVenda": "Geladinho gourmet vende o ano todo no bairro e na porta de escola. Faça vários sabores e venda em isopor.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "mini-pizza",
+    "nome": "Mini Pizza",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/mini-pizza.webp?v=90bf5063",
+    "rendimento": {
+      "unidades": 40,
+      "pesoUnidadeG": 40,
+      "faixa": [
+        36,
+        44
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo (massa)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo (massa)",
+        "qtd": 60,
+        "unidade": "ml",
+        "caseira": "¼ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Molho de tomate (cobertura)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 340,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Presunto picado (cobertura)",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "150 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 34.9
+        }
+      },
+      {
+        "nome": "Muçarela ralada (cobertura)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "300 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Orégano (cobertura)",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "2 colheres de chá",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      }
+    ],
+    "preparo": [
+      "Misture cerca de 250 ml de água morna, o fermento e o açúcar. Deixe espumar por 5 minutos.",
+      "Junte o óleo, o sal e a farinha aos poucos. Sove por 10 minutos até ficar lisa.",
+      "Cubra e deixe crescer por 30 minutos.",
+      "Abra a massa com rolo, com meio centímetro de altura, e corte discos de 6 a 7 cm com um cortador ou copo.",
+      "Coloque os discos em forma untada, fure com um garfo e pré-asse a 200 °C por 8 minutos.",
+      "Cubra cada disco com molho, presunto, muçarela e orégano. Se quiser, coloque uma rodela de tomate ou azeitona (opcional, fora do custo).",
+      "Volte ao forno por 8 a 10 minutos, até o queijo derreter."
+    ],
+    "dicas": [
+      "Pré-assar os discos evita mini pizza com massa crua embaixo.",
+      "Fure a massa com o garfo para ela não estufar no forno.",
+      "Use pouco molho: molho demais amolece a massa.",
+      "Para congelar, congele já montada e pré-assada. Asse ainda congelada por 10 a 12 minutos a 200 °C.",
+      "Validade: 3 dias na geladeira ou 60 dias congelada."
+    ],
+    "dicaVenda": "Mini pizza é campeã em festa infantil. Venda também congelada em pacote para o cliente assar em casa.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "tiramisu-pote",
+    "nome": "Tiramisù no Pote",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/tiramisu-pote.webp?v=3c7c2ddc",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 150,
+      "faixa": [
+        9,
+        12
+      ]
+    },
+    "gas": {
+      "minutos": 5,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Pote de 200 ml com tampa e colherzinha (R$ 0,50 a R$ 0,90 cada)",
+    "ingredientes": [
+      {
+        "nome": "Biscoito champanhe",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "2 pacotes",
+        "emb": {
+          "qtd": 150,
+          "unidade": "g",
+          "preco": 7.49
+        }
+      },
+      {
+        "nome": "Café solúvel",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 50,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Cream cheese",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "2 potes",
+        "emb": {
+          "qtd": 150,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Creme de leite",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 caixinhas",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Cacau em pó (para polvilhar)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      }
+    ],
+    "preparo": [
+      "Dissolva o café em 300 ml de água quente e deixe esfriar.",
+      "Bata o cream cheese, o leite condensado e o creme de leite até ficar cremoso.",
+      "Molhe cada biscoito rapidamente no café.",
+      "Monte nos potes: biscoito, creme, biscoito e creme por cima.",
+      "Leve à geladeira por 4 horas e polvilhe o cacau só na hora de entregar."
+    ],
+    "dicas": [
+      "Molhe o biscoito rápido: encharcado, ele desmancha.",
+      "O cacau por cima absorve umidade; polvilhe na hora da entrega.",
+      "É a versão brasileira, com cream cheese no lugar do mascarpone: mais barata e muito gostosa.",
+      "Validade: 3 dias na geladeira."
+    ],
+    "dicaVenda": "Tiramisù no pote tem cara de sobremesa de restaurante italiano. Venda individual e em kits para jantar a dois.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "lasanha-bolonhesa",
+    "nome": "Lasanha à Bolonhesa",
+    "categoria": "Marmitas",
+    "foto": "/img/receitas/lasanha-bolonhesa.webp?v=d605c93c",
+    "rendimento": {
+      "unidades": 6,
+      "pesoUnidadeG": 450,
+      "faixa": [
+        6,
+        8
+      ]
+    },
+    "gas": {
+      "minutos": 60,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Marmita de alumínio nº 8 com tampa (R$ 0,80 a R$ 1,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Massa de lasanha (direto ao forno)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 8.99
+        }
+      },
+      {
+        "nome": "Carne moída",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "500 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 32.9
+        }
+      },
+      {
+        "nome": "Molho de tomate",
+        "qtd": 680,
+        "unidade": "g",
+        "caseira": "2 sachês",
+        "emb": {
+          "qtd": 340,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 15,
+        "unidade": "ml",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 6,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite (molho branco)",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga (molho branco)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Farinha de trigo (molho branco)",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Presunto fatiado",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "200 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 34.9
+        }
+      },
+      {
+        "nome": "Muçarela fatiada",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "400 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 44.9
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      }
+    ],
+    "preparo": [
+      "Bolonhesa: refogue a cebola e o alho no óleo, junte a carne e o sal e cozinhe até secar. Junte o molho de tomate e cozinhe por 10 minutos.",
+      "Molho branco: derreta a manteiga, junte a farinha, mexa 1 minuto e acrescente o leite aos poucos, mexendo até engrossar.",
+      "Monte nas marmitas: bolonhesa, massa, molho branco, presunto e muçarela. Repita e termine com bolonhesa e parmesão.",
+      "Asse coberta com papel alumínio a 200 °C por 30 minutos, ou feche e congele crua."
+    ],
+    "dicas": [
+      "Massa \"direto ao forno\" precisa de bastante molho, porque ela absorve no cozimento.",
+      "Cole etiqueta com \"forno a 200 °C por 40 minutos, congelada\" para quem leva para casa.",
+      "Varie com lasanha de frango ou de presunto e queijo.",
+      "Validade: 3 dias na geladeira ou 60 dias congelada."
+    ],
+    "dicaVenda": "Lasanha congelada vende muito para o almoço de domingo. Ofereça tamanho individual e família.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "pastel-de-nata",
+    "nome": "Pastel de Nata",
+    "categoria": "Doces",
+    "foto": "/img/receitas/pastel-de-nata.webp?v=118aa458",
+    "rendimento": {
+      "unidades": 18,
+      "pesoUnidadeG": 60,
+      "faixa": [
+        16,
+        20
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Caixinha com visor para 2 ou 6 (R$ 0,80 a R$ 1,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Massa folhada pronta",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 14.9
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 500,
+        "unidade": "ml",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Amido de milho",
+        "qtd": 30,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Ovos (só as gemas)",
+        "qtd": 6,
+        "unidade": "un",
+        "caseira": "6 gemas",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Essência de baunilha",
+        "qtd": 5,
+        "unidade": "ml",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "ml",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Canela em pó (para servir)",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      }
+    ],
+    "preparo": [
+      "Enrole a massa folhada como um rocambole e corte rodelas de 2 cm.",
+      "Coloque cada rodela numa forminha de empada untada e aperte com o polegar molhado, subindo pelas laterais.",
+      "Creme: cozinhe o leite, o açúcar e o amido, mexendo, até engrossar. Desligue, espere 2 minutos e junte as gemas peneiradas e a baunilha.",
+      "Encha as forminhas até ¾.",
+      "Asse no forno bem quente (250 °C ou o máximo) por 12 a 15 minutos, até aparecerem manchinhas escuras.",
+      "Sirva com canela polvilhada."
+    ],
+    "dicas": [
+      "O forno no máximo é o segredo: as manchinhas queimadinhas são o charme do pastel de nata.",
+      "Peneire as gemas para o creme ficar liso.",
+      "As claras que sobram dão suspiro ou merengue para outra receita.",
+      "Validade: 2 dias em lugar fresco (melhor no mesmo dia)."
+    ],
+    "dicaVenda": "Pastel de nata é clássico de Portugal e quase ninguém faz no bairro. Venda quentinho com café.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "caldo-verde",
+    "nome": "Caldo Verde",
+    "categoria": "Caldos",
+    "foto": "/img/receitas/caldo-verde.webp?v=b25de91c",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 300,
+      "faixa": [
+        9,
+        11
+      ]
+    },
+    "gas": {
+      "minutos": 40,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Pote térmico de 300 ml com tampa (R$ 0,40 a R$ 0,80 cada)",
+    "ingredientes": [
+      {
+        "nome": "Batata",
+        "qtd": 1000,
+        "unidade": "g",
+        "caseira": "6 batatas médias",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Couve",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 maço",
+        "emb": {
+          "qtd": 1,
+          "unidade": "un",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Linguiça calabresa",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "1 gomo grande",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 14.9
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 cebola média",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "2 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 30,
+        "unidade": "ml",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Caldo de galinha",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 tablete",
+        "emb": {
+          "qtd": 6,
+          "unidade": "un",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 8,
+        "unidade": "g",
+        "caseira": "1½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      }
+    ],
+    "preparo": [
+      "Refogue a cebola e o alho no óleo. Junte a batata em cubos, 2 litros de água e o caldo de galinha.",
+      "Cozinhe por 25 minutos, até a batata desmanchar.",
+      "Bata no liquidificador em partes (cuidado, está quente) e volte para a panela.",
+      "Frite a calabresa em rodelas e junte ao caldo.",
+      "Acrescente a couve cortada bem fininha, cozinhe 3 minutos e acerte o sal."
+    ],
+    "dicas": [
+      "Couve fininha e só no final: fica verdinha e crocante.",
+      "Fritar a calabresa antes dá muito mais sabor.",
+      "Para congelar, congele sem a couve e junte na hora de esquentar.",
+      "Validade: 3 dias na geladeira ou 60 dias congelado (sem a couve)."
+    ],
+    "dicaVenda": "Caldo vende muito em noites frias, em bar e na porta de casa. Ofereça com pão ou torradinha.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "donuts",
+    "nome": "Donuts",
+    "categoria": "Doces",
+    "foto": "/img/receitas/donuts.webp?v=aebbd6d8",
+    "rendimento": {
+      "unidades": 16,
+      "pesoUnidadeG": 60,
+      "faixa": [
+        14,
+        18
+      ]
+    },
+    "gas": {
+      "minutos": 30,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa com visor para 4 ou 6 (R$ 1,00 a R$ 2,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Leite (morno)",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Chocolate meio amargo (cobertura)",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "300 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 49.9
+        }
+      },
+      {
+        "nome": "Granulado (decorar)",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 150,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+      "Junte a farinha, os ovos, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+      "Abra com 1 cm de altura, corte com um copo grande e faça o furo com uma tampinha. Deixe descansar mais 30 minutos.",
+      "Frite em óleo morno (cerca de 170 °C), 1 a 2 minutos de cada lado. Escorra.",
+      "Banhe a parte de cima no chocolate derretido e decore com granulado."
+    ],
+    "dicas": [
+      "Óleo morno, não quente: assim o donut cozinha por dentro sem queimar por fora.",
+      "Um anel clarinho no meio do donut é sinal de massa bem crescida.",
+      "Frite também as bolinhas do furo e venda em saquinho.",
+      "Validade: 2 dias em pote fechado."
+    ],
+    "dicaVenda": "Donuts coloridos fazem sucesso em festa infantil e na vitrine. Monte caixas com 4 ou 6 sabores.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "pao-de-alho",
+    "nome": "Pão de Alho Caseiro",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/pao-de-alho.webp?v=57ff86ff",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 40,
+      "faixa": [
+        18,
+        22
+      ]
+    },
+    "gas": {
+      "minutos": 0,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho para congelados com 5 ou 10 unidades (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Pão francês pequeno (bolinha)",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "20 pãezinhos",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 16.9
+        }
+      },
+      {
+        "nome": "Maionese",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "10 colheres de sopa",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 9.99
+        }
+      },
+      {
+        "nome": "Requeijão cremoso",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "¾ copo",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Alho",
+        "qtd": 40,
+        "unidade": "g",
+        "caseira": "8 dentes",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 29.9
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 2,
+        "unidade": "g",
+        "caseira": "1 pitada",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      }
+    ],
+    "preparo": [
+      "Misture a maionese, o requeijão, a manteiga amolecida, o alho amassado, o parmesão, o cheiro-verde e o sal.",
+      "Faça 3 cortes em cada pão, sem separar a base.",
+      "Recheie os cortes com a pasta.",
+      "Congele em assadeira e depois embale em saquinhos.",
+      "Para comer: churrasqueira ou forno a 200 °C por 15 minutos, até dourar."
+    ],
+    "dicas": [
+      "Pão amanhecido absorve melhor a pasta.",
+      "Amasse o alho na hora: o sabor fica muito mais forte.",
+      "Venda sempre congelado, em pacotes para o churrasco do fim de semana.",
+      "Validade: 90 dias congelado."
+    ],
+    "dicaVenda": "Pão de alho sai muito na sexta e no sábado. Ofereça em açougues e mercadinhos do bairro.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "arroz-doce",
+    "nome": "Arroz-Doce",
+    "categoria": "Sobremesas",
+    "foto": "/img/receitas/arroz-doce.webp?v=ee78dfb7",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 200,
+      "faixa": [
+        9,
+        12
+      ]
+    },
+    "gas": {
+      "minutos": 50,
+      "chama": "baixa"
+    },
+    "embalagemSugerida": "Pote de 250 ml com tampa (R$ 0,30 a R$ 0,70 cada)",
+    "ingredientes": [
+      {
+        "nome": "Arroz",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "1 xícara e ¼",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 1000,
+        "unidade": "ml",
+        "caseira": "1 litro",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Leite condensado",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Canela em pó (para polvilhar)",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 30,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o arroz em 750 ml de água até a água secar (cerca de 15 minutos).",
+      "Junte o leite e o açúcar e cozinhe em fogo baixo, mexendo sempre, por 25 minutos.",
+      "Acrescente o leite condensado e cozinhe mais 5 minutos, até ficar cremoso.",
+      "Distribua nos potes e polvilhe canela."
+    ],
+    "dicas": [
+      "Desligue ainda bem mole: o arroz-doce engrossa ao esfriar.",
+      "Mexa sempre, porque o leite gruda no fundo.",
+      "Um pau de canela e casca de limão no cozimento deixam o sabor mais caseiro.",
+      "Validade: 4 dias na geladeira."
+    ],
+    "dicaVenda": "Arroz-doce vende muito em festa junina e como sobremesa de marmita. Ofereça quente ou gelado.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "bolinho-arroz",
+    "nome": "Bolinho de Arroz",
+    "categoria": "Salgados",
+    "foto": "/img/receitas/bolinho-arroz.webp?v=7a1ec9ad",
+    "rendimento": {
+      "unidades": 30,
+      "pesoUnidadeG": 30,
+      "faixa": [
+        26,
+        34
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Caixa para cento de salgados ou bandeja de alumínio com tampa (R$ 1,50 a R$ 3,00 cada)",
+    "ingredientes": [
+      {
+        "nome": "Arroz",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 xícara (vira 3 xícaras cozido)",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 6.49
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 120,
+        "unidade": "g",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Queijo parmesão ralado",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 9.9
+        }
+      },
+      {
+        "nome": "Cebola",
+        "qtd": 60,
+        "unidade": "g",
+        "caseira": "½ cebola",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Cheiro-verde picado",
+        "qtd": 20,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 2.99
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 5,
+        "unidade": "g",
+        "caseira": "1 colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Óleo (para fritar: o que a fritura gasta)",
+        "qtd": 250,
+        "unidade": "ml",
+        "caseira": "cerca de 1 xícara (use 1 litro na panela)",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      }
+    ],
+    "preparo": [
+      "Cozinhe o arroz e deixe esfriar (arroz do dia anterior é melhor).",
+      "Misture o arroz, os ovos, o leite, o parmesão, a cebola ralada, o cheiro-verde e o sal.",
+      "Junte a farinha e o fermento até virar uma massa mole que segura na colher.",
+      "Com duas colheres, pingue porções no óleo quente e frite até dourar. Escorra em papel-toalha."
+    ],
+    "dicas": [
+      "Arroz frio, de preferência da véspera, dá mais liga.",
+      "Molhe a colher no óleo entre um bolinho e outro: a massa solta fácil.",
+      "Faça também com recheio de queijo no meio.",
+      "Validade: venda no mesmo dia; a massa crua dura 1 dia na geladeira."
+    ],
+    "dicaVenda": "Bolinho de arroz tem custo muito baixo e vende em bar e porção. Ótimo para aproveitar sobra de arroz.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "bolo-gelado-coco",
+    "nome": "Bolo Gelado de Coco",
+    "categoria": "Bolos",
+    "foto": "/img/receitas/bolo-gelado-coco.webp?v=a6451835",
+    "rendimento": {
+      "unidades": 20,
+      "pesoUnidadeG": 90,
+      "faixa": [
+        18,
+        22
+      ]
+    },
+    "gas": {
+      "minutos": 40,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Papel alumínio + saquinho ou pote quadrado (R$ 0,15 a R$ 0,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Ovos",
+        "qtd": 4,
+        "unidade": "un",
+        "caseira": "4 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "1½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Leite (massa)",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Leite de coco (calda)",
+        "qtd": 200,
+        "unidade": "ml",
+        "caseira": "1 vidro",
+        "emb": {
+          "qtd": 200,
+          "unidade": "ml",
+          "preco": 4.49
+        }
+      },
+      {
+        "nome": "Leite condensado (calda)",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Leite (calda)",
+        "qtd": 400,
+        "unidade": "ml",
+        "caseira": "1½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Coco ralado (cobertura)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Bata os ovos, o açúcar, o leite e o óleo. Junte a farinha e, por último, o fermento.",
+      "Asse em forma retangular untada a 180 °C por 35 a 40 minutos.",
+      "Ainda quente, fure o bolo todo com um garfo.",
+      "Aqueça o leite de coco, o leite condensado e o leite por 3 minutos e regue o bolo.",
+      "Leve à geladeira por 4 horas, corte em quadrados, passe no coco ralado e embrulhe no papel alumínio."
+    ],
+    "dicas": [
+      "Calda morna no bolo quente: ele absorve tudo e fica molhadinho.",
+      "Embrulhe no alumínio já gelado, para não suar.",
+      "Bem gelado vende muito mais: use caixa de isopor.",
+      "Validade: 4 dias na geladeira."
+    ],
+    "dicaVenda": "Bolo gelado (o \"toalha felpuda\") vende em escola, ponto de ônibus e festa. Custo baixo e preço bom por unidade.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "quindim",
+    "nome": "Quindim",
+    "categoria": "Doces",
+    "foto": "/img/receitas/quindim.webp?v=7debc8ef",
+    "rendimento": {
+      "unidades": 18,
+      "pesoUnidadeG": 30,
+      "faixa": [
+        16,
+        20
+      ]
+    },
+    "gas": {
+      "minutos": 40,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Forminha de papel + caixinha (R$ 0,05 a R$ 0,20 cada)",
+    "ingredientes": [
+      {
+        "nome": "Ovos (só as gemas)",
+        "qtd": 12,
+        "unidade": "un",
+        "caseira": "12 gemas",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 250,
+        "unidade": "g",
+        "caseira": "1¼ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Coco ralado",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      }
+    ],
+    "preparo": [
+      "Passe as gemas por uma peneira.",
+      "Misture as gemas, o açúcar, a manteiga derretida e o coco, sem bater. Deixe descansar 30 minutos.",
+      "Unte forminhas com manteiga e açúcar e encha com a mistura.",
+      "Asse em banho-maria, em forno a 180 °C, por 35 a 40 minutos.",
+      "Espere esfriar bem e desenforme."
+    ],
+    "dicas": [
+      "Peneirar as gemas tira a película e o cheiro de ovo.",
+      "Não bata a mistura: bolhas estragam o brilho do quindim.",
+      "O coco sobe e forma a base: é assim mesmo.",
+      "As claras que sobram viram suspiro. Validade do quindim: 3 dias na geladeira."
+    ],
+    "dicaVenda": "Quindim brilhante é doce de vitrine. Venda em caixinhas com 4 e no cento para festas.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "pipoca-gourmet-chocolate",
+    "nome": "Pipoca Gourmet de Chocolate",
+    "categoria": "Doces",
+    "foto": "/img/receitas/pipoca-gourmet-chocolate.webp?v=58ef698d",
+    "rendimento": {
+      "unidades": 10,
+      "pesoUnidadeG": 45,
+      "faixa": [
+        9,
+        12
+      ]
+    },
+    "gas": {
+      "minutos": 15,
+      "chama": "media"
+    },
+    "embalagemSugerida": "Saquinho de celofane 10x20 cm com laço (R$ 0,10 a R$ 0,30 cada)",
+    "ingredientes": [
+      {
+        "nome": "Milho de pipoca",
+        "qtd": 150,
+        "unidade": "g",
+        "caseira": "¾ xícara",
+        "emb": {
+          "qtd": 500,
+          "unidade": "g",
+          "preco": 5.99
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 30,
+        "unidade": "ml",
+        "caseira": "2 colheres de sopa",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Chocolate meio amargo",
+        "qtd": 300,
+        "unidade": "g",
+        "caseira": "300 g",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 49.9
+        }
+      }
+    ],
+    "preparo": [
+      "Estoure a pipoca com o óleo numa panela grande, sem sal.",
+      "Tire os milhos que não estouraram.",
+      "Derreta o chocolate em banho-maria ou no micro-ondas, de 30 em 30 segundos.",
+      "Misture a pipoca com o chocolate rapidamente e espalhe numa assadeira com papel manteiga.",
+      "Leve 10 minutos à geladeira para firmar, solte os pedaços e embale."
+    ],
+    "dicas": [
+      "Pipoca sem sal e bem sequinha: assim o chocolate gruda.",
+      "Tire todos os milhos duros: ninguém quer quebrar o dente.",
+      "Faça também de leite em pó ou de caramelo.",
+      "Validade: 10 dias em saquinho bem fechado."
+    ],
+    "dicaVenda": "Pipoca gourmet tem custo baixo e vende em escola, festa e cinema da comunidade. Saquinho com laço vira lembrancinha.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "rosca-doce-coco",
+    "nome": "Rosca Doce de Coco",
+    "categoria": "Pães",
+    "foto": "/img/receitas/rosca-doce-coco.webp?v=2fd49e02",
+    "rendimento": {
+      "unidades": 2,
+      "pesoUnidadeG": 600,
+      "faixa": [
+        2,
+        3
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Bandeja de papelão + saco plástico (R$ 0,80 a R$ 1,50 cada)",
+    "ingredientes": [
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 500,
+        "unidade": "g",
+        "caseira": "4 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento biológico seco",
+        "qtd": 10,
+        "unidade": "g",
+        "caseira": "1 sachê",
+        "emb": {
+          "qtd": 10,
+          "unidade": "g",
+          "preco": 2.49
+        }
+      },
+      {
+        "nome": "Leite (morno)",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Manteiga",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "3 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 2,
+        "unidade": "un",
+        "caseira": "2 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Sal",
+        "qtd": 3,
+        "unidade": "g",
+        "caseira": "½ colher de chá",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Leite condensado (recheio)",
+        "qtd": 395,
+        "unidade": "g",
+        "caseira": "1 lata",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Coco ralado (recheio)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "1 pacote",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Ovo (gema para pincelar)",
+        "qtd": 1,
+        "unidade": "un",
+        "caseira": "1 gema",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      }
+    ],
+    "preparo": [
+      "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+      "Junte a farinha, os ovos, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+      "Recheio: cozinhe o leite condensado com o coco em fogo baixo por 5 minutos e deixe esfriar.",
+      "Divida a massa em 2, abra cada parte num retângulo, espalhe o recheio, enrole e feche em forma de rosca.",
+      "Deixe crescer mais 30 minutos, pincele com a gema e asse a 180 °C por 30 minutos."
+    ],
+    "dicas": [
+      "Corte a rosca por cima com tesoura antes de assar: o recheio aparece e fica mais bonita.",
+      "Recheio frio, senão derrete a massa.",
+      "Regue com um pouco de leite condensado e coco depois de assar para brilhar.",
+      "Validade: 3 dias em saco fechado."
+    ],
+    "dicaVenda": "Rosca doce vende inteira no café da tarde de domingo e em fatias. Faça também de goiabada.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "bolo-laranja",
+    "nome": "Bolo de Laranja",
+    "categoria": "Bolos",
+    "foto": "/img/receitas/bolo-laranja.webp?v=1c983c1d",
+    "rendimento": {
+      "unidades": 12,
+      "pesoUnidadeG": 90,
+      "faixa": [
+        10,
+        14
+      ]
+    },
+    "gas": {
+      "minutos": 45,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Embalagem para fatia ou saquinho (R$ 0,20 a R$ 0,60 cada)",
+    "ingredientes": [
+      {
+        "nome": "Laranja (massa, inteira com casca)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 laranjas",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Ovos",
+        "qtd": 4,
+        "unidade": "un",
+        "caseira": "4 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 200,
+        "unidade": "ml",
+        "caseira": "¾ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Açúcar (massa)",
+        "qtd": 360,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 360,
+        "unidade": "g",
+        "caseira": "3 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Laranja (calda, só o suco)",
+        "qtd": 400,
+        "unidade": "g",
+        "caseira": "2 laranjas",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 4.99
+        }
+      },
+      {
+        "nome": "Açúcar (calda)",
+        "qtd": 100,
+        "unidade": "g",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      }
+    ],
+    "preparo": [
+      "Corte as 2 laranjas da massa em pedaços, tire as sementes e a parte branca grossa do meio.",
+      "Bata no liquidificador com os ovos, o óleo e o açúcar.",
+      "Misture com a farinha e, por último, o fermento.",
+      "Asse em forma untada a 180 °C por 40 a 45 minutos.",
+      "Calda: ferva o suco das outras 2 laranjas com o açúcar por 3 minutos e regue o bolo ainda morno."
+    ],
+    "dicas": [
+      "Laranja-pera de casca fina deixa o bolo menos amargo.",
+      "Calda quente em bolo morno: ele absorve e fica úmido.",
+      "Venda em fatias no café da tarde.",
+      "Validade: 4 dias em pote fechado."
+    ],
+    "dicaVenda": "Bolo caseiro em fatia vende todo dia em padaria, escola e trabalho. Bolo inteiro sai bem por encomenda.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
+  },
+  {
+    "id": "mini-bolo-vulcao",
+    "nome": "Mini Bolo Vulcão de Chocolate",
+    "categoria": "Bolos",
+    "foto": "/img/receitas/mini-bolo-vulcao.webp?v=9c179788",
+    "rendimento": {
+      "unidades": 8,
+      "pesoUnidadeG": 180,
+      "faixa": [
+        7,
+        9
+      ]
+    },
+    "gas": {
+      "minutos": 35,
+      "chama": "forno"
+    },
+    "embalagemSugerida": "Forminha de alumínio com tampa (R$ 0,60 a R$ 1,20 cada)",
+    "ingredientes": [
+      {
+        "nome": "Ovos",
+        "qtd": 3,
+        "unidade": "un",
+        "caseira": "3 ovos",
+        "emb": {
+          "qtd": 12,
+          "unidade": "un",
+          "preco": 12
+        }
+      },
+      {
+        "nome": "Açúcar",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "1½ xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Óleo",
+        "qtd": 120,
+        "unidade": "ml",
+        "caseira": "½ xícara",
+        "emb": {
+          "qtd": 900,
+          "unidade": "ml",
+          "preco": 7.99
+        }
+      },
+      {
+        "nome": "Leite",
+        "qtd": 240,
+        "unidade": "ml",
+        "caseira": "1 xícara",
+        "emb": {
+          "qtd": 1,
+          "unidade": "L",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50% (massa)",
+        "qtd": 80,
+        "unidade": "g",
+        "caseira": "¾ xícara",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 11.9
+        }
+      },
+      {
+        "nome": "Farinha de trigo",
+        "qtd": 240,
+        "unidade": "g",
+        "caseira": "2 xícaras",
+        "emb": {
+          "qtd": 1,
+          "unidade": "kg",
+          "preco": 5.49
+        }
+      },
+      {
+        "nome": "Fermento em pó",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 100,
+          "unidade": "g",
+          "preco": 3.99
+        }
+      },
+      {
+        "nome": "Leite condensado (cobertura)",
+        "qtd": 790,
+        "unidade": "g",
+        "caseira": "2 latas",
+        "emb": {
+          "qtd": 395,
+          "unidade": "g",
+          "preco": 6.99
+        }
+      },
+      {
+        "nome": "Creme de leite (cobertura)",
+        "qtd": 200,
+        "unidade": "g",
+        "caseira": "1 caixinha",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 3.49
+        }
+      },
+      {
+        "nome": "Chocolate em pó 50% (cobertura)",
+        "qtd": 40,
+        "unidade": "g",
+        "caseira": "4 colheres de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 11.9
+        }
+      },
+      {
+        "nome": "Manteiga (cobertura)",
+        "qtd": 15,
+        "unidade": "g",
+        "caseira": "1 colher de sopa",
+        "emb": {
+          "qtd": 200,
+          "unidade": "g",
+          "preco": 12.9
+        }
+      },
+      {
+        "nome": "Granulado (decorar)",
+        "qtd": 50,
+        "unidade": "g",
+        "caseira": "⅓ pacote",
+        "emb": {
+          "qtd": 150,
+          "unidade": "g",
+          "preco": 4.99
+        }
+      }
+    ],
+    "preparo": [
+      "Bata os ovos, o açúcar, o óleo, o leite e o chocolate. Junte a farinha e, por último, o fermento.",
+      "Distribua em 8 forminhas de pudim pequenas (com furo no meio) untadas e asse a 180 °C por 25 minutos.",
+      "Cobertura: cozinhe o leite condensado, o chocolate e a manteiga por 8 minutos, desligue e misture o creme de leite (fica bem mole).",
+      "Desenforme os bolinhos nas forminhas de alumínio e encha o furo com a cobertura até transbordar.",
+      "Decore com granulado."
+    ],
+    "dicas": [
+      "A cobertura tem que ficar mole para escorrer como lava: por isso o creme de leite entra no final.",
+      "Mande com tampa e fotografe aberto: o \"efeito vulcão\" vende sozinho.",
+      "Faça também de ninho com morango.",
+      "Validade: 3 dias na geladeira."
+    ],
+    "dicaVenda": "Mini bolo vulcão é campeão de vídeo e foto nas redes. Venda por encomenda e para presente.",
+    "liberarEm": "aguardando-foto",
+    "fotoProvisoria": true
   }
 ]

@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.1';
+const VERSAO_APP = '6.2';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -246,6 +246,12 @@ abas.addEventListener('click', (ev) => {
 });
 
 // ---------- livro de receitas ----------
+// Só o dono vê as receitas agendadas (escondidas para os clientes até a hora de liberar).
+function textoAgendada(r) {
+  const d = new Date(r.agendada);
+  return Number.isNaN(d.getTime()) ? '📷 Escondida: aguardando foto'
+    : `⏳ Escondida: libera ${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+}
 function textoRendimento(r) {
   if (r.bloqueada) return '🔒 na versão completa';
   const o = r.rendimentoObservado || { tipo: 'inicial', min: r.rendimento.faixa[0], max: r.rendimento.faixa[1] };
@@ -371,7 +377,7 @@ function htmlSumario() {
     <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
       <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r).replace('/receitas/', '/receitas/mini/'))}" alt="" loading="lazy" width="64" height="64">
-        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b><small>Rende ${textoRendimento(r)}</small></span>
+        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b><small>${r.agendada ? textoAgendada(r) : `Rende ${textoRendimento(r)}`}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
     </ol>
     <h2>Minhas receitas</h2>

@@ -40,6 +40,8 @@ simple = { limit = 10, period = 60 }
 
 [vars]
 APP_ID = "calculadora-receitas"
+# Conta do dono: vê também as receitas agendadas (ainda escondidas para os clientes).
+DONO_EMAIL = "emanuelantunes2021@gmail.com"
 # Aviso do Mercado Pago sempre neste endereço (compras feitas pela loja www também).
 URL_AVISO = "https://quantocobrar.leunamesoftware.com.br"
 
