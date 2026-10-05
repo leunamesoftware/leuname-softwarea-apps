@@ -31,3 +31,5 @@
 7. Prompts de imagem: um único bloco para copiar de uma vez, neste formato: primeiro a frase "Gere N imagens separadas,
    uma por vez, na ordem abaixo. Todas no mesmo estilo: ..." e depois uma linha por foto: "IMAGEM 1 – NOME: descrição. Ao fundo, ...".
    Não repetir receita que já existe no app.
+8. A cada 10 receitas no canal vai uma "💡 DICA" de propaganda (lista em `calculadora/canal/dicas.md`).
+   Quando fechar um lote de 10, entregar também a dica seguinte, pronta para copiar.
