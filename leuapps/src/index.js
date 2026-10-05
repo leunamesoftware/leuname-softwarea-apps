@@ -20,10 +20,27 @@ async function eDono(req, env) {
     return d?.conta?.email === env.DONO_EMAIL;
   } catch { return false; }
 }
-const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Área restrita</title></head>
-<body style="font:16px system-ui,sans-serif;background:#F7F5F2;color:#1C1917;display:grid;place-items:center;min-height:100vh;margin:0;padding:16px;text-align:center">
-<div><h1 style="font-size:20px">Área restrita</h1><p>Entre no app com a conta do dono e volte aqui.</p>
-<p><a href="https://www.leunamesoftware.com.br/quantocobrar/app/" style="color:#C2410C;font-weight:700">Entrar com a minha conta</a></p></div></body></html>`;
+const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#1C1917"><link rel="manifest" href="/dono/manifest.webmanifest"><title>Área do Dono · entrar</title>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#F7F5F2;color:#1C1917}
+form{width:100%;max-width:360px;background:#fff;border:1px solid #E7E2DC;border-radius:18px;padding:22px;display:grid;gap:12px}
+h1{margin:0;font-size:21px}p{margin:0;color:#6B6259;font-size:14px}label{font-size:14px;font-weight:700;display:grid;gap:4px}
+input{font:inherit;min-height:46px;border:1px solid #D6D0C8;border-radius:10px;padding:0 12px}input:focus{outline:3px solid #E8590C;outline-offset:1px}
+button{font:inherit;font-weight:800;min-height:48px;border:0;border-radius:12px;background:#1C1917;color:#fff;cursor:pointer}#erro{color:#B91C1C;font-weight:700}</style></head>
+<body><form id="f"><h1>Área do Dono</h1><p>Entre com o e-mail e a senha da sua conta de dono.</p>
+<label>E-mail<input id="email" type="email" autocomplete="username" required></label>
+<label>Senha<input id="senha" type="password" autocomplete="current-password" required></label>
+<p id="erro" hidden></p><button type="submit">Entrar</button></form>
+<script>document.getElementById('f').addEventListener('submit', async (e) => {
+  e.preventDefault(); const erro = document.getElementById('erro'); erro.hidden = true;
+  try {
+    const r = await fetch('/loja-api/conta/entrar', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: document.getElementById('email').value.trim(), senha: document.getElementById('senha').value }) });
+    if (r.ok) return location.reload();
+    erro.textContent = r.status === 429 ? 'Muitas tentativas. Espere um minuto e tente de novo.' : 'E-mail ou senha não conferem.';
+  } catch { erro.textContent = 'Sem internet. Tente de novo.'; }
+  erro.hidden = false;
+});<\/script></body></html>`;
 
 export default {
   async fetch(req, env) {
