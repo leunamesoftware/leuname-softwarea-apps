@@ -50,3 +50,5 @@
     com licença, como Gestacell e Radar). App novo na loja: o dono também tem que entrar liberado.
 13. Padrão para os outros apps (o dono aprovou no Quanto Cobrar): página de canal do WhatsApp com postagens prontas
     (enviar, riscar com data, reenviar depois de 30 dias) e barra de pesquisa no conteúdo. Repetir nos próximos apps.
+14. Canal do WhatsApp "Quanto Devo Cobrar?": https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y
+    — é o link da bio do TikTok (as fotos e vídeos dizem "link na bio"). Atalho na Área do Dono.
