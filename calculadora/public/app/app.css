@@ -292,3 +292,10 @@ ul.dicas { padding-left: 20px; margin: 0; } ul.dicas li { margin-bottom: 8px; fo
 .busca-receita:focus { outline: 3px solid var(--laranja-claro); outline-offset: 1px; }
 .barra-dir { display: flex; gap: 14px; justify-self: end; }
 .sumario li[hidden], #busca-vazia[hidden] { display: none; }
+
+.busca-painel { position: fixed; inset: 0; z-index: 30; background: rgba(43,26,16,.45); padding: calc(64px + env(safe-area-inset-top, 0px)) 12px 12px; }
+.busca-caixa { max-width: 640px; margin: 0 auto; background: var(--fundo); border-radius: 18px; padding: 12px; max-height: 100%; display: flex; flex-direction: column; box-shadow: 0 14px 30px rgba(0,0,0,.25); }
+.busca-topo { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.busca-topo input { flex: 1; min-height: 48px; border: 2px solid var(--laranja); border-radius: 999px; padding: 0 18px; font: inherit; font-size: 16px; background: #fff; }
+.busca-topo .link { font-size: 22px; padding: 4px 8px; }
+.busca-lista { overflow-y: auto; }

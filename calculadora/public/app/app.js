@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.3';
+const VERSAO_APP = '6.4';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -349,10 +349,7 @@ function mostrarPagina(efeito) {
   tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
   tela.querySelectorAll('[data-tenho-chave]').forEach((b) => b.addEventListener('click', () => telaAtivacao()));
   if (f.tipo === 'receita' && f.parte === 3) ligarMiniCalculadora(r);
-  document.getElementById('ir-busca')?.addEventListener('click', () => {
-    if (p !== 0) irPara(0, 'tras');
-    setTimeout(() => document.getElementById('busca-receita')?.focus(), 350);
-  });
+  document.getElementById('ir-busca')?.addEventListener('click', abrirBusca);
   // Pesquisa no sumário: filtra pelo nome, categoria e ingredientes (sem acento, sem maiúscula).
   document.getElementById('busca-receita')?.addEventListener('input', (e) => {
     const termos = normalizar(e.target.value).split(' ').filter(Boolean);
@@ -363,6 +360,43 @@ function mostrarPagina(efeito) {
     });
     document.getElementById('busca-vazia').hidden = achou > 0;
   });
+}
+
+// Pesquisa por cima da página: o cliente acha outra receita sem sair de onde está.
+const textoBusca = (r) => normalizar([r.nome, r.categoria, ...(r.ingredientes || []).map((x) => x.nome)].join(' '));
+function abrirBusca() {
+  document.getElementById('busca-painel')?.remove();
+  const painel = document.createElement('div');
+  painel.id = 'busca-painel';
+  painel.className = 'busca-painel';
+  painel.innerHTML = `
+    <div class="busca-caixa" role="dialog" aria-label="Pesquisar receita">
+      <div class="busca-topo">
+        <input type="search" id="busca-rapida" placeholder="🔍 Pesquise a receita (ex.: frango, bolo)" aria-label="Pesquisar receita" autocomplete="off">
+        <button class="link" id="busca-fechar" aria-label="Fechar pesquisa">✕</button>
+      </div>
+      <ol class="sumario busca-lista" id="busca-lista"></ol>
+    </div>`;
+  document.body.appendChild(painel);
+  const lista = painel.querySelector('#busca-lista');
+  const mostrar = (q) => {
+    const termos = normalizar(q).split(' ').filter(Boolean);
+    const achadas = estado.receitas.map((r, i) => ({ r, i })).filter(({ r }) => termos.every((t) => textoBusca(r).includes(t)));
+    lista.innerHTML = achadas.length ? achadas.map(({ r, i }) => `
+      <li><button data-ir-receita="${i}"><img src="${esc(fotoDe(r).replace('/receitas/', '/receitas/mini/'))}" alt="" loading="lazy" width="64" height="64">
+        <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b></span><i>›</i></button></li>`).join('')
+      : '<p class="vazio">Nenhuma receita com esse nome. Tente outra palavra.</p>';
+  };
+  const fechar = () => painel.remove();
+  painel.querySelector('#busca-rapida').addEventListener('input', (e) => mostrar(e.target.value));
+  painel.querySelector('#busca-fechar').addEventListener('click', fechar);
+  painel.addEventListener('click', (e) => {
+    if (e.target === painel) return fechar();
+    const b = e.target.closest('[data-ir-receita]');
+    if (b) { fechar(); irPara(inicioDaReceita(+b.dataset.irReceita), 'frente'); }
+  });
+  mostrar('');
+  painel.querySelector('#busca-rapida').focus();
 }
 
 // Efeito de livro: a folha gira pela lombada (esquerda) revelando a outra página.

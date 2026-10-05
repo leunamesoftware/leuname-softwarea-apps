@@ -1,5 +1,5 @@
 // Guarda as telas do app para funcionar sem internet. A API nunca é guardada aqui.
-const VERSAO = 'calc-v51';
+const VERSAO = 'calc-v52';
 // BASE: '' em quantocobrar.leunamesoftware.com.br, '/quantocobrar' dentro da loja (www).
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const ARQUIVOS = ['/app/', '/app/app.js', '/app/app.css', '/app/calculo.js', '/img/logo.webp', '/img/icone-192-v2.png', '/manifest.webmanifest'].map((a) => BASE + a);
