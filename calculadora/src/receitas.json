@@ -92,7 +92,20 @@
       "Quando começar a desgrudar do fundo da panela, acrescente o leite condensado e mexa por cerca de 3 minutos, até ficar cremoso e brilhante.",
       "Coloque porções sobre papel-manteiga untado e deixe esfriar completamente até firmar."
     ],
-    "dicaVenda": "Porções de 30 a 40 g vendem bem em saquinho individual. Ofereça kit com 3 unidades com um pequeno desconto para aumentar o valor de cada venda."
+    "dicaVenda": "Porções de 30 a 40 g vendem bem em saquinho individual. Ofereça kit com 3 unidades com um pequeno desconto para aumentar o valor de cada venda.",
+    "canal": {
+      "emoji": "🥥",
+      "ingredientes": [
+        "Açúcar, água, vinagre de álcool, cravo-da-índia, coco ralado fresco e leite condensado."
+      ],
+      "preparo": [
+        "Coloque o açúcar, a água e o vinagre em uma panela e misture só para incorporar. Leve ao fogo baixo, sem mexer, até formar um caramelo dourado.",
+        "Acrescente os cravos-da-índia e deixe cozinhar por alguns minutos.",
+        "Junte o coco ralado e misture bem para envolver no caramelo.",
+        "Quando começar a desgrudar do fundo da panela, acrescente o leite condensado e mexa por cerca de 3 minutos, até ficar cremoso e brilhante.",
+        "Coloque porções sobre papel-manteiga untado e deixe esfriar completamente até firmar."
+      ]
+    }
   },
   {
     "id": "mousse-maracuja",
@@ -153,7 +166,19 @@
       "Despeje em uma travessa ou em taças (ou copinhos, para vender).",
       "Leve à geladeira por pelo menos 2 horas, até firmar."
     ],
-    "dicaVenda": "Não vai ao fogo: custo baixo e pronto em minutos. Venda em copinhos de 100 ml com tampa; decorar com um pouco da polpa com sementes por cima valoriza o doce e permite cobrar mais."
+    "dicaVenda": "Não vai ao fogo: custo baixo e pronto em minutos. Venda em copinhos de 100 ml com tampa; decorar com um pouco da polpa com sementes por cima valoriza o doce e permite cobrar mais.",
+    "canal": {
+      "emoji": "💛",
+      "ingredientes": [
+        "Leite condensado, creme de leite e suco de maracujá concentrado."
+      ],
+      "preparo": [
+        "Coloque o leite condensado, o creme de leite e o suco de maracujá no liquidificador.",
+        "Bata por cerca de 1 minuto, até ficar bem cremoso.",
+        "Despeje em uma travessa ou em taças (ou copinhos, para vender).",
+        "Leve à geladeira por pelo menos 2 horas, até firmar."
+      ]
+    }
   },
   {
     "id": "beijinho-copinho",
@@ -237,7 +262,20 @@
       "Espere amornar e distribua nos copinhos.",
       "Depois de frio, finalize com coco ralado por cima."
     ],
-    "dicaVenda": "Copinho de 50 ml é doce de festa e de lanche: venda avulso ou em kit com 3 ou 6 unidades. Mantenha na geladeira e capriche no coco por cima, que é o que chama a atenção."
+    "dicaVenda": "Copinho de 50 ml é doce de festa e de lanche: venda avulso ou em kit com 3 ou 6 unidades. Mantenha na geladeira e capriche no coco por cima, que é o que chama a atenção.",
+    "canal": {
+      "emoji": "🥥",
+      "ingredientes": [
+        "Leite condensado, creme de leite, coco ralado, manteiga e coco ralado para decorar."
+      ],
+      "preparo": [
+        "Em uma panela, coloque o leite condensado, o creme de leite, o coco ralado e a manteiga. Misture bem.",
+        "Leve ao fogo baixo, mexendo sempre, até engrossar levemente, sem chegar ao ponto de enrolar.",
+        "O ponto certo: cremoso, brilhante e caindo devagar da espátula. Desligue o fogo.",
+        "Espere amornar e distribua nos copinhos.",
+        "Depois de frio, finalize com coco ralado por cima."
+      ]
+    }
   },
   {
     "id": "sorvete-coco",
@@ -321,7 +359,20 @@
       "Tire do congelador, coloque na batedeira, junte o emulsificante e bata até ficar cremoso, leve e aerado.",
       "Volte para o recipiente, tampe e leve ao congelador até ficar completamente firme."
     ],
-    "dicaVenda": "Sorvete não vai ao fogo e tem custo baixo. Venda em potes de 150 ml no calor, ou no quilo para festas; coco ralado por cima deixa com cara de sorveteria."
+    "dicaVenda": "Sorvete não vai ao fogo e tem custo baixo. Venda em potes de 150 ml no calor, ou no quilo para festas; coco ralado por cima deixa com cara de sorveteria.",
+    "canal": {
+      "emoji": "🍨",
+      "ingredientes": [
+        "Creme de leite, leite condensado, leite, coco ralado e emulsificante."
+      ],
+      "preparo": [
+        "Bata o leite, o leite condensado e o creme de leite no liquidificador até ficar bem homogêneo.",
+        "Acrescente o coco ralado e misture delicadamente.",
+        "Passe para um recipiente com tampa e leve ao congelador até começar a firmar.",
+        "Tire do congelador, coloque na batedeira, junte o emulsificante e bata até ficar cremoso, leve e aerado.",
+        "Volte para o recipiente, tampe e leve ao congelador até ficar completamente firme."
+      ]
+    }
   },
   {
     "id": "brownie-chocolate",
@@ -429,7 +480,22 @@
       "Asse em forno preaquecido a 180 °C até formar a casquinha e o centro continuar macio (cerca de 30 minutos).",
       "Deixe esfriar antes de cortar."
     ],
-    "dicaVenda": "Brownie é campeão de venda avulsa: corte em quadrados iguais e embale um a um. Com gotas de chocolate por dentro, dá para cobrar um pouco mais (lembre de somar o custo delas)."
+    "dicaVenda": "Brownie é campeão de venda avulsa: corte em quadrados iguais e embale um a um. Com gotas de chocolate por dentro, dá para cobrar um pouco mais (lembre de somar o custo delas).",
+    "canal": {
+      "emoji": "🍫",
+      "ingredientes": [
+        "Chocolate meio amargo, manteiga, ovos, açúcar, farinha de trigo, chocolate em pó 50% e sal."
+      ],
+      "preparo": [
+        "Derreta o chocolate com a manteiga até ficar liso.",
+        "Misture os ovos com o açúcar. Acrescente o chocolate derretido e misture.",
+        "Junte a farinha, o chocolate em pó e o sal. Misture só até incorporar (se quiser, 1 colher de chá de baunilha).",
+        "Se quiser, acrescente chocolate picado ou gotas.",
+        "Coloque em forma forrada com papel-manteiga.",
+        "Asse em forno preaquecido a 180 °C até formar a casquinha e o centro continuar macio (cerca de 30 minutos).",
+        "Deixe esfriar antes de cortar."
+      ]
+    }
   },
   {
     "id": "pudim-leite-condensado",
@@ -502,7 +568,21 @@
       "Cubra com papel-alumínio e asse em banho-maria, em forno preaquecido a 180 °C, até firmar (cerca de 1 hora).",
       "Deixe esfriar e leve à geladeira por algumas horas antes de desenformar."
     ],
-    "dicaVenda": "Venda inteiro por encomenda ou em fatias no pote. Mini pudins em forminhas individuais valorizam o produto e vendem bem em festas e marmitas de sobremesa."
+    "dicaVenda": "Venda inteiro por encomenda ou em fatias no pote. Mini pudins em forminhas individuais valorizam o produto e vendem bem em festas e marmitas de sobremesa.",
+    "canal": {
+      "emoji": "🍮",
+      "ingredientes": [
+        "Leite condensado, leite e ovos.",
+        "Calda: açúcar."
+      ],
+      "preparo": [
+        "Derreta o açúcar em uma panela até formar um caramelo dourado. Espalhe na forma.",
+        "Bata no liquidificador o leite condensado, o leite e os ovos por cerca de 1 minuto.",
+        "Despeje a mistura na forma caramelizada.",
+        "Cubra com papel-alumínio e asse em banho-maria, em forno preaquecido a 180 °C, até firmar (cerca de 1 hora).",
+        "Deixe esfriar e leve à geladeira por algumas horas antes de desenformar."
+      ]
+    }
   },
   {
     "id": "trufa-chocolate",
@@ -576,7 +656,22 @@
       "Derreta o chocolate da cobertura e banhe as trufas.",
       "Coloque sobre papel-manteiga e deixe o chocolate firmar."
     ],
-    "dicaVenda": "Trufa vende muito em datas especiais (Páscoa, Dia das Mães, Natal). Varie a cobertura (granulado, amendoim, fios de chocolate branco) e venda em caixinhas com 4, 6 ou 12 unidades."
+    "dicaVenda": "Trufa vende muito em datas especiais (Páscoa, Dia das Mães, Natal). Varie a cobertura (granulado, amendoim, fios de chocolate branco) e venda em caixinhas com 4, 6 ou 12 unidades.",
+    "canal": {
+      "emoji": "🍫",
+      "ingredientes": [
+        "Chocolate meio amargo, creme de leite e manteiga.",
+        "Cobertura: chocolate em pó ou chocolate derretido."
+      ],
+      "preparo": [
+        "Pique o chocolate e coloque em uma tigela.",
+        "Aqueça o creme de leite com a manteiga, sem deixar ferver. Despeje sobre o chocolate e misture até formar um creme liso.",
+        "Leve à geladeira até o recheio ficar firme o suficiente para modelar.",
+        "Faça pequenas porções e modele as trufas.",
+        "Derreta o chocolate da cobertura e banhe as trufas.",
+        "Coloque sobre papel-manteiga e deixe o chocolate firmar."
+      ]
+    }
   },
   {
     "id": "morango-creme-travessa",
@@ -660,7 +755,20 @@
       "Derreta o chocolate e misture com a outra caixa de creme de leite, formando uma ganache.",
       "Espalhe a ganache sobre o creme e leve à geladeira até ficar bem gelado."
     ],
-    "dicaVenda": "Venda a travessa inteira por encomenda ou em potes individuais de 250 ml. Morango bonito por cima chama a atenção na foto: capriche na decoração."
+    "dicaVenda": "Venda a travessa inteira por encomenda ou em potes individuais de 250 ml. Morango bonito por cima chama a atenção na foto: capriche na decoração.",
+    "canal": {
+      "emoji": "🍓",
+      "ingredientes": [
+        "Morangos, leite condensado, creme de leite, manteiga e chocolate ao leite ou meio amargo."
+      ],
+      "preparo": [
+        "Lave, seque e corte os morangos. Reserve alguns inteiros para decorar.",
+        "Em uma panela, coloque o leite condensado, 1 caixa de creme de leite e a manteiga. Cozinhe em fogo baixo, mexendo, até formar um creme levemente espesso.",
+        "Coloque os morangos em uma travessa e cubra com o creme. Leve à geladeira.",
+        "Derreta o chocolate e misture com a outra caixa de creme de leite, formando uma ganache.",
+        "Espalhe a ganache sobre o creme e leve à geladeira até ficar bem gelado."
+      ]
+    }
   },
   {
     "id": "bolo-cenoura-pote",
@@ -801,7 +909,23 @@
       "Monte os potes alternando bolo e creme.",
       "Tampe e leve à geladeira."
     ],
-    "dicaVenda": "Bolo no pote vende o ano todo e viaja bem. Finalize com cobertura de chocolate e granulado por cima (some esse custo) para ficar igual à foto e cobrar mais."
+    "dicaVenda": "Bolo no pote vende o ano todo e viaja bem. Finalize com cobertura de chocolate e granulado por cima (some esse custo) para ficar igual à foto e cobrar mais.",
+    "canal": {
+      "emoji": "🥕",
+      "ingredientes": [
+        "Cenoura, ovos, óleo, açúcar, farinha de trigo e fermento em pó.",
+        "Creme: leite condensado, creme de leite, leite em pó e manteiga."
+      ],
+      "preparo": [
+        "Bata no liquidificador a cenoura, os ovos, o óleo e o açúcar.",
+        "Misture com a farinha e, por último, o fermento.",
+        "Asse a 180 °C até dourar.",
+        "Creme: cozinhe o leite condensado, o creme de leite, o leite em pó e a manteiga em fogo baixo até engrossar.",
+        "Espere esfriar.",
+        "Monte os potes alternando bolo e creme.",
+        "Tampe e leve à geladeira."
+      ]
+    }
   },
   {
     "id": "pave-limao-pote",
@@ -885,7 +1009,20 @@
       "Finalize com creme e raspas de limão.",
       "Tampe e leve à geladeira até ficar bem gelado."
     ],
-    "dicaVenda": "Não vai ao fogo e fica pronto rápido: ótimo para vender no calor. Raspas de limão por cima deixam o pote bonito e cheiroso, o que ajuda a vender."
+    "dicaVenda": "Não vai ao fogo e fica pronto rápido: ótimo para vender no calor. Raspas de limão por cima deixam o pote bonito e cheiroso, o que ajuda a vender.",
+    "canal": {
+      "emoji": "🍋",
+      "ingredientes": [
+        "Leite condensado, creme de leite, suco e raspas de limão, biscoito maisena e leite para umedecer."
+      ],
+      "preparo": [
+        "Misture o leite condensado, o creme de leite e o suco de limão até formar um creme.",
+        "Quebre os biscoitos em pedaços menores e umedeça rapidamente no leite.",
+        "Monte os potes alternando biscoito e creme.",
+        "Finalize com creme e raspas de limão.",
+        "Tampe e leve à geladeira até ficar bem gelado."
+      ]
+    }
   },
   {
     "id": "joelho-presunto-queijo",
@@ -1067,7 +1204,24 @@
       "Para congelar, congele já assado. Depois é só aquecer por 10 minutos a 180 °C.",
       "Validade: 3 dias na geladeira ou 90 dias congelado."
     ],
-    "dicaVenda": "Joelho sai bem em lanchonete, cantina e encomenda para festa. Venda quentinho ou congelado em pacotes para o cliente assar em casa."
+    "dicaVenda": "Joelho sai bem em lanchonete, cantina e encomenda para festa. Venda quentinho ou congelado em pacotes para o cliente assar em casa.",
+    "canal": {
+      "emoji": "🥐",
+      "ingredientes": [
+        "Massa: farinha de trigo, fermento biológico seco, leite morno, açúcar, sal, manteiga, ovo e óleo.",
+        "Recheio: presunto, muçarela e orégano (tomate sem sementes é opcional).",
+        "Para pincelar: gema e leite."
+      ],
+      "preparo": [
+        "Misture o fermento, o açúcar e o leite morno e deixe espumar.",
+        "Junte a farinha, o sal, o ovo, o óleo e a manteiga. Sove até ficar lisa e macia.",
+        "Cubra e deixe descansar.",
+        "Divida em bolinhas e abra cada uma em formato oval.",
+        "Recheie com presunto, muçarela e orégano, dobre ao meio e aperte bem as bordas.",
+        "Coloque em forma untada e deixe descansar mais um pouco.",
+        "Pincele com a gema batida com leite e asse em forno preaquecido até dourar."
+      ]
+    }
   },
   {
     "id": "coxinha-frango",
@@ -1249,7 +1403,26 @@
       "Para congelar, congele a coxinha já empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
       "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
     ],
-    "dicaVenda": "Coxinha é o salgado que mais sai no cento para festa. No tamanho de lanchonete (cerca de 100 g) a mesma receita rende uns 20: mude o peso no app e veja o novo preço."
+    "dicaVenda": "Coxinha é o salgado que mais sai no cento para festa. No tamanho de lanchonete (cerca de 100 g) a mesma receita rende uns 20: mude o peso no app e veja o novo preço.",
+    "canal": {
+      "emoji": "🍗",
+      "ingredientes": [
+        "Massa: caldo do cozimento do frango, leite, manteiga, sal e farinha de trigo.",
+        "Recheio: peito de frango, caldo de galinha, cebola, alho, óleo e cheiro-verde.",
+        "Para empanar: ovos e farinha de rosca.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Cozinhe o frango com o caldo de galinha. Reserve parte do caldo e desfie o frango.",
+        "Refogue a cebola e o alho no óleo, junte o frango e o cheiro-verde. Deixe esfriar.",
+        "Ferva o caldo reservado com o leite, a manteiga e o sal.",
+        "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.",
+        "Sove a massa ainda morna até ficar lisa.",
+        "Abra porções de massa na mão, recheie e modele em formato de gota.",
+        "Passe no ovo batido e depois na farinha de rosca.",
+        "Frite em óleo quente, poucas de cada vez, até dourar."
+      ]
+    }
   },
   {
     "id": "kibe-frito",
@@ -1374,7 +1547,21 @@
       "Para congelar, congele cru, em assadeira, e depois passe para saco. Frite ainda congelado, sem descongelar.",
       "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
     ],
-    "dicaVenda": "Kibe tem custo baixo e completa o cento sortido. Mande limão ou coalhada junto na entrega para valorizar."
+    "dicaVenda": "Kibe tem custo baixo e completa o cento sortido. Mande limão ou coalhada junto na entrega para valorizar.",
+    "canal": {
+      "emoji": "🧆",
+      "ingredientes": [
+        "Trigo para kibe, carne moída, cebola, alho, hortelã, sal e pimenta síria.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Deixe o trigo de molho em água e depois esprema muito bem.",
+        "Bata a cebola, o alho e a hortelã no processador (ou pique bem fino).",
+        "Misture o trigo, a carne crua, a cebola batida, o sal e a pimenta síria. Amasse até virar uma massa lisa.",
+        "Com as mãos úmidas, modele os kibes em formato alongado com pontas.",
+        "Frite em óleo quente, poucos de cada vez, até ficarem bem dourados."
+      ]
+    }
   },
   {
     "id": "risole-presunto-queijo",
@@ -1522,7 +1709,25 @@
       "Para congelar, congele empanado e cru, em assadeira, e depois passe para saco. Frite ainda congelado, sem descongelar.",
       "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
     ],
-    "dicaVenda": "Risole entra no cento sortido e também vende bem em porção para bar e lanchonete."
+    "dicaVenda": "Risole entra no cento sortido e também vende bem em porção para bar e lanchonete.",
+    "canal": {
+      "emoji": "🥟",
+      "ingredientes": [
+        "Massa: leite, água, manteiga, caldo de galinha, sal e farinha de trigo.",
+        "Recheio: presunto e muçarela.",
+        "Para empanar: ovos e farinha de rosca.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Ferva o leite, a água, a manteiga, o caldo de galinha e o sal.",
+        "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.",
+        "Sove a massa ainda morna até ficar lisa e deixe esfriar coberta.",
+        "Abra a massa bem fina e corte discos.",
+        "Recheie com presunto e muçarela, feche em meia-lua e aperte bem as bordas.",
+        "Passe no ovo batido e depois na farinha de rosca.",
+        "Frite em óleo quente até dourar."
+      ]
+    }
   },
   {
     "id": "bolinha-queijo",
@@ -1669,7 +1874,24 @@
       "Para congelar, congele empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
       "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
     ],
-    "dicaVenda": "Bolinha de queijo é a preferida das crianças nas festas. Ofereça o cento só de bolinha ou misture no sortido."
+    "dicaVenda": "Bolinha de queijo é a preferida das crianças nas festas. Ofereça o cento só de bolinha ou misture no sortido.",
+    "canal": {
+      "emoji": "🧀",
+      "ingredientes": [
+        "Massa: leite, água, manteiga, caldo de galinha, sal, queijo parmesão ralado e farinha de trigo.",
+        "Recheio: muçarela em cubinhos.",
+        "Para empanar: ovos e farinha de rosca.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Ferva o leite, a água, a manteiga, o caldo de galinha e o sal.",
+        "Abaixe o fogo, junte o parmesão, despeje a farinha de uma vez e mexa até desgrudar da panela.",
+        "Sove a massa ainda morna até ficar lisa e deixe esfriar coberta.",
+        "Abra porções pequenas de massa na mão, coloque um cubinho de muçarela e feche em bolinha.",
+        "Passe no ovo batido e depois na farinha de rosca.",
+        "Frite em óleo quente, poucas de cada vez, até dourar."
+      ]
+    }
   },
   {
     "id": "pastel-carne",
@@ -1827,7 +2049,23 @@
       "Para congelar, congele cru, separado por plástico, e frite ainda congelado.",
       "Validade: frito, venda no mesmo dia; cru, 90 dias congelado."
     ],
-    "dicaVenda": "Pastel frito na hora vende muito em feira, festa junina e porta de escola. Faça mini pastéis para o cento de festa."
+    "dicaVenda": "Pastel frito na hora vende muito em feira, festa junina e porta de escola. Faça mini pastéis para o cento de festa.",
+    "canal": {
+      "emoji": "🥟",
+      "ingredientes": [
+        "Massa: farinha de trigo, sal, óleo, vinagre e água morna.",
+        "Recheio: carne moída, cebola, alho, tomate, cheiro-verde, sal e óleo.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Misture a farinha e o sal, junte o óleo, o vinagre e a água morna aos poucos até a massa desgrudar das mãos.",
+        "Sove, cubra e deixe descansar.",
+        "Refogue a cebola e o alho, junte a carne e cozinhe até secar. Acrescente o tomate, o cheiro-verde e o sal. Deixe esfriar.",
+        "Abra a massa bem fina e corte retângulos.",
+        "Recheie, feche e aperte as bordas com um garfo.",
+        "Frite em óleo bem quente até formar bolhinhas e dourar."
+      ]
+    }
   },
   {
     "id": "esfiha-carne",
@@ -1986,7 +2224,22 @@
       "Para congelar, congele já assada. Depois é só aquecer por 10 minutos a 180 °C.",
       "Validade: 3 dias na geladeira ou 90 dias congelada."
     ],
-    "dicaVenda": "Esfiha vende bem em combo (ex.: 10 unidades + refrigerante) e no delivery de fim de semana. Faça também a de queijo com a mesma massa."
+    "dicaVenda": "Esfiha vende bem em combo (ex.: 10 unidades + refrigerante) e no delivery de fim de semana. Faça também a de queijo com a mesma massa.",
+    "canal": {
+      "emoji": "🫓",
+      "ingredientes": [
+        "Massa: farinha de trigo, fermento biológico seco, açúcar, óleo, sal e água morna.",
+        "Recheio: carne moída, cebola, tomate, cheiro-verde, limão, sal e pimenta síria."
+      ],
+      "preparo": [
+        "Misture a água morna, o fermento e o açúcar e deixe espumar.",
+        "Junte o óleo, o sal e a farinha. Sove até ficar lisa, cubra e deixe crescer.",
+        "Misture a carne crua com a cebola, o tomate e o cheiro-verde bem picados, o limão, o sal e a pimenta síria. Escorra o líquido.",
+        "Divida a massa em bolinhas, abra em discos e aperte o centro, deixando uma borda.",
+        "Cubra com o recheio, apertando bem.",
+        "Asse em forno preaquecido até a borda dourar."
+      ]
+    }
   },
   {
     "id": "empada-frango",
@@ -2188,7 +2441,23 @@
       "Para congelar, congele já assada. Depois é só aquecer por 10 minutos a 180 °C.",
       "Validade: 3 dias na geladeira ou 90 dias congelada."
     ],
-    "dicaVenda": "Empada que derrete na boca fideliza cliente. Venda no cento de festa e também em caixinha com 6 para lanche da tarde."
+    "dicaVenda": "Empada que derrete na boca fideliza cliente. Venda no cento de festa e também em caixinha com 6 para lanche da tarde.",
+    "canal": {
+      "emoji": "🥧",
+      "ingredientes": [
+        "Massa: farinha de trigo, margarina, ovo e sal.",
+        "Recheio: peito de frango, caldo de galinha, cebola, alho, óleo, tomate, milho verde, farinha de trigo, leite e requeijão cremoso.",
+        "Para pincelar: gema."
+      ],
+      "preparo": [
+        "Cozinhe o frango com o caldo de galinha e desfie.",
+        "Refogue a cebola e o alho, junte o frango, o tomate e o milho.",
+        "Engrosse com a farinha dissolvida no leite, desligue, misture o requeijão e deixe esfriar.",
+        "Misture a farinha, o sal, a margarina e o ovo com a ponta dos dedos, só até unir. Não sove.",
+        "Forre as forminhas, coloque o recheio frio e tampe com um disco de massa.",
+        "Pincele com a gema e asse em forno preaquecido até dourar."
+      ]
+    }
   },
   {
     "id": "enroladinho-salsicha",
@@ -2336,7 +2605,23 @@
       "Para congelar, congele já assado. Depois é só aquecer por 10 minutos a 180 °C.",
       "Validade: 3 dias na geladeira ou 90 dias congelado."
     ],
-    "dicaVenda": "Enroladinho é barato de fazer e sai muito em festa infantil e cantina. Com a salsicha inteira vira salgado de lanchonete: mude o peso no app."
+    "dicaVenda": "Enroladinho é barato de fazer e sai muito em festa infantil e cantina. Com a salsicha inteira vira salgado de lanchonete: mude o peso no app.",
+    "canal": {
+      "emoji": "🌭",
+      "ingredientes": [
+        "Massa: farinha de trigo, fermento biológico seco, leite morno, açúcar, sal, manteiga e ovo.",
+        "Recheio: salsicha.",
+        "Para pincelar: gema e leite."
+      ],
+      "preparo": [
+        "Misture o fermento, o açúcar e o leite morno e deixe espumar.",
+        "Junte a farinha, o sal, o ovo e a manteiga. Sove até ficar lisa e macia, cubra e deixe crescer.",
+        "Corte as salsichas ao meio e seque bem.",
+        "Faça rolinhos finos de massa e enrole em volta de cada pedaço de salsicha.",
+        "Coloque na forma com a ponta da massa para baixo e deixe descansar mais um pouco.",
+        "Pincele com a gema batida com leite e asse em forno preaquecido até dourar."
+      ]
+    }
   },
   {
     "id": "pao-queijo",
@@ -2461,7 +2746,21 @@
       "Para congelar, congele as bolinhas cruas em assadeira e depois passe para saco. Asse ainda congeladas, com 5 a 10 minutos a mais.",
       "Validade: assado, 2 dias em pote fechado; cru, 90 dias congelado."
     ],
-    "dicaVenda": "Pão de queijo congelado vende muito em pacote de 1 kg. O assado sai bem em café da manhã e coffee break de empresa."
+    "dicaVenda": "Pão de queijo congelado vende muito em pacote de 1 kg. O assado sai bem em café da manhã e coffee break de empresa.",
+    "canal": {
+      "emoji": "🧀",
+      "ingredientes": [
+        "Polvilho azedo, polvilho doce, leite, óleo, sal, ovos, queijo meia cura ralado e queijo parmesão ralado."
+      ],
+      "preparo": [
+        "Ferva o leite, o óleo e o sal.",
+        "Despeje sobre os polvilhos e misture bem (é a escaldada). Deixe amornar.",
+        "Junte os ovos um a um, sovando até a massa ficar lisa.",
+        "Acrescente os queijos e amasse até incorporar.",
+        "Com as mãos untadas, faça bolinhas e coloque na assadeira com espaço entre elas.",
+        "Asse em forno preaquecido até crescer e dourar."
+      ]
+    }
   },
   {
     "id": "brigadeiro-tradicional",
@@ -2540,8 +2839,20 @@
       "Validade: 3 dias em lugar fresco ou 7 dias na geladeira."
     ],
     "dicaVenda": "Brigadeiro é o doce mais pedido do Brasil: venda o cento para festas e caixinhas com 4 ou 6 para presente.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍫",
+      "ingredientes": [
+        "Leite condensado, manteiga e chocolate em pó 50%.",
+        "Para enrolar: granulado de chocolate."
+      ],
+      "preparo": [
+        "Coloque o leite condensado, a manteiga e o chocolate em pó numa panela e misture antes de ligar o fogo.",
+        "Cozinhe em fogo baixo, mexendo sem parar, até desgrudar do fundo da panela (cerca de 15 minutos).",
+        "Passe para um prato untado, cubra com filme encostado na massa e deixe esfriar.",
+        "Com as mãos untadas de manteiga, enrole bolinhas, passe no granulado e coloque nas forminhas."
+      ]
+    }
   },
   {
     "id": "empanada-argentina",
@@ -2710,8 +3021,22 @@
       "Validade: 3 dias na geladeira ou 90 dias congelada."
     ],
     "dicaVenda": "Empanada é novidade em muitos bairros e chama atenção. Venda quentinha e ofereça um molho chimichurri à parte (some esse custo) para cobrar mais.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥟",
+      "ingredientes": [
+        "Massa: farinha de trigo, manteiga, ovo, sal e água morna.",
+        "Recheio: carne moída, cebola, óleo, páprica doce, cominho, ovos cozidos e azeitona verde picada.",
+        "Para pincelar: gema."
+      ],
+      "preparo": [
+        "Massa: misture a farinha e o sal, junte a manteiga, o ovo e a água morna aos poucos, até ficar lisa. Leve à geladeira por 30 minutos.",
+        "Recheio: refogue a cebola no óleo, junte a carne, a páprica, o cominho e o resto do sal e cozinhe até secar. Deixe esfriar e misture os ovos cozidos picados e a azeitona.",
+        "Abra a massa fina e corte discos.",
+        "Coloque o recheio frio, feche em meia-lua e dobre a borda em pequenas pregas (o \"repulgue\").",
+        "Pincele com a gema e asse em forno preaquecido a 200 °C por 20 a 25 minutos, até dourar."
+      ]
+    }
   },
   {
     "id": "pao-de-mel",
@@ -2846,8 +3171,22 @@
       "Validade: 15 dias em lugar fresco e seco."
     ],
     "dicaVenda": "Pão de mel é presente fácil: venda em caixas com 4 ou 6 na Páscoa, no Dia das Mães e no Natal.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍯",
+      "ingredientes": [
+        "Leite, mel, açúcar mascavo, farinha de trigo, chocolate em pó 50%, canela em pó e bicarbonato de sódio.",
+        "Recheio: doce de leite.",
+        "Cobertura: chocolate meio amargo."
+      ],
+      "preparo": [
+        "Misture a farinha, o açúcar mascavo, o chocolate em pó, a canela e o bicarbonato.",
+        "Junte o leite e o mel e mexa até ficar uma massa lisa.",
+        "Asse em assadeira untada e enfarinhada, em forno preaquecido a 180 °C, por cerca de 25 minutos.",
+        "Depois de frio, corte discos com um cortador ou copo, abra ao meio e recheie com doce de leite.",
+        "Derreta o chocolate, banhe cada pão de mel e deixe secar sobre papel manteiga."
+      ]
+    }
   },
   {
     "id": "torta-frango-liquidificador",
@@ -3048,8 +3387,21 @@
       "Validade: 3 dias na geladeira ou 60 dias congelada."
     ],
     "dicaVenda": "Venda em fatia para o almoço e o lanche do trabalho, ou a torta inteira por encomenda.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥧",
+      "ingredientes": [
+        "Massa: ovos, leite, óleo, farinha de trigo, queijo parmesão ralado, fermento em pó e sal.",
+        "Recheio: peito de frango, caldo de galinha, cebola, tomate, milho verde, cheiro-verde, requeijão cremoso e óleo."
+      ],
+      "preparo": [
+        "Cozinhe o frango em água com o caldo de galinha por 25 minutos e desfie.",
+        "Refogue a cebola no óleo, junte o frango, o tomate picado, o milho e o cheiro-verde. Desligue e misture o requeijão.",
+        "Bata no liquidificador os ovos, o leite, o óleo, a farinha, o parmesão e o sal. Por último, misture o fermento com uma colher.",
+        "Numa forma untada, coloque metade da massa, espalhe o recheio e cubra com o resto da massa.",
+        "Asse em forno preaquecido a 180 °C por 40 a 45 minutos, até dourar."
+      ]
+    }
   },
   {
     "id": "palha-italiana",
@@ -3139,8 +3491,20 @@
       "Validade: 5 dias em lugar fresco ou 10 dias na geladeira."
     ],
     "dicaVenda": "Palha italiana vende bem em ponto de ônibus, escola e trabalho. Embalagem com laço deixa pronta para presente.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍫",
+      "ingredientes": [
+        "Leite condensado, manteiga, chocolate em pó 50% e biscoito maisena.",
+        "Para polvilhar: açúcar de confeiteiro."
+      ],
+      "preparo": [
+        "Cozinhe o leite condensado, a manteiga e o chocolate em fogo baixo, mexendo, até começar a desgrudar da panela (ponto de brigadeiro mole).",
+        "Desligue e misture o biscoito quebrado em pedaços médios.",
+        "Espalhe numa forma untada, alise e leve à geladeira por 2 horas.",
+        "Corte em quadrados e passe no açúcar de confeiteiro."
+      ]
+    }
   },
   {
     "id": "croquete-carne",
@@ -3297,8 +3661,22 @@
       "Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru."
     ],
     "dicaVenda": "Croquete completa o cento sortido e é muito pedido em bar e lanchonete.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥖",
+      "ingredientes": [
+        "Carne moída, cebola, alho, óleo, sal, leite, farinha de trigo e cheiro-verde picado.",
+        "Para empanar: ovos e farinha de rosca.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Refogue a cebola e o alho no óleo, junte a carne e o sal e cozinhe até secar.",
+        "Junte o leite e, aos poucos, a farinha, mexendo até virar uma massa que desgruda da panela. Misture o cheiro-verde.",
+        "Deixe esfriar bem (de preferência na geladeira).",
+        "Com as mãos úmidas, modele rolinhos.",
+        "Passe no ovo batido e na farinha de rosca e frite em óleo quente até dourar. Escorra em papel-toalha."
+      ]
+    }
   },
   {
     "id": "cookies-gotas-chocolate",
@@ -3432,8 +3810,19 @@
       "Validade: 10 dias em pote ou saquinho bem fechado."
     ],
     "dicaVenda": "Cookie grande e recheado vende como lanche em escola e faculdade. Ofereça kits com 4 para presente.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍪",
+      "ingredientes": [
+        "Manteiga amolecida, açúcar mascavo, açúcar, ovos, essência de baunilha, farinha de trigo, bicarbonato de sódio, sal e gotas de chocolate."
+      ],
+      "preparo": [
+        "Bata a manteiga com os dois açúcares até ficar cremoso. Junte os ovos e a baunilha.",
+        "Misture a farinha, o bicarbonato e o sal, e por último as gotas de chocolate.",
+        "Faça bolas de massa e leve à geladeira por 30 minutos.",
+        "Asse em assadeira com papel manteiga, com espaço entre elas, em forno preaquecido a 180 °C por 12 a 14 minutos."
+      ]
+    }
   },
   {
     "id": "hamburguer-artesanal",
@@ -3557,8 +3946,20 @@
       "Validade: carne crua 1 dia na geladeira ou 90 dias congelada; o lanche montado é para comer na hora."
     ],
     "dicaVenda": "Hambúrguer artesanal vende muito no delivery de sexta e sábado. Monte combo com batata e refrigerante para cobrar mais.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍔",
+      "ingredientes": [
+        "Acém moído, sal, pimenta-do-reino, pão de hambúrguer, muçarela fatiada, alface, tomate e maionese."
+      ],
+      "preparo": [
+        "Divida a carne em bolas e amasse em discos um pouco maiores que o pão (ele encolhe). Não amasse demais a carne.",
+        "Faça um pequeno afundado no centro de cada disco com o dedo.",
+        "Tempere com sal e pimenta só na hora e grelhe em chapa ou frigideira bem quente, 3 a 4 minutos de cada lado.",
+        "Coloque a muçarela por cima no final e tampe para derreter.",
+        "Toste o pão e monte: maionese, alface, tomate e o hambúrguer."
+      ]
+    }
   },
   {
     "id": "churros-doce-leite",
@@ -3671,8 +4072,23 @@
       "Para congelar, congele a massa já modelada, crua, e frite congelada. Frito, venda no mesmo dia."
     ],
     "dicaVenda": "Churros vende em festa junina, feira, porta de escola e evento. Ofereça recheio de chocolate também.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥖",
+      "ingredientes": [
+        "Massa: água, manteiga, sal e farinha de trigo.",
+        "Recheio: doce de leite.",
+        "Para passar: açúcar e canela em pó.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Ferva a água com a manteiga e o sal.",
+        "Desligue, despeje a farinha de uma vez e mexa até virar uma bola lisa. Deixe amornar.",
+        "Coloque a massa num saco de confeitar com bico pitanga grande.",
+        "Faça tiras direto no óleo quente (cerca de 170 °C) e frite até dourar. Escorra.",
+        "Passe no açúcar misturado com a canela e recheie com o doce de leite usando uma bisnaga."
+      ]
+    }
   },
   {
     "id": "sanduiche-natural-frango",
@@ -3806,8 +4222,19 @@
       "Validade: 2 dias na geladeira. Não congele."
     ],
     "dicaVenda": "Sanduíche natural vende cedo em academia, escritório e escola. Combine com suco para fazer um combo.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥪",
+      "ingredientes": [
+        "Pão de forma integral, peito de frango, cenoura ralada, maionese, requeijão cremoso, milho verde, cheiro-verde picado, alface e sal."
+      ],
+      "preparo": [
+        "Cozinhe o frango em água com sal por 25 minutos, desfie e deixe esfriar.",
+        "Misture o frango com a maionese, o requeijão, a cenoura, o milho e o cheiro-verde. Acerte o sal.",
+        "Espalhe o recheio em metade das fatias, coloque folhas de alface bem secas e feche com as outras fatias.",
+        "Corte na diagonal e embale com etiqueta e data."
+      ]
+    }
   },
   {
     "id": "cinnamon-roll",
@@ -3977,7 +4404,23 @@
     ],
     "dicaVenda": "Cinnamon roll é moda nas cafeterias e quase ninguém vende no bairro. Venda individual e em caixas com 4.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥐",
+      "ingredientes": [
+        "Massa: farinha de trigo, fermento biológico seco, leite morno, açúcar, manteiga, ovo e sal.",
+        "Recheio: manteiga, açúcar mascavo e canela em pó.",
+        "Cobertura: açúcar de confeiteiro e leite."
+      ],
+      "preparo": [
+        "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+        "Junte a farinha, o ovo, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+        "Abra num retângulo, espalhe a manteiga mole do recheio e polvilhe o açúcar mascavo com a canela.",
+        "Enrole pelo lado comprido e corte os rolinhos com uma linha (ou fio dental sem sabor).",
+        "Coloque numa forma untada, deixe crescer mais 30 minutos e asse a 180 °C por 25 minutos.",
+        "Misture o açúcar de confeiteiro com o leite e cubra os rolinhos ainda mornos."
+      ]
+    }
   },
   {
     "id": "escondidinho-frango-mandioca",
@@ -4157,7 +4600,22 @@
     ],
     "dicaVenda": "Marmita congelada vende por kit semanal (ex.: 5 marmitas). Varie com carne seca ou carne moída para ter cardápio.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍲",
+      "ingredientes": [
+        "Purê: mandioca, manteiga, leite e sal.",
+        "Recheio: peito de frango, caldo de galinha, cebola, alho, tomate, cheiro-verde, óleo e requeijão cremoso.",
+        "Cobertura: muçarela ralada."
+      ],
+      "preparo": [
+        "Cozinhe a mandioca em água com sal até ficar bem macia, tire a fibra do meio e amasse com a manteiga e o leite até virar um purê.",
+        "Cozinhe o frango em água com o caldo de galinha por 25 minutos e desfie.",
+        "Refogue a cebola e o alho no óleo, junte o frango, o tomate e o cheiro-verde.",
+        "Monte nas marmitas: purê, frango, requeijão, purê e muçarela por cima.",
+        "Gratine em forno a 200 °C por 10 a 15 minutos, ou feche e congele cru para o cliente assar em casa."
+      ]
+    }
   },
   {
     "id": "alfajor",
@@ -4293,7 +4751,22 @@
     ],
     "dicaVenda": "Alfajor caseiro tem cara de doce de padaria fina. Venda individual e em caixas para presente.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍪",
+      "ingredientes": [
+        "Amido de milho, farinha de trigo, manteiga, açúcar, gemas, fermento em pó e essência de baunilha.",
+        "Recheio: doce de leite de corte.",
+        "Cobertura: chocolate meio amargo."
+      ],
+      "preparo": [
+        "Bata a manteiga com o açúcar, as gemas e a baunilha.",
+        "Junte o amido, a farinha e o fermento e misture até virar uma massa lisa.",
+        "Abra a massa fina, corte discos e asse a 180 °C por 10 a 12 minutos, sem deixar dourar.",
+        "Depois de frios, junte os discos de dois em dois com doce de leite.",
+        "Banhe no chocolate derretido e deixe secar sobre papel manteiga."
+      ]
+    }
   },
   {
     "id": "quiche-alho-poro",
@@ -4451,7 +4924,21 @@
     ],
     "dicaVenda": "Quiche vende bem em fatia para escritório e inteira para encomendas. Faça também de queijo com tomate seco.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥧",
+      "ingredientes": [
+        "Massa: farinha de trigo, manteiga gelada, ovo, sal e água gelada.",
+        "Recheio: alho-poró, manteiga, ovos, creme de leite, leite, queijo parmesão ralado, sal e pimenta-do-reino."
+      ],
+      "preparo": [
+        "Massa: misture a farinha, a manteiga gelada em pedaços e metade do sal com a ponta dos dedos. Junte o ovo e 2 colheres de sopa de água gelada até unir.",
+        "Forre uma forma de fundo removível, fure com garfo e pré-asse a 200 °C por 10 minutos.",
+        "Refogue o alho-poró em rodelas finas na manteiga por 5 minutos.",
+        "Bata os ovos com o creme de leite, o leite, o resto do sal e a pimenta. Junte o alho-poró e o parmesão.",
+        "Despeje na massa e asse a 180 °C por 30 a 35 minutos, até firmar."
+      ]
+    }
   },
   {
     "id": "geladinho-morango",
@@ -4554,7 +5041,20 @@
     ],
     "dicaVenda": "Geladinho gourmet vende o ano todo no bairro e na porta de escola. Faça vários sabores e venda em isopor.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍓",
+      "ingredientes": [
+        "Leite, açúcar, amido de milho, leite condensado, creme de leite e morango."
+      ],
+      "preparo": [
+        "Dissolva o amido em um pouco do leite. Leve ao fogo com o resto do leite e o açúcar, mexendo, até engrossar levemente (cerca de 5 minutos).",
+        "Deixe esfriar.",
+        "Bata no liquidificador com o leite condensado, o creme de leite e os morangos lavados.",
+        "Encha os saquinhos com um funil, deixando espaço, e feche com nó firme.",
+        "Congele deitados por pelo menos 6 horas."
+      ]
+    }
   },
   {
     "id": "mini-pizza",
@@ -4693,7 +5193,23 @@
     ],
     "dicaVenda": "Mini pizza é campeã em festa infantil. Venda também congelada em pacote para o cliente assar em casa.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍕",
+      "ingredientes": [
+        "Massa: farinha de trigo, fermento biológico seco, açúcar, óleo, sal e água morna.",
+        "Cobertura: molho de tomate, presunto picado, muçarela ralada e orégano."
+      ],
+      "preparo": [
+        "Misture a água morna, o fermento e o açúcar. Deixe espumar por 5 minutos.",
+        "Junte o óleo, o sal e a farinha aos poucos. Sove por 10 minutos até ficar lisa.",
+        "Cubra e deixe crescer por 30 minutos.",
+        "Abra a massa com rolo e corte discos com um cortador ou copo.",
+        "Coloque os discos em forma untada, fure com um garfo e pré-asse a 200 °C por 8 minutos.",
+        "Cubra cada disco com molho, presunto, muçarela e orégano. Se quiser, coloque uma rodela de tomate ou azeitona (opcional, fora do custo).",
+        "Volte ao forno por 8 a 10 minutos, até o queijo derreter."
+      ]
+    }
   },
   {
     "id": "tiramisu-pote",
@@ -4796,7 +5312,21 @@
     ],
     "dicaVenda": "Tiramisù no pote tem cara de sobremesa de restaurante italiano. Venda individual e em kits para jantar a dois.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "☕",
+      "ingredientes": [
+        "Biscoito champanhe, café solúvel, água, cream cheese, creme de leite e leite condensado.",
+        "Para polvilhar: cacau em pó."
+      ],
+      "preparo": [
+        "Dissolva o café em água quente e deixe esfriar.",
+        "Bata o cream cheese, o leite condensado e o creme de leite até ficar cremoso.",
+        "Molhe cada biscoito rapidamente no café.",
+        "Monte nos potes: biscoito, creme, biscoito e creme por cima.",
+        "Leve à geladeira por 4 horas e polvilhe o cacau só na hora de entregar."
+      ]
+    }
   },
   {
     "id": "lasanha-bolonhesa",
@@ -4975,7 +5505,20 @@
     ],
     "dicaVenda": "Lasanha congelada vende muito para o almoço de domingo. Ofereça tamanho individual e família.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍝",
+      "ingredientes": [
+        "Massa de lasanha direto ao forno, carne moída, molho de tomate, cebola, alho, óleo, sal, presunto fatiado, muçarela fatiada e queijo parmesão ralado.",
+        "Molho branco: leite, manteiga e farinha de trigo."
+      ],
+      "preparo": [
+        "Bolonhesa: refogue a cebola e o alho no óleo, junte a carne e o sal e cozinhe até secar. Junte o molho de tomate e cozinhe por 10 minutos.",
+        "Molho branco: derreta a manteiga, junte a farinha, mexa 1 minuto e acrescente o leite aos poucos, mexendo até engrossar.",
+        "Monte nas marmitas: bolonhesa, massa, molho branco, presunto e muçarela. Repita e termine com bolonhesa e parmesão.",
+        "Asse coberta com papel alumínio a 200 °C por 30 minutos, ou feche e congele crua."
+      ]
+    }
   },
   {
     "id": "pastel-de-nata",
@@ -5090,7 +5633,22 @@
     ],
     "dicaVenda": "Pastel de nata é clássico de Portugal e quase ninguém faz no bairro. Venda quentinho com café.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥧",
+      "ingredientes": [
+        "Massa folhada pronta, leite, açúcar, amido de milho, gemas e essência de baunilha.",
+        "Para servir: canela em pó."
+      ],
+      "preparo": [
+        "Enrole a massa folhada como um rocambole e corte em rodelas.",
+        "Coloque cada rodela numa forminha de empada untada e aperte com o polegar molhado, subindo pelas laterais.",
+        "Creme: cozinhe o leite, o açúcar e o amido, mexendo, até engrossar. Desligue, espere 2 minutos e junte as gemas peneiradas e a baunilha.",
+        "Encha as forminhas até ¾.",
+        "Asse no forno bem quente (250 °C ou o máximo) por 12 a 15 minutos, até aparecerem manchinhas escuras.",
+        "Sirva com canela polvilhada."
+      ]
+    }
   },
   {
     "id": "caldo-verde",
@@ -5215,7 +5773,20 @@
     ],
     "dicaVenda": "Caldo vende muito em noites frias, em bar e na porta de casa. Ofereça com pão ou torradinha.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥣",
+      "ingredientes": [
+        "Batata, couve, linguiça calabresa, cebola, alho, óleo, caldo de galinha, sal e água."
+      ],
+      "preparo": [
+        "Refogue a cebola e o alho no óleo. Junte a batata em cubos, a água e o caldo de galinha.",
+        "Cozinhe por 25 minutos, até a batata desmanchar.",
+        "Bata no liquidificador em partes (cuidado, está quente) e volte para a panela.",
+        "Frite a calabresa em rodelas e junte ao caldo.",
+        "Acrescente a couve cortada bem fininha, cozinhe 3 minutos e acerte o sal."
+      ]
+    }
   },
   {
     "id": "donuts",
@@ -5362,7 +5933,23 @@
     ],
     "dicaVenda": "Donuts coloridos fazem sucesso em festa infantil e na vitrine. Monte caixas com 4 ou 6 sabores.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍩",
+      "ingredientes": [
+        "Farinha de trigo, fermento biológico seco, leite morno, açúcar, manteiga, ovos e sal.",
+        "Cobertura: chocolate meio amargo.",
+        "Para decorar: granulado.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+        "Junte a farinha, os ovos, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+        "Abra a massa, corte com um copo grande e faça o furo com uma tampinha. Deixe descansar mais 30 minutos.",
+        "Frite em óleo morno (cerca de 170 °C), 1 a 2 minutos de cada lado. Escorra.",
+        "Banhe a parte de cima no chocolate derretido e decore com granulado."
+      ]
+    }
   },
   {
     "id": "pao-de-alho",
@@ -5487,7 +6074,20 @@
     ],
     "dicaVenda": "Pão de alho sai muito na sexta e no sábado. Ofereça em açougues e mercadinhos do bairro.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🧄",
+      "ingredientes": [
+        "Pãezinhos franceses pequenos, maionese, requeijão cremoso, manteiga, alho, queijo parmesão ralado, cheiro-verde e sal."
+      ],
+      "preparo": [
+        "Misture a maionese, o requeijão, a manteiga amolecida, o alho amassado, o parmesão, o cheiro-verde e o sal.",
+        "Faça 3 cortes em cada pão, sem separar a base.",
+        "Recheie os cortes com a pasta.",
+        "Congele em assadeira e depois embale em saquinhos.",
+        "Para comer: churrasqueira ou forno a 200 °C por 15 minutos, até dourar."
+      ]
+    }
   },
   {
     "id": "arroz-doce",
@@ -5578,7 +6178,20 @@
     ],
     "dicaVenda": "Arroz-doce vende muito em festa junina e como sobremesa de marmita. Ofereça quente ou gelado.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍚",
+      "ingredientes": [
+        "Arroz, água, leite, leite condensado e açúcar.",
+        "Para polvilhar: canela em pó."
+      ],
+      "preparo": [
+        "Cozinhe o arroz na água até secar (cerca de 15 minutos).",
+        "Junte o leite e o açúcar e cozinhe em fogo baixo, mexendo sempre, por 25 minutos.",
+        "Acrescente o leite condensado e cozinhe mais 5 minutos, até ficar cremoso.",
+        "Distribua nos potes e polvilhe canela."
+      ]
+    }
   },
   {
     "id": "bolinho-arroz",
@@ -5724,7 +6337,20 @@
     ],
     "dicaVenda": "Bolinho de arroz tem custo muito baixo e vende em bar e porção. Ótimo para aproveitar sobra de arroz.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍘",
+      "ingredientes": [
+        "Arroz, ovos, farinha de trigo, leite, queijo parmesão ralado, cebola, cheiro-verde picado, fermento em pó e sal.",
+        "Óleo para fritar."
+      ],
+      "preparo": [
+        "Cozinhe o arroz e deixe esfriar (arroz do dia anterior é melhor).",
+        "Misture o arroz, os ovos, o leite, o parmesão, a cebola ralada, o cheiro-verde e o sal.",
+        "Junte a farinha e o fermento até virar uma massa mole que segura na colher.",
+        "Com duas colheres, pingue porções no óleo quente e frite até dourar. Escorra em papel-toalha."
+      ]
+    }
   },
   {
     "id": "bolo-gelado-coco",
@@ -5871,7 +6497,22 @@
     ],
     "dicaVenda": "Bolo gelado (o \"toalha felpuda\") vende em escola, ponto de ônibus e festa. Custo baixo e preço bom por unidade.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🥥",
+      "ingredientes": [
+        "Massa: ovos, açúcar, farinha de trigo, leite, óleo e fermento em pó.",
+        "Calda: leite de coco, leite condensado e leite.",
+        "Cobertura: coco ralado."
+      ],
+      "preparo": [
+        "Bata os ovos, o açúcar, o leite e o óleo. Junte a farinha e, por último, o fermento.",
+        "Asse em forma retangular untada a 180 °C por 35 a 40 minutos.",
+        "Ainda quente, fure o bolo todo com um garfo.",
+        "Aqueça o leite de coco, o leite condensado e o leite por 3 minutos e regue o bolo.",
+        "Leve à geladeira por 4 horas, corte em quadrados, passe no coco ralado e embrulhe no papel alumínio."
+      ]
+    }
   },
   {
     "id": "quindim",
@@ -5952,7 +6593,20 @@
     ],
     "dicaVenda": "Quindim brilhante é doce de vitrine. Venda em caixinhas com 4 e no cento para festas.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "💛",
+      "ingredientes": [
+        "Gemas, açúcar, coco ralado e manteiga."
+      ],
+      "preparo": [
+        "Passe as gemas por uma peneira.",
+        "Misture as gemas, o açúcar, a manteiga derretida e o coco, sem bater. Deixe descansar 30 minutos.",
+        "Unte forminhas com manteiga e açúcar e encha com a mistura.",
+        "Asse em banho-maria, em forno a 180 °C, por 35 a 40 minutos.",
+        "Espere esfriar bem e desenforme."
+      ]
+    }
   },
   {
     "id": "pipoca-gourmet-chocolate",
@@ -6022,7 +6676,20 @@
     ],
     "dicaVenda": "Pipoca gourmet tem custo baixo e vende em escola, festa e cinema da comunidade. Saquinho com laço vira lembrancinha.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍿",
+      "ingredientes": [
+        "Milho de pipoca, óleo e chocolate meio amargo."
+      ],
+      "preparo": [
+        "Estoure a pipoca com o óleo numa panela grande, sem sal.",
+        "Tire os milhos que não estouraram.",
+        "Derreta o chocolate em banho-maria ou no micro-ondas, de 30 em 30 segundos.",
+        "Misture a pipoca com o chocolate rapidamente e espalhe numa assadeira com papel manteiga.",
+        "Leve 10 minutos à geladeira para firmar, solte os pedaços e embale."
+      ]
+    }
   },
   {
     "id": "rosca-doce-coco",
@@ -6169,7 +6836,22 @@
     ],
     "dicaVenda": "Rosca doce vende inteira no café da tarde de domingo e em fatias. Faça também de goiabada.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍞",
+      "ingredientes": [
+        "Farinha de trigo, fermento biológico seco, leite morno, açúcar, manteiga, ovos e sal.",
+        "Recheio: leite condensado e coco ralado.",
+        "Para pincelar: gema."
+      ],
+      "preparo": [
+        "Misture o fermento, o açúcar e o leite morno e deixe espumar por 5 minutos.",
+        "Junte a farinha, os ovos, a manteiga e o sal. Sove por 10 minutos, cubra e deixe crescer por 1 hora.",
+        "Recheio: cozinhe o leite condensado com o coco em fogo baixo por 5 minutos e deixe esfriar.",
+        "Divida a massa, abra cada parte num retângulo, espalhe o recheio, enrole e feche em forma de rosca.",
+        "Deixe crescer mais 30 minutos, pincele com a gema e asse a 180 °C por 30 minutos."
+      ]
+    }
   },
   {
     "id": "bolo-laranja",
@@ -6294,7 +6976,21 @@
     ],
     "dicaVenda": "Bolo caseiro em fatia vende todo dia em padaria, escola e trabalho. Bolo inteiro sai bem por encomenda.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🍊",
+      "ingredientes": [
+        "Massa: laranjas inteiras com casca, ovos, óleo, açúcar, farinha de trigo e fermento em pó.",
+        "Calda: suco de laranja e açúcar."
+      ],
+      "preparo": [
+        "Corte as 2 laranjas da massa em pedaços, tire as sementes e a parte branca grossa do meio.",
+        "Bata no liquidificador com os ovos, o óleo e o açúcar.",
+        "Misture com a farinha e, por último, o fermento.",
+        "Asse em forma untada a 180 °C por 40 a 45 minutos.",
+        "Calda: ferva o suco das outras 2 laranjas com o açúcar por 3 minutos e regue o bolo ainda morno."
+      ]
+    }
   },
   {
     "id": "mini-bolo-vulcao",
@@ -6463,6 +7159,21 @@
     ],
     "dicaVenda": "Mini bolo vulcão é campeão de vídeo e foto nas redes. Venda por encomenda e para presente.",
     "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true
+    "fotoProvisoria": true,
+    "canal": {
+      "emoji": "🌋",
+      "ingredientes": [
+        "Massa: ovos, açúcar, óleo, leite, chocolate em pó 50%, farinha de trigo e fermento em pó.",
+        "Cobertura: leite condensado, creme de leite, chocolate em pó 50% e manteiga.",
+        "Para decorar: granulado."
+      ],
+      "preparo": [
+        "Bata os ovos, o açúcar, o óleo, o leite e o chocolate. Junte a farinha e, por último, o fermento.",
+        "Distribua em forminhas de pudim pequenas (com furo no meio) untadas e asse a 180 °C por 25 minutos.",
+        "Cobertura: cozinhe o leite condensado, o chocolate e a manteiga por 8 minutos, desligue e misture o creme de leite (fica bem mole).",
+        "Desenforme os bolinhos nas forminhas de alumínio e encha o furo com a cobertura até transbordar.",
+        "Decore com granulado."
+      ]
+    }
   }
 ]

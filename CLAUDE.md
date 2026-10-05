@@ -36,3 +36,7 @@
 9. Receitas agendadas: lote novo entra escondido ("liberarEm": "aguardando-foto", "fotoProvisoria": true). Quando a foto chega:
    foto_receita.py, tirar "fotoProvisoria" e rodar `python3 scripts/agendar.py` (libera 2 por dia, 8h e 19h de Brasília, sozinho no servidor).
    O dono (DONO_EMAIL no wrangler.toml) vê as escondidas marcadas no sumário. Numeração dos prompts pula o 13.
+10. Página do canal (só o dono): https://www.leunamesoftware.com.br/quantocobrar/canal — postagens prontas (receitas liberadas
+   com foto real + uma dica de `calculadora/src/dicas.json` a cada 10), botão Enviar para o WhatsApp, marca enviada com data
+   (D1 canal_envios) e pede reenvio depois de 30 dias. Texto do canal de cada receita: campo "canal" (emoji, ingredientes,
+   preparo) SEM quantidades; o teste test/canal.test.mjs confere. Receita nova sempre com "canal". Acabando as dicas, escreva mais.

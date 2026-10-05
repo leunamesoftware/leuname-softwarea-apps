@@ -1,4 +1,6 @@
 import RECEITAS from './receitas.json';
+import DICAS from './dicas.json';
+import { listarCanal, marcarEnvio } from './canal.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
@@ -153,6 +155,18 @@ export default {
       if (pathname === '/api/conta/apps' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
         return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id) }) : json({ conta: null, apps: {} });
+      }
+
+      // ---- página do canal do WhatsApp (só o dono) ----
+      if (pathname === '/api/canal' || pathname === '/api/canal/enviado') {
+        const conta = await contaDaSessao(env, req);
+        if (!conta || !env.DONO_EMAIL || conta.email !== env.DONO_EMAIL) return json({ erro: 'so_o_dono' }, 403);
+        if (pathname === '/api/canal' && m === 'GET') return json({ posts: await listarCanal(env, RECEITAS, DICAS) });
+        if (pathname === '/api/canal/enviado' && m === 'POST') {
+          if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+          return (await marcarEnvio(env, RECEITAS, DICAS, await corpo(req))) ? json({ ok: true }) : json({ erro: 'nao_encontrado' }, 404);
+        }
+        return json({ erro: 'nao_encontrado' }, 404);
       }
 
       // ---- app (conta ou chave antiga: o plano dela; sem nada: degustação) ----
