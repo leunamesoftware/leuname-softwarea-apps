@@ -21,14 +21,14 @@ async function eDono(req, env) {
   } catch { return false; }
 }
 const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex"><meta name="theme-color" content="#0A2BB8"><link rel="manifest" href="/dono/app.webmanifest"><link rel="icon" href="/dono/robo-192.png"><title>Área do Dono</title>
+<meta name="robots" content="noindex"><meta name="theme-color" content="#0A2BB8"><link rel="manifest" href="/dono/app.webmanifest"><link rel="icon" href="/dono/robo-192.png"><title>Leu · Área do Dono</title>
 <style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#0A2BB8;color:#1C1917}
 form{width:100%;max-width:360px;background:#fff;border-radius:20px;padding:22px;display:grid;gap:12px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
 img{width:96px;height:96px;border-radius:22px;justify-self:center}h1{margin:0;font-size:21px;text-align:center}p{margin:0;color:#6B6259;font-size:14px;text-align:center}
 label{font-size:14px;font-weight:700;display:grid;gap:4px}input{font:inherit;min-height:46px;border:1px solid #D6D0C8;border-radius:10px;padding:0 12px}
 input:focus{outline:3px solid #2563EB;outline-offset:1px}button{font:inherit;font-weight:800;min-height:48px;border:0;border-radius:12px;background:#0A2BB8;color:#fff;cursor:pointer}
 #erro{color:#B91C1C;font-weight:700}[hidden]{display:none!important}</style></head>
-<body><form id="f"><img src="/dono/robo-192.png" alt=""><h1 id="titulo">Área do Dono</h1><p id="sub">Carregando…</p>
+<body><form id="f"><img src="/dono/robo-192.png" alt=""><h1 id="titulo">Leu · Área do Dono</h1><p id="sub">Carregando…</p>
 <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
 <label>Senha<input id="senha" type="password" autocomplete="current-password" minlength="6" required></label>
 <label id="l2" hidden>Repita a senha<input id="senha2" type="password" autocomplete="new-password" minlength="6"></label>
