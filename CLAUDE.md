@@ -20,7 +20,12 @@
    e disparar o workflow `calculadora-publicar.yml` no repositório leunamesoftware/Leunamesite.
 5. Responder ao dono com o link único de divulgação (o mesmo para todas as receitas):
    `www.leunamesoftware.com.br/quantocobrar` (abre a página de venda dentro da loja).
-6. Quando o dono pedir para o Claude criar as receitas: escrever tudo no JSON, usar foto provisória ("Foto em breve")
+6. Esquema fixo de cada lote de receitas (o dono copia tudo pronto):
+   - prompts das imagens num bloco só (formato da regra 7);
+   - quando as imagens chegarem: foto no app (passo 1) e, para o canal, as imagens numeradas em JPG (1-coxinha.jpg…)
+     + os textos numerados com o mesmo número, cada um num bloco para copiar, SEM quantidades e SEM rendimento,
+     terminando com o link https://www.leunamesoftware.com.br/quantocobrar (sempre com https://).
+   Quando o dono pedir para o Claude criar as receitas: escrever tudo no JSON, usar foto provisória ("Foto em breve")
    e entregar em `calculadora/canal/<grupo>.md` o prompt de cada imagem e o texto do canal do WhatsApp
    (sem quantidades e sem rendimento: isso fica só no app). Publicar só depois que as fotos chegarem.
 7. Prompts de imagem: um único bloco para copiar de uma vez, neste formato: primeiro a frase "Gere N imagens separadas,

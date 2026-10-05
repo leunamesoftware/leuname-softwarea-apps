@@ -31,7 +31,7 @@ Para empanar: ovos e farinha de rosca.
 • Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 2 · imagem 2-kibe.jpg
@@ -58,7 +58,7 @@ Trigo para kibe, carne moída, cebola, alho, hortelã, sal e pimenta síria.
 • Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 3 · imagem 3-risole.jpg
@@ -89,7 +89,7 @@ Para empanar: ovos e farinha de rosca.
 • Validade: 2 dias na geladeira depois de frito ou 90 dias congelado cru.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 4 · imagem 4-bolinha-de-queijo.jpg
@@ -119,7 +119,7 @@ Para empanar: ovos e farinha de rosca.
 • Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 5 · imagem 5-pastel.jpg
@@ -148,7 +148,7 @@ Recheio: carne moída, cebola, alho, tomate, cheiro-verde, sal e óleo.
 • Validade: frito, venda no mesmo dia; cru, 90 dias congelado.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 6 · imagem 6-esfiha.jpg
@@ -176,7 +176,7 @@ Recheio: carne moída, cebola, tomate, cheiro-verde, limão, sal e pimenta síri
 • Validade: 3 dias na geladeira ou 90 dias congelada.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 7 · imagem 7-empada.jpg
@@ -205,7 +205,7 @@ Para pincelar: gema.
 • Validade: 3 dias na geladeira ou 90 dias congelada.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 8 · imagem 8-enroladinho.jpg
@@ -234,7 +234,7 @@ Para pincelar: gema e leite.
 • Validade: 3 dias na geladeira ou 90 dias congelado.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 9 · imagem 9-pao-de-queijo.jpg
@@ -261,7 +261,7 @@ Polvilho azedo, polvilho doce, leite, óleo, sal, ovos, queijo meia cura ralado 
 • Validade: assado, 2 dias em pote fechado; cru, 90 dias congelado.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```
 
 ## 10 · imagem 10-joelho.jpg
@@ -290,5 +290,5 @@ Para pincelar: gema e leite.
 • Validade: 3 dias na geladeira ou 90 dias congelado.
 
 🧮 Quer as *quantidades certas*, quanto rende e *quanto cobrar* por unidade? Está tudo no app Quanto Cobrar:
-👉 www.leunamesoftware.com.br/quantocobrar
+👉 https://www.leunamesoftware.com.br/quantocobrar
 ```

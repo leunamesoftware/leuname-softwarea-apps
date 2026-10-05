@@ -152,6 +152,8 @@
   <section id="detalhe" class="detalhe" hidden aria-label="Detalhes do app"></section>
   <p class="rodape">© 2026 LeuName Softwares · Todos os direitos reservados.<br>Aplicativos sempre na versão mais nova.</p>
   <script>
+// Link de divulgação www.leunamesoftware.com.br/quantocobrar abre aqui mesmo, já na página do app.
+if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, '', '/#quantocobrar');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const lista = document.getElementById('lista');
     let apps = [];
