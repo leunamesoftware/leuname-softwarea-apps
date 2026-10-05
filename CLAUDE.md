@@ -47,3 +47,5 @@
 12. Conta do dono (DONO_EMAIL = leunamesoftware@gmail.com, nos wrangler.toml da calculadora e do leuapps): tudo liberado e
     ilimitado em todos os apps, sempre (plano "dono" no Quanto Cobrar; licença vitalícia de dono criada sozinha para cada app
     com licença, como Gestacell e Radar). App novo na loja: o dono também tem que entrar liberado.
+13. Padrão para os outros apps (o dono aprovou no Quanto Cobrar): página de canal do WhatsApp com postagens prontas
+    (enviar, riscar com data, reenviar depois de 30 dias) e barra de pesquisa no conteúdo. Repetir nos próximos apps.

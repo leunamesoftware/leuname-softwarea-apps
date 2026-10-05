@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.2';
+const VERSAO_APP = '6.3';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -322,7 +322,7 @@ function mostrarPagina(efeito) {
   tela.innerHTML = `
     <div class="livro-barra">
       <button class="link" id="fechar">📕 Fechar livro</button>
-      ${p === 0 ? '<span>Sumário</span>' : '<button class="link" data-pagina="0">📑 Sumário</button>'}
+      <span class="barra-dir">${p === 0 ? '' : '<button class="link" data-pagina="0">📑 Sumário</button>'}<button class="link" id="ir-busca">🔍 Pesquisar</button></span>
     </div>
     ${f.tipo === 'receita' ? `<div class="partes" role="tablist">${PARTES.map(([ic, nome], k) => `
       <button role="tab" aria-selected="${k === f.parte}" class="${k === f.parte ? 'ativa' : ''}" data-pagina="${inicio + k}"><span>${ic}</span>${nome}</button>`).join('')}</div>` : ''}
@@ -349,6 +349,20 @@ function mostrarPagina(efeito) {
   tela.querySelectorAll('[data-minha-excluir]').forEach((b) => b.addEventListener('click', () => excluirMinha(b.dataset.minhaExcluir, () => mostrarPagina())));
   tela.querySelectorAll('[data-tenho-chave]').forEach((b) => b.addEventListener('click', () => telaAtivacao()));
   if (f.tipo === 'receita' && f.parte === 3) ligarMiniCalculadora(r);
+  document.getElementById('ir-busca')?.addEventListener('click', () => {
+    if (p !== 0) irPara(0, 'tras');
+    setTimeout(() => document.getElementById('busca-receita')?.focus(), 350);
+  });
+  // Pesquisa no sumário: filtra pelo nome, categoria e ingredientes (sem acento, sem maiúscula).
+  document.getElementById('busca-receita')?.addEventListener('input', (e) => {
+    const termos = normalizar(e.target.value).split(' ').filter(Boolean);
+    let achou = 0;
+    tela.querySelectorAll('.sumario li[data-busca]').forEach((li) => {
+      const ok = termos.every((t) => li.dataset.busca.includes(t));
+      li.hidden = !ok; if (ok) achou++;
+    });
+    document.getElementById('busca-vazia').hidden = achou > 0;
+  });
 }
 
 // Efeito de livro: a folha gira pela lombada (esquerda) revelando a outra página.
@@ -374,9 +388,11 @@ function htmlSumario() {
   return `
     <h1 class="pagina-titulo">Sumário</h1>
     ${faixaGratis()}
-    <p class="sub">Toque numa receita. Em cada página tem a receita completa e a calculadora.</p>
+    <p class="sub">Pesquise ou toque numa receita. Depois é só passar nas setas para ver ingredientes, preparo e preço.</p>
+    <input type="search" id="busca-receita" class="busca-receita" placeholder="🔍 Pesquise a receita (ex.: frango, bolo, coxinha)" aria-label="Pesquisar receita" autocomplete="off">
+    <p class="vazio" id="busca-vazia" hidden>Nenhuma receita com esse nome. Tente outra palavra.</p>
     <ol class="sumario">${estado.receitas.map((r, i) => `
-      <li><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r).replace('/receitas/', '/receitas/mini/'))}" alt="" loading="lazy" width="64" height="64">
+      <li data-busca="${esc(normalizar([r.nome, r.categoria, ...(r.ingredientes || []).map((x) => x.nome)].join(' ')))}"><button data-pagina="${inicioDaReceita(i)}"><img src="${esc(fotoDe(r).replace('/receitas/', '/receitas/mini/'))}" alt="" loading="lazy" width="64" height="64">
         <span><small>Receita ${i + 1} · ${esc(r.categoria)}</small><b>${r.bloqueada ? '🔒 ' : ''}${esc(r.nome)}</b><small>${r.agendada ? textoAgendada(r) : `Rende ${textoRendimento(r)}`}</small></span>
         <i>›</i></button></li>`).join('') || '<p class="vazio">Conecte-se à internet para baixar as receitas.</p>'}
     </ol>
