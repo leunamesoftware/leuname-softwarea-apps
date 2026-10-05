@@ -35,3 +35,8 @@ custom_domain = true
 [[routes]]
 pattern = "leunamesoftware.com.br"
 custom_domain = true
+
+# Área do Dono (só o dono; instala como app separado no celular).
+[[routes]]
+pattern = "dono.leunamesoftware.com.br"
+custom_domain = true
