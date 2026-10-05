@@ -22,6 +22,8 @@
 body { margin: 0; font: 500 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
 .topo { background: #1C1917; color: #fff; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px; }
 .topo h1 { margin: 0; font-size: 21px; font-weight: 800; }
+.topo { position: relative; }
+.sair { position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top, 0px)); border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 700; cursor: pointer; }
 .topo p { margin: 2px 0 0; font-size: 13px; color: #D6D3D1; }
 main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; display: grid; gap: 22px; }
 .instalar { display: flex; align-items: center; gap: 10px; background: var(--cartao); border: 1px dashed var(--linha); border-radius: 14px; padding: 10px 12px; font-size: 14px; }
@@ -53,6 +55,7 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
 <header class="topo">
   <h1>Área do Dono</h1>
   <p>Só você vê esta página. As ferramentas ficam separadas por cor.</p>
+  <button type="button" id="sair" class="sair">Sair</button>
 </header>
 <main>
   <div class="instalar" id="instalar" hidden>
@@ -84,7 +87,7 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
       <a class="card" href="https://www.leunamesoftware.com.br/"><span class="ic">🏪</span><span><b>Loja LeuApps</b><small>A vitrine como o cliente vê</small></span></a>
     </div>
     <details class="senha">
-      <summary>🔒 Trocar minha senha</summary>
+      <summary>🔒 Trocar minha senha de dono</summary>
       <form id="form-senha">
         <label>Senha atual<input id="s-atual" type="password" autocomplete="current-password" required></label>
         <label>Nova senha (mínimo 6 letras ou números)<input id="s-nova" type="password" autocomplete="new-password" minlength="6" required></label>
@@ -108,12 +111,17 @@ document.getElementById('form-senha').addEventListener('submit', async (e) => {
   const mostrar = (t, ok) => { msg.textContent = t; msg.style.color = ok ? '#15803D' : '#B91C1C'; msg.hidden = false; };
   if (nova !== document.getElementById('s-nova2').value) return mostrar('As duas senhas novas não são iguais.');
   try {
-    const r = await fetch('/loja-api/conta/senha', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    const r = await fetch('/loja-api/dono/senha', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ atual: document.getElementById('s-atual').value, nova }) });
-    if (r.ok) { e.target.reset(); return mostrar('Senha trocada! Use a nova senha daqui pra frente em todos os apps.', true); }
+    if (r.ok) { e.target.reset(); return mostrar('Senha trocada! Use a nova senha para entrar na Área do Dono.', true); }
     const erro = (await r.json().catch(() => ({}))).erro;
     mostrar(erro === 'senha_atual' ? 'A senha atual não confere.' : erro === 'senha_curta' ? 'A nova senha precisa ter pelo menos 6 caracteres.' : erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não deu para trocar agora. Tente de novo.');
   } catch { mostrar('Sem internet. Tente de novo.'); }
+});
+
+document.getElementById('sair').addEventListener('click', async () => {
+  await fetch('/loja-api/dono/sair', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+  location.reload();
 });
 
 let pedido = null;

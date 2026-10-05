@@ -1,6 +1,7 @@
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
+import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { acessoDaChave, acessoDaConta, appsDaConta, eDono } from './planos.js';
@@ -170,10 +171,22 @@ export default {
         return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email) }) : json({ conta: null, apps: {} });
       }
 
+      // ---- Área do Dono: login próprio, separado das contas dos apps ----
+      if (pathname === '/api/dono/estado' && m === 'GET') return json(await estadoDono(env, req));
+      if (pathname.startsWith('/api/dono/') && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        if (pathname === '/api/dono/sair') return json({ ok: true }, 200, await sairDono(env, req));
+        const acao = { '/api/dono/criar': criarSenhaDono, '/api/dono/entrar': entrarDono, '/api/dono/senha': trocarSenhaDono }[pathname];
+        if (!acao) return json({ erro: 'nao_encontrado' }, 404);
+        const r = await acao(env, req, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true }, 200, r.cookie);
+      }
+
       // ---- página do canal do WhatsApp (só o dono) ----
       if (pathname === '/api/canal' || pathname === '/api/canal/enviado') {
         const conta = await contaDaSessao(env, req);
-        if (!conta || !eDono(env, conta.email)) return json({ erro: 'so_o_dono' }, 403);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
         if (pathname === '/api/canal' && m === 'GET') return json({ posts: await listarCanal(env, RECEITAS, DICAS) });
         if (pathname === '/api/canal/enviado' && m === 'POST') {
           if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);

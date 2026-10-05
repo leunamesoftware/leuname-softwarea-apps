@@ -15,32 +15,48 @@ const DONO_LIVRE = /^\/dono\/(manifest\.webmanifest|icone-\d+\.png|sw\.js)$/;
 async function eDono(req, env) {
   if (!env.CONTAS || !env.DONO_EMAIL) return false;
   try {
-    const r = await env.CONTAS.fetch(new Request(new URL('/api/conta', req.url), { headers: { Cookie: req.headers.get('Cookie') || '' } }));
-    const d = await r.json();
-    return String(d?.conta?.email || '').toLowerCase() === env.DONO_EMAIL.toLowerCase();
+    // Login próprio da Área do Dono (separado das contas dos apps), guardado no servidor de vendas.
+    const r = await env.CONTAS.fetch(new Request(new URL('/api/dono/estado', req.url), { headers: { Cookie: req.headers.get('Cookie') || '' } }));
+    return Boolean((await r.json())?.logado);
   } catch { return false; }
 }
 const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex"><meta name="theme-color" content="#1C1917"><link rel="manifest" href="/dono/manifest.webmanifest"><title>Área do Dono · entrar</title>
-<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#F7F5F2;color:#1C1917}
-form{width:100%;max-width:360px;background:#fff;border:1px solid #E7E2DC;border-radius:18px;padding:22px;display:grid;gap:12px}
-h1{margin:0;font-size:21px}p{margin:0;color:#6B6259;font-size:14px}label{font-size:14px;font-weight:700;display:grid;gap:4px}
-input{font:inherit;min-height:46px;border:1px solid #D6D0C8;border-radius:10px;padding:0 12px}input:focus{outline:3px solid #E8590C;outline-offset:1px}
-button{font:inherit;font-weight:800;min-height:48px;border:0;border-radius:12px;background:#1C1917;color:#fff;cursor:pointer}#erro{color:#B91C1C;font-weight:700}</style></head>
-<body><form id="f"><h1>Área do Dono</h1><p>Entre com o e-mail e a senha da sua conta de dono.</p>
+<meta name="robots" content="noindex"><meta name="theme-color" content="#0A2BB8"><link rel="manifest" href="/dono/manifest.webmanifest"><link rel="icon" href="/dono/icone-192.png"><title>Área do Dono</title>
+<style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;font:16px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#0A2BB8;color:#1C1917}
+form{width:100%;max-width:360px;background:#fff;border-radius:20px;padding:22px;display:grid;gap:12px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+img{width:96px;height:96px;border-radius:22px;justify-self:center}h1{margin:0;font-size:21px;text-align:center}p{margin:0;color:#6B6259;font-size:14px;text-align:center}
+label{font-size:14px;font-weight:700;display:grid;gap:4px}input{font:inherit;min-height:46px;border:1px solid #D6D0C8;border-radius:10px;padding:0 12px}
+input:focus{outline:3px solid #2563EB;outline-offset:1px}button{font:inherit;font-weight:800;min-height:48px;border:0;border-radius:12px;background:#0A2BB8;color:#fff;cursor:pointer}
+#erro{color:#B91C1C;font-weight:700}[hidden]{display:none!important}</style></head>
+<body><form id="f"><img src="/dono/icone-192.png" alt=""><h1 id="titulo">Área do Dono</h1><p id="sub">Carregando…</p>
 <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
-<label>Senha<input id="senha" type="password" autocomplete="current-password" required></label>
-<p id="erro" hidden></p><button type="submit">Entrar</button></form>
-<script>document.getElementById('f').addEventListener('submit', async (e) => {
+<label>Senha<input id="senha" type="password" autocomplete="current-password" minlength="6" required></label>
+<label id="l2" hidden>Repita a senha<input id="senha2" type="password" autocomplete="new-password" minlength="6"></label>
+<p id="erro" hidden></p><button type="submit" id="bt">Entrar</button></form>
+<script>
+let criar = false;
+fetch('/loja-api/dono/estado', { cache: 'no-store', credentials: 'same-origin' }).then((r) => r.json()).then((d) => {
+  criar = !d.temSenha;
+  document.getElementById('sub').textContent = criar ? 'Primeiro acesso: crie a sua senha de dono (só desta área, separada dos apps).' : 'Entre com o seu e-mail e a sua senha de dono.';
+  document.getElementById('l2').hidden = !criar; document.getElementById('senha2').required = criar;
+  document.getElementById('senha').autocomplete = criar ? 'new-password' : 'current-password';
+  document.getElementById('bt').textContent = criar ? 'Criar senha e entrar' : 'Entrar';
+}).catch(() => { document.getElementById('sub').textContent = 'Sem internet. Tente de novo.'; });
+document.getElementById('f').addEventListener('submit', async (e) => {
   e.preventDefault(); const erro = document.getElementById('erro'); erro.hidden = true;
+  const senha = document.getElementById('senha').value;
+  if (criar && senha !== document.getElementById('senha2').value) { erro.textContent = 'As duas senhas não são iguais.'; erro.hidden = false; return; }
   try {
-    const r = await fetch('/loja-api/conta/entrar', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: document.getElementById('email').value.trim(), senha: document.getElementById('senha').value }) });
+    const r = await fetch(criar ? '/loja-api/dono/criar' : '/loja-api/dono/entrar', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: document.getElementById('email').value.trim(), senha }) });
     if (r.ok) return location.reload();
-    erro.textContent = r.status === 429 ? 'Muitas tentativas. Espere um minuto e tente de novo.' : 'E-mail ou senha não conferem.';
+    const c = (await r.json().catch(() => ({}))).erro;
+    erro.textContent = c === 'email' ? 'Este não é o e-mail do dono.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.'
+      : c === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : c === 'ja_existe' ? 'A senha já foi criada. Recarregue a página e entre.' : 'E-mail ou senha não conferem.';
   } catch { erro.textContent = 'Sem internet. Tente de novo.'; }
   erro.hidden = false;
-});<\/script></body></html>`;
+});
+<\/script></body></html>`;
 
 export default {
   async fetch(req, env) {
