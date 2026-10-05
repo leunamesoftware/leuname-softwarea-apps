@@ -3,7 +3,7 @@ import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { acessoDaChave, acessoDaConta, appsDaConta } from './planos.js';
+import { acessoDaChave, acessoDaConta, appsDaConta, eDono } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
 import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
@@ -154,13 +154,13 @@ export default {
       // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
       if (pathname === '/api/conta/apps' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
-        return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id) }) : json({ conta: null, apps: {} });
+        return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email) }) : json({ conta: null, apps: {} });
       }
 
       // ---- página do canal do WhatsApp (só o dono) ----
       if (pathname === '/api/canal' || pathname === '/api/canal/enviado') {
         const conta = await contaDaSessao(env, req);
-        if (!conta || !env.DONO_EMAIL || conta.email !== env.DONO_EMAIL) return json({ erro: 'so_o_dono' }, 403);
+        if (!conta || !eDono(env, conta.email)) return json({ erro: 'so_o_dono' }, 403);
         if (pathname === '/api/canal' && m === 'GET') return json({ posts: await listarCanal(env, RECEITAS, DICAS) });
         if (pathname === '/api/canal/enviado' && m === 'POST') {
           if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
@@ -187,7 +187,7 @@ export default {
           const acesso = acessoConta || (chave ? await acessoDaChave(env, chave) : { plano: 'gratis', receitas: 0, semConta: true });
           const stats = await estatisticas(env);
           // Receitas agendadas (liberarEm no futuro ou "aguardando-foto") ficam escondidas; só o dono vê, marcadas.
-          const dono = Boolean(conta && env.DONO_EMAIL && conta.email === env.DONO_EMAIL);
+          const dono = Boolean(conta && eDono(env, conta.email));
           const agora = Date.now();
           const liberada = (r) => !r.liberarEm || Date.parse(r.liberarEm) <= agora;
           const visiveis = RECEITAS.filter((r) => dono || liberada(r))

@@ -17,7 +17,7 @@ async function eDono(req, env) {
   try {
     const r = await env.CONTAS.fetch(new Request(new URL('/api/conta', req.url), { headers: { Cookie: req.headers.get('Cookie') || '' } }));
     const d = await r.json();
-    return d?.conta?.email === env.DONO_EMAIL;
+    return String(d?.conta?.email || '').toLowerCase() === env.DONO_EMAIL.toLowerCase();
   } catch { return false; }
 }
 const RESTRITA = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">

@@ -1,3 +1,5 @@
+import { emitirLicenca } from './licencas.js';
+
 // Planos à venda e o que cada um libera.
 export const RECEITAS_GRATIS = 2;
 
@@ -40,7 +42,9 @@ export const RECEITAS_POR_PACOTE = 30;
  * - sem compra → teste grátis de 2 dias (2 receitas); depois, bloqueado até comprar.
  */
 export async function acessoDaConta(env, contaId) {
-  const conta = await env.DB.prepare('SELECT criado_em, sem_teste FROM contas WHERE id = ?').bind(contaId).first();
+  const conta = await env.DB.prepare('SELECT email, criado_em, sem_teste FROM contas WHERE id = ?').bind(contaId).first();
+  // O dono tem tudo liberado, sempre, sem comprar nem vencer.
+  if (eDono(env, conta?.email)) return { plano: 'dono', receitas: Infinity };
   const { results: todasCompras } = await env.DB.prepare("SELECT a.plano, a.expira_em FROM pedidos p JOIN acessos a ON a.chave = p.chave WHERE p.conta_id = ? AND p.status = 'pago'")
     .bind(contaId).all();
   const compras = todasCompras.filter((x) => PLANOS_RECEITAS.includes(x.plano)).map(avaliar);
@@ -73,8 +77,22 @@ export async function aplicarPlano(env, chave, plano) {
     .bind(chave, plano, expira, agora.toISOString()).run();
 }
 
-/** Licenças vitalícias dos outros apps que a conta comprou: { gestacell: { chave }, radar: { chave } }. */
-export async function appsDaConta(env, contaId) {
+export const eDono = (env, email) => Boolean(email && env.DONO_EMAIL && String(email).toLowerCase() === env.DONO_EMAIL.toLowerCase());
+
+/** Licença vitalícia do dono para um app (criada uma vez, reaproveitada depois). */
+async function licencaDoDono(env, appId) {
+  const l = await env.LICDB.prepare("SELECT chave FROM licencas WHERE app_id = ? AND cliente_contato = ? AND origem = 'dono' AND status = 'ativa' LIMIT 1")
+    .bind(appId, env.DONO_EMAIL).first();
+  return l?.chave || emitirLicenca(env, 'Dono (LeuName Softwares)', env.DONO_EMAIL, appId, 'dono');
+}
+
+/** Licenças vitalícias dos outros apps que a conta comprou: { gestacell: { chave }, radar: { chave } }. O dono tem todas. */
+export async function appsDaConta(env, contaId, email) {
+  if (eDono(env, email)) {
+    const apps = {};
+    for (const p of Object.values(PLANOS)) if (p.licenca) apps[p.app] = { chave: await licencaDoDono(env, p.licenca) };
+    return apps;
+  }
   const { results } = await env.DB.prepare("SELECT plano, chave FROM pedidos WHERE conta_id = ? AND status = 'pago' AND chave IS NOT NULL ORDER BY criado_em")
     .bind(contaId).all();
   const apps = {};

@@ -43,3 +43,6 @@
 11. Área do Dono: https://dono.leunamesoftware.com.br (endereço próprio para instalar como app separado; www…/dono/ redireciona; só abre logado com DONO_EMAIL).
    Ferramentas separadas por cor em leuapps/public/dono/index.html: verde = WhatsApp/canais, laranja = apps da loja,
    azul = lojas de celular, roxo = administração. Ferramenta nova do dono entra lá, na cor certa.
+12. Conta do dono (DONO_EMAIL = leunamesoftware@gmail.com, nos wrangler.toml da calculadora e do leuapps): tudo liberado e
+    ilimitado em todos os apps, sempre (plano "dono" no Quanto Cobrar; licença vitalícia de dono criada sozinha para cada app
+    com licença, como Gestacell e Radar). App novo na loja: o dono também tem que entrar liberado.
