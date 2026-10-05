@@ -23,7 +23,7 @@ export function textoTikTok(r) {
   const c = r.canal || {};
   return [
     `${c.emoji || '🍽️'} ${r.nome}: receita que vende!`, '',
-    'A receita completa, com ingredientes e modo de fazer, está no nosso canal do WhatsApp "Quanto Devo Cobrar?" 👉 link na bio.', '',
+    'A receita completa, com ingredientes e modo de fazer, está no nosso canal do WhatsApp "Quanto Devo Cobrar?" 👉 veja na bio.', '',
     'Quer saber quanto rende e por quanto vender? A calculadora Quanto Cobrar faz a conta pra você. 💰', '',
     ['#receitas', '#receitasfaceis', '#rendaextra', '#empreendedorismo', '#' + (TAG_CATEGORIA[r.categoria] || 'receitacaseira'), '#' + tag(r.nome)].join(' '),
   ].join('\n');

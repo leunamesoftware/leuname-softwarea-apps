@@ -251,7 +251,7 @@ async function fotoTikTok(p) {
   g.textAlign = 'center'; g.fillStyle = '#fff';
   const caber = (peso, px, texto) => { do g.font = `${peso} ${px}px ${TT.letra}`; while (g.measureText(texto).width > 800 && --px > 28); };
   caber(800, 42, 'Quantidades e modo de fazer no canal'); g.fillText('Quantidades e modo de fazer no canal', 500, y2 + alto - cta + 62);
-  caber(900, 48, 'do WhatsApp 👉 link na bio'); g.fillText('do WhatsApp 👉 link na bio', 500, y2 + alto - cta + 120);
+  caber(900, 48, 'do WhatsApp 👉 veja na bio'); g.fillText('do WhatsApp 👉 veja na bio', 500, y2 + alto - cta + 120);
 
   return [await paraArquivo(um.c, base + '-tiktok-1.jpg'), await paraArquivo(dois.c, base + '-tiktok-2.jpg')];
 }

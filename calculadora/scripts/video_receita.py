@@ -4,7 +4,7 @@
 Uso: python3 scripts/video_receita.py <id-da-receita> [saida.mp4]
 
 Usa a foto da receita (public/img/receitas/<id>.webp) com zoom lento e mostra:
-nome → o que vai (só nomes) → passos curtos → "receita completa no canal, link na bio".
+nome → o que vai (só nomes) → passos curtos → "receita completa no canal, veja na bio".
 Sem quantidades: elas ficam no canal e no app. O vídeo sai sem música — a música
 se escolhe dentro do TikTok (as do próprio TikTok não dão problema de direitos).
 Os passos curtos vêm de canal.passosCurtos; sem eles, usa o começo de cada passo do canal.
@@ -173,7 +173,7 @@ class Video:
             pulso = 1 + 0.06 * math.sin(k * 6)
             fb = fonte('ExtraBold', round(76 * pulso))
             d.rounded_rectangle((180, y + 820, 820, y + 980), 80, fill='white')
-            d.text((500, y + 900), 'LINK NA BIO', font=fb, fill=LARANJA, anchor='mm')
+            d.text((500, y + 900), 'VEJA NA BIO', font=fb, fill=LARANJA, anchor='mm')
         return img
 
 

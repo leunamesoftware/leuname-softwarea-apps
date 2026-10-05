@@ -31,7 +31,7 @@ test('texto do canal: sem quantidades, com o link', () => {
 test('legenda do TikTok: sem quantidade, manda para o link da bio e tem hashtags', () => {
   for (const r of receitas) {
     const t = textoTikTok(r);
-    assert.match(t, /link na bio/);
+    assert.match(t, /veja na bio/);
     assert.match(t, /#receitas /);
     assert.doesNotMatch(t.replace(/#\S+/g, ''), /\d/, `${r.id}: número na legenda`);
   }
