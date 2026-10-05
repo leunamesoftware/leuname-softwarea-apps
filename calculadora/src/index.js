@@ -168,7 +168,10 @@ export default {
       // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
       if (pathname === '/api/conta/apps' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
-        return conta ? json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email) }) : json({ conta: null, apps: {} });
+        if (conta) return json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email) });
+        // Entrou com a senha da Área do Dono: tem todos os apps, sem precisar de conta da loja.
+        if (await donoLogado(env, req)) return json({ conta: { nome: 'Dono', email: env.DONO_EMAIL }, apps: await appsDaConta(env, null, env.DONO_EMAIL) });
+        return json({ conta: null, apps: {} });
       }
 
       // ---- Área do Dono: login próprio, separado das contas dos apps ----

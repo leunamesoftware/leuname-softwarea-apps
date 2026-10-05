@@ -169,6 +169,7 @@ option{background:var(--white);color:var(--gray-800);}
 .panel-body.pad0{padding:0;}
 
 .two-col{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;}
+.two-col>*{min-width:0;}
 .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 
 table{width:100%;border-collapse:collapse;font-size:13px;}
@@ -359,7 +360,7 @@ const STORES=['loja','usuarios','produtos','pecas','clientes','fornecedores','ve
 const SYNC_API_BASE='https://api.leunamesoftware.com';
 const DESKTOP_INSTALLER_URL='https://api.leunamesoftware.com/download/leuname-gestao.exe';
 const SYNC_STORES=['loja','usuarios','produtos','pecas','clientes','fornecedores','vendas','ordens','financeiro','config','dispositivos'];
-const APP_VERSION='1.0.0';
+const APP_VERSION='1.1.0';
 const LOGO_DATA_URI='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpiTIAAADAFBMVEUMKU/3+PoAAADn6vH81wT8uAX8xwT95wX8dwL8pwP8aAKrt8n8lwP8hwP9WAL+9geVpbq5w9PV3OYVMVHc4evFHRPDy9mcrMEtOkVUaYSKm7K4GxehrsLRJhDL0tz9xiv89jAmKUdleJP3SgQsRmhyhJz892/99k5sRjJ5i6XuNgb811Faajj36SszREahrLz9+69EW3n++Y9PODtQRzrHuRj41S3LmCfMxhY7U3NdcYy4lRq7phnYMg5pOjPOWBNxVjCQSSeMhjK2hxpwdjd+kKrOZxJKVkdMYX33602xlS1SVTvMqBVvZzS0eRqopy7OdhTkKwmNZyq3ty4iPWFqdk2RViazVxv4uyRMJjtFSULKxy4dO2GLdy60RxuqhySmsb5zIy9kbEmTljSpVSLOiBPQlhbz62xbZ0qaHCLSSBHa1BhDNkB8hDePOiapTCCwZBva1yz8zUT9+8SzOxylZyQ7NT98hEiMISeCiU6hHSCmJCCpeCi+sRnV0k48UUiamU+7JhfEx2k+RD+fRh+esMWppkrUqSfQuCrY12XjpyVBLUBHXoGBj6idpS+iMCKhlEKhqWW1vEK+vW28wSC8wmfTdyXKx0fr7IcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACuUA8UAAABAHRSTlP//wD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYbkjiQAAJ7VJREFUeNrtnYd/21aW7y8XBEgQLCChsIWhKIqyJDuUVpGsiZSJZSmOu2Ove+xxkkmfZFJnMnV3yvby3u4ru++9P/fdikaABMAiATi/fCxRJEUq/H3vuQX3noP+YiFCoNBakDNgfLpBQOB9uilAYH66IUBgfrohQOB+uhlA4H66GUDgfroZQGB/uhFA4H66GUBgf7oRQGB/uhFAYH+6EUBgf7oRQGB/uhFA4H+6CUBgf7oRQGB/uhFA4H+6CUBgf7oRQOB/uglA4H+6CUBgf7oRQOB/uglA4H+6CUBgf7oRQOB/uglA4H+6CUDgf7oJQOB/uglA4H+6CUDgf7oJQOB/uglA4H+6CUDgf7oJQOB/uglA4H+6CUDgf7oJQOB/uglA4H+6CUDgf7oJQOB/ugkAAAAA8D/NBCDwP90EIPA/3QQAAAAA+J9mAhD4n24CEPifbgIAAAAA/E8zAQj8TzcBAAAAAP6nmQAAAAAA/9NMAAL/000AAAAAgP9pJgAAAADA/zQTAAAAAOB/mgkAAAAA8D/NBAAAAAD4n2YCAAAAAAAAAMD/1BIAAAAA4H+aCQAAAAAAAAAA/1NLAAAAAAAAAAB8GqklAAAAAACA1AMAn0V6CQAAAAAAAAAApRoA+CRSTAAAAAAAAAAAKM0AwOeQZgIAAAAAPgYAAAQAgNIKAHwKqSYAAAAAQAAACAAAAQAgAAAEAIDSBQAIBAKBQCAQCAQCgUAgEAgEAoFAIBAIBAKBQCAQCAQCgUAgEGg+MgyDfHHdN/o0+KRAIFAM9GpkXbly5dVTCMGDwc71Vr9/eNiiOjwUt86SDg9i0qGhrVxlCn25wK7u4UFrTdfqNSkTA3XjBEBkBHKV1xcDQHNn7YN6LIynkpaqAwQAzMr86+3qUiZGkmr1+k5cZgEYgOxUAMz5zztY02qZeLnfrdfr12MzCyQA5M4oAM2W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';
 const LICENSE_MAX_DEVICES_DEFAULT=4;
 const ROLE_LABELS={administrador:'Administrador',vendedor:'Vendedor',tecnico:'Técnico'};
@@ -785,7 +786,7 @@ const ROLE_DEFAULT_PERMS={
 };
 function can(section){
   if(!STATE.user) return false;
-  if(STATE.user.papel==='administrador') return true;
+  if(STATE.user.papel==='administrador' || section==='calculadoras') return true;
   const perms=STATE.user.permissoes||ROLE_DEFAULT_PERMS[STATE.user.papel]||{};
   return !!perms[section];
 }
@@ -795,6 +796,7 @@ function requirePerm(section){
 }
 
 const ICONS={
+  calc:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8v3H8z"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/>',
   dashboard:'<path d="M3 13h8V3H3v10zM13 21h8V11h-8v10zM13 3v6h8V3h-8zM3 21h8v-6H3v6z"/>',
   vendas:'<circle cx="9" cy="21" r="1.5"/><circle cx="19" cy="21" r="1.5"/><path d="M2.5 3h2l2.4 12.2a2 2 0 002 1.6h8.6a2 2 0 002-1.6L21 8H6"/>',
   produtos:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
@@ -865,6 +867,13 @@ async function chaveDaConta(){
     return true;
   }catch(e){ return false; }
 }
+/* Entra na conta da loja; se não der e for o e-mail do dono, tenta a senha da Área do Dono. */
+async function entrarNaConta(email,senha){
+  const tentar=(rota)=>fetch(rota,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})});
+  let r=await tentar('/loja-api/conta/entrar');
+  if(!r.ok && r.status!==429) r=await tentar('/loja-api/dono/entrar');
+  if(!r.ok) throw new Error(r.status===429?'Muitas tentativas. Espere um minuto.':'E-mail ou senha não conferem.');
+}
 function renderLicenseGate(errMsg){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
@@ -895,8 +904,7 @@ function renderLicenseGate(errMsg){
     if(!email||!senha){ erro('Digite o e-mail e a senha.'); return; }
     const btn=document.getElementById('cg-entrar'); btn.disabled=true; btn.textContent='Entrando...';
     try{
-      const r=await fetch('/loja-api/conta/entrar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,senha})});
-      if(!r.ok) throw new Error(r.status===429?'Muitas tentativas. Espere um minuto.':'E-mail ou senha não conferem.');
+      await entrarNaConta(email,senha);
       if(!(await chaveDaConta())) throw new Error('Esta conta ainda não comprou o Gestacell.');
       toast('Gestacell liberado!','success');
       __booted=false; boot();
@@ -952,9 +960,11 @@ async function renderLogin(){
     <div class="field" style="margin-top:10px;"><label>Senha</label><input type="password" id="lg-senha" placeholder="••••••••" autocomplete="current-password"></div>
     <div id="lg-error" class="callout warn hidden" style="margin-top:12px;"></div>
     <button class="btn primary" id="lg-submit" style="width:100%;justify-content:center;margin-top:16px;padding:11px;">Entrar</button>
-    <p class="small center muted" style="margin-top:14px;">Esqueceu a senha? Peça ao administrador da loja para redefini-la em <b>Usuários</b>.</p>
+    <p class="small center muted" style="margin-top:14px;">Funcionário: se esqueceu a senha, peça ao administrador da loja (em <b>Usuários</b>).</p>
+    <p class="small center" style="margin-top:6px;"><a href="#" id="lg-esqueci">Sou o dono da loja e esqueci a senha</a></p>
     ${authFooterHTML()}
   </div></div>`;
+  document.getElementById('lg-esqueci').onclick=(e)=>{ e.preventDefault(); renderRecuperarSenha(); };
   const submit=async()=>{
     const email=document.getElementById('lg-email').value.trim();
     const senha=document.getElementById('lg-senha').value;
@@ -967,6 +977,59 @@ async function renderLogin(){
   };
   document.getElementById('lg-submit').onclick=submit;
   root.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{ if(e.key==='Enter') submit(); }));
+}
+
+/* Dono da loja esqueceu a senha do Gestacell: prova que é o dono entrando na conta em que
+   comprou (ou com a senha de dono da LeuName) e, se a licença for a mesma deste aparelho,
+   cria uma senha nova para um administrador. Os dados da loja continuam todos. */
+async function renderRecuperarSenha(){
+  document.getElementById('app-root').classList.remove('ready');
+  const loja=await getLoja();
+  const admins=(await idbAll('usuarios')).filter(u=>u.papel==='administrador');
+  const root=document.getElementById('auth-root');
+  root.innerHTML=`
+  <div class="auth-screen"><div class="auth-card">
+    ${authBrandHTML(loja)}
+    <h2 style="font-size:17px;text-align:center;margin-bottom:2px;">Criar senha nova</h2>
+    <p class="muted small center" style="margin-bottom:16px;">Para provar que a loja é sua, entre com o <b>e-mail e a senha da conta em que comprou o Gestacell</b>.</p>
+    <div class="field"><label>E-mail da compra</label><input type="email" id="rs-email" autocomplete="username" placeholder="voce@email.com"></div>
+    <div class="field" style="margin-top:10px;"><label>Senha da conta</label><input type="password" id="rs-senha" autocomplete="current-password"></div>
+    <div class="divider" style="margin:16px 0 12px;"></div>
+    <div class="field"><label>Administrador</label><select id="rs-admin">${admins.map(u=>`<option value="${esc(u.id)}">${esc(u.nome)} · ${esc(u.email)}</option>`).join('')}</select></div>
+    <div class="form-grid" style="margin-top:10px;">
+      <div class="field"><label>Senha nova do Gestacell</label><input type="password" id="rs-nova" autocomplete="new-password" placeholder="mín. 6 caracteres"></div>
+      <div class="field"><label>Repita a senha nova</label><input type="password" id="rs-nova2" autocomplete="new-password"></div>
+    </div>
+    <div id="rs-erro" class="callout warn hidden" style="margin-top:12px;"></div>
+    <button class="btn primary" id="rs-ok" style="width:100%;justify-content:center;margin-top:14px;padding:11px;">Salvar senha nova e entrar</button>
+    <p class="small center" style="margin-top:12px;"><a href="#" id="rs-voltar">Voltar</a></p>
+    ${authFooterHTML()}
+  </div></div>`;
+  document.getElementById('rs-voltar').onclick=(e)=>{ e.preventDefault(); renderLogin(); };
+  const erro=(t)=>{ const b=document.getElementById('rs-erro'); b.textContent=t; b.classList.remove('hidden'); };
+  document.getElementById('rs-ok').onclick=async()=>{
+    const email=document.getElementById('rs-email').value.trim(), senha=document.getElementById('rs-senha').value;
+    const nova=document.getElementById('rs-nova').value, nova2=document.getElementById('rs-nova2').value;
+    const user=admins.find(u=>u.id===document.getElementById('rs-admin').value);
+    if(!email||!senha) return erro('Digite o e-mail e a senha da conta em que comprou.');
+    if(!user) return erro('Nenhum administrador neste aparelho.');
+    if(nova.length<6) return erro('A senha nova precisa ter pelo menos 6 caracteres.');
+    if(nova!==nova2) return erro('As duas senhas novas não são iguais.');
+    const btn=document.getElementById('rs-ok'); btn.disabled=true; btn.textContent='Conferindo...';
+    try{
+      await entrarNaConta(email,senha);
+      const r=await fetch('/loja-api/conta/apps',{cache:'no-store',credentials:'same-origin'});
+      const chave=r.ok?(await r.json())?.apps?.gestacell?.chave:null;
+      if(!chave||chave!==lsGet(LICENSE_LS_KEY)) throw new Error('Esta conta não é a dona do Gestacell deste aparelho.');
+      user.salt=genSalt(); user.senha_hash=await hashPassword(nova,user.salt); user.status='ativo';
+      await idbPut('usuarios',user);
+      const l=await doLogin(user.email,nova);
+      if(!l.ok) throw new Error(l.msg);
+      await logAction('senha_recuperada','Senha do administrador trocada pela conta da compra');
+      toast('Senha nova salva!','success');
+      startApp();
+    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); btn.disabled=false; btn.textContent='Salvar senha nova e entrar'; }
+  };
 }
 
 function obStepsHTML(){
@@ -1106,6 +1169,7 @@ const NAV_ITEMS=[
   {id:'produtos',label:'Estoque (Produtos)',icon:'produtos'},
   {id:'pecas',label:'Estoque (Peças)',icon:'pecas'},
   {id:'os',label:'Ordens de Serviço',icon:'os'},
+  {id:'calculadoras',label:'Calculadoras',icon:'calc'},
   {id:'clientes',label:'Clientes',icon:'clientes'},
   {id:'fornecedores',label:'Fornecedores',icon:'fornecedores'},
   {id:'financeiro',label:'Financeiro',icon:'financeiro'},
@@ -2185,6 +2249,7 @@ async function openOSDetail(id){
             <div class="flex-between small"><span>Peças</span><span>${fmtBRL(os.valor_pecas)}</span></div>
             <div class="flex-between" style="font-weight:700;margin-top:4px;"><span>Total</span><span id="os-total-display">${fmtBRL(os.valor_total)}</span></div>
           </div>
+          <p class="small muted" id="os-cartao-dica" style="margin:6px 2px 0;"></p>
         </div>
       </div>
       <div class="divider"></div>
@@ -2212,7 +2277,9 @@ async function openOSDetail(id){
     const desc=parseFloat(document.getElementById('os-desc').value||'0');
     const total=Math.max(0,Number(os.valor_pecas||0)+mo-desc);
     document.getElementById('os-total-display').textContent=fmtBRL(total);
+    osDicaCartao(total);
   }));
+  osDicaCartao(os.valor_total);
   document.getElementById('os-save-detail').onclick=async()=>{
     const novoStatus=document.getElementById('os-status-select').value;
     const copiaDevolvida=document.getElementById('os-copia-devolvida').checked;
@@ -2570,6 +2637,265 @@ VIEWS.relatorios = {
         <p style="margin-top:16px;font-size:9.5px;color:#999;">Sistema Gestacell — LeuName Softwares</p>
       </div>`);
     };
+  }
+};
+
+/* ============================================================
+   CALCULADORAS — quanto cobrar pelo conserto, parcelas no cartão,
+   lucro real da venda e as taxas da maquininha da loja.
+   ============================================================ */
+// Na OS: quanto cobrar no cartão para receber o total (usa as taxas da maquininha da loja).
+async function osDicaCartao(total){
+  const el=document.getElementById('os-cartao-dica'); if(!el) return;
+  if(!(total>0)){ el.textContent=''; return; }
+  const t=await calcTaxas(), c=calcTabelaCartao(total,t);
+  el.textContent=`💳 Para receber ${fmtBRL(total)} limpo: débito ${fmtBRL(calcNoCartao(total,t.debito))} · 3x de ${fmtBRL(c[2].parcela)} · 10x de ${fmtBRL(c[9].parcela)}`;
+}
+/* CALC-INICIO (contas puras, testadas em leuapps/test/calculadoras.test.mjs) */
+// Taxas de exemplo (%). Cada loja troca pelas da sua maquininha em "Taxas da maquininha".
+const CALC_TAXAS_PADRAO={debito:1.99,credito:[4.99,6.29,7.49,8.69,9.89,10.99,12.09,12.99,14.19,15.29,16.49,17.59]};
+const calcNum=(v)=>{ const n=parseFloat(String(v==null?'':v).replace(',','.')); return isFinite(n)&&n>0?n:0; };
+const calcCent=(v)=>Math.round(v*100)/100;
+// Preço para cobrar no cartão e ainda receber "liquido" depois da taxa.
+function calcNoCartao(liquido,taxaPct){ return taxaPct>=100?0:calcCent(liquido/(1-taxaPct/100)); }
+// Arredonda para cima: de R$ 5 em R$ 5 a partir de R$ 50, de R$ 1 em R$ 1 abaixo disso.
+function calcArredondar(v){ if(v<=0) return 0; const passo=v>=50?5:1; return Math.ceil(v/passo-1e-9)*passo; }
+function calcTabelaCartao(liquido,taxas){
+  return taxas.credito.map((t,i)=>{ const total=calcNoCartao(liquido,t); return {vezes:i+1,taxa:t,total,parcela:calcCent(total/(i+1))}; });
+}
+/** Conserto: peças + lucro na peça + mão de obra + reserva para garantia + imposto. */
+function calcConserto(e,taxas){
+  const peca=calcNum(e.peca), outros=calcNum(e.outros), mao=calcNum(e.maoObra);
+  const lucroPeca=peca*calcNum(e.lucroPecaPct)/100;
+  const subtotal=peca+outros+lucroPeca+mao;
+  const reserva=subtotal*calcNum(e.reservaPct)/100;
+  const impostoPct=Math.min(calcNum(e.impostoPct),90);
+  let vista=(subtotal+reserva)/(1-impostoPct/100);
+  if(e.arredondar) vista=calcArredondar(vista);
+  vista=calcCent(vista);
+  const imposto=calcCent(vista*impostoPct/100);
+  const ganho=calcCent(vista-peca-outros-reserva-imposto);
+  return {peca,outros,lucroPeca:calcCent(lucroPeca),mao,reserva:calcCent(reserva),imposto,vista,ganho,
+    debito:calcNoCartao(vista,taxas.debito),credito:calcTabelaCartao(vista,taxas)};
+}
+/** Parcelas: "receber" = quanto cobrar para sobrar o valor; "cobrar" = quanto sobra cobrando o valor. */
+function calcParcelas(valor,modo,taxas){
+  valor=calcNum(valor);
+  const linha=(nome,t,vezes)=>{
+    const total=modo==='receber'?calcNoCartao(valor,t):valor;
+    const liquido=modo==='receber'?valor:calcCent(valor*(1-t/100));
+    return {nome,vezes,taxa:t,total,parcela:calcCent(total/vezes),liquido,custo:calcCent(total-liquido)};
+  };
+  return [linha('Débito',taxas.debito,1),...taxas.credito.map((t,i)=>linha(i?`Crédito ${i+1}x`:'Crédito à vista',t,i+1))];
+}
+/** Venda de aparelho/acessório: lucro real depois de taxa e imposto, e o preço mínimo. */
+function calcVenda(e,taxas){
+  const custo=calcNum(e.custo)+calcNum(e.outros), preco=calcNum(e.preco);
+  const forma=e.forma||'vista';
+  const taxaPct=forma==='vista'?0:forma==='debito'?taxas.debito:(taxas.credito[Number(forma)-1]||0);
+  const impostoPct=calcNum(e.impostoPct);
+  const taxa=calcCent(preco*taxaPct/100), imposto=calcCent(preco*impostoPct/100);
+  const lucro=calcCent(preco-custo-taxa-imposto);
+  const resto=1-(taxaPct+impostoPct)/100;
+  const minimo=resto>0?calcCent(custo/resto):0;
+  const lucroPct=calcNum(e.lucroDesejadoPct);
+  const sugerido=resto-lucroPct/100>0?calcCent(custo/(resto-lucroPct/100)):0;
+  return {custo:calcCent(custo),preco,taxaPct,taxa,imposto,lucro,
+    margem:preco?lucro/preco*100:0,sobreCusto:custo?lucro/custo*100:0,minimo,sugerido};
+}
+/* CALC-FIM */
+
+async function calcTaxas(){
+  const c=await idbGet('config','maquininha');
+  if(!c||!Array.isArray(c.credito)||c.credito.length!==12) return CALC_TAXAS_PADRAO;
+  return {debito:Number(c.debito)||0,credito:c.credito.map(t=>Number(t)||0)};
+}
+const calcPct=(v)=>Number(v).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';
+const CALC_TABS=[
+  {id:'conserto',label:'🔧 Conserto'},
+  {id:'parcelas',label:'💳 Parcelas'},
+  {id:'venda',label:'📱 Venda'},
+  {id:'taxas',label:'⚙️ Taxas'},
+];
+// O que a pessoa digitou fica guardado enquanto o app está aberto (trocar de aba não apaga).
+function calcEstado(aba,padrao){ return STATE.cache['calc_'+aba]||(STATE.cache['calc_'+aba]={...padrao}); }
+const CALC_PADRAO={
+  conserto:{servico:'',aparelho:'',peca:'',outros:'',maoObra:'',lucroPecaPct:'30',reservaPct:'5',impostoPct:'0',garantia:'90',arredondar:true},
+  parcelas:{valor:'',modo:'receber'},
+  venda:{custo:'',outros:'',preco:'',forma:'vista',impostoPct:'0',lucroDesejadoPct:'20'},
+};
+function calcCampo(id,label,valor,extra){
+  return `<div class="field"><label for="${id}">${label}</label><input id="${id}" inputmode="decimal" value="${esc(valor)}" ${extra||''}></div>`;
+}
+function calcLinha(rotulo,valor,forte){
+  return `<div class="flex-between small" style="padding:5px 0;${forte?'font-weight:800;font-size:14px;':''}"><span>${rotulo}</span><span class="mono">${valor}</span></div>`;
+}
+function calcTabelaHTML(linhas){
+  return `<div class="table-wrap"><table><thead><tr><th>Forma</th><th class="right">Cobrar</th><th class="right">Parcela</th></tr></thead><tbody>
+    ${linhas.map(l=>`<tr><td>${l.nome||(l.vezes===1?'Crédito à vista':'Crédito '+l.vezes+'x')}<br><small class="muted">taxa ${calcPct(l.taxa)}</small></td><td class="right mono">${fmtBRL(l.total)}</td><td class="right mono">${l.vezes>1?l.vezes+'x '+fmtBRL(l.parcela):'—'}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+function calcOrcamentoTexto(e,r){
+  const loja=STATE.loja?.nome||'';
+  const p3=r.credito[2], p10=r.credito[9];
+  return [
+    `*Orçamento${loja?' — '+loja:''}*`,
+    [e.servico||'Conserto',e.aparelho].filter(Boolean).join(' · '),
+    '',
+    `💵 À vista (Pix ou dinheiro): *${fmtBRL(r.vista)}*`,
+    `💳 Débito: ${fmtBRL(r.debito)}`,
+    `💳 Crédito: 3x de ${fmtBRL(p3.parcela)} ou 10x de ${fmtBRL(p10.parcela)}`,
+    calcNum(e.garantia)?`✅ Garantia de ${calcNum(e.garantia)} dias`:'',
+  ].filter((l,i,a)=>l!==''||a[i-1]!=='').join('\n').trim();
+}
+
+async function calcResultadoHTML(aba){
+  const taxas=await calcTaxas();
+  if(aba==='conserto'){
+    const e=calcEstado('conserto',CALC_PADRAO.conserto), r=calcConserto(e,taxas);
+    if(!r.vista) return `<div class="empty-state">${ic('calc',30)}<h4>Digite o custo da peça e a mão de obra</h4><p>O preço à vista, no débito e parcelado aparece aqui na hora.</p></div>`;
+    return `
+      <div class="grid-cards" style="grid-template-columns:repeat(2,1fr);margin-bottom:12px;">
+        <div class="kpi-card"><div class="kpi-label">Cobrar à vista (Pix/dinheiro)</div><div class="kpi-value" style="color:var(--green);">${fmtBRL(r.vista)}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Seu ganho neste conserto</div><div class="kpi-value">${fmtBRL(r.ganho)}</div><div class="kpi-delta ${r.ganho>0?'up':'down'}">mão de obra + lucro na peça</div></div>
+      </div>
+      <div class="panel" style="padding:10px 14px;margin-bottom:12px;">
+        ${calcLinha('Peça e outros custos',fmtBRL(r.peca+r.outros))}
+        ${calcLinha('Lucro na peça',fmtBRL(r.lucroPeca))}
+        ${calcLinha('Mão de obra',fmtBRL(r.mao))}
+        ${calcLinha('Reserva para garantia/retorno',fmtBRL(r.reserva))}
+        ${r.imposto?calcLinha('Imposto',fmtBRL(r.imposto)):''}
+        ${calcLinha('Preço à vista',fmtBRL(r.vista),true)}
+      </div>
+      <p class="small muted" style="margin:0 0 6px;">No cartão a taxa da maquininha já vai somada — você recebe os mesmos ${fmtBRL(r.vista)}.</p>
+      ${calcTabelaHTML([{nome:'Débito',vezes:1,taxa:taxas.debito,total:r.debito,parcela:r.debito},...r.credito])}
+      <div class="field" style="margin-top:14px;"><label for="calc-orc">Orçamento para mandar ao cliente</label><textarea id="calc-orc" rows="7" readonly>${esc(calcOrcamentoTexto(e,r))}</textarea></div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn primary" id="calc-zap">💬 Enviar no WhatsApp</button>
+        <button class="btn outline" id="calc-copiar">📋 Copiar</button>
+      </div>`;
+  }
+  if(aba==='parcelas'){
+    const e=calcEstado('parcelas',CALC_PADRAO.parcelas), linhas=calcParcelas(e.valor,e.modo,taxas);
+    if(!calcNum(e.valor)) return `<div class="empty-state">${ic('calc',30)}<h4>Digite um valor</h4><p>A tabela do débito até 12x aparece aqui.</p></div>`;
+    return `<div class="table-wrap"><table><thead><tr><th>Forma</th><th class="right">Cliente paga</th><th class="right">Você recebe</th></tr></thead><tbody>
+      ${linhas.map(l=>`<tr><td>${l.nome}<br><small class="muted">taxa ${calcPct(l.taxa)}</small></td><td class="right mono">${fmtBRL(l.total)}${l.vezes>1?`<br><small class="muted">${l.vezes}x ${fmtBRL(l.parcela)}</small>`:''}</td><td class="right mono" style="font-weight:700;">${fmtBRL(l.liquido)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="small muted" style="margin-top:8px;">${e.modo==='receber'?'Cobrando o valor da coluna "Cliente paga", sobra exatamente '+fmtBRL(calcNum(e.valor))+' para você.':'A coluna "Você recebe" já desconta a taxa da maquininha.'}</p>`;
+  }
+  if(aba==='venda'){
+    const e=calcEstado('venda',CALC_PADRAO.venda), r=calcVenda(e,taxas);
+    if(!r.custo) return `<div class="empty-state">${ic('calc',30)}<h4>Digite quanto o aparelho custou</h4><p>O lucro real, depois da taxa e do imposto, aparece aqui.</p></div>`;
+    const cor=r.preco&&r.lucro<0?'var(--red)':'var(--green)';
+    return `
+      <div class="grid-cards" style="grid-template-columns:repeat(2,1fr);margin-bottom:12px;">
+        <div class="kpi-card"><div class="kpi-label">Lucro real</div><div class="kpi-value" style="color:${cor};">${r.preco?fmtBRL(r.lucro):'—'}</div>${r.preco?`<div class="kpi-delta ${r.lucro>=0?'up':'down'}">${calcPct(r.margem)} do preço · ${calcPct(r.sobreCusto)} sobre o custo</div>`:''}</div>
+        <div class="kpi-card"><div class="kpi-label">Preço mínimo (sem prejuízo)</div><div class="kpi-value">${fmtBRL(r.minimo)}</div><div class="kpi-delta warn">nesta forma de pagamento</div></div>
+      </div>
+      ${r.preco&&r.lucro<0?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>Vendendo por ${fmtBRL(r.preco)} você <b>perde ${fmtBRL(-r.lucro)}</b>. Cobre pelo menos ${fmtBRL(r.minimo)}.</span></div>`:''}
+      <div class="panel" style="padding:10px 14px;margin-bottom:12px;">
+        ${calcLinha('Custo do aparelho + outros',fmtBRL(r.custo))}
+        ${r.preco?calcLinha('Taxa da maquininha ('+calcPct(r.taxaPct)+')',fmtBRL(r.taxa)):''}
+        ${r.preco&&r.imposto?calcLinha('Imposto',fmtBRL(r.imposto)):''}
+        ${r.preco?calcLinha('Sobra para você',fmtBRL(r.lucro),true):''}
+      </div>
+      <div class="callout info"><span>${ic('lightning',15)}</span><span>Para ganhar <b>${calcPct(calcNum(e.lucroDesejadoPct))}</b> do preço nesta forma de pagamento, venda por <b>${fmtBRL(r.sugerido)}</b>.</span></div>`;
+  }
+  return '';
+}
+
+VIEWS.calculadoras = {
+  render: async()=>{
+    const aba=STATE.cache['calc_tab']||'conserto';
+    const taxas=await calcTaxas();
+    let form='';
+    if(aba==='conserto'){
+      const e=calcEstado('conserto',CALC_PADRAO.conserto);
+      form=`
+        <div class="form-grid">
+          <div class="field"><label for="calc-servico">Serviço</label><input id="calc-servico" data-calc="servico" value="${esc(e.servico)}" placeholder="Ex: Troca de tela"></div>
+          <div class="field"><label for="calc-aparelho">Aparelho</label><input id="calc-aparelho" data-calc="aparelho" value="${esc(e.aparelho)}" placeholder="Ex: Samsung A54"></div>
+          ${calcCampo('calc-peca','Custo da peça (R$)',e.peca,'data-calc="peca" placeholder="0,00"')}
+          ${calcCampo('calc-outros','Frete e outros custos (R$)',e.outros,'data-calc="outros" placeholder="0,00"')}
+          ${calcCampo('calc-mao','Mão de obra (R$)',e.maoObra,'data-calc="maoObra" placeholder="0,00"')}
+          ${calcCampo('calc-lucro','Lucro na peça (%)',e.lucroPecaPct,'data-calc="lucroPecaPct"')}
+          ${calcCampo('calc-reserva','Reserva para garantia (%)',e.reservaPct,'data-calc="reservaPct"')}
+          ${calcCampo('calc-imposto','Imposto (%) — MEI: 0',e.impostoPct,'data-calc="impostoPct"')}
+          ${calcCampo('calc-garantia','Garantia (dias)',e.garantia,'data-calc="garantia"')}
+          <div class="field check" style="align-self:end;"><input type="checkbox" id="calc-arred" data-calc="arredondar" ${e.arredondar?'checked':''}><label for="calc-arred" style="margin:0;">Arredondar o preço para cima</label></div>
+        </div>`;
+    } else if(aba==='parcelas'){
+      const e=calcEstado('parcelas',CALC_PADRAO.parcelas);
+      form=`
+        <div class="field"><label for="calc-modo">O que você quer saber?</label><select id="calc-modo" data-calc="modo">
+          <option value="receber" ${e.modo==='receber'?'selected':''}>Quero receber limpo… quanto cobro?</option>
+          <option value="cobrar" ${e.modo==='cobrar'?'selected':''}>Vou cobrar… quanto sobra para mim?</option>
+        </select></div>
+        <div style="margin-top:10px;">${calcCampo('calc-valor','Valor (R$)',e.valor,'data-calc="valor" placeholder="0,00"')}</div>`;
+    } else if(aba==='venda'){
+      const e=calcEstado('venda',CALC_PADRAO.venda);
+      form=`
+        <div class="form-grid">
+          ${calcCampo('calc-custo','Quanto o aparelho custou (R$)',e.custo,'data-calc="custo" placeholder="0,00"')}
+          ${calcCampo('calc-voutros','Outros custos (R$)',e.outros,'data-calc="outros" placeholder="película, capinha, frete"')}
+          ${calcCampo('calc-preco','Preço de venda (R$)',e.preco,'data-calc="preco" placeholder="0,00"')}
+          <div class="field"><label for="calc-forma">Forma de pagamento</label><select id="calc-forma" data-calc="forma">
+            <option value="vista" ${e.forma==='vista'?'selected':''}>Pix ou dinheiro</option>
+            <option value="debito" ${e.forma==='debito'?'selected':''}>Débito</option>
+            ${taxas.credito.map((t,i)=>`<option value="${i+1}" ${e.forma===String(i+1)?'selected':''}>Crédito ${i?i+1+'x':'à vista'}</option>`).join('')}
+          </select></div>
+          ${calcCampo('calc-vimposto','Imposto (%) — MEI: 0',e.impostoPct,'data-calc="impostoPct"')}
+          ${calcCampo('calc-vlucro','Lucro que você quer (% do preço)',e.lucroDesejadoPct,'data-calc="lucroDesejadoPct"')}
+        </div>`;
+    } else {
+      form=`
+        <p class="small muted" style="margin:0 0 12px;">Confira no app ou no contrato da sua maquininha e troque os números. Os que vêm aqui são só um exemplo.</p>
+        <div class="form-grid c3">
+          ${calcCampo('calc-tx-deb','Débito (%)',String(taxas.debito).replace('.',','))}
+          ${taxas.credito.map((t,i)=>calcCampo('calc-tx-'+(i+1),(i?`Crédito ${i+1}x`:'Crédito à vista')+' (%)',String(t).replace('.',','))).join('')}
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn primary" id="calc-tx-salvar">${ic('check',15)} Salvar taxas</button>
+          <button class="btn outline" id="calc-tx-padrao">Voltar aos números de exemplo</button>
+        </div>`;
+    }
+    return `
+    <div class="page-head"><div><h2>Calculadoras</h2><p>Quanto cobrar, parcelar e quanto sobra de verdade</p></div></div>
+    <div class="tabs">${CALC_TABS.map(t=>`<button class="tab-btn ${aba===t.id?'active':''}" data-calc-tab="${t.id}">${t.label}</button>`).join('')}</div>
+    ${aba==='taxas'?`<div class="panel"><div class="panel-body">${form}</div></div>`:`
+    <div class="two-col">
+      <div class="panel"><div class="panel-body">${form}</div></div>
+      <div id="calc-resultado">${await calcResultadoHTML(aba)}</div>
+    </div>`}`;
+  },
+  wire: ()=>{
+    const aba=STATE.cache['calc_tab']||'conserto';
+    document.querySelectorAll('[data-calc-tab]').forEach(b=>b.onclick=()=>{ STATE.cache['calc_tab']=b.dataset.calcTab; render(); });
+    const ligarResultado=()=>{
+      const zap=document.getElementById('calc-zap'), copiar=document.getElementById('calc-copiar');
+      const texto=()=>document.getElementById('calc-orc').value;
+      if(zap) zap.onclick=()=>window.open('https://wa.me/?text='+encodeURIComponent(texto()),'_blank');
+      if(copiar) copiar.onclick=async()=>{ try{ await navigator.clipboard.writeText(texto()); toast('Orçamento copiado.','success'); }catch(e){ document.getElementById('calc-orc').select(); toast('Selecionei o texto: toque em Copiar.','info'); } };
+    };
+    // Só o resultado é redesenhado: o campo que a pessoa está digitando não perde o foco.
+    let fila=Promise.resolve();
+    const atualizar=()=>{ fila=fila.then(async()=>{ const box=document.getElementById('calc-resultado'); if(box){ box.innerHTML=await calcResultadoHTML(aba); ligarResultado(); } }); };
+    document.querySelectorAll('[data-calc]').forEach(el=>{
+      const ev=el.type==='checkbox'||el.tagName==='SELECT'?'change':'input';
+      el.addEventListener(ev,()=>{ calcEstado(aba,CALC_PADRAO[aba])[el.dataset.calc]=el.type==='checkbox'?el.checked:el.value; atualizar(); });
+    });
+    ligarResultado();
+    const salvar=document.getElementById('calc-tx-salvar');
+    if(salvar) salvar.onclick=async()=>{
+      const ler=(id)=>{ const n=parseFloat(String(document.getElementById(id).value).replace(',','.')); return isFinite(n)&&n>=0&&n<100?n:null; };
+      const debito=ler('calc-tx-deb'), credito=Array.from({length:12},(_,i)=>ler('calc-tx-'+(i+1)));
+      if(debito==null||credito.some(t=>t==null)){ toast('Confira as taxas: use números entre 0 e 99, como 4,99.','error'); return; }
+      await idbPut('config',{id:'maquininha',debito,credito,atualizado_em:nowISO()});
+      await logAction('taxas_maquininha','Taxas da maquininha atualizadas');
+      toast('Taxas salvas. As calculadoras já usam os números novos.','success');
+    };
+    const padrao=document.getElementById('calc-tx-padrao');
+    if(padrao) padrao.onclick=async()=>{ await idbPut('config',{id:'maquininha',...CALC_TAXAS_PADRAO,atualizado_em:nowISO()}); render(); };
   }
 };
 

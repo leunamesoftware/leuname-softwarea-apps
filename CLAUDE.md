@@ -51,4 +51,9 @@
 13. Padrão para os outros apps (o dono aprovou no Quanto Cobrar): página de canal do WhatsApp com postagens prontas
     (enviar, riscar com data, reenviar depois de 30 dias) e barra de pesquisa no conteúdo. Repetir nos próximos apps.
 14. Canal do WhatsApp "Quanto Devo Cobrar?": https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y
-    — é o link da bio do TikTok (as fotos e vídeos dizem "link na bio"). Atalho na Área do Dono.
+    — é o link da bio do TikTok (as fotos e vídeos dizem "veja na bio": a conta ainda não tem o campo Site). Atalho na Área do Dono.
+15. Play Store: a conta foi bloqueada/cancelada. Esquecer a Play Store; tudo sai só pela LeuApps.
+16. Gestacell (`leuapps/public/gestacell/`): o dono entra com o e-mail dele e a senha da Área do Dono
+    (ou a conta da loja). Dono da loja que esqueceu a senha local: "Sou o dono da loja e esqueci a senha"
+    (prova com a conta da compra e cria senha nova). Calculadoras: conserto, parcelas, venda e taxas da maquininha;
+    contas testadas em `leuapps/test/calculadoras.test.mjs` (`node --test test/*.test.mjs` em `leuapps/`).
