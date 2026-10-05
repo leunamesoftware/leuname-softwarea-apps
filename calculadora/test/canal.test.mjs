@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { postagens, textoDoCanal } from '../src/canal.js';
+import { postagens, textoDoCanal, textoTikTok } from '../src/canal.js';
 
 const receitas = JSON.parse(readFileSync(new URL('../src/receitas.json', import.meta.url)));
 const dicas = JSON.parse(readFileSync(new URL('../src/dicas.json', import.meta.url)));
@@ -25,5 +25,14 @@ test('texto do canal: sem quantidades, com o link', () => {
     const modo = t.split('👩‍🍳 *Modo de fazer*')[1].split('💡')[0];
     assert.doesNotMatch(modo, /\d+\s*(ml|g|kg|litros?|cm|xícaras?)\b/, `${r.id}: quantidade no modo de fazer`);
     assert.doesNotMatch(t.split('👩‍🍳')[0].replace(/\d+%/g, ''), /\d/, `${r.id}: número nos ingredientes ("50%" do chocolate é o tipo, pode)`);
+  }
+});
+
+test('legenda do TikTok: sem quantidade, manda para o link da bio e tem hashtags', () => {
+  for (const r of receitas) {
+    const t = textoTikTok(r);
+    assert.match(t, /link na bio/);
+    assert.match(t, /#receitas /);
+    assert.doesNotMatch(t.replace(/#\S+/g, ''), /\d/, `${r.id}: número na legenda`);
   }
 });

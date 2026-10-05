@@ -20,6 +20,13 @@ button { font: inherit; cursor: pointer; }
 .topo h1 { margin: 0; font-size: 19px; font-weight: 800; }
 .topo p { margin: 2px 0 0; font-size: 13px; opacity: .92; }
 main { max-width: 640px; margin: 0 auto; padding: 14px 16px 40px; }
+.redes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.redes button { border: 2px solid var(--linha); background: #fff; border-radius: 12px; padding: 10px 4px; font-weight: 800; font-size: 15px; color: var(--texto); }
+.redes button[aria-selected="true"][data-rede="zap"] { border-color: #16A34A; background: #DCFCE7; color: #15803D; }
+.redes button[aria-selected="true"][data-rede="tiktok"] { border-color: #111; background: #111; color: #fff; }
+.dica-rede { margin: 0 0 12px; font-size: 13.5px; background: #fff; border: 1px dashed var(--linha); border-radius: 12px; padding: 10px 12px; color: var(--suave); }
+.dica-rede[hidden] { display: none; }
+.bt.enviar.tiktok { background: #111; color: #fff; }
 .abas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
 .abas button { border: 1px solid var(--linha); background: #fff; border-radius: 12px; padding: 8px 4px; font-weight: 800; font-size: 13px; color: var(--suave); }
 .abas button[aria-selected="true"] { background: var(--laranja); border-color: var(--laranja); color: #fff; }
@@ -52,10 +59,15 @@ pre { white-space: pre-wrap; word-wrap: break-word; font: inherit; font-size: 13
 </head>
 <body>
 <header class="topo">
-  <h1>📲 Postagens do canal</h1>
-  <p>Toque em "Enviar para o WhatsApp" e escolha o canal. O que já foi enviado fica riscado, com a data.</p>
+  <h1>📲 Postagens prontas</h1>
+  <p>Escolha a rede, toque em "Enviar" e escolha onde postar. O que já foi enviado fica riscado, com a data.</p>
 </header>
 <main>
+  <div class="redes" role="tablist" aria-label="Rede">
+    <button role="tab" data-rede="zap" aria-selected="true">💬 WhatsApp</button>
+    <button role="tab" data-rede="tiktok" aria-selected="false">🎵 TikTok</button>
+  </div>
+  <p class="dica-rede" id="dica-rede" hidden>No TikTok o link do texto não é clicável: deixe o link do canal do WhatsApp na sua <b>bio</b>. O botão envia a foto em pé e deixa a legenda copiada: é só colar.</p>
   <div class="abas" role="tablist">
     <button role="tab" id="aba-enviar" data-aba="enviar" aria-selected="true">Para enviar</button>
     <button role="tab" id="aba-enviadas" data-aba="enviadas" aria-selected="false">Enviadas</button>
@@ -68,8 +80,14 @@ pre { white-space: pre-wrap; word-wrap: break-word; font: inherit; font-size: 13
 // Dentro da loja o endereço é www.leunamesoftware.com.br/quantocobrar/canal; direto, quantocobrar.leunamesoftware.com.br/canal.
 const BASE = location.pathname.replace(/\/canal(\.html)?\/?$/, '');
 const DIAS_REENVIAR = 30; // o WhatsApp some com as postagens antigas do canal: depois disso, reenvie.
-let posts = [], aba = 'enviar';
-try { aba = localStorage.getItem('canal.aba') || 'enviar'; } catch {}
+let todos = [], posts = [], aba = 'enviar', rede = 'zap';
+try { aba = localStorage.getItem('canal.aba') || 'enviar'; rede = localStorage.getItem('canal.rede') || 'zap'; } catch {}
+
+// Cada rede tem o seu texto e a sua marcação de enviado. No TikTok só vão as receitas.
+function vistas() {
+  if (rede === 'zap') return todos;
+  return todos.filter((p) => p.tipo === 'receita').map((p) => ({ ...p, id: 'tt:' + p.id, texto: p.tiktok, enviadoEm: p.enviadoTikTok, rede: 'tiktok' }));
+}
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const dias = (iso) => Math.floor((Date.now() - Date.parse(iso)) / 864e5);
@@ -89,11 +107,14 @@ async function carregar() {
     document.getElementById('lista').innerHTML = `<p class="aviso">Esta página é só do dono.<br><a href="${BASE}/app/">Entre no app com a conta do dono</a> e volte aqui.</p>`;
     return;
   }
-  posts = (await r.json()).posts || [];
+  todos = (await r.json()).posts || [];
   mostrar();
 }
 
 function mostrar() {
+  posts = vistas();
+  document.querySelectorAll('[data-rede]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.rede === rede)));
+  document.getElementById('dica-rede').hidden = rede !== 'tiktok';
   const filtro = { enviar: pendente, enviadas: (p) => p.enviadoEm && !vencida(p), todas: () => true }[aba];
   document.querySelectorAll('[data-aba]').forEach((b) => {
     const n = posts.filter({ enviar: pendente, enviadas: (p) => p.enviadoEm && !vencida(p), todas: () => true }[b.dataset.aba]).length;
@@ -118,7 +139,7 @@ function cartao(p) {
       ${estado}
       <details><summary>Ver o texto</summary><pre>${esc(p.texto)}</pre></details>
       <div class="botoes">
-        <button class="bt enviar" data-enviar="${esc(p.id)}">📤 ${p.enviadoEm ? 'Reenviar' : 'Enviar'} para o WhatsApp</button>
+        <button class="bt enviar ${p.rede === 'tiktok' ? 'tiktok' : ''}" data-enviar="${esc(p.id)}">${p.rede === 'tiktok' ? '🎵' : '📤'} ${p.enviadoEm ? 'Reenviar' : 'Enviar'} para o ${p.rede === 'tiktok' ? 'TikTok' : 'WhatsApp'}</button>
         <button class="bt sec" data-copiar="${esc(p.id)}">📋 Copiar texto</button>
         <button class="bt sec" data-marcar="${esc(p.id)}">${vencida(p) ? '✔️ Já reenviei' : p.enviadoEm ? '↩️ Desmarcar' : '✔️ Já enviei'}</button>
       </div>
@@ -129,7 +150,8 @@ function cartao(p) {
 async function marcar(p, enviado) {
   const r = await fetch(BASE + '/api/canal/enviado', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: p.id, enviado }) });
   if (!r.ok) return aviso('Não consegui salvar. Confira a internet e tente de novo.');
-  p.enviadoEm = enviado ? new Date().toISOString() : null;
+  const original = todos.find((x) => x.id === p.id.replace(/^tt:/, ''));
+  if (original) original[p.rede === 'tiktok' ? 'enviadoTikTok' : 'enviadoEm'] = enviado ? new Date().toISOString() : null;
   mostrar();
 }
 
@@ -142,7 +164,37 @@ async function fotoJpg(p) {
   c.width = img.naturalWidth; c.height = img.naturalHeight;
   c.getContext('2d').drawImage(img, 0, 0);
   const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.92));
-  return new File([blob], p.id.replace(/^.:/, '') + '.jpg', { type: 'image/jpeg' });
+  return new File([blob], p.id.split(':').pop() + '.jpg', { type: 'image/jpeg' });
+}
+
+// TikTok: foto em pé (1080×1920) com fundo desfocado, o nome da receita e o aviso do link na bio.
+async function fotoTikTok(p) {
+  const img = new Image();
+  img.src = BASE + p.foto;
+  await img.decode();
+  const W = 1080, H = 1920, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  const capa = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  g.filter = 'blur(40px) brightness(0.55)';
+  g.drawImage(img, (W - img.naturalWidth * capa) / 2, (H - img.naturalHeight * capa) / 2, img.naturalWidth * capa, img.naturalHeight * capa);
+  g.filter = 'none';
+  const h = img.naturalHeight * (W / img.naturalWidth), y = (H - h) / 2;
+  g.drawImage(img, 0, y, W, h);
+  g.textAlign = 'center'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 18;
+  const linhas = [];
+  let atual = '';
+  for (const palavra of p.titulo.toUpperCase().split(' ')) {
+    g.font = '900 88px system-ui, -apple-system, Roboto, sans-serif';
+    if (g.measureText((atual + ' ' + palavra).trim()).width > W - 120 && atual) { linhas.push(atual); atual = palavra; } else atual = (atual + ' ' + palavra).trim();
+  }
+  linhas.push(atual);
+  linhas.forEach((l, i) => g.fillText(l, W / 2, y - 60 - (linhas.length - 1 - i) * 100));
+  g.font = '800 54px system-ui, -apple-system, Roboto, sans-serif';
+  g.fillText('Receita completa no canal', W / 2, y + h + 110);
+  g.fillText('👉 link na bio', W / 2, y + h + 190);
+  const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.9));
+  return new File([blob], p.id.split(':').pop() + '-tiktok.jpg', { type: 'image/jpeg' });
 }
 
 async function copiar(p) {
@@ -150,17 +202,18 @@ async function copiar(p) {
 }
 
 async function enviar(p) {
-  const copiou = await copiar(p); // se o WhatsApp não trouxer o texto junto, é só colar
+  const copiou = await copiar(p); // se o app não trouxer o texto junto, é só colar
   try {
-    const dados = { text: p.texto };
+    // O TikTok ignora o texto: vai só a foto, e a legenda fica copiada para colar.
+    const dados = p.rede === 'tiktok' ? {} : { text: p.texto };
     if (p.foto) {
-      const f = await fotoJpg(p);
+      const f = p.rede === 'tiktok' ? await fotoTikTok(p) : await fotoJpg(p);
       if (navigator.canShare && navigator.canShare({ files: [f] })) dados.files = [f];
     }
     if (!navigator.share) throw Object.assign(new Error('sem compartilhar'), { name: 'SemShare' });
     await navigator.share(dados);
     await marcar(p, true);
-    aviso('Marcada como enviada. ' + (copiou ? 'O texto também ficou copiado, se precisar colar.' : ''));
+    aviso(p.rede === 'tiktok' ? 'Marcada como enviada. A legenda está copiada: cole no TikTok antes de publicar.' : 'Marcada como enviada. ' + (copiou ? 'O texto também ficou copiado, se precisar colar.' : ''));
   } catch (e) {
     if (e.name === 'AbortError') return;
     if (p.foto) window.open(BASE + p.foto, '_blank');
@@ -171,6 +224,7 @@ async function enviar(p) {
 document.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.aba) { aba = b.dataset.aba; try { localStorage.setItem('canal.aba', aba); } catch {} return mostrar(); }
+  if (b.dataset.rede) { rede = b.dataset.rede; try { localStorage.setItem('canal.rede', rede); } catch {} return mostrar(); }
   const p = posts.find((x) => x.id === (b.dataset.enviar || b.dataset.copiar || b.dataset.marcar));
   if (!p) return;
   if (b.dataset.enviar) enviar(p);
