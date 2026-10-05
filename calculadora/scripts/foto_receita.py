@@ -18,7 +18,7 @@ def preparar(origem, rid):
     (PASTA / 'mini').mkdir(parents=True, exist_ok=True)
     grande = im.resize((720, round(im.height * 720 / im.width)), Image.LANCZOS)
     grande = grande.filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2))
-    grande.save(PASTA / f'{rid}.webp', quality=74, method=6)
+    grande.save(PASTA / f'{rid}.webp', quality=66, method=6)
     lado = min(im.size)
     quadrado = im.crop(((im.width - lado) // 2, (im.height - lado) // 2, (im.width + lado) // 2, (im.height + lado) // 2))
     quadrado.resize((160, 160), Image.LANCZOS).save(PASTA / 'mini' / f'{rid}.webp', quality=70, method=6)
