@@ -40,6 +40,13 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
 .laranja { --cor: var(--laranja); --claro: var(--laranja-claro); }
 .azul { --cor: var(--azul); --claro: var(--azul-claro); }
 .roxo { --cor: var(--roxo); --claro: var(--roxo-claro); }
+.senha { margin-top: 10px; background: var(--cartao); border: 1px solid var(--linha); border-left: 5px solid var(--roxo); border-radius: 14px; padding: 12px; }
+.senha summary { font-weight: 800; cursor: pointer; }
+.senha form { display: grid; gap: 10px; margin-top: 12px; }
+.senha label { display: grid; gap: 4px; font-size: 14px; font-weight: 700; }
+.senha input { font: inherit; min-height: 44px; border: 1px solid #D6D0C8; border-radius: 10px; padding: 0 12px; }
+.senha button { font: inherit; font-weight: 800; min-height: 46px; border: 0; border-radius: 12px; background: var(--roxo); color: #fff; cursor: pointer; }
+#s-msg { margin: 0; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -76,6 +83,16 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
       <a class="card" href="https://www.leunamesoftware.com.br/admin-licencas/login.html"><span class="ic">🔑</span><span><b>Painel de licenças</b><small>Chaves e licenças dos programas</small></span></a>
       <a class="card" href="https://www.leunamesoftware.com.br/"><span class="ic">🏪</span><span><b>Loja LeuApps</b><small>A vitrine como o cliente vê</small></span></a>
     </div>
+    <details class="senha">
+      <summary>🔒 Trocar minha senha</summary>
+      <form id="form-senha">
+        <label>Senha atual<input id="s-atual" type="password" autocomplete="current-password" required></label>
+        <label>Nova senha (mínimo 6 letras ou números)<input id="s-nova" type="password" autocomplete="new-password" minlength="6" required></label>
+        <label>Repita a nova senha<input id="s-nova2" type="password" autocomplete="new-password" minlength="6" required></label>
+        <p id="s-msg" hidden></p>
+        <button type="submit">Salvar nova senha</button>
+      </form>
+    </details>
   </section>
 </main>
 <script>
@@ -84,6 +101,20 @@ fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((apps) => 
   document.getElementById('apps').innerHTML = apps.map((a) => `
     <a class="card" href="https://www.leunamesoftware.com.br${esc(a.url)}"><span class="ic"><img src="${esc(a.icone)}" alt=""></span><span><b>${esc(a.nome)}</b><small>${esc(a.categoria || a.resumo || '')}</small></span></a>`).join('');
 }).catch(() => { document.getElementById('apps').innerHTML = '<p class="nota">Sem internet agora.</p>'; });
+
+document.getElementById('form-senha').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('s-msg'), nova = document.getElementById('s-nova').value;
+  const mostrar = (t, ok) => { msg.textContent = t; msg.style.color = ok ? '#15803D' : '#B91C1C'; msg.hidden = false; };
+  if (nova !== document.getElementById('s-nova2').value) return mostrar('As duas senhas novas não são iguais.');
+  try {
+    const r = await fetch('/loja-api/conta/senha', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ atual: document.getElementById('s-atual').value, nova }) });
+    if (r.ok) { e.target.reset(); return mostrar('Senha trocada! Use a nova senha daqui pra frente em todos os apps.', true); }
+    const erro = (await r.json().catch(() => ({}))).erro;
+    mostrar(erro === 'senha_atual' ? 'A senha atual não confere.' : erro === 'senha_curta' ? 'A nova senha precisa ter pelo menos 6 caracteres.' : erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não deu para trocar agora. Tente de novo.');
+  } catch { mostrar('Sem internet. Tente de novo.'); }
+});
 
 let pedido = null;
 addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; document.getElementById('instalar').hidden = false; });

@@ -5,7 +5,7 @@ import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { acessoDaChave, acessoDaConta, appsDaConta, eDono } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
-import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
+import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
@@ -144,6 +144,19 @@ export default {
         const ap = aparelhoDoPedido(req, d?.aparelho);
         const semTeste = nova ? await marcarTeste(env, c.conta.id, req, ap) : 0;
         return json({ ok: true, nome: c.conta.nome, semTeste: Boolean(semTeste) }, 200, [await abrirSessao(env, c.conta.id, req), cookieAparelho(req, ap.valor)]);
+      }
+      // Trocar a senha (precisa estar logado e saber a senha atual). As outras sessões caem; esta continua.
+      if (pathname === '/api/conta/senha' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const sessao = await contaDaSessao(env, req);
+        if (!sessao) return json({ erro: 'sem_sessao' }, 401);
+        const d = await corpo(req);
+        const conta = await buscarConta(env, sessao.email);
+        if (!conta || !(await senhaConfere(conta, d?.atual))) return json({ erro: 'senha_atual' }, 401);
+        if (!senhaValida(d?.nova)) return json({ erro: 'senha_curta' }, 400);
+        await trocarSenha(env, conta.id, d.nova);
+        return json({ ok: true }, 200, await abrirSessao(env, conta.id, req));
       }
       if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
       if (pathname === '/api/conta' && m === 'GET') {
