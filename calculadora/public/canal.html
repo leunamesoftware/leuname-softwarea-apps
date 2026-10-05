@@ -179,7 +179,7 @@ async function fotoTikTok(p) {
   g.filter = 'blur(40px) brightness(0.55)';
   g.drawImage(img, (W - img.naturalWidth * capa) / 2, (H - img.naturalHeight * capa) / 2, img.naturalWidth * capa, img.naturalHeight * capa);
   g.filter = 'none';
-  const h = img.naturalHeight * (W / img.naturalWidth), y = (H - h) / 2;
+  const h = img.naturalHeight * (W / img.naturalWidth), y = 520; // mais para cima: embaixo o TikTok põe nome e legenda
   g.drawImage(img, 0, y, W, h);
   g.textAlign = 'center'; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 18;
   const linhas = [];
@@ -191,8 +191,8 @@ async function fotoTikTok(p) {
   linhas.push(atual);
   linhas.forEach((l, i) => g.fillText(l, W / 2, y - 60 - (linhas.length - 1 - i) * 100));
   g.font = '800 54px system-ui, -apple-system, Roboto, sans-serif';
-  g.fillText('Receita completa no canal', W / 2, y + h + 110);
-  g.fillText('👉 link na bio', W / 2, y + h + 190);
+  g.fillText('Receita completa no canal', W / 2, y + h + 90);
+  g.fillText('👉 link na bio', W / 2, y + h + 170);
   const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.9));
   return new File([blob], p.id.split(':').pop() + '-tiktok.jpg', { type: 'image/jpeg' });
 }
