@@ -4237,7 +4237,7 @@
     "id": "cinnamon-roll",
     "nome": "Cinnamon Roll (Rolinho de Canela)",
     "categoria": "Doces",
-    "foto": "/img/receitas/cinnamon-roll.webp?v=5d56d4cc",
+    "foto": "/img/receitas/cinnamon-roll.webp?v=f811a032",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 90,
@@ -4400,8 +4400,7 @@
       "Validade: 3 dias em pote fechado."
     ],
     "dicaVenda": "Cinnamon roll é moda nas cafeterias e quase ninguém vende no bairro. Venda individual e em caixas com 4.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-06T08:00:00-03:00",
     "canal": {
       "emoji": "🥐",
       "ingredientes": [
@@ -4423,7 +4422,7 @@
     "id": "escondidinho-frango-mandioca",
     "nome": "Escondidinho de Frango com Mandioca",
     "categoria": "Marmitas",
-    "foto": "/img/receitas/escondidinho-frango-mandioca.webp?v=25663075",
+    "foto": "/img/receitas/escondidinho-frango-mandioca.webp?v=12905d07",
     "rendimento": {
       "unidades": 6,
       "pesoUnidadeG": 400,
@@ -4596,8 +4595,7 @@
       "Validade: 3 dias na geladeira ou 60 dias congelado."
     ],
     "dicaVenda": "Marmita congelada vende por kit semanal (ex.: 5 marmitas). Varie com carne seca ou carne moída para ter cardápio.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-06T19:00:00-03:00",
     "canal": {
       "emoji": "🍲",
       "ingredientes": [
@@ -4618,7 +4616,7 @@
     "id": "alfajor",
     "nome": "Alfajor",
     "categoria": "Doces",
-    "foto": "/img/receitas/alfajor.webp?v=504292c5",
+    "foto": "/img/receitas/alfajor.webp?v=6e832392",
     "rendimento": {
       "unidades": 20,
       "pesoUnidadeG": 45,
@@ -4747,8 +4745,7 @@
       "Validade: 15 dias em lugar fresco e seco."
     ],
     "dicaVenda": "Alfajor caseiro tem cara de doce de padaria fina. Venda individual e em caixas para presente.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-07T08:00:00-03:00",
     "canal": {
       "emoji": "🍪",
       "ingredientes": [
@@ -4769,7 +4766,7 @@
     "id": "quiche-alho-poro",
     "nome": "Quiche de Alho-Poró",
     "categoria": "Salgados",
-    "foto": "/img/receitas/quiche-alho-poro.webp?v=34c803ef",
+    "foto": "/img/receitas/quiche-alho-poro.webp?v=c21bd889",
     "rendimento": {
       "unidades": 8,
       "pesoUnidadeG": 120,
@@ -4920,8 +4917,7 @@
       "Validade: 3 dias na geladeira ou 30 dias congelada."
     ],
     "dicaVenda": "Quiche vende bem em fatia para escritório e inteira para encomendas. Faça também de queijo com tomate seco.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-07T19:00:00-03:00",
     "canal": {
       "emoji": "🥧",
       "ingredientes": [
@@ -4941,7 +4937,7 @@
     "id": "geladinho-morango",
     "nome": "Geladinho Gourmet de Morango",
     "categoria": "Sorvetes",
-    "foto": "/img/receitas/geladinho-morango.webp?v=68440c21",
+    "foto": "/img/receitas/geladinho-morango.webp?v=edaf6ba5",
     "rendimento": {
       "unidades": 22,
       "pesoUnidadeG": 100,
@@ -5037,8 +5033,7 @@
       "Validade: 60 dias congelado."
     ],
     "dicaVenda": "Geladinho gourmet vende o ano todo no bairro e na porta de escola. Faça vários sabores e venda em isopor.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-08T08:00:00-03:00",
     "canal": {
       "emoji": "🍓",
       "ingredientes": [
@@ -5057,7 +5052,7 @@
     "id": "mini-pizza",
     "nome": "Mini Pizza",
     "categoria": "Salgados",
-    "foto": "/img/receitas/mini-pizza.webp?v=90bf5063",
+    "foto": "/img/receitas/mini-pizza.webp?v=75710d20",
     "rendimento": {
       "unidades": 40,
       "pesoUnidadeG": 40,
@@ -5189,8 +5184,7 @@
       "Validade: 3 dias na geladeira ou 60 dias congelada."
     ],
     "dicaVenda": "Mini pizza é campeã em festa infantil. Venda também congelada em pacote para o cliente assar em casa.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-08T19:00:00-03:00",
     "canal": {
       "emoji": "🍕",
       "ingredientes": [
@@ -5212,7 +5206,7 @@
     "id": "tiramisu-pote",
     "nome": "Tiramisù no Pote",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/tiramisu-pote.webp?v=3c7c2ddc",
+    "foto": "/img/receitas/tiramisu-pote.webp?v=b4c1299f",
     "rendimento": {
       "unidades": 10,
       "pesoUnidadeG": 150,
@@ -5308,8 +5302,7 @@
       "Validade: 3 dias na geladeira."
     ],
     "dicaVenda": "Tiramisù no pote tem cara de sobremesa de restaurante italiano. Venda individual e em kits para jantar a dois.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-09T08:00:00-03:00",
     "canal": {
       "emoji": "☕",
       "ingredientes": [
@@ -5329,7 +5322,7 @@
     "id": "lasanha-bolonhesa",
     "nome": "Lasanha à Bolonhesa",
     "categoria": "Marmitas",
-    "foto": "/img/receitas/lasanha-bolonhesa.webp?v=d605c93c",
+    "foto": "/img/receitas/lasanha-bolonhesa.webp?v=d3b9f1bb",
     "rendimento": {
       "unidades": 6,
       "pesoUnidadeG": 450,
@@ -5501,8 +5494,7 @@
       "Validade: 3 dias na geladeira ou 60 dias congelada."
     ],
     "dicaVenda": "Lasanha congelada vende muito para o almoço de domingo. Ofereça tamanho individual e família.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-09T19:00:00-03:00",
     "canal": {
       "emoji": "🍝",
       "ingredientes": [
@@ -5521,7 +5513,7 @@
     "id": "pastel-de-nata",
     "nome": "Pastel de Nata",
     "categoria": "Doces",
-    "foto": "/img/receitas/pastel-de-nata.webp?v=118aa458",
+    "foto": "/img/receitas/pastel-de-nata.webp?v=79c671d6",
     "rendimento": {
       "unidades": 18,
       "pesoUnidadeG": 60,
@@ -5629,8 +5621,7 @@
       "Validade: 2 dias em lugar fresco (melhor no mesmo dia)."
     ],
     "dicaVenda": "Pastel de nata é clássico de Portugal e quase ninguém faz no bairro. Venda quentinho com café.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-10T08:00:00-03:00",
     "canal": {
       "emoji": "🥧",
       "ingredientes": [
@@ -5651,7 +5642,7 @@
     "id": "caldo-verde",
     "nome": "Caldo Verde",
     "categoria": "Caldos",
-    "foto": "/img/receitas/caldo-verde.webp?v=b25de91c",
+    "foto": "/img/receitas/caldo-verde.webp?v=bef8bd96",
     "rendimento": {
       "unidades": 10,
       "pesoUnidadeG": 300,
@@ -5769,8 +5760,7 @@
       "Validade: 3 dias na geladeira ou 60 dias congelado (sem a couve)."
     ],
     "dicaVenda": "Caldo vende muito em noites frias, em bar e na porta de casa. Ofereça com pão ou torradinha.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-10T19:00:00-03:00",
     "canal": {
       "emoji": "🥣",
       "ingredientes": [
@@ -5789,7 +5779,7 @@
     "id": "donuts",
     "nome": "Donuts",
     "categoria": "Doces",
-    "foto": "/img/receitas/donuts.webp?v=aebbd6d8",
+    "foto": "/img/receitas/donuts.webp?v=37ab678c",
     "rendimento": {
       "unidades": 16,
       "pesoUnidadeG": 60,
@@ -5929,8 +5919,7 @@
       "Validade: 2 dias em pote fechado."
     ],
     "dicaVenda": "Donuts coloridos fazem sucesso em festa infantil e na vitrine. Monte caixas com 4 ou 6 sabores.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-11T08:00:00-03:00",
     "canal": {
       "emoji": "🍩",
       "ingredientes": [
@@ -5952,7 +5941,7 @@
     "id": "pao-de-alho",
     "nome": "Pão de Alho Caseiro",
     "categoria": "Salgados",
-    "foto": "/img/receitas/pao-de-alho.webp?v=57ff86ff",
+    "foto": "/img/receitas/pao-de-alho.webp?v=a97028de",
     "rendimento": {
       "unidades": 20,
       "pesoUnidadeG": 40,
@@ -6070,8 +6059,7 @@
       "Validade: 90 dias congelado."
     ],
     "dicaVenda": "Pão de alho sai muito na sexta e no sábado. Ofereça em açougues e mercadinhos do bairro.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-11T19:00:00-03:00",
     "canal": {
       "emoji": "🧄",
       "ingredientes": [
@@ -6090,7 +6078,7 @@
     "id": "arroz-doce",
     "nome": "Arroz-Doce",
     "categoria": "Sobremesas",
-    "foto": "/img/receitas/arroz-doce.webp?v=ee78dfb7",
+    "foto": "/img/receitas/arroz-doce.webp?v=c25a8bd6",
     "rendimento": {
       "unidades": 10,
       "pesoUnidadeG": 200,
@@ -6174,8 +6162,7 @@
       "Validade: 4 dias na geladeira."
     ],
     "dicaVenda": "Arroz-doce vende muito em festa junina e como sobremesa de marmita. Ofereça quente ou gelado.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-12T08:00:00-03:00",
     "canal": {
       "emoji": "🍚",
       "ingredientes": [
@@ -6194,7 +6181,7 @@
     "id": "bolinho-arroz",
     "nome": "Bolinho de Arroz",
     "categoria": "Salgados",
-    "foto": "/img/receitas/bolinho-arroz.webp?v=7a1ec9ad",
+    "foto": "/img/receitas/bolinho-arroz.webp?v=d5cba1ef",
     "rendimento": {
       "unidades": 30,
       "pesoUnidadeG": 30,
@@ -6333,8 +6320,7 @@
       "Validade: venda no mesmo dia; a massa crua dura 1 dia na geladeira."
     ],
     "dicaVenda": "Bolinho de arroz tem custo muito baixo e vende em bar e porção. Ótimo para aproveitar sobra de arroz.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-12T19:00:00-03:00",
     "canal": {
       "emoji": "🍘",
       "ingredientes": [
@@ -6353,7 +6339,7 @@
     "id": "bolo-gelado-coco",
     "nome": "Bolo Gelado de Coco",
     "categoria": "Bolos",
-    "foto": "/img/receitas/bolo-gelado-coco.webp?v=a6451835",
+    "foto": "/img/receitas/bolo-gelado-coco.webp?v=8fd74481",
     "rendimento": {
       "unidades": 20,
       "pesoUnidadeG": 90,
@@ -6493,8 +6479,7 @@
       "Validade: 4 dias na geladeira."
     ],
     "dicaVenda": "Bolo gelado (o \"toalha felpuda\") vende em escola, ponto de ônibus e festa. Custo baixo e preço bom por unidade.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-13T08:00:00-03:00",
     "canal": {
       "emoji": "🥥",
       "ingredientes": [
@@ -6515,7 +6500,7 @@
     "id": "quindim",
     "nome": "Quindim",
     "categoria": "Doces",
-    "foto": "/img/receitas/quindim.webp?v=7debc8ef",
+    "foto": "/img/receitas/quindim.webp?v=b8091c50",
     "rendimento": {
       "unidades": 18,
       "pesoUnidadeG": 30,
@@ -6589,8 +6574,7 @@
       "As claras que sobram viram suspiro. Validade do quindim: 3 dias na geladeira."
     ],
     "dicaVenda": "Quindim brilhante é doce de vitrine. Venda em caixinhas com 4 e no cento para festas.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-13T19:00:00-03:00",
     "canal": {
       "emoji": "💛",
       "ingredientes": [
@@ -6609,7 +6593,7 @@
     "id": "pipoca-gourmet-chocolate",
     "nome": "Pipoca Gourmet de Chocolate",
     "categoria": "Doces",
-    "foto": "/img/receitas/pipoca-gourmet-chocolate.webp?v=58ef698d",
+    "foto": "/img/receitas/pipoca-gourmet-chocolate.webp?v=427f96f6",
     "rendimento": {
       "unidades": 10,
       "pesoUnidadeG": 45,
@@ -6672,8 +6656,7 @@
       "Validade: 10 dias em saquinho bem fechado."
     ],
     "dicaVenda": "Pipoca gourmet tem custo baixo e vende em escola, festa e cinema da comunidade. Saquinho com laço vira lembrancinha.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-14T08:00:00-03:00",
     "canal": {
       "emoji": "🍿",
       "ingredientes": [
@@ -6692,7 +6675,7 @@
     "id": "rosca-doce-coco",
     "nome": "Rosca Doce de Coco",
     "categoria": "Pães",
-    "foto": "/img/receitas/rosca-doce-coco.webp?v=2fd49e02",
+    "foto": "/img/receitas/rosca-doce-coco.webp?v=276d0c46",
     "rendimento": {
       "unidades": 2,
       "pesoUnidadeG": 600,
@@ -6832,8 +6815,7 @@
       "Validade: 3 dias em saco fechado."
     ],
     "dicaVenda": "Rosca doce vende inteira no café da tarde de domingo e em fatias. Faça também de goiabada.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-14T19:00:00-03:00",
     "canal": {
       "emoji": "🍞",
       "ingredientes": [
@@ -6854,7 +6836,7 @@
     "id": "bolo-laranja",
     "nome": "Bolo de Laranja",
     "categoria": "Bolos",
-    "foto": "/img/receitas/bolo-laranja.webp?v=1c983c1d",
+    "foto": "/img/receitas/bolo-laranja.webp?v=4ac369a2",
     "rendimento": {
       "unidades": 12,
       "pesoUnidadeG": 90,
@@ -6972,8 +6954,7 @@
       "Validade: 4 dias em pote fechado."
     ],
     "dicaVenda": "Bolo caseiro em fatia vende todo dia em padaria, escola e trabalho. Bolo inteiro sai bem por encomenda.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-15T08:00:00-03:00",
     "canal": {
       "emoji": "🍊",
       "ingredientes": [
@@ -6993,7 +6974,7 @@
     "id": "mini-bolo-vulcao",
     "nome": "Mini Bolo Vulcão de Chocolate",
     "categoria": "Bolos",
-    "foto": "/img/receitas/mini-bolo-vulcao.webp?v=9c179788",
+    "foto": "/img/receitas/mini-bolo-vulcao.webp?v=4a919cf5",
     "rendimento": {
       "unidades": 8,
       "pesoUnidadeG": 180,
@@ -7155,8 +7136,7 @@
       "Validade: 3 dias na geladeira."
     ],
     "dicaVenda": "Mini bolo vulcão é campeão de vídeo e foto nas redes. Venda por encomenda e para presente.",
-    "liberarEm": "aguardando-foto",
-    "fotoProvisoria": true,
+    "liberarEm": "2026-10-15T19:00:00-03:00",
     "canal": {
       "emoji": "🌋",
       "ingredientes": [
