@@ -263,11 +263,16 @@
     @media (prefers-reduced-motion: reduce) { .barra.indo i { animation: none; width: 100% !important; } }
 
     /* Pesquisa: explorar por categoria */
-    .categorias { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .categorias { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .categorias .categoria { min-width: 0; hyphens: auto; -webkit-hyphens: auto; font-size: 15px; padding: 0 12px 0 14px; line-height: 1.25; }
     .categoria { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 76px; padding: 0 16px 0 18px; border-radius: 6px; border: 0; background: var(--cartao); font-size: 15.5px; font-weight: 500; text-align: left; }
     .categoria:first-child { border-top-left-radius: 22px; } .categoria:nth-child(2) { border-top-right-radius: 22px; }
     .categoria:nth-last-child(2):nth-child(odd) { border-bottom-left-radius: 22px; } .categoria:last-child { border-bottom-right-radius: 22px; }
     .categoria span { font-size: 34px; }
+    .cat-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+    .cat-ico svg { width: 24px; height: 24px; }
+    .microfone { flex: none; width: 40px; height: 40px; margin-right: -8px; border: 0; border-radius: 50%; background: none; color: var(--texto); display: grid; place-items: center; }
+    .microfone.ouvindo { background: var(--verde); color: var(--no-verde); }
 
     /* Serviços: abas + fileiras de exemplos */
     .abas-texto { display: flex; gap: 26px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--linha); margin: 4px -16px 0; padding: 0 16px; }
@@ -370,7 +375,8 @@
     <div class="topo-linha" id="topo-busca" hidden>
       <label class="busca">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="busca" type="search" placeholder="Pesquisar apps" aria-label="Pesquisar apps" autocomplete="off">
+        <input id="busca" type="search" placeholder="Pesquisar apps e cursos" aria-label="Pesquisar apps e cursos" autocomplete="off">
+        <button type="button" class="microfone" id="microfone" aria-label="Pesquisar por voz" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button>
       </label>
       <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar2">L</button>
     </div>
@@ -438,8 +444,10 @@
     <section id="aba-pesquisa" hidden>
       <div id="resultados" hidden><div class="secao"><div class="secao-titulo" id="titulo-secao" hidden><h2></h2></div><ul class="lista" id="lista-busca"></ul></div></div>
       <div id="explorar">
-        <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
-        <div class="secao"><div class="secao-titulo"><h2>Sugestões para você</h2></div><div class="rolar" id="fileira-busca"></div></div>
+        <!-- Como a Pesquisa da Play: Explorar cursos (no lugar de jogos), Patrocinados · Sugestões, Explorar apps -->
+        <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar cursos</h2></div><div class="categorias" id="categorias-cursos"></div></div>
+        <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="rolar" id="fileira-busca"></div></div>
+        <div class="secao"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
       </div>
     </section>
 
@@ -683,7 +691,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     };
     const CHIPS_CURSOS = [['Em alta', I.alta], ['Grátis', I.gratis], ['Pagos', I.premium], ['Categorias', I.categorias], ['Vendas', I.compras], ['Culinária', I.comida],
       ['Finanças', I.financas], ['Marketing', '<path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 010 6M19 6a8 8 0 010 12"/>'], ['Atendimento', I.comunicacao], ['Gestão', I.produtividade],
-      ['Empreendedorismo', I.negocios], ['Tecnologia', I.meus], ['Beleza', I.estilo], ['Idiomas', IG.palavras]];
+      ['Empreender', I.negocios], ['Tecnologia', I.meus], ['Beleza', I.estilo], ['Idiomas', IG.palavras]];
     const CHIPS_LIVROS = [['E-books', IG.ebook], ['Audiolivros', IG.audio], ['Categorias', I.categorias], ['Mais vendidos', I.alta], ['Lançamentos', IG.novo], ['Gratuitos', I.gratis], ['Receitas', I.comida],
       ['Negócios', I.negocios], ['Finanças', I.financas], ['Autoajuda', IG.coracao], ['Infantil', I.criancas], ['Romance', IG.coracao], ['Estudos', I.educacao], ['Religião', IG.sol]];
     function lojasExtras() {
@@ -744,6 +752,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         </div>`;
     const SECOES_CURSOS = [['Cursos grátis', 'Grátis', 'sempre'], ['Cursos pagos', 'Pagos', 'sempre'], ['Vendas', 'Vendas'], ['Culinária', 'Culinária'], ['Finanças', 'Finanças'], ['Marketing', 'Marketing']];
     function mostrarCursos() {
+      categoriasCursos(); fileiraBusca(); if ($('busca').value.trim()) mostrar();
       $('chips-cursos').innerHTML = CHIPS_CURSOS.map(([n, d]) => `<button class="chip" type="button" data-secao="${n === 'Categorias' ? 'Categorias de cursos' : 'cursos:' + esc(n)}">${G(d)}${esc(n)}</button>`).join('');
       $('dest-cursos').innerHTML = cursos.filter((c) => c.destaque).map(cartaoCurso).join('');
       const andamento = cursos.filter((c) => { const f = progressoDe(c.id).length; return f && f < c.aulas.length; });
@@ -832,18 +841,26 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       for (let i = 0; i < Math.max(a.length, s.length); i++) { if (a[i]) itens.push(doApp(a[i])); if (s[i]) itens.push(doServico(s[i])); }
       $('destaques').innerHTML = itens.join('');
     }
+    // Pesquisa: grades "Explorar cursos" e "Explorar apps" com ícones coloridos (como na Play)
+    const CORES_CAT = ['#E5383B', '#2E9E5B', '#1E88E5', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
+    const icoCat = (d, i) => { const c = CORES_CAT[i % CORES_CAT.length];
+      return `<span class="cat-ico" style="background:${c}22;color:${c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg></span>`; };
     function categorias() {
-      const cores = { 'Receitas e vendas': '🧁', 'Gestão de loja': '📱', 'Documentos e prazos': '📄' };
-      const cats = [...new Set(apps.map((a) => a.categoria))];
-      $('categorias').innerHTML = cats.map((c) => `<button class="categoria" type="button" data-categoria="${esc(c)}">${esc(c)}<span>${cores[c] || '🧩'}</span></button>`).join('')
-        + `<button class="categoria" type="button" data-aba="servicos">Logo, site e banners<span>🎨</span></button>`;
+      const cats = CHIPS.filter((c) => !c[2] && !['Premium', 'Grátis para testar'].includes(c[0]));
+      $('categorias').innerHTML = cats.map(([n, ic], i) => `<button class="categoria" type="button" data-secao="${esc(n)}">${esc(n)}${icoCat(I[ic], i)}</button>`).join('')
+        + `<button class="categoria" type="button" data-aba="servicos">Logo, site e banners${icoCat(I.estilo, cats.length)}</button>`;
     }
+    function categoriasCursos() {
+      $('categorias-cursos').innerHTML = CHIPS_CURSOS.slice(4).map(([n, d], i) => `<button class="categoria" type="button" data-secao="cursos:${esc(n)}">${esc(n)}${icoCat(d, i + 3)}</button>`).join('');
+    }
+    const iconeCurso = (c) => `<button class="icone-grande" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.icone)}" alt="" loading="lazy"><div class="nome">${esc(c.nomeCurto || c.nome)}</div><span class="pilula">${esc(c.preco)}</span></button>`;
+    const fileiraBusca = () => { $('fileira-busca').innerHTML = [...apps.map(iconeGrande), ...cursos.map(iconeCurso)].join(''); };
     function mostrar() {
       const f = $('busca').value.trim().toLowerCase();
       $('lista').innerHTML = `<ul class="lista">${[...apps].sort((x, y) => pontos(y) - pontos(x)).map(linhaSugestao).join('')}</ul>`;
       // Uma novidade por app (a mais nova), para não repetir o mesmo app lado a lado.
 
-      $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
+      fileiraBusca();
       const achados = todos.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       const naSecao = secaoAtual && !f;
       $('resultados').hidden = !f && !naSecao; $('explorar').hidden = Boolean(f) || Boolean(naSecao);
@@ -851,7 +868,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (naSecao) {
         const l = daSecao(secaoAtual);
         $('lista-busca').innerHTML = l.map(linhaVitrine).join('') || `<li class="em-breve"><b>Em breve: ${esc(secaoAtual)}</b>Ainda não temos nada nesta categoria. Estamos preparando novidades.</li>`;
-      } else $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
+      } else {
+        const cursosAchados = cursos.filter((c) => (c.nome + ' ' + c.resumo + ' ' + c.preco + ' ' + (c.categorias || []).join(' ') + ' ' + c.aulas.map((a) => a.titulo).join(' ')).toLowerCase().includes(f));
+        $('lista-busca').innerHTML = achados.map(linha).join('') + cursosAchados.map(linhaCurso).join('') || '<li class="vazio">Nada encontrado. Tente outra palavra.</li>';
+      }
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
@@ -1097,6 +1117,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const sv = t.closest('[data-servico]'); if (sv) return mostrarServicos(sv.dataset.servico);
     });
     $('busca').addEventListener('input', () => { secaoAtual = null; mostrar(); });
+    // Pesquisa por voz (quando o celular permite)
+    const Voz = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (Voz) {
+      const mic = $('microfone'); mic.hidden = false;
+      mic.addEventListener('click', (e) => {
+        e.preventDefault();
+        const r = new Voz(); r.lang = 'pt-BR'; r.interimResults = false;
+        mic.classList.add('ouvindo');
+        r.onresult = (ev) => { $('busca').value = ev.results[0][0].transcript; secaoAtual = null; mostrar(); };
+        r.onend = () => mic.classList.remove('ouvindo');
+        try { r.start(); } catch { mic.classList.remove('ouvindo'); }
+      });
+    }
 
     // ---- Saudação pelo horário ----
     const h = new Date().getHours();

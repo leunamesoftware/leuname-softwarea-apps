@@ -6,7 +6,7 @@
     "resumo": "Aprenda a calcular custo, preço de venda e lucro de doces, salgados e marmitas, sem chute.",
     "icone": "/img/cursos/preco-certo.webp",
     "destaque": { "imagem": "/img/cursos/preco-certo-capa.webp", "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo" },
-    "categorias": ["Grátis", "Em alta", "Vendas", "Culinária", "Finanças", "Empreendedorismo"],
+    "categorias": ["Grátis", "Em alta", "Vendas", "Culinária", "Finanças", "Empreender"],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "app": "quantocobrar",
@@ -45,7 +45,7 @@
     "resumo": "Perfil que passa confiança, status que vende, mensagens que fecham pedido e clientes que voltam.",
     "icone": "/img/cursos/whatsapp-vendas.webp",
     "destaque": { "imagem": "/img/cursos/whatsapp-vendas-capa.webp", "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia" },
-    "categorias": ["Grátis", "Em alta", "Vendas", "Marketing", "Atendimento", "Empreendedorismo"],
+    "categorias": ["Grátis", "Em alta", "Vendas", "Marketing", "Atendimento", "Empreender"],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "aulas": [
