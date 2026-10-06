@@ -60,3 +60,6 @@
 17. Vídeos curtos (TikTok/Status, 1080×1920, sem música — a música entra no TikTok):
     receita: `python3 calculadora/scripts/video_receita.py <id>`; demonstração do app gravando a tela de verdade:
     `calculadora/scripts/demo/` (passo a passo no topo de `qc-montar.py`). Repetir o mesmo para os outros apps.
+18. Brindes (presente, sem compra): o dono libera só o e-mail na Área do Dono → "Brindes". A pessoa toca em Entrar,
+    põe esse e-mail e cria a senha que quiser; já entra com o Pro. Nunca pedir nem guardar a senha de ninguém para o dono.
+    Tabela `brindes` (migração 0008), regra em `calculadora/src/brindes.js`. Padrão a repetir nos outros apps.
