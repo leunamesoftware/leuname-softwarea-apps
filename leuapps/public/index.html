@@ -192,7 +192,7 @@
     .falta b { font-size: 15px; }
     .vazio-linha { padding: 18px 16px; border-radius: 16px; background: var(--cartao); color: var(--suave); font-size: 15px; }
     /* Página de uma seção (seta →): grade de ícones grandes, como na Play */
-    .pagina-secao { position: fixed; inset: 0 0 var(--altura-menu, 80px) 0; z-index: 14; overflow-y: auto; background: var(--fundo); }
+    .pagina-secao { position: fixed; inset: 0 0 var(--altura-menu, 80px) 0; z-index: 12; overflow-y: auto; background: var(--fundo); }
     .pagina-secao .det-barra { display: flex; align-items: center; gap: 8px; }
     .pagina-secao h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .grade { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 14px; padding: 14px 16px 40px; }
@@ -523,10 +523,9 @@
     .recente b { display: block; font-weight: 600; }
     .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
-    .meus-apps { padding-top: 6px; }
-    .grade-meus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; padding: 0 16px 8px; }
+    .grade-meus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 8px; padding: 8px 0 18px; }
     .grade-meus button { display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0; font: inherit; font-size: 12.5px; color: var(--texto); cursor: pointer; text-align: center; }
-    .grade-meus img { width: 60px; height: 60px; border-radius: 16px; box-shadow: 0 3px 10px rgba(20,10,50,.15); }
+    .grade-meus img { width: 64px; height: 64px; border-radius: 18px; box-shadow: 0 3px 10px rgba(20,10,50,.15); }
     .grade-meus span { line-height: 1.2; max-width: 76px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .loja-app { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
     .loja-app img { width: 48px; height: 48px; border-radius: 12px; }
@@ -565,11 +564,15 @@
     .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #2B3030; color: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(0,0,0,.3); font-size: 14.5px; }
 
     /* Menu de baixo */
-    .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
-    .menu div { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 560px; }
+    .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 13; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
+    .menu div { display: grid; grid-template-columns: repeat(6, 1fr); width: 100%; max-width: 560px; align-items: end; }
     .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
     .menu button span { display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; }
     .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
+    @media (max-width: 420px) { .menu button { font-size: 11.5px; } .menu button span { width: 48px; } }
+    .menu .menu-meus { color: var(--verde-texto); font-weight: 700; cursor: pointer; }
+    .menu .menu-meus .bola { width: 54px; height: 54px; margin-top: -26px; border-radius: 18px; background: var(--botao); color: #fff; box-shadow: 0 6px 16px rgba(106,53,232,.38); border: 3px solid var(--cartao); }
+    .menu .menu-meus:active .bola { transform: scale(.95); }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
     .rodape { height: calc(var(--altura-menu, 80px) + 8px); }
 
@@ -611,7 +614,6 @@
         <div class="capa-rodape"><div class="capa-icones" id="capa-icones"></div><button class="capa-botao" type="button" data-secao="Negócios">Explorar</button></div>
       </div>
       <div class="chips-linha" id="chips"></div>
-      <div class="secao meus-apps" id="meus-apps" hidden><div class="secao-titulo"><h2>Meus apps</h2></div><div class="grade-meus" id="grade-meus"></div></div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
@@ -698,6 +700,7 @@
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
     <button role="tab" id="tab-cursos" data-aba="cursos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg></span>Cursos</button>
     <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Início</button>
+    <button type="button" class="menu-meus" data-meus-apps aria-label="Abrir meus apps"><span class="bola"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"/></svg></span>Meus apps</button>
     <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Buscar</button>
     <button role="tab" id="tab-livros" data-aba="livros" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-3.5L6 21z"/></svg></span>Livros</button>
     <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Perfil</button>
@@ -1230,9 +1233,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
-      const dentro = apps.filter((a) => a.abrirWww && situacao(a) !== 'nao');
-      $('meus-apps').hidden = !dentro.length || Boolean(N) || !janelaApp();
-      $('grade-meus').innerHTML = dentro.map((a) => `<button type="button" data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt=""><span>${esc(a.nome)}</span></button>`).join('');
+      if (location.hash === '#meus-apps') mostrarMeusApps();
       const at = apps.filter((a) => situacao(a) === 'atualizar').length, novos = recentesNaoVistos().length;
       $('selo-atualizar').hidden = !(at + novos); $('selo-atualizar').textContent = at + novos;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
@@ -1497,9 +1498,24 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       paginaSecao.hidden = false; document.body.style.overflow = 'hidden';
     }
+    // "Meus apps": os apps da pessoa como a tela de um celular; toca e abre aqui dentro, em tela cheia.
+    function mostrarMeusApps() {
+      const tem = (a) => N && a.android ? situacao(a) !== 'nao' : a.abrirWww && (meus.includes(a.id) || icones.includes(a.id));
+      const meusApps = apps.filter(tem), outros = apps.filter((a) => !tem(a));
+      paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><h1>Meus apps</h1></div>
+        <div class="det-corpo pagina-meus">
+          ${meusApps.length ? `<p class="det-texto">Toque no app para abrir. Ele abre aqui, em tela cheia.</p>
+            <div class="grade-meus">${meusApps.map((a) => `<button type="button" data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt=""><span>${esc(a.nome)}</span></button>`).join('')}</div>`
+          : `<div class="sem-avaliacoes">${ICO('<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>', 34)}<b>Você ainda não tem apps aqui</b>Toque em Instalar em qualquer app da loja e ele aparece aqui.</div>`}
+          ${outros.length ? `<h2 class="det-h2">Instale também</h2><ul class="lista">${outros.map(linhaSugestao).join('')}</ul>` : ''}
+        </div>`;
+      paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaSecao.hidden = false; document.body.style.overflow = 'hidden';
+    }
     function mostrarPaginaSecao() {
       const h = decodeURIComponent(location.hash.slice(1));
       if (todos.some((x) => x.id === h) || h.startsWith('curso/')) return; // abriu um app/curso por cima da lista: a lista fica embaixo
+      if (h === 'meus-apps') return mostrarMeusApps();
       if (h.startsWith('dados/')) return mostrarPaginaDados(h.slice(6));
       if (h.startsWith('sobre/')) return mostrarPaginaDetalhes(h.slice(6));
       if (h.startsWith('avaliacoes/')) { if (paginaSecao.dataset.pagina !== h) { filtroAval = 'todos'; ordemAval = 'relevantes'; paginaSecao.scrollTop = 0; } paginaSecao.dataset.pagina = h; return mostrarPaginaAvaliacoes(h.slice(11)); }
@@ -1781,6 +1797,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (t.closest('[data-buscar-livros]')) { history.replaceState(null, '', location.pathname + location.search); paginaSecao.hidden = true; document.body.style.overflow = ''; aba('livros'); $('busca').focus(); return; }
       // ---- página do app ----
       if (t.closest('[data-recentes]')) return folhaRecentes();
+      if (t.closest('[data-meus-apps]')) { if (location.hash === '#meus-apps') mostrarMeusApps(); else location.hash = 'meus-apps'; return; }
       const cc2 = t.closest('[data-cancelar]'); if (cc2) { if (N && N.cancelar) N.cancelar(cc2.dataset.cancelar); return; }
       if (t.closest('[data-ir-resenha]')) { const f = $('texto-avaliacao'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.focus({ preventScroll: true }); } else document.querySelector('#avaliacoes-app .avaliar')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
       const ar = t.closest('[data-avaliar-rapido]'); if (ar) { const id = ar.dataset.avaliarRapido, nota = Number(ar.dataset.valor);
