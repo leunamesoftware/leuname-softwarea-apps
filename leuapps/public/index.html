@@ -1754,7 +1754,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); });
 
     // ---- Abas (menu de baixo) ----
-    function aba(qual) {
+    function aba(qual, historico = true) {
       secaoAtual = null;
       if (/^#(lista|curso)\//.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
@@ -1769,7 +1769,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (qual === 'pesquisa' && apps.length) mostrar();
       try { localStorage.setItem('leuapps.aba', qual); } catch {}
       scrollTo(0, 0); naCapa();
+      // Setinha de voltar do celular: das outras abas (Cursos, Buscar, Livros, Perfil) volta para o Início, em vez de sair da loja.
+      if (historico && !location.hash) {
+        const fora = qual !== 'apps', marcado = Boolean(history.state && history.state.aba);
+        if (fora && marcado) history.replaceState({ aba: qual }, '');
+        else if (fora) history.pushState({ aba: qual }, '');
+        else if (marcado) history.back();
+      }
     }
+    addEventListener('popstate', (e) => {
+      if (location.hash) return;
+      const q = (e.state && e.state.aba) || 'apps';
+      if (q !== abaAtual) aba(q, false);
+    });
 
     // ---- Cliques ----
     document.addEventListener('click', (e) => {
