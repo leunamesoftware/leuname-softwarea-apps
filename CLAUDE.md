@@ -63,3 +63,8 @@
 18. Brindes (presente, sem compra): o dono libera só o e-mail na Área do Dono → "Brindes". A pessoa toca em Entrar,
     põe esse e-mail e cria a senha que quiser; já entra com o Pro. Nunca pedir nem guardar a senha de ninguém para o dono.
     Tabela `brindes` (migração 0008), regra em `calculadora/src/brindes.js`. Padrão a repetir nos outros apps.
+19. LeuApps para Android (loja de verdade, fora da Play): código em `leuapps/android` (Kotlin, WebView da loja +
+    ponte LeuNativo: instalar com PackageInstaller, abrir, desinstalar). APK gerado pelo workflow
+    `leuapps-android.yml` (repositório Leunamesite, branch padrão) → www.leunamesoftware.com.br/baixar/leuapps.apk;
+    o mesmo workflow gera o Gestacell da loja (/baixar/gestacell.apk). Cada app no apps.json tem `android`
+    {pacote, apk, versao}: subir `versao` faz aparecer "Atualizar" na loja.
