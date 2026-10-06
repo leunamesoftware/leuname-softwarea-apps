@@ -523,6 +523,7 @@
     .recente b { display: block; font-weight: 600; }
     .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
+    .anel-botao { width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; background: conic-gradient(#fff calc(var(--pct, 0) * 1%), rgba(255,255,255,.3) 0); -webkit-mask: radial-gradient(circle, transparent 5px, #000 6px); mask: radial-gradient(circle, transparent 5px, #000 6px); }
     .loja-app { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
     .loja-app img { width: 48px; height: 48px; border-radius: 12px; }
     .loja-app b { display: block; }
@@ -1291,13 +1292,32 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">O ${esc(a.nome)} vai abrir. Quando abrir:</p>
         <ol>${passos.map((x) => `<li>${x}</li>`).join('')}</ol><a class="acao" href="${esc(a.instalar)}">Abrir o ${esc(a.nome)}</a>`);
     }
+    // Baixa a LeuApps (app Android) mostrando a voltinha com a porcentagem; no fim o Android pergunta "Instalar?".
+    async function baixarLojaApp(botao, nota) {
+      const url = '/baixar/leuapps.apk';
+      const salvar = (href) => { const l = document.createElement('a'); l.href = href; l.download = 'LeuApps.apk'; document.body.appendChild(l); l.click(); l.remove(); };
+      const pronto = () => { if (nota) nota.innerHTML = '✓ Baixou! Toque em <b>Abrir</b> (embaixo da tela ou nas notificações) e depois em <b>Instalar</b>. Se o celular pedir, ative <b>Permitir desta fonte</b> (só uma vez).'; botao.disabled = false; botao.textContent = 'Baixar de novo'; };
+      botao.disabled = true;
+      try {
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok || !r.body) throw new Error('sem corpo');
+        const total = Number(r.headers.get('Content-Length')) || 0, leitor = r.body.getReader(), partes = []; let lidos = 0;
+        for (;;) {
+          const { done, value } = await leitor.read(); if (done) break;
+          partes.push(value); lidos += value.length;
+          const pct = total ? Math.round(lidos * 100 / total) : 0;
+          botao.innerHTML = `<span class="anel-botao" style="--pct:${pct}"></span>${total ? pct + '%' : 'Baixando…'}`;
+        }
+        const blob = new Blob(partes, { type: 'application/vnd.android.package-archive' }), href = URL.createObjectURL(blob);
+        salvar(href); setTimeout(() => URL.revokeObjectURL(href), 60000); pronto();
+      } catch { salvar(url); pronto(); }
+    }
     function folhaLojaApp(a) {
-      folha(`<div class="loja-app"><img src="/img/leuapps-192.webp" alt=""><div><b>App LeuApps</b><small>A loja da LeuName no seu celular</small></div></div>
-        <h3>Instale o ${esc(a.nome)} direto no celular</h3>
-        <p class="sub">Para o Instalar mandar o app direto para a tela do celular (sem abrir site), use o app da nossa loja. É só na primeira vez:</p>
-        <ol><li>Toque em <b>Baixar o app LeuApps</b>.</li><li>Quando baixar, toque em <b>Abrir</b> e depois em <b>Instalar</b>.</li><li>Abra a LeuApps e toque em <b>Instalar</b> no ${esc(a.nome)}: ele vai direto para a tela do celular.</li></ol>
-        <a class="acao" href="/baixar/leuapps.apk">Baixar o app LeuApps</a>
-        <p class="sub pequeno">Se o celular pedir, ative <b>Permitir desta fonte</b>. É só uma vez.</p>`, 'Agora não');
+      const f = folha(`<div class="loja-app"><img src="/img/leuapps-192.webp" alt=""><div><b>Atualize a sua LeuApps</b><small>Uma vez só, e pronto</small></div></div>
+        <p class="sub">A LeuApps do seu celular é a versão antiga, que abre os apps como site. A nova instala o ${esc(a.nome)} e todos os outros direto na tela do celular, com a voltinha, igual à Play.</p>
+        <button class="acao" type="button" id="baixar-loja">Atualizar a LeuApps</button>
+        <p class="sub pequeno" id="nota-loja">Quando baixar, toque em <b>Abrir</b> e depois em <b>Instalar</b>. Se o celular pedir, ative <b>Permitir desta fonte</b>.</p>`, 'Agora não');
+      f.querySelector('#baixar-loja').addEventListener('click', (e) => baixarLojaApp(e.currentTarget, f.querySelector('#nota-loja')));
     }
     function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
@@ -1882,21 +1902,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <h2>Sobre este app</h2>
         <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele vai direto para a tela do seu celular, com ícone próprio. Atualizações chegam sozinhas.</p>
         <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
-        <p class="nota" id="nota-app">Depois de instalar, abra a LeuApps pelo ícone na tela do celular.</p>
+        <p class="nota" id="nota-app">Toque em Instalar. Quando baixar, toque em <b>Abrir</b> e depois em <b>Instalar</b>. Pronto: abra a LeuApps pelo ícone e instale qualquer app com um toque.</p>
 `;
       document.body.prepend(pag);
-      $('instalar-leuapps').addEventListener('click', async () => {
-        if (pedidoChrome) {
-          const q = pedidoChrome; pedidoChrome = null;
-          q.prompt();
-          const r = await q.userChoice;
-          if (r.outcome === 'accepted') $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
-          return;
-        }
-        // O Chrome ainda não ofereceu (ou a LeuApps já está instalada): mostra o caminho pelo menu.
-        folha(`<h3>Instalar a LeuApps</h3><p class="sub">Se a LeuApps já está na tela do celular, é só abrir por lá. Se não:</p>
-          <ol><li>Toque nos <b>⋮</b> do Chrome (canto de baixo ou de cima).</li><li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>`, 'Entendi');
-      });
+      // Android: instala a LeuApps de verdade (app), que instala os outros apps direto na tela do celular, como a Play.
+      $('instalar-leuapps').addEventListener('click', () => baixarLojaApp($('instalar-leuapps'), $('nota-app')));
     }
 
     // ---- Serviços sob encomenda (abas + exemplos com marca d'água + orçamento pelo WhatsApp) ----
