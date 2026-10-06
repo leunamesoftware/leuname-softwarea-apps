@@ -1,7 +1,7 @@
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
-import { listarBrindes, darBrinde, tirarBrinde } from './brindes.js';
+import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
@@ -128,7 +128,13 @@ export default {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const d = await corpo(req);
-        const conta = await buscarConta(env, d?.email);
+        let conta = await buscarConta(env, d?.email);
+        // Ganhou presente (brinde) e ainda não tem conta: o primeiro "Entrar" cria a conta com a senha que a pessoa escolheu.
+        if (!conta && EMAIL.test(String(d?.email || '').trim().toLowerCase()) && senhaValida(d?.senha) && (await brindeDoEmail(env, d.email))) {
+          const email = String(d.email).trim().toLowerCase();
+          conta = (await contaParaCompra(env, email, email.split('@')[0], d.senha)).conta;
+          return json({ ok: true, nome: conta.nome, novaConta: true }, 200, await abrirSessao(env, conta.id, req));
+        }
         if (!conta || !(await senhaConfere(conta, d?.senha))) return json({ erro: 'login_invalido' }, 401);
         return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
       }
