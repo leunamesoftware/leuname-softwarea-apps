@@ -94,7 +94,7 @@
 
     .icone-topo { position: relative; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; color: var(--texto); }
     .selo { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #E5383B; color: #fff; font-size: 10px; font-weight: 800; line-height: 14px; text-align: center; border: 2px solid var(--fundo); box-sizing: border-box; }
-    .destaques { position: relative; margin-top: 12px; gap: 14px; }
+    .destaques { position: relative; gap: 14px; }
     .dest-item { flex: 0 0 calc(100% - 44px); scroll-snap-align: center; display: grid; gap: 6px; }
     .dest-item .destaque { flex: none; width: 100%; aspect-ratio: 2.15 / 1; max-height: none; }
     .destaque-frase { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -.3px; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
@@ -289,11 +289,11 @@
         <div class="capa-rodape"><div class="capa-icones" id="capa-icones"></div><button class="capa-botao" type="button" data-secao="Negócios">Explorar</button></div>
       </div>
       <div class="chips-linha" id="chips"></div>
-      <div class="rolar destaques" id="destaques"></div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2>Sugestões para você</h2><button class="seta" type="button" data-secao="Sugestões para você" aria-label="Ver todas as sugestões"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
+      <div class="secao"><div class="rolar destaques" id="destaques"></div></div>
       <div id="vitrines"></div>
       <div class="secao seguir">
         <h2>Siga suas categorias favoritas</h2>
