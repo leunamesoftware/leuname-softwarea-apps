@@ -269,8 +269,8 @@
     .categoria:first-child { border-top-left-radius: 22px; } .categoria:nth-child(2) { border-top-right-radius: 22px; }
     .categoria:nth-last-child(2):nth-child(odd) { border-bottom-left-radius: 22px; } .categoria:last-child { border-bottom-right-radius: 22px; }
     .categoria span { font-size: 34px; }
-    .cat-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; }
-    .cat-ico svg { width: 24px; height: 24px; }
+    .cat-ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+    .cat-ico svg { width: 42px; height: 42px; }
     .microfone { flex: none; width: 40px; height: 40px; margin-right: -8px; border: 0; border-radius: 50%; background: none; color: var(--texto); display: grid; place-items: center; }
     .microfone.ouvindo { background: var(--verde); color: var(--no-verde); }
 
@@ -844,7 +844,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Pesquisa: grades "Explorar cursos" e "Explorar apps" com ícones coloridos (como na Play)
     const CORES_CAT = ['#E5383B', '#2E9E5B', '#1E88E5', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
     const icoCat = (d, i) => { const c = CORES_CAT[i % CORES_CAT.length];
-      return `<span class="cat-ico" style="background:${c}22;color:${c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg></span>`; };
+      return `<span class="cat-ico" style="color:${c}"><svg viewBox="0 0 24 24" fill="${c}40" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg></span>`; };
     function categorias() {
       const cats = CHIPS.filter((c) => !c[2] && !['Premium', 'Grátis para testar'].includes(c[0]));
       $('categorias').innerHTML = cats.map(([n, ic], i) => `<button class="categoria" type="button" data-secao="${esc(n)}">${esc(n)}${icoCat(I[ic], i)}</button>`).join('')
