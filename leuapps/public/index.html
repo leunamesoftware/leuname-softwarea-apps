@@ -101,6 +101,7 @@
     .dest-app { padding: 6px 0 0; }
     .dest-app .info { font-size: 13.5px; }
     .linha-simples { width: 100%; border: 0; background: none; text-align: left; grid-template-columns: 64px 1fr; }
+    .linha-simples { align-items: start; }
     .linha-simples > span { display: grid; gap: 1px; min-width: 0; }
     .linha-simples .pilula { justify-self: start; }
     .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
@@ -125,15 +126,15 @@
     /* Lista de apps */
     .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     .linha { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 8px 0; }
-    .linha img { width: 64px; height: 64px; border-radius: 16px; box-shadow: var(--sombra); display: block; }
+    .linha img { width: 64px; height: 64px; flex: none; object-fit: cover; border-radius: 16px; box-shadow: var(--sombra); display: block; }
     .linha .nome { font-size: 16.5px; }
     .linha .info { font-size: 14px; color: var(--suave); }
     .pilula { display: inline-block; margin-top: 4px; padding: 2px 9px; border-radius: 8px; background: var(--cartao); font-size: 13px; color: var(--texto); }
     .pilula.verde { background: var(--verde-claro); color: var(--verde-texto); font-weight: 600; }
 
     /* Fileira de ícones grandes */
-    .icone-grande { flex: 0 0 112px; scroll-snap-align: start; border: 0; background: none; padding: 0; text-align: left; }
-    .icone-grande img { width: 112px; height: 112px; border-radius: 26px; box-shadow: var(--sombra); display: block; }
+    .icone-grande { flex: 0 0 112px; align-self: flex-start; scroll-snap-align: start; border: 0; background: none; padding: 0; text-align: left; }
+    .icone-grande img { width: 112px; height: 112px; object-fit: cover; border-radius: 26px; box-shadow: var(--sombra); display: block; }
     .icone-grande .nome { margin-top: 8px; font-size: 14.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
     /* Botões (pílulas) */
@@ -185,7 +186,7 @@
     .det-voltar { width: 48px; height: 48px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; }
     .det-corpo { max-width: 760px; margin: 0 auto; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
     .det-topo { display: grid; grid-template-columns: 76px 1fr; gap: 18px; align-items: center; }
-    .det-topo img { width: 76px; height: 76px; border-radius: 18px; box-shadow: var(--sombra); }
+    .det-topo img { width: 76px; height: 76px; object-fit: cover; border-radius: 18px; box-shadow: var(--sombra); }
     .det-topo h1 { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: -.3px; }
     .det-dev { color: var(--verde-texto); font-weight: 600; font-size: 14.5px; }
     .det-compra { color: var(--suave); font-size: 12.5px; }
@@ -281,10 +282,6 @@
       <div class="secao">
         <div class="secao-titulo" id="bloco-novidades"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
         <div class="rolar" id="novidades"></div>
-      </div>
-      <div class="secao">
-        <div class="secao-titulo"><h2>Feitos pela LeuName</h2><button class="seta" type="button" data-aba="pesquisa" aria-label="Ver todos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-        <div class="rolar" id="fileira"></div>
       </div>
     </section>
 
@@ -464,8 +461,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     const pontos = (a) => (a.secoes || []).filter((s) => seguidas.includes(s)).length;
     function vitrines() {
+      const ja = new Set();
       $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
-        const lista = daSecao(s); if (!lista.length) return '';
+        const lista = daSecao(s).filter((a) => !ja.has(a.id)); if (!lista.length) return '';
+        lista.forEach((a) => ja.add(a.id));
         return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(s)}" aria-label="Ver ${esc(s)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
           <ul class="lista">${lista.map(linhaVitrine).join('')}</ul></div>`;
       }).join('');
@@ -515,7 +514,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`).join('')}</ul>`;
       $('novidades').innerHTML = apps.flatMap((a) => (a.novidades || []).map((n) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
           <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`)).join('');
-      $('fileira').innerHTML = apps.map(iconeGrande).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
       const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       const naSecao = secaoAtual && !f;
