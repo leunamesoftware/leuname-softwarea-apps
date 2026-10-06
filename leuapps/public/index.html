@@ -717,6 +717,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const bom = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
     $('saudacao').textContent = bom;
 
+    // Abre sempre no começo da loja, com a capa inteira à mostra (como a Play).
+    try { history.scrollRestoration = 'manual'; } catch {}
+    scrollTo(0, 0);
+
     // ---- Barra de cima transparente enquanto a capa está embaixo dela
     function naCapa() {
       const c = $('capa');
