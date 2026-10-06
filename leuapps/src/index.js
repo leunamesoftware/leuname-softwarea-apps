@@ -92,6 +92,19 @@ export default {
       if (url.pathname === '/api/mp/aviso') return new Response('Não encontrado.', { status: 404 });
       return env.CONTAS.fetch(new Request(url, req));
     }
+    // APKs da loja para Android (fora da Play Store): /baixar/leuapps.apk, /baixar/gestacell.apk e a versão da LeuApps.
+    const BAIXAR = { '/baixar/leuapps.apk': ['leuapps.apk', 'LeuApps.apk'], '/baixar/gestacell.apk': ['gestacell.apk', 'Gestacell.apk'],
+      '/baixar/leuapps-versao.json': ['leuapps-versao.json'], '/baixar/gestacell-versao.json': ['gestacell-loja-versao.json'] };
+    if (BAIXAR[url.pathname] && env.DOWNLOADS && (req.method === 'GET' || req.method === 'HEAD')) {
+      const [chave, nome] = BAIXAR[url.pathname];
+      const obj = req.method === 'HEAD' ? await env.DOWNLOADS.head(chave) : await env.DOWNLOADS.get(chave);
+      if (!obj) return new Response('Download indisponível no momento.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      const cab = new Headers({ 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' });
+      if (nome) { cab.set('Content-Type', 'application/vnd.android.package-archive'); cab.set('Content-Disposition', `attachment; filename="${nome}"`); }
+      else cab.set('Content-Type', 'application/json');
+      if (obj.size) cab.set('Content-Length', String(obj.size));
+      return new Response(req.method === 'HEAD' ? null : obj.body, { headers: cab });
+    }
     // A Área do Dono tem endereço próprio (vira um app separado no celular): dono.leunamesoftware.com.br.
     if (url.hostname !== DONO_HOST && (url.pathname === '/dono' || url.pathname.startsWith('/dono/'))) return Response.redirect(`https://${DONO_HOST}/`, 302);
     if (url.hostname === DONO_HOST) {
