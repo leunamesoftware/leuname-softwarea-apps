@@ -479,9 +479,14 @@
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
     .det-telas { margin-top: 22px; }
-    .det-telas { gap: 14px; padding-top: 4px; padding-bottom: 14px; }
-    .det-telas img { flex: 0 0 auto; height: 320px; width: auto; max-width: none; border-radius: 16px; scroll-snap-align: start; background: var(--cartao);
-      border: 1px solid rgba(20,10,50,.12); box-shadow: 0 6px 16px rgba(20,10,50,.14); }
+    /* Telas do app: uma de cada vez (arrastou, passa para a próxima), com bolinhas embaixo */
+    .rolar.det-telas { gap: 0; padding: 6px 0 16px; margin: 0 -16px; scroll-snap-type: x mandatory; }
+    .det-telas .tela { flex: 0 0 100%; display: grid; place-items: center; scroll-snap-align: center; scroll-snap-stop: always; }
+    .det-telas img { height: 440px; max-height: 62vh; width: auto; max-width: 82%; object-fit: contain; border-radius: 18px; background: var(--cartao);
+      border: 1px solid rgba(20,10,50,.12); box-shadow: 0 8px 20px rgba(20,10,50,.16); }
+    .pontos-telas { display: flex; justify-content: center; gap: 7px; margin-top: -4px; }
+    .pontos-telas i { width: 7px; height: 7px; border-radius: 50%; background: rgba(20,10,50,.18); transition: width .2s, background .2s; }
+    .pontos-telas i.ativo { width: 20px; border-radius: 999px; background: var(--verde); }
     .detalhe h2 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; }
     .det-desc { margin: 0 0 12px; color: var(--suave); font-size: 15px; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
@@ -1593,7 +1598,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           ${a.planos && situacao(a) === 'nao' && !(a.id in baixando) ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
 `,
         telas: `
-          ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="180" height="320">`).join('')}</div>` : ''}
+          ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c, i) => `<div class="tela"><img src="${esc(c)}" alt="Tela ${i + 1} do ${esc(a.nome)}" loading="lazy" width="248" height="440"></div>`).join('')}</div>
+          <div class="pontos-telas" aria-hidden="true">${a.capturas.map((c, i) => `<i${i ? '' : ' class="ativo"'}></i>`).join('')}</div>` : ''}
 `,
         sobre: `
           <div class="det-secao"><h2>Conheça o app</h2><button class="seta" type="button" data-sobre="${esc(a.id)}" aria-label="Ler tudo sobre o app">${SETA_D}</button></div>
@@ -1651,6 +1657,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       detalhe.hidden = false; document.body.style.overflow = 'hidden';
       detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       if (!av) carregarAvaliacoes(a.id);
+      const telas = detalhe.querySelector('.det-telas'), pontos = detalhe.querySelectorAll('.pontos-telas i');
+      if (telas && pontos.length) telas.addEventListener('scroll', () => {
+        const n = Math.round(telas.scrollLeft / telas.clientWidth);
+        pontos.forEach((p, i) => p.classList.toggle('ativo', i === n));
+      }, { passive: true });
     }
     // Topo da página do app em 3 estados (como na Play): para instalar, instalando (voltinha + Cancelar), instalado (Desinstalar/Abrir).
     let abrirSozinho = (() => { try { return localStorage.getItem('leuapps.abrir-sozinho') === '1'; } catch { return false; } })();
