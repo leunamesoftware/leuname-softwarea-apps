@@ -157,6 +157,22 @@
     .breve-capa { margin-top: 14px; padding: 28px 20px 24px; border-radius: 28px; color: #fff; display: grid; gap: 10px; justify-items: start; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.45), transparent 60%), #0E1A4A; }
     .breve-banner { display: grid; place-items: center; color: #fff; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.6), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.5), transparent 60%), #0E1A4A; }
     .breve-banner .breve-icone { margin-bottom: 40px; }
+    .abas-livros { position: sticky; top: calc(68px + env(safe-area-inset-top)); z-index: 4; background: var(--fundo); }
+    .capas { gap: 14px; }
+    .grade-livros .capa-livro img { width: 100%; aspect-ratio: 2 / 3; border-radius: 8px; }
+    .grade-livros { gap: 26px 16px; }
+    .preco-livro { font-size: 14.5px; color: var(--suave); } .preco-livro s { opacity: .8; }
+    .pagina-secao .lupa-livros { margin-left: auto; flex: none; }
+    .sub-titulo { display: block; font-size: 15px; font-weight: 500; color: var(--suave); letter-spacing: 0; margin-top: 2px; }
+    .capa-livro { flex: 0 0 116px; scroll-snap-align: start; border: 0; background: none; padding: 0; text-align: left; color: var(--texto); display: grid; gap: 4px; align-content: start; }
+    .capa-livro img { width: 116px; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 8px; box-shadow: var(--sombra); margin-bottom: 6px; }
+    .capa-livro .nome { font-size: 14.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .capa-livro .pilula { justify-self: start; }
+    .capa-vazia { flex: 1 0 100%; }
+    .ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    .ranking button { width: 100%; display: flex; align-items: center; gap: 14px; border: 0; background: none; padding: 0; text-align: left; color: var(--texto); font: inherit; }
+    .ranking .pos { width: 22px; text-align: center; font-weight: 700; color: var(--suave); }
+    .ranking img { width: 64px; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 6px; }
     .breve-livros { background: radial-gradient(120% 90% at 85% 10%, rgba(255,138,0,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(123,63,242,.5), transparent 60%), #1A1240; }
     .breve-icone { width: 92px; height: 92px; border-radius: 26px; display: grid; place-items: center; background: rgba(255,255,255,.14); }
     .breve-capa h2 { margin: 6px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
@@ -433,14 +449,9 @@
       <div id="vitrines-cursos"></div>
     </section>
     <section id="aba-livros" hidden>
-      <div class="chips-linha" id="chips-livros"></div>
-      <div class="breve-capa breve-livros" id="breve-livros">
-        <div class="breve-icone"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg></div>
-        <h2>Livros e e-books</h2>
-        <p>Em breve: e-books de receitas, negócios e muito mais. Toque abaixo e avisamos você quando chegarem.</p>
-        <button class="capa-botao" type="button" data-avisar="livros">Quero ser avisado</button>
-      </div>
-      <div class="secao" id="sec-livros" hidden><div class="secao-titulo"><h2>Sugestões para você</h2></div><ul class="lista" id="lista-livros"></ul></div>
+      <!-- Como a aba Livros da Play: abas de texto e fileiras de capas (livros.json) -->
+      <nav class="abas-texto abas-livros" id="abas-livros" aria-label="Tipos de livro"></nav>
+      <div id="conteudo-livros"></div>
     </section>
     <section id="aba-pesquisa" hidden>
       <div id="resultados" hidden><div class="secao"><div class="secao-titulo" id="titulo-secao" hidden><h2></h2></div><ul class="lista" id="lista-busca"></ul></div></div>
@@ -695,15 +706,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ['Empreender', I.negocios], ['Tecnologia', I.meus], ['Beleza', I.estilo], ['Idiomas', IG.palavras]];
     const CHIPS_LIVROS = [['E-books', IG.ebook], ['Audiolivros', IG.audio], ['Categorias', I.categorias], ['Mais vendidos', I.alta], ['Lançamentos', IG.novo], ['Gratuitos', I.gratis], ['Receitas', I.comida],
       ['Negócios', I.negocios], ['Finanças', I.financas], ['Autoajuda', IG.coracao], ['Infantil', I.criancas], ['Romance', IG.coracao], ['Estudos', I.educacao], ['Religião', IG.sol]];
-    function lojasExtras() {
-      for (const [tipo, chips, nome] of [['livros', CHIPS_LIVROS, 'livro']]) {
-        $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-secao="Categorias de ${tipo}">${G(d)}${esc(n)}</button>`
-          : `<button class="chip" type="button" data-secao="${esc(n)}">${G(d)}${esc(n)}</button>`).join('');
-        const itens = todos.filter((a) => a.tipo === nome);
-        $('breve-' + tipo).hidden = Boolean(itens.length);
-        $('sec-' + tipo).hidden = !itens.length; $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
-      }
-    }
+    function lojasExtras() {} // Livros agora tem a própria tela (mostrarLivros)
     const girar = (l, n) => l.length ? [...l.slice(n % l.length), ...l.slice(0, n % l.length)] : l; // cada bloco começa por um app diferente
     const linhaSugestao = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
           <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="info">${tags(a)}</span>
@@ -720,6 +723,61 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(alvo)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: novos apps da LeuName vão aparecer aqui.</li>'}</ul></div>`;
     }
+    // ================= LIVROS (como a aba Livros da Play) — dados em livros.json =================
+    // Cada livro: { id, titulo, autor, capa, preco ("Grátis" ou "R$ 4,90"), precoAntigo?, tipo: "ebook"|"audiolivro",
+    //               generos: [...], vendidos (número, para o ranking), lancamento ("2026-10-06"), link? }
+    let livros = [], abaLivros = 'E-books', abaAtual = 'apps';
+    const ABAS_LIVROS = ['E-books', 'Audiolivros', 'Gêneros', 'Os mais vendidos', 'Lançamentos', 'Principais livros gratuitos'];
+    const GENEROS = [['Inspiradores', I.estilo], ['Cinema e TV', I.diversao], ['Vida saudável', I.saude], ['Negócios', I.negocios], ['Finanças', I.financas], ['Culinária', I.comida], ['Autoajuda', I.saude], ['Romance', '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>'],
+      ['Infantil', I.criancas], ['Religião', I.estilo], ['Estudos', I.educacao], ['Biografias', I.meus], ['Ficção', IG.sandbox]];
+    const hoje = () => new Date().toISOString().slice(0, 10);
+    const valor = (p) => /grátis/i.test(p || '') ? 0 : Number(String(p).replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const capaLivro = (l) => `<button class="capa-livro" type="button" data-livro="${esc(l.id)}"><img src="${esc(l.capa)}" alt="" loading="lazy"><span class="nome">${esc(l.titulo)}</span><span class="pilula">${esc(l.preco)}</span></button>`;
+    // Na página da setinha: grade de capas com preço antigo riscado (como na Play)
+    const capaLivroGrade = (l) => `<button class="capa-livro" type="button" data-livro="${esc(l.id)}"><img src="${esc(l.capa)}" alt="" loading="lazy"><span class="nome">${esc(l.titulo)}</span><span class="preco-livro">${l.precoAntigo ? `<s>${esc(l.precoAntigo)}</s> ` : ''}${esc(l.preco)}</span></button>`;
+    function livrosDe(filtro) {
+      const tipo = abaLivros === 'Audiolivros' ? 'audiolivro' : 'ebook';
+      const base = livros.filter((l) => (l.tipo || 'ebook') === tipo || ['Os mais vendidos', 'Lançamentos', 'Principais livros gratuitos'].includes(abaLivros));
+      return ({ barato: () => base.filter((l) => valor(l.preco) < 5),
+        vendidos: () => [...base].sort((a, b) => (b.vendidos || 0) - (a.vendidos || 0)),
+        reduzidos: () => base.filter((l) => l.precoAntigo),
+        gratis: () => base.filter((l) => valor(l.preco) === 0),
+        lancamentos: () => [...base].filter((l) => l.lancamento && l.lancamento <= hoje()).sort((a, b) => b.lancamento.localeCompare(a.lancamento)),
+        descontos: () => base.filter((l) => l.precoAntigo || valor(l.preco) === 0),
+        reserva: () => base.filter((l) => l.lancamento && l.lancamento > hoje()),
+      }[filtro] || (() => base.filter((l) => (l.generos || []).includes(filtro))))();
+    }
+    const fileiraLivros = (titulo, filtro, sub) => { const l = livrosDe(filtro);
+      return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}${sub ? `<small class="sub-titulo">${esc(sub)}</small>` : ''}</h2><button class="seta" type="button" data-secao="livros:${esc(filtro)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        <div class="rolar capas">${l.map(capaLivro).join('') || '<div class="vazio-linha capa-vazia">Em breve: os livros da LeuName vão aparecer aqui.</div>'}</div></div>`; };
+    function mostrarLivros() {
+      $('abas-livros').innerHTML = ABAS_LIVROS.map((n) => `<button type="button" data-aba-livros="${esc(n)}" aria-selected="${n === abaLivros}">${esc(n)}</button>`).join('');
+      const f = abaAtual === 'livros' ? $('busca').value.trim().toLowerCase() : '';
+      let html;
+      if (f) {
+        const achados = livros.filter((l) => (l.titulo + ' ' + (l.autor || '') + ' ' + (l.generos || []).join(' ')).toLowerCase().includes(f));
+        html = `<div class="secao"><ul class="ranking">${achados.map((l) => `<li><button type="button" data-livro="${esc(l.id)}"><img src="${esc(l.capa)}" alt=""><span><b>${esc(l.titulo)}</b><br><small>${esc(l.autor || '')} · ${esc(l.preco)}</small></span></button></li>`).join('') || '<li class="vazio">Nenhum livro encontrado.</li>'}</ul></div>`;
+      } else if (abaLivros === 'Gêneros') {
+        html = `<div class="secao"><div class="categorias">${GENEROS.map(([n, d], i) => `<button class="categoria" type="button" data-secao="livros:${esc(n)}"><span class="cat-nome">${esc(n)}</span>${icoCat(d, i)}</button>`).join('')}</div></div>`;
+      } else if (abaLivros === 'Os mais vendidos') {
+        const l = livrosDe('vendidos');
+        html = `<div class="secao"><ul class="ranking">${l.map((x, i) => `<li><button type="button" data-livro="${esc(x.id)}"><span class="pos">${i + 1}</span><img src="${esc(x.capa)}" alt=""><span><b>${esc(x.titulo)}</b><br><small>${esc(x.autor || '')} · ${esc(x.preco)}</small></span></button></li>`).join('') || '<li class="vazio-linha">Em breve: o ranking dos livros mais vendidos.</li>'}</ul></div>`;
+      } else if (abaLivros === 'Lançamentos') {
+        html = fileiraLivros('Lançamentos', 'lancamentos');
+      } else if (abaLivros === 'Principais livros gratuitos') {
+        html = fileiraLivros('Principais livros gratuitos', 'gratis');
+      } else {
+        const nome = abaLivros === 'Audiolivros' ? 'Audiolivros' : 'E-books';
+        // Mesma sequência da Play (aba E-books)
+        html = fileiraLivros(`${nome} por menos de R$ 5`, 'barato') + fileiraLivros('Os mais vendidos', 'vendidos') + fileiraLivros('Preços reduzidos', 'reduzidos')
+          + fileiraLivros('Reflita com livros inspiradores', 'Inspiradores') + fileiraLivros('Livros levados para a tela', 'Cinema e TV')
+          + fileiraLivros('Livros para uma vida saudável', 'Vida saudável') + fileiraLivros('Lançamentos imperdíveis', 'lancamentos')
+          + fileiraLivros(`Novos descontos em ${nome.toLowerCase()}`, 'descontos', 'Ofertas fresquinhas') + fileiraLivros('Reserve antes do lançamento', 'reserva');
+      }
+      $('conteudo-livros').innerHTML = html;
+    }
+    fetch('/livros.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { livros = d; mostrarLivros(); }).catch(() => mostrarLivros());
+
     // ================= CURSOS (grátis e pagos) — dados em cursos.json =================
     let cursos = [];
     const progressoDe = (id) => { try { return JSON.parse(localStorage.getItem('leuapps.curso.' + id) || '[]'); } catch { return []; } };
@@ -995,6 +1053,15 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
         paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden'; return;
       }
+      if (nome.startsWith('livros:')) {
+        const filtro = nome.slice(7), l = livrosDe(filtro);
+        const titulos = { barato: 'Por menos de R$ 5', vendidos: 'Os mais vendidos', reduzidos: 'Preços reduzidos', gratis: 'Livros gratuitos', lancamentos: 'Lançamentos imperdíveis', descontos: 'Novos descontos', reserva: 'Reserve antes do lançamento' };
+        const titulo = titulos[filtro] || filtro;
+        paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(titulo)}</h1><button type="button" class="det-voltar lupa-livros" data-buscar-livros aria-label="Pesquisar livros"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button></div>
+          ${l.length ? `<div class="grade grade-livros">${l.map(capaLivroGrade).join('')}</div>` : `<div class="em-breve"><b>Em breve: ${esc(titulo)}</b>Ainda não temos livros aqui. Estamos preparando novidades.</div>`}`;
+        paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+        paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden'; return;
+      }
       if (nome.startsWith('cursos:')) {
         const cat = nome.slice(7), lista = cursosDe(cat), titulo = cat === 'Todos' ? 'Cursos' : cat;
         paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(titulo)}</h1></div>
@@ -1043,10 +1110,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       secaoAtual = null;
       if (/^#(lista|curso)\//.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
-      document.body.classList.toggle('rolar-topo', ['apps', 'cursos', 'livros'].includes(qual));
+      document.body.classList.toggle('rolar-topo', ['apps', 'cursos'].includes(qual));
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
       for (const n of ['cursos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
-      $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
+      const comBusca = qual === 'pesquisa' || qual === 'livros'; abaAtual = qual;
+      $('topo-inicio').hidden = comBusca; $('topo-busca').hidden = !comBusca;
+      $('busca').placeholder = qual === 'livros' ? 'Pesquisar livros' : 'Pesquisar apps e cursos';
+      if ($('busca').dataset.aba !== qual) { $('busca').value = ''; $('busca').dataset.aba = qual; if (qual === 'livros') mostrarLivros(); }
       if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
       if (qual === 'pesquisa' && apps.length) mostrar();
       try { localStorage.setItem('leuapps.aba', qual); } catch {}
@@ -1077,6 +1147,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem os livros na LeuApps.`;
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
       }
+      if (t.closest('[data-buscar-livros]')) { history.replaceState(null, '', location.pathname + location.search); paginaSecao.hidden = true; document.body.style.overflow = ''; aba('livros'); $('busca').focus(); return; }
+      const al = t.closest('[data-aba-livros]'); if (al) { abaLivros = al.dataset.abaLivros; mostrarLivros(); scrollTo(0, 0); return; }
+      const lv = t.closest('[data-livro]'); if (lv) { const l = livros.find((x) => x.id === lv.dataset.livro); if (!l) return;
+        if (l.link) { open(l.link, '_blank'); return; }
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero o livro ${l.titulo} (${l.preco}).`)}`, '_blank'); return; }
       const ca = t.closest('[data-curso-abrir]'); if (ca) { const c = cursos.find((x) => x.id === ca.dataset.cursoAbrir), f = progressoDe(c.id);
         const prox = c.aulas.findIndex((_, i) => !f.includes(i)); location.hash = `curso/${c.id}/${prox < 0 ? 0 : prox}`; return; }
       const au = t.closest('[data-aula]'); if (au) { location.replace('#curso/' + au.dataset.aula); return; }
@@ -1117,7 +1192,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const rol = t.closest('[data-rolar]'); if (rol) return $(rol.dataset.rolar).scrollIntoView({ behavior: 'smooth' });
       const sv = t.closest('[data-servico]'); if (sv) return mostrarServicos(sv.dataset.servico);
     });
-    $('busca').addEventListener('input', () => { secaoAtual = null; mostrar(); });
+    $('busca').addEventListener('input', () => { secaoAtual = null; if (abaAtual === 'livros') return mostrarLivros(); mostrar(); });
     // Pesquisa por voz (quando o celular permite)
     const Voz = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (Voz) {
@@ -1126,7 +1201,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         e.preventDefault();
         const r = new Voz(); r.lang = 'pt-BR'; r.interimResults = false;
         mic.classList.add('ouvindo');
-        r.onresult = (ev) => { $('busca').value = ev.results[0][0].transcript; secaoAtual = null; mostrar(); };
+        r.onresult = (ev) => { $('busca').value = ev.results[0][0].transcript; secaoAtual = null; if (abaAtual === 'livros') return mostrarLivros(); mostrar(); };
         r.onend = () => mic.classList.remove('ouvindo');
         try { r.start(); } catch { mic.classList.remove('ouvindo'); }
       });
