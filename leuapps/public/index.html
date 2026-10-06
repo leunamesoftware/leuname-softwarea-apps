@@ -567,7 +567,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function selos(a) {
       const s = [];
       if (situacao(a) !== 'nao') s.push(['instalado', 'Instalado']);
-      if (a.escolha) s.push(['escolha', 'Escolha da LeuName']);
+      if (a.escolha) s.push(['escolha', 'Escolha dos editores']);
       const promo = a.promo && situacao(a) === 'nao' ? a.promo : null; // "promo": {"de": "R$ 30", "por": "R$ 19,90"} no apps.json
       if (/grátis/i.test(a.preco || '')) s.push(['gratis', 'Teste grátis']);
       if (/pagamento único/i.test(a.preco || '')) s.push(['unico', 'Pagamento único']);
@@ -594,7 +594,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ['Fazer novas conexões', 'Fazer novas conexões', 'mostrar-vazio'],
       ['Sugestões para você', 'patrocinados', 2],
       ['Turismo e guia local', 'Turismo e guia local', 'mostrar-vazio'],
-      ['Escolha da LeuName: apps', (a) => a.escolha, 'mostrar-vazio'],
+      ['Escolha dos editores: apps', (a) => a.escolha, 'mostrar-vazio'],
       ['Personalize seu dispositivo', 'Personalize seu dispositivo', 'mostrar-vazio'],
       ['Em promoção', (a) => a.promo],
     ];
