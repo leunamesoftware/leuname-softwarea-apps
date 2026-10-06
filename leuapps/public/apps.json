@@ -143,8 +143,6 @@
       "/img/telas/gestacell-1.webp"
     ],
     "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
-    "manifestWww": "/gestacell/www.webmanifest",
-    "abrirWww": "/gestacell/",
     "instalarDireto": {
       "url": "https://gestacell.leunamesoftware.com.br/",
       "id": "https://gestacell.leunamesoftware.com.br/?app=gestacell"

@@ -1263,19 +1263,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) App dentro do www e o Chrome já ofereceu: instala daqui mesmo (voltinha até o ícone ir para a tela).
-      if (pedidosApp[id]) {
-        const q = pedidosApp[id]; delete pedidosApp[id];
-        q.prompt();
-        const r = await q.userChoice;
-        if (r.outcome !== 'accepted') { mostrarDetalhe(); return; }
-        baixando[id] = -2; mostrar(); mostrarDetalhe();
-        setTimeout(() => { if (id in baixando) { delete baixando[id]; meus = [...new Set([...meus, id])]; gravar(meus); recemInstalados.add(id); marcarInstalado(id); mostrar(); avisar(`✓ ${a.nome} instalado! O ícone já está na tela do celular.`); } }, 8000);
-        return;
-      }
-      // Dentro da LeuApps aberta pelo ícone (janela de app): o Chrome não instala aqui; abre esta página no Chrome.
-      if (a.manifestWww && android && janelaApp()) { abrirNoChrome(`${location.origin}/?loja=1#${a.id}`); return; }
-      // 4) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
+      // 2) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
@@ -1284,8 +1272,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
       }
-      // 5) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
-      meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
+      // 3) Outros navegadores: o app abre e mostra o botão "Instalar" (o navegador exige esse toque lá).
+      //    Não marca como instalado aqui: a loja não tem como saber se a pessoa confirmou.
       if (!a.instalar) return;
       if (!a.instalarPassos) { abrirNoChrome(a.instalar); return; }
       const ios = /iPhone|iPad|iPod/i.test(ua);
@@ -1307,7 +1295,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
-      if (!N && a.abrirWww && instaladosEm[a.id]) { location.href = a.abrirWww; return; }
       const destino = !N && a.instalar ? a.instalar : link(a);
       if (a.exigeCompra) return conferirCompra(a, destino);
       if (!N && a.instalar) return abrirNoChrome(destino);
@@ -1479,20 +1466,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const DADOS_PADRAO = { coleta: 'E-mail da conta e as informações que você cadastra no app', uso: 'Para o app funcionar e guardar suas informações com segurança' };
     const avaliacoesCache = {};
     let editandoAvaliacao = null; // app cuja avaliação a pessoa está editando
-    // Apps dentro do www: na página do app, a loja mostra o manifesto do próprio app. Assim o Chrome oferece instalar
-    // aquele app direto daqui (ícone próprio na tela), sem abrir outra página e sem pedir permissão.
     const janelaApp = () => ['standalone', 'fullscreen', 'minimal-ui'].some((q) => matchMedia(`(display-mode: ${q})`).matches) || Boolean(navigator.standalone);
-    const pedidosApp = {}; let manifestoDe = null;
-    function trocarManifesto(a) {
-      const link = document.querySelector('link[rel=manifest]'); if (!link || N || janelaApp()) return;
-      const quer = a && a.manifestWww ? a : null;
-      if ((quer && quer.id) === manifestoDe) return;
-      manifestoDe = quer ? quer.id : null;
-      link.href = quer ? quer.manifestWww : '/manifest.webmanifest';
-    }
     function mostrarDetalhe() {
       const a = todos.find((x) => x.id === location.hash.slice(1));
-      trocarManifesto(a);
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
       const salvo = desejos().includes(a.id), av = avaliacoesCache[a.id];
       const novidade = (a.novidades || [])[0], dados = a.dados || DADOS_PADRAO;
@@ -1886,15 +1862,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       || new URLSearchParams(location.search).get('origem') === 'app' || document.referrer.startsWith('android-app://');
     try { if (instalada) sessionStorage.setItem('leuapps.app', '1'); else instalada = sessionStorage.getItem('leuapps.app') === '1'; } catch {}
     let pedidoChrome = null;
-    addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      if (manifestoDe) { pedidosApp[manifestoDe] = e; if (location.hash.slice(1) === manifestoDe) mostrarDetalhe(); } else pedidoChrome = e;
-    });
-    addEventListener('appinstalled', () => {
-      const id = manifestoDe; if (!id || !(id in baixando)) return;
-      delete baixando[id]; meus = [...new Set([...meus, id])]; gravar(meus); recemInstalados.add(id); marcarInstalado(id); mostrar(); mostrarDetalhe();
-      const a = todos.find((x) => x.id === id); avisar(`✓ ${a ? a.nome : 'App'} instalado! O ícone já está na tela do celular.`);
-    });
+    addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedidoChrome = e; });
     addEventListener('appinstalled', () => { pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.'; });
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
     if (android && !N && !instalada) {
