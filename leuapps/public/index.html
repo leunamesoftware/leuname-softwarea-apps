@@ -256,9 +256,7 @@
       <div class="chips-linha">
         <button class="chip" type="button" data-rolar="sugestoes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20h16M6 20V11h3v9M11 20V5h3v15M16 20v-6h3v6"/></svg>Em alta</button>
         <button class="chip" type="button" data-filtro="grátis"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-1.5-3-5-3.5-5-1.2C7 7 9 7 12 7c3 0 5 0 5-1.2C17 3.5 13.5 4 12 7z"/></svg>Grátis para testar</button>
-        <button class="chip" type="button" data-filtro="Empresa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/></svg>Para empresas</button>
-        <button class="chip" type="button" data-filtro="Receitas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5a6 6 0 1112 0V19a1 1 0 01-1 1H7a1 1 0 01-1-1z"/><path d="M6 16h12"/></svg>Receitas</button>
-        <button class="chip" type="button" data-filtro="Documentos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg>Documentos</button>
+        <span id="chips-tags" style="display:contents"></span>
         <button class="chip" type="button" data-aba="pesquisa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l3.5 6h-7z"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="17" cy="16.5" r="3.5"/></svg>Categorias</button>
         <button class="chip" type="button" data-aba="servicos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg>Serviços</button>
         <button class="chip" type="button" data-aba="voce"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>Meus apps</button>
@@ -384,6 +382,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div>${botaoLinha(a)}</div></div></li>`;
     }
     const iconeGrande = (a) => `<button class="icone-grande" type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy"><div class="nome">${esc(a.nome)}</div><span class="pilula">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`;
+    // Atalhos do topo: um para cada etiqueta dos apps (app novo com etiqueta nova ganha atalho sozinho).
+    const ICONES_TAG = {
+      'Empresa': '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>',
+      'Receitas': '<path d="M6 13.5a6 6 0 1112 0V19a1 1 0 01-1 1H7a1 1 0 01-1-1z"/><path d="M6 16h12"/>',
+      'Documentos': '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+      'Loja de celular': '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+      'Calculadora de preço': '<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>',
+    };
+    const NOMES_TAG = { 'Empresa': 'Para empresas' };
+    function chipsTags() {
+      const vistas = [...new Set(apps.flatMap((a) => a.tags || [a.categoria]))];
+      $('chips-tags').innerHTML = vistas.map((g) => `<button class="chip" type="button" data-filtro="${esc(g)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONES_TAG[g] || '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>'}</svg>${esc(NOMES_TAG[g] || g)}</button>`).join('');
+    }
     function destaques() {
       $('destaques').innerHTML = apps.filter((a) => a.destaque).map((a) => `
         <div class="dest-item">
@@ -422,6 +433,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
+      chipsTags();
       destaques(); bolinhas();
       if (!detalhe.hidden) mostrarDetalhe();
     }
