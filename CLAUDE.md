@@ -57,3 +57,6 @@
     (ou a conta da loja). Dono da loja que esqueceu a senha local: "Sou o dono da loja e esqueci a senha"
     (prova com a conta da compra e cria senha nova). Calculadoras: conserto, parcelas, venda e taxas da maquininha;
     contas testadas em `leuapps/test/calculadoras.test.mjs` (`node --test test/*.test.mjs` em `leuapps/`).
+17. Vídeos curtos (TikTok/Status, 1080×1920, sem música — a música entra no TikTok):
+    receita: `python3 calculadora/scripts/video_receita.py <id>`; demonstração do app gravando a tela de verdade:
+    `calculadora/scripts/demo/` (passo a passo no topo de `qc-montar.py`). Repetir o mesmo para os outros apps.
