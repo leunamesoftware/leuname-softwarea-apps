@@ -1276,10 +1276,29 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) Apps do www: instalam DENTRO da LeuApps (como num celular): baixa os arquivos do app com a voltinha,
-      //    o app vai para "Meus apps" e abre aqui dentro, em tela cheia, sem navegador e sem pedir permissão.
+      // 2) Apps do www com a loja aberta no Chrome: o Instalar põe o app direto na tela do celular (ícone próprio,
+      //    abre lá fora), só com a confirmação do Chrome. Sem permissão e sem Play Store.
+      if (a.abrirWww && !N && !janelaApp() && 'onbeforeinstallprompt' in window) {
+        trocarManifesto(a);
+        for (let i = 0; i < 12 && !pedidosApp[id]; i++) await new Promise((ok) => setTimeout(ok, 250));
+        const q = pedidosApp[id];
+        if (!q) {
+          return folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">Se o ${esc(a.nome)} já está instalado, é só abrir pelo ícone na tela do celular. Se ainda não está:</p>
+            <ol><li>Toque nos <b>⋮</b> do Chrome.</li><li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>`, 'Entendi');
+        }
+        delete pedidosApp[id];
+        q.prompt();
+        const r = await q.userChoice;
+        if (r.outcome !== 'accepted') return;
+        baixando[id] = -2; mostrar(); mostrarDetalhe();
+        // Só marca como instalado quando o Chrome avisar que terminou (appinstalled).
+        setTimeout(() => { if (baixando[id] === -2) { delete baixando[id]; mostrar(); mostrarDetalhe(); } }, 60000);
+        return;
+      }
+      // 3) Dentro do ícone da LeuApps (janela própria): o Android não deixa criar ícone ali. O app instala DENTRO
+      //    da LeuApps (voltinha), vai para "Meus apps" e abre aqui dentro, em tela cheia.
       if (a.abrirWww) return instalarDentro(a);
-      // 2b) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
+      // 4) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
@@ -1288,7 +1307,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
       }
-      // 3) Outros navegadores: o app abre e mostra o botão "Instalar" (o navegador exige esse toque lá).
+      // 5) Outros navegadores: o app abre e mostra o botão "Instalar" (o navegador exige esse toque lá).
       //    Não marca como instalado aqui: a loja não tem como saber se a pessoa confirmou.
       if (!a.instalar) return;
       if (!a.instalarPassos) { abrirNoChrome(a.instalar); return; }
@@ -1945,7 +1964,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
     });
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
-    if (android && !N && !instalada) {
+    if (false && android && !N && !instalada) { // a loja abre direto no Chrome; quem quiser instala a LeuApps pelo menu
       document.body.classList.add('so-app');
       const pag = document.createElement('section'); pag.className = 'pagina-app';
       pag.innerHTML = `
