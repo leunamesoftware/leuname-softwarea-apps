@@ -31,8 +31,12 @@
         if (new URLSearchParams(location.search).get('leuapps') === '1') sessionStorage.setItem('leuapps', '1');
       } catch (e) { return; }
       var a = document.createElement('a');
-      a.href = 'https://www.leunamesoftware.com.br/';
-      a.setAttribute('aria-label', 'Voltar para a página inicial da loja LeuApps');
+      a.href = 'https://www.leunamesoftware.com.br/#meus-apps';
+      a.setAttribute('aria-label', 'Voltar para Meus apps, na loja LeuApps');
+      // Veio da loja: volta igual à setinha do celular (para "Meus apps", sem recarregar a loja do começo).
+      a.addEventListener('click', function (e) {
+        try { if (/^https:\/\/www\.leunamesoftware\.com\.br\//.test(document.referrer) && history.length > 1) { e.preventDefault(); history.back(); } } catch (x) {}
+      });
       a.innerHTML = '<img src="https://apps.leunamesoftware.com.br/img/leuapps-192.png" alt="" style="width:26px;height:26px;border-radius:7px;display:block"><span style="line-height:1.1;text-align:left">Voltar<br>à loja</span>';
       a.style.cssText = 'position:fixed;right:10px;top:calc(9px + env(safe-area-inset-top));z-index:2147483647;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:12px;background:#fff;color:#C2410C;font:800 12px/1.1 Poppins,system-ui,sans-serif;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.28)';
       function por(el) { if (document.body) document.body.appendChild(el); else addEventListener('DOMContentLoaded', function () { document.body.appendChild(el); }); }
