@@ -100,7 +100,8 @@
       "Negócios",
       "Finanças",
       "Ferramentas",
-      "Grátis para testar"
+      "Grátis para testar",
+      "Apps favoritos"
     ],
     "escolha": true
   },
@@ -167,7 +168,9 @@
       "Finanças",
       "Produtividade",
       "Ferramentas",
-      "Premium"
+      "Premium",
+      "Ferramentas de negócios",
+      "Ferramentas e utilitários"
     ]
   },
   {
@@ -233,7 +236,8 @@
       "Negócios",
       "Produtividade",
       "Ferramentas",
-      "Premium"
+      "Premium",
+      "Ferramentas de negócios"
     ]
   }
 ]

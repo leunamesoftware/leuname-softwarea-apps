@@ -363,12 +363,9 @@
         <div class="secao-titulo"><h2>Recomendado para você</h2><button class="seta" type="button" data-secao="Recomendado para você" aria-label="Ver todos os recomendados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista" id="recomendados"></ul>
       </div>
-      <div class="secao">
-        <div class="secao-titulo"><h2>Comunicação</h2><button class="seta" type="button" data-secao="Comunicação" aria-label="Ver Comunicação"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-        <ul class="lista" id="lista-comunicacao"></ul>
-      </div>
       <div id="vitrines"></div>
       <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Dê sua opinião</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
+      <div id="vitrines2"></div>
       <div class="secao seguir">
         <h2>Siga suas categorias favoritas</h2>
         <p>Melhore as sugestões: os apps das categorias que você segue aparecem primeiro. Mude quando quiser.</p>
@@ -586,24 +583,25 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Vitrines com título e seta (como "Ação sem limites" na Play).
     // Seção aparece sozinha quando tiver app. Por categoria: cada app aparece em uma só.
     // Por escolha (função): pode repetir, como "Escolha dos editores" na Play.
-    const VITRINES = [
-      ['Para quem vende comida', 'Comer e beber'],
-      ['Seu negócio sem complicação', 'Negócios'],
+    const VITRINES = [ // mesma ordem da Play; [título, seção] (seção = apps.json → secoes) ou [título, função]
+      ['Comunicação', 'Comunicação'],
+      ['Enviar uma mensagem', 'Enviar uma mensagem'],
+      ['Mantenha contato', 'Mantenha contato'],
+      ['Rede social', 'Rede social'],
+      ['Fazer novas conexões', 'Fazer novas conexões'],
+      ['Turismo e guia local', 'Turismo e guia local'],
       ['Escolha da LeuName: apps', (a) => a.escolha],
-      ['Ferramentas de negócios', 'Ferramentas'],
-      ['Mais tempo no seu dia', 'Produtividade'],
-      ['Controle o seu dinheiro', 'Finanças'],
-      ['Em promoção', (a) => a.promo],
-      ['Aprenda algo novo', 'Educação'],
-      ['Compre e venda', 'Compras'],
-      ['Cuide da saúde', 'Saúde e fitness'],
-      ['Tire fotos mais bonitas', 'Fotografia'],
-      ['Para o seu dia a dia', 'Estilo de vida'],
-      ['Diversão para assistir', 'Entretenimento'],
-      ['Música e áudio', 'Música e áudio'],
-      ['Para viajar', 'Viagens'],
-      ['Para as crianças', 'Crianças'],
+      ['Personalize seu dispositivo', 'Personalize seu dispositivo'],
+      ['Assistir filmes e programas de TV por streaming', 'Streaming'],
+      ['Filmes e programas de TV', 'Filmes e programas de TV'],
+      ['Arte e design', 'Arte e design'],
+      ['Ferramentas de negócios', 'Ferramentas de negócios'],
+      ['Tire fotos mais bonitas', 'Tire fotos mais bonitas'],
+      ['Apps favoritos', 'Apps favoritos'],
+      ['Produtividade', 'Produtividade'],
+      ['Em promoção', (a) => a.promo, 'esconder-vazio'],
     ];
+    const VITRINES_FIM = [['Ferramentas e utilitários', 'Ferramentas e utilitários']]; // depois de "Dê sua opinião"
     const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
         <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
         <span class="selos">${selos(a)}</span></span></button></li>`;
@@ -674,16 +672,17 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
       }
     }
+    function vitrine([titulo, s, modo]) {
+      const porEscolha = typeof s === 'function';
+      const lista = porEscolha ? apps.filter(s) : daSecao(s);
+      if (!lista.length && modo === 'esconder-vazio') return '';
+      const alvo = porEscolha ? titulo : s;
+      return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(alvo)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: novos apps da LeuName vão aparecer aqui.</li>'}</ul></div>`;
+    }
     function vitrines() {
-      const ja = new Set();
-      $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
-        const porEscolha = typeof s === 'function';
-        const lista = porEscolha ? apps.filter(s) : daSecao(s).filter((a) => !ja.has(a.id)); if (!lista.length) return '';
-        if (!porEscolha) lista.forEach((a) => ja.add(a.id));
-        if (porEscolha) s = titulo;
-        return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(s)}" aria-label="Ver ${esc(s)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-          <ul class="lista">${lista.map(linhaVitrine).join('')}</ul></div>`;
-      }).join('');
+      $('vitrines').innerHTML = VITRINES.map(vitrine).join('');
+      $('vitrines2').innerHTML = VITRINES_FIM.map(vitrine).join('');
     }
     function seloDestaque(a) {
       const s = situacao(a) === 'atualizar' ? 'Atualização disponível' : (a.novidades || []).length ? 'Novidade' : /grátis/i.test(a.preco || '') ? 'Teste grátis' : '';
@@ -750,8 +749,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
       vitrines(); seguir(); opiniao();
-      const com = daSecao('Comunicação');
-      $('lista-comunicacao').innerHTML = com.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: apps de comunicação da LeuName.</li>';
       $('recomendados').innerHTML = daSecao('Recomendado para você').map(linhaVitrine).join('');
       const cn = daSecao('Negócios');
       $('capa-icones').innerHTML = cn.slice(0, 3).map((a) => `<img src="${esc(a.icone)}" alt="">`).join('') + (cn.length > 3 ? `<span>+${cn.length - 3}</span>` : '');
