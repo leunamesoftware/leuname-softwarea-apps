@@ -155,6 +155,8 @@
     .fim-arte { width: 140px; height: auto; margin-right: -24px; }
     /* Jogos e Livros (em breve) */
     .breve-capa { margin-top: 14px; padding: 28px 20px 24px; border-radius: 28px; color: #fff; display: grid; gap: 10px; justify-items: start; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.45), transparent 60%), #0E1A4A; }
+    .breve-banner { display: grid; place-items: center; color: #fff; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.6), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.5), transparent 60%), #0E1A4A; }
+    .breve-banner .breve-icone { margin-bottom: 40px; }
     .breve-livros { background: radial-gradient(120% 90% at 85% 10%, rgba(255,138,0,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(123,63,242,.5), transparent 60%), #1A1240; }
     .breve-icone { width: 92px; height: 92px; border-radius: 26px; display: grid; place-items: center; background: rgba(255,255,255,.14); }
     .breve-capa h2 { margin: 6px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
@@ -397,13 +399,19 @@
     <!-- Pesquisa -->
     <section id="aba-jogos" hidden>
       <div class="chips-linha" id="chips-jogos"></div>
-      <div class="breve-capa breve-jogos" id="breve-jogos">
-        <div class="breve-icone"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/></svg></div>
-        <h2>Jogos da LeuName</h2>
-        <p>Em breve: estamos preparando os primeiros jogos. Toque abaixo e avisamos você quando chegarem.</p>
-        <button class="capa-botao" type="button" data-avisar="jogos">Quero ser avisado</button>
+      <!-- Como na aba Jogos da Play: cartão grande com a linha do jogo embaixo, depois Patrocinados · Sugestões -->
+      <div class="rolar destaques" id="dest-jogos" style="margin-top:12px">
+        <div class="dest-item" id="breve-jogos">
+          <div class="destaque breve-banner"><div class="breve-icone"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/></svg></div><span class="destaque-frase">Jogos da LeuName estão chegando</span></div>
+          <div class="linha dest-app">
+            <img src="/img/leuapps-192.webp" alt="">
+            <div style="min-width:0"><div class="nome">Jogos LeuName</div><div class="info">LeuName Softwares</div><span class="pilula">Em breve</span></div>
+            <div class="dest-botao"><button class="acao" type="button" data-avisar="jogos">Avisar</button></div>
+          </div>
+        </div>
       </div>
-      <div class="secao" id="sec-jogos" hidden><div class="secao-titulo"><h2>Sugestões para você</h2></div><ul class="lista" id="lista-jogos"></ul></div>
+      <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+        <ul class="lista" id="lista-jogos"></ul></div>
     </section>
     <section id="aba-livros" hidden>
       <div class="chips-linha" id="chips-livros"></div>
@@ -639,7 +647,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const ESTRELA = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>';
     const notaDe = (id) => { try { return Number(localStorage.getItem('leuapps.nota.' + id)) || 0; } catch { return 0; } };
     function opiniao() {
-      const meus = apps.filter((a) => situacao(a) !== 'nao');
+      const meus = apps.filter((a) => situacao(a) !== 'nao' && !notaDe(a.id)); // já avaliou: sai do bloco (como na Play)
       $('opiniao').hidden = !meus.length;
       $('opiniao-lista').innerHTML = meus.map((a) => { const n = notaDe(a.id);
         return `<div class="opiniao-cartao"><header><img src="${esc(a.icone)}" alt=""><div><b>${esc(a.nome)}</b><small>Avalie este app</small></div></header>
@@ -670,8 +678,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-secao="Categorias de ${tipo}">${G(d)}${esc(n)}</button>`
           : `<button class="chip" type="button" data-secao="${esc(n)}">${G(d)}${esc(n)}</button>`).join('');
         const itens = todos.filter((a) => a.tipo === nome);
-        $('breve-' + tipo).hidden = Boolean(itens.length); $('sec-' + tipo).hidden = !itens.length;
-        $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
+        $('breve-' + tipo).hidden = Boolean(itens.length);
+        if ($('sec-' + tipo)) { $('sec-' + tipo).hidden = !itens.length; $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join(''); continue; }
+        // Jogos: cartões grandes dos jogos com destaque + Patrocinados · Sugestões
+        if ($('dest-' + tipo)) $('dest-' + tipo).querySelectorAll('.dest-item:not([id])').forEach((x) => x.remove());
+        if (itens.some((a) => a.destaque)) $('dest-' + tipo).insertAdjacentHTML('beforeend', itens.filter((a) => a.destaque).map(doApp).join(''));
+        $('lista-' + tipo).innerHTML = itens.map(linhaSugestao).join('') || '<li class="vazio-linha">Em breve: os jogos da LeuName vão aparecer aqui.</li>';
       }
     }
     const girar = (l, n) => l.length ? [...l.slice(n % l.length), ...l.slice(0, n % l.length)] : l; // cada bloco começa por um app diferente
@@ -698,8 +710,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const s = situacao(a) === 'atualizar' ? 'Atualização disponível' : (a.novidades || []).length ? 'Novidade' : /grátis/i.test(a.preco || '') ? 'Teste grátis' : '';
       return s ? `<span class="dest-selo">${s}</span>` : '';
     }
-    function destaques() {
-      const doApp = (a) => `
+    const cartaoApp = (a) => `
         <div class="dest-item">
           <button class="destaque" type="button" data-detalhe="${esc(a.id)}">
             <img src="${esc(a.destaque.imagem)}" alt="">${seloDestaque(a)}
@@ -712,6 +723,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <div class="dest-botao">${botaoLinha(a)}${a.planos && situacao(a) === 'nao' ? '<small>Compras no app</small>' : ''}</div>
           </div>
         </div>`;
+    function destaques() {
+      const doApp = cartaoApp;
       const doServico = (s) => `
         <div class="dest-item">
           <button class="destaque" type="button" data-pedir="${esc(s.id)}">
@@ -945,7 +958,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem ${av.dataset.avisar === 'jogos' ? 'os jogos' : 'os livros'} na LeuApps.`;
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
       }
-      const nt = t.closest('[data-nota]'); if (nt) { try { localStorage.setItem('leuapps.nota.' + nt.dataset.nota, nt.dataset.valor); } catch {} return opiniao(); }
+      const nt = t.closest('[data-nota]'); if (nt) {
+        const a = todos.find((x) => x.id === nt.dataset.nota);
+        try { localStorage.setItem('leuapps.nota.' + a.id, nt.dataset.valor); } catch {}
+        opiniao();
+        return folha(`<h2>Obrigado pela avaliação!</h2><p class="det-desc">Você deu ${'★'.repeat(Number(nt.dataset.valor))}${'☆'.repeat(5 - Number(nt.dataset.valor))} para o ${esc(a.nome)}. Quer contar o que achou?</p>
+          <button class="acao" type="button" data-fecha data-resenha="${esc(a.id)}">Escrever uma resenha</button>`);
+      }
       const rs = t.closest('[data-resenha]'); if (rs) {
         const a = todos.find((x) => x.id === rs.dataset.resenha), n = notaDe(a.id);
         const txt = `Olá, LeuName Softwares! Minha opinião sobre o ${a.nome}${n ? ` (${n} de 5 estrelas)` : ''}: `;
