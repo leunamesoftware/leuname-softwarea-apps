@@ -115,7 +115,6 @@
     <nav class="abas" role="tablist">
       <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
       <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
-      <button role="tab" id="tab-tela" aria-selected="false"><span>📲</span>Tela inicial</button>
       <button role="tab" id="tab-servicos" aria-selected="false"><span>🎨</span>Serviços</button>
     </nav>
     <div class="busca"><input id="busca" type="search" placeholder="Buscar aplicativo" aria-label="Buscar aplicativo" autocomplete="off"></div>
@@ -134,11 +133,6 @@
       <div class="servicos-topo"><b>🎨 Criamos para você</b><p>Logomarca, site e banners sob encomenda. Orçamento grátis, valores a combinar.</p></div>
       <div id="servicos"><p class="vazio">Carregando…</p></div>
       <p class="resumo" style="text-align:center;color:var(--suave);font-size:13px">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>
-    </section>
-    <section id="aba-tela" hidden>
-      <h2>Colocar na tela inicial</h2>
-      <p class="resumo" style="margin:-6px 0 14px;color:var(--suave)">Escolha os apps que você quer com ícone próprio na tela do celular ou na área de trabalho do computador. Eles abrem direto, sem passar pela loja.</p>
-      <ul class="lista" id="tela"></ul>
     </section>
     <section id="aba-meus" hidden>
       <h2>Meus apps</h2>
@@ -165,8 +159,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
     // Botões de cada app: Abrir (usa aqui na loja), Instalar (ícone próprio no aparelho) e Comprar.
-    const botoes = (a) => `<a class="abrir verde" href="${esc(link(a))}" data-abre="${esc(a.id)}">▶ Abrir</a>
-            ${a.instalar ? `<button class="abrir" data-aparelho="${esc(a.id)}">📲 Instalar</button>` : ''}
+    // Como na Play Store: antes de instalar, "Instalar"; depois, "Abrir" e "Desinstalar".
+    const botoes = (a) => meus.includes(a.id)
+      ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>
+            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
+            <button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
+      : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>
             ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}`;
     function cartao(a) {
       return `
@@ -183,13 +181,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       lista.innerHTML = vis.map(cartao).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
       const mi = apps.filter((a) => meus.includes(a.id));
       document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(link(a))}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
-        || '<li class="vazio" style="grid-column:1/-1">Os apps que você abrir aparecem aqui. Escolha abaixo e toque em Abrir.</li>';
-      document.getElementById('tela').innerHTML = apps.filter((a) => a.instalar).map((a) => `
-        <li class="app">
-          <img src="${esc(a.icone)}" alt="" loading="lazy">
-          <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div></div>
-          <div class="botoes"><button class="abrir claro" data-aparelho="${esc(a.id)}">📲 Instalar</button></div>
-        </li>`).join('');
+        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Escolha abaixo e toque em Instalar.</li>';
       const resto = apps.filter((a) => !meus.includes(a.id));
       document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
       document.getElementById('descubra').hidden = !resto.length;
@@ -209,7 +201,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function aoClicar(e) {
       const det = e.target.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
       const cmp = e.target.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
-      const apa = e.target.closest('[data-aparelho]'); if (apa) instalarNoAparelho(apa.dataset.aparelho);
+      const ins = e.target.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
+      const tir = e.target.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
     }
     // Instalar no aparelho: cada app tem endereço próprio e vira um ícone próprio (celular ou área de trabalho).
     function folha(html) {
@@ -230,10 +223,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <ol style="margin:0 0 12px;padding-left:22px;display:grid;gap:6px">${passos.map((x) => `<li>${x}</li>`).join('')}</ol>
         <a class="abrir" href="${esc(a.instalar)}" style="display:block;text-align:center">Abrir o ${esc(a.nome)}</a>`);
     }
-    document.getElementById('tela').addEventListener('click', (e) => { const b = e.target.closest('[data-aparelho]'); if (b) instalarNoAparelho(b.dataset.aparelho); });
 
-    // Abrir um app já coloca ele em "Meus apps".
-    document.addEventListener('click', (e) => { const ab = e.target.closest('[data-abre]'); if (ab && !meus.includes(ab.dataset.abre)) { meus = [...meus, ab.dataset.abre]; gravar(meus); } }, true);
+    // Instalar: entra em "Meus apps" e já coloca o ícone no celular/computador (o app abre com o botão Instalar).
+    function instalar(id) {
+      meus = [...new Set([...meus, id])]; gravar(meus);
+      mostrar(document.getElementById('busca').value); if (!detalhe.hidden) mostrarDetalhe();
+      instalarNoAparelho(id);
+    }
+    function desinstalar(id) {
+      const a = apps.find((x) => x.id === id); if (!a) return;
+      if (!confirm(`Desinstalar o ${a.nome}?\n\nSe o ícone dele está na tela do celular ou na área de trabalho, segure o ícone e toque em Desinstalar (ou Remover).`)) return;
+      meus = meus.filter((x) => x !== id); gravar(meus);
+      mostrar(document.getElementById('busca').value); if (!detalhe.hidden) mostrarDetalhe();
+    }
 
     // Apps que só abrem depois de comprados (exigeCompra): confere a conta antes de abrir.
     document.addEventListener('click', async (e) => {
@@ -265,7 +267,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       detalhe.querySelector('.det-voltar').onclick = () => history.length > 1 ? history.back() : (location.hash = '');
     }
     detalhe.addEventListener('click', (e) => {
-      const apa = e.target.closest('[data-aparelho]'); if (apa) return instalarNoAparelho(apa.dataset.aparelho);
+      const ins = e.target.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
+      const tir = e.target.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = e.target.closest('[data-comprar]'); if (cmp) planos(cmp.dataset.comprar);
     });
     addEventListener('hashchange', mostrarDetalhe);
@@ -273,10 +276,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function aba(qual) {
       document.getElementById('aba-loja').hidden = qual !== 'loja';
       document.getElementById('aba-meus').hidden = qual !== 'meus';
-      document.getElementById('aba-tela').hidden = qual !== 'tela';
       document.getElementById('aba-servicos').hidden = qual !== 'servicos';
       document.getElementById('tab-servicos').setAttribute('aria-selected', qual === 'servicos');
-      document.getElementById('tab-tela').setAttribute('aria-selected', qual === 'tela');
       document.getElementById('tab-loja').setAttribute('aria-selected', qual === 'loja');
       document.getElementById('tab-meus').setAttribute('aria-selected', qual === 'meus');
       document.querySelector('.busca').style.display = qual === 'loja' ? '' : 'none';
@@ -284,7 +285,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     document.getElementById('tab-loja').addEventListener('click', () => aba('loja'));
     document.getElementById('tab-meus').addEventListener('click', () => aba('meus'));
-    document.getElementById('tab-tela').addEventListener('click', () => aba('tela'));
     document.getElementById('tab-servicos').addEventListener('click', () => aba('servicos'));
     // Serviços sob encomenda: exemplos com marca d'água + orçamento grátis pelo WhatsApp.
     fetch('/servicos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
@@ -297,7 +297,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:700;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
     }).catch(() => {});
     document.getElementById('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); mostrarDetalhe(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'tela', 'servicos'].includes(a) ? a : 'loja'); })
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); mostrarDetalhe(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'servicos'].includes(a) ? a : 'loja'); })
       .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
     document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
 

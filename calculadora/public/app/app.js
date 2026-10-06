@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.5';
+const VERSAO_APP = '6.6';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -1072,3 +1072,20 @@ if ('serviceWorker' in navigator) {
   abrir('receitas');
   carregarReceitas().then(() => { if (estado.acesso?.bloqueado) telaBloqueio(); else if (estado.aba === 'receitas') telaReceitas(); });
 })();
+
+// Receitas novas (e mudança de plano) chegam sozinhas: ao voltar para o app e a cada 15 minutos com ele aberto.
+let ultimaAtualizacao = Date.now();
+async function atualizarSozinho() {
+  if (!navigator.onLine || !logado()) return;
+  ultimaAtualizacao = Date.now();
+  const marca = () => estado.receitas.map((r) => r.id + (r.bloqueada ? '#' : '')).join();
+  const antes = marca(), qtdAntes = estado.receitas.filter((r) => !r.bloqueada).length;
+  await conferirConta(); await carregarReceitas();
+  if (marca() === antes) return;
+  if (estado.acesso?.bloqueado) return telaBloqueio();
+  if (estado.aba === 'receitas') telaReceitas();
+  const novas = estado.receitas.filter((r) => !r.bloqueada).length - qtdAntes;
+  if (novas > 0) aviso(`📚 ${novas === 1 ? 'Chegou 1 receita nova' : `Chegaram ${novas} receitas novas`}!`);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - ultimaAtualizacao > 60000) atualizarSozinho(); });
+setInterval(atualizarSozinho, 15 * 60 * 1000);
