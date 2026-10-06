@@ -14,7 +14,7 @@
   addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault(); pedido = e;
     if (tela && estado === 'esperando') pedirInstalacao(); // a pessoa já tocou em Instalar: segue direto
-    else if (tela && estado === 'passos') desenhar('botao');
+    else if (tela && (estado === 'passos' || estado === 'janelinha')) desenhar('botao');
   });
   addEventListener('appinstalled', function () { pedido = null; if (tela) desenhar('pronto'); });
 
@@ -22,7 +22,9 @@
   if (p.get('instalar') !== '1' && p.get('atalho') !== '1') return;
   p.delete('instalar'); p.delete('atalho');
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
-  if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) return; // já aberto pelo ícone: segue para o app
+  // Veio da loja (?instalar=1): mostra sempre a tela de instalação. Se a página está numa janela de app, é a
+  // janelinha que o Android abre de dentro da LeuApps instalada: ali o Chrome não instala, só no Chrome de verdade.
+  var janelinha = matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || navigator.standalone;
 
   var ua = navigator.userAgent;
   var ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -46,6 +48,9 @@
         + '<a class="li-sim" href="' + loja + '">Voltar para a LeuApps</a><button type="button" class="li-nao" data-usar>Abrir aqui mesmo</button>';
     } else if (novo === 'botao') {
       corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>';
+    } else if (novo === 'janelinha') {
+      corpo = '<p class="li-texto">Falta só abrir no Chrome, que é quem instala o <b>' + nome + '</b> sem pedir permissão:</p>'
+        + '<ol class="li-passos"><li>Toque nos <b>⋮</b> lá em cima, à direita.</li><li>Toque em <b>Abrir no Chrome</b>.</li><li>Toque em <b>Instalar</b> e confirme.</li></ol>';
     } else if (novo === 'passos') {
       corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
@@ -104,7 +109,7 @@
     });
     document.documentElement.style.overflow = 'hidden';
     (document.body || document.documentElement).appendChild(tela);
-    desenhar(ios || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
+    desenhar(janelinha && !ios ? 'janelinha' : ios || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
   }
   // Abre na hora (cobre o app antes do login aparecer).
   if (document.body) abrir(); else addEventListener('DOMContentLoaded', abrir);
