@@ -583,25 +583,17 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Vitrines com título e seta (como "Ação sem limites" na Play).
     // Seção aparece sozinha quando tiver app. Por categoria: cada app aparece em uma só.
     // Por escolha (função): pode repetir, como "Escolha dos editores" na Play.
-    const VITRINES = [ // mesma ordem da Play; [título, seção] (seção = apps.json → secoes) ou [título, função]
-      ['Comunicação', 'Comunicação'],
-      ['Enviar uma mensagem', 'Enviar uma mensagem'],
-      ['Mantenha contato', 'Mantenha contato'],
-      ['Rede social', 'Rede social'],
-      ['Fazer novas conexões', 'Fazer novas conexões'],
-      ['Turismo e guia local', 'Turismo e guia local'],
+    // Seções da aba Apps, na ordem. 'mostrar-vazio' = aparece mesmo sem app (com "Em breve");
+    // as outras só aparecem quando tiverem app (apps.json → secoes).
+    const VITRINES = [
+      ['Comunicação', 'Comunicação', 'mostrar-vazio'],
+      ['Enviar uma mensagem', 'Enviar uma mensagem', 'mostrar-vazio'],
+      ['Para quem vende comida', 'Comer e beber'],
+      ['Seu negócio sem complicação', 'Negócios'],
       ['Escolha da LeuName: apps', (a) => a.escolha],
-      ['Personalize seu dispositivo', 'Personalize seu dispositivo'],
-      ['Assistir filmes e programas de TV por streaming', 'Streaming'],
-      ['Filmes e programas de TV', 'Filmes e programas de TV'],
-      ['Arte e design', 'Arte e design'],
-      ['Ferramentas de negócios', 'Ferramentas de negócios'],
-      ['Tire fotos mais bonitas', 'Tire fotos mais bonitas'],
-      ['Apps favoritos', 'Apps favoritos'],
-      ['Produtividade', 'Produtividade'],
-      ['Em promoção', (a) => a.promo, 'esconder-vazio'],
+      ['Em promoção', (a) => a.promo],
     ];
-    const VITRINES_FIM = [['Ferramentas e utilitários', 'Ferramentas e utilitários']]; // depois de "Dê sua opinião"
+    const VITRINES_FIM = [];
     const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
         <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
         <span class="selos">${selos(a)}</span></span></button></li>`;
@@ -675,7 +667,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function vitrine([titulo, s, modo]) {
       const porEscolha = typeof s === 'function';
       const lista = porEscolha ? apps.filter(s) : daSecao(s);
-      if (!lista.length && modo === 'esconder-vazio') return '';
+      if (!lista.length && modo !== 'mostrar-vazio') return '';
       const alvo = porEscolha ? titulo : s;
       return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(alvo)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: novos apps da LeuName vão aparecer aqui.</li>'}</ul></div>`;
