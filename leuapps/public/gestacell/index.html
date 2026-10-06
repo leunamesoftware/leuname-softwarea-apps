@@ -3373,7 +3373,11 @@ function setupPWA(){
     appleTouch.rel='apple-touch-icon'; appleTouch.href=location.hostname==='gestacell.leunamesoftware.com.br'?'/img/gestacell-192.png':LOGO_DATA_URI;
     document.head.appendChild(appleTouch);
   }catch(e){ console.warn('Favicon indisponível neste ambiente.',e); }
-  // Instalar como app (ícone próprio) só no endereço próprio: dentro da loja o celular acharia que já está instalado.
+  // Dentro do www (www.leunamesoftware.com.br/gestacell/): manifesto próprio, para a loja instalar o Gestacell direto (ícone próprio).
+  if(location.pathname.startsWith('/gestacell/') && !document.querySelector('link[rel=manifest]')){
+    try{ const link=document.createElement('link'); link.rel='manifest'; link.href='/gestacell/www.webmanifest'; document.head.appendChild(link); }catch(e){}
+  }
+  // Instalar como app (ícone próprio) no endereço próprio.
   if(location.hostname==='gestacell.leunamesoftware.com.br'){
     try{
       if(!document.querySelector('link[rel=manifest]')){ const link=document.createElement('link'); link.rel='manifest'; link.href='/app.webmanifest'; document.head.appendChild(link); }
