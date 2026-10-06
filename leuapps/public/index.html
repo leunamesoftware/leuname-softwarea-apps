@@ -604,9 +604,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ['Ferramentas de negócios', 'Ferramentas de negócios', 'mostrar-vazio'],
       ['Tire fotos mais bonitas', 'Tire fotos mais bonitas', 'mostrar-vazio'],
       ['Apps favoritos', 'Apps favoritos', 'mostrar-vazio'],
+      ['Produtividade', 'Produtividade', 'mostrar-vazio'],
       ['Em promoção', (a) => a.promo],
     ];
-    const VITRINES_FIM = [];
+    const VITRINES_FIM = [['Ferramentas e utilitários', 'Ferramentas e utilitários', 'mostrar-vazio']]; // depois de "Dê sua opinião"
     const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
         <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
         <span class="selos">${selos(a)}</span></span></button></li>`;
