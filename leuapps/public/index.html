@@ -1901,6 +1901,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     let pedidoChrome = null;
     addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedidoChrome = e; });
     addEventListener('appinstalled', () => { pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.'; });
+    // Android: a LeuApps é instalada como app (versão app). Tira o manifesto para o Chrome não oferecer a versão site pelo menu.
+    if (android && !N && !janelaApp()) document.querySelector('link[rel=manifest]')?.remove();
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
     if (android && !N && !instalada) {
       document.body.classList.add('so-app');
