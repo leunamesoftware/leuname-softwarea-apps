@@ -159,6 +159,11 @@
     .breve-icone { width: 92px; height: 92px; border-radius: 26px; display: grid; place-items: center; background: rgba(255,255,255,.14); }
     .breve-capa h2 { margin: 6px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
     .breve-capa p { margin: 0 0 6px; font-size: 16px; opacity: .92; }
+    #sugestoes .secao-titulo h2 { font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .patrocinados { font-size: 12.5px; font-weight: 600; color: var(--texto); letter-spacing: 0; margin-right: 2px; }
+    .tres-pontos { width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--texto); display: grid; place-items: center; }
+    .opcoes-menu { display: grid; gap: 4px; margin-top: 8px; }
+    .opcoes-menu button { min-height: 52px; border: 0; border-radius: 14px; background: var(--cartao); color: var(--texto); font: inherit; font-size: 16px; font-weight: 600; text-align: left; padding: 0 16px; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -336,7 +341,7 @@
       </div>
       <div class="chips-linha" id="chips"></div>
       <div class="secao" id="sugestoes">
-        <div class="secao-titulo"><h2>Sugestões para você</h2><button class="seta" type="button" data-secao="Sugestões para você" aria-label="Ver todas as sugestões"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        <div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
       <div class="secao"><div class="secao-titulo"><h2>Novidades e destaques</h2></div><div class="rolar destaques" id="destaques"></div></div>
@@ -878,6 +883,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      if (t.closest('[data-menu-sugestoes]')) {
+        return folha(`<h2>Sugestões para você</h2>
+          <p class="det-desc">Estes são apps da LeuName Softwares em destaque na loja. A ordem muda com as categorias que você segue.</p>
+          <div class="opcoes-menu"><button type="button" data-fecha data-secao="Sugestões para você">Ver todas as sugestões</button>
+          <button type="button" data-fecha data-rolar="seguir">Escolher minhas categorias</button></div>`, 'Fechar');
+      }
       const av = t.closest('[data-avisar]'); if (av) {
         const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem ${av.dataset.avisar === 'jogos' ? 'os jogos' : 'os livros'} na LeuApps.`;
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
