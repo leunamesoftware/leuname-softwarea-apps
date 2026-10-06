@@ -565,13 +565,14 @@
 
     /* Menu de baixo */
     .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 13; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
-    .menu div { display: grid; grid-template-columns: repeat(6, 1fr); width: 100%; max-width: 560px; align-items: end; }
+    .menu div { display: grid; grid-template-columns: repeat(6, 1fr); width: 100%; max-width: 560px; }
     .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
     .menu button span { display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; }
     .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
     @media (max-width: 420px) { .menu button { font-size: 11.5px; } .menu button span { width: 48px; } }
-    .menu .menu-meus { color: var(--verde-texto); font-weight: 700; cursor: pointer; }
-    .menu .menu-meus .bola { width: 54px; height: 54px; margin-top: -26px; border-radius: 18px; background: var(--botao); color: #fff; box-shadow: 0 6px 16px rgba(106,53,232,.38); border: 3px solid var(--cartao); }
+    .menu .menu-meus { color: var(--verde-texto); font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .menu .menu-meus .bola { width: 56px; height: 32px; border-radius: 999px; background: var(--botao); color: #fff; box-shadow: 0 3px 8px rgba(106,53,232,.3); }
+    .menu .menu-meus .bola svg { width: 19px; height: 19px; }
     .menu .menu-meus:active .bola { transform: scale(.95); }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
     .rodape { height: calc(var(--altura-menu, 80px) + 8px); }
