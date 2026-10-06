@@ -1286,8 +1286,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android && N.abrir(a.android.pacote)) return;
-      if (a.exigeCompra) return conferirCompra(a, link(a));
-      location.href = link(a);
+      // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
+      // se já foi, o próprio navegador costuma abrir o app instalado.
+      const destino = !N && a.instalar ? a.instalar : link(a);
+      if (a.exigeCompra) return conferirCompra(a, destino);
+      location.href = destino;
     }
     function desinstalar(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;

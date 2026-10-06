@@ -44,7 +44,7 @@
       corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>';
     } else if (novo === 'passos') {
       corpo = '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p><ol class="li-passos">' + passos() + '</ol>'
-        + '<button type="button" class="li-nao" data-usar>Já instalei, usar agora</button>';
+        + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
       corpo = '<div class="li-anel" aria-hidden="true"></div><p class="li-mini">Preparando a instalação…</p>';
     }
