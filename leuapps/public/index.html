@@ -520,7 +520,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Android no navegador: só a página do app LeuApps (como a página de um app na loja) ----
     // "Instalar" usa a instalação do próprio Chrome (vai direto para a tela, sem pacote nem Play Store).
     // Instalada, a LeuApps abre como app (tela cheia) e mostra a loja completa.
-    const instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    // Aberta pelo ícone da LeuApps? (o ícone abre /?origem=app; vale para a janela inteira do app)
+    const modo = (q) => matchMedia(`(display-mode: ${q})`).matches;
+    let instalada = modo('standalone') || modo('fullscreen') || modo('minimal-ui') || Boolean(navigator.standalone)
+      || new URLSearchParams(location.search).get('origem') === 'app' || document.referrer.startsWith('android-app://');
+    try { if (instalada) sessionStorage.setItem('leuapps.app', '1'); else instalada = sessionStorage.getItem('leuapps.app') === '1'; } catch {}
     let pedidoChrome = null;
     addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedidoChrome = e; });
     addEventListener('appinstalled', () => { pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.'; });
@@ -535,7 +539,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele vai direto para a tela do seu celular, com ícone próprio. Atualizações chegam sozinhas.</p>
         <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
         <p class="nota" id="nota-app">Depois de instalar, abra a LeuApps pelo ícone na tela do celular.</p>
-        <p class="nota"><a href="/baixar/leuapps.apk" style="color:var(--suave)">Prefere o app em arquivo (APK)? Baixar</a></p>`;
+`;
       document.body.prepend(pag);
       $('instalar-leuapps').addEventListener('click', async () => {
         if (pedidoChrome) {
