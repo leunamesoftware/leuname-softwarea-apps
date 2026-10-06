@@ -164,6 +164,11 @@
     .tres-pontos { width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--texto); display: grid; place-items: center; }
     .opcoes-menu { display: grid; gap: 4px; margin-top: 8px; }
     .opcoes-menu button { min-height: 52px; border: 0; border-radius: 14px; background: var(--cartao); color: var(--texto); font: inherit; font-size: 16px; font-weight: 600; text-align: left; padding: 0 16px; }
+    .lista-notif { display: grid; gap: 4px; margin-top: 8px; max-height: 60vh; overflow-y: auto; }
+    .lista-notif button { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 0; border-radius: 14px; background: none; color: var(--texto); font: inherit; font-size: 14.5px; text-align: left; }
+    .lista-notif img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex: none; }
+    .lista-notif span { display: grid; gap: 2px; color: var(--suave); }
+    .lista-notif small { font-size: 12.5px; } .lista-notif b { color: var(--texto); font-size: 15.5px; }
     .vazio-linha { padding: 18px 16px; border-radius: 16px; background: var(--cartao); color: var(--suave); font-size: 15px; }
     /* Página de uma seção (seta →): grade de ícones grandes, como na Play */
     .pagina-secao { position: fixed; inset: 0 0 var(--altura-menu, 80px) 0; z-index: 14; overflow-y: auto; background: var(--fundo); }
@@ -337,7 +342,7 @@
       <img class="logo" src="/img/leuapps-192.webp" alt="LeuApps" width="40" height="40"><span class="saudacao" hidden><small id="saudacao">Olá</small></span>
       <span class="espaco"></span>
       <button class="icone-topo" type="button" data-aba="voce" aria-label="Atualizações dos seus apps" id="atualizacoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-3-6.25"/><path d="M8.5 12l2.5 2.5L20 5.5"/></svg><span class="selo" id="selo-atualizar" hidden>0</span></button>
-      <button class="icone-topo" type="button" data-rolar="bloco-novidades" aria-label="Novidades"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg></button>
+      <button class="icone-topo" type="button" data-notificacoes aria-label="Notificações"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg></button>
       <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar">L</button>
     </div>
     <div class="topo-linha" id="topo-busca" hidden>
@@ -370,16 +375,6 @@
       <div id="vitrines"></div>
       <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Dê sua opinião</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
       <div id="vitrines2"></div>
-      <div class="secao seguir">
-        <h2>Siga suas categorias favoritas</h2>
-        <p>Melhore as sugestões: os apps das categorias que você segue aparecem primeiro. Mude quando quiser.</p>
-        <div class="seguir-lista" id="seguir"></div>
-        <button class="mostrar-mais" type="button" id="mostrar-mais">Mostrar mais</button>
-      </div>
-      <div class="secao">
-        <div class="secao-titulo" id="bloco-novidades"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
-        <div class="rolar" id="novidades"></div>
-      </div>
       <div class="fim-loja">
         <div class="fim-texto">
           <div class="fim-marca"><img src="/img/leuapps-192.webp" alt="" width="28" height="28">LeuName Serviços</div>
@@ -615,6 +610,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     let seguidas = []; try { seguidas = JSON.parse(localStorage.getItem('leuapps.seguidas') || '[]'); } catch {}
     let todasCats = false;
     function seguir() {
+      if (!$('seguir')) return; // bloco saiu da aba Apps; as categorias seguidas continuam valendo
       const cats = CHIPS.filter((c) => !c[2]).map((c) => c[0]);
       const ver = todasCats ? cats : cats.slice(0, 6);
       $('seguir').innerHTML = ver.map((c) => { const s = seguidas.includes(c);
@@ -744,8 +740,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const f = $('busca').value.trim().toLowerCase();
       $('lista').innerHTML = `<ul class="lista">${[...apps].sort((x, y) => pontos(y) - pontos(x)).map(linhaSugestao).join('')}</ul>`;
       // Uma novidade por app (a mais nova), para não repetir o mesmo app lado a lado.
-      $('novidades').innerHTML = apps.filter((a) => (a.novidades || []).length).map((a) => [a, a.novidades[0]]).map(([a, n]) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
-          <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`).join('');
+
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
       const achados = todos.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       const naSecao = secaoAtual && !f;
@@ -935,11 +930,16 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      if (t.closest('[data-notificacoes]')) {
+        const itens = apps.flatMap((a) => (a.novidades || []).map((n) => [a, n]));
+        return folha(`<h2>Notificações</h2><div class="lista-notif">${itens.map(([a, n]) => `<button type="button" data-fecha data-detalhe="${esc(a.id)}">
+          <img src="${esc(a.icone)}" alt=""><span><small>${esc(a.nome)} · ${esc(n.data)}</small><b>${esc(n.titulo)}</b>${esc(n.texto)}</span></button>`).join('') || '<p class="det-desc">Nenhuma notificação por enquanto.</p>'}</div>`, 'Fechar');
+      }
       if (t.closest('[data-menu-sugestoes]')) {
         return folha(`<h2>Sugestões para você</h2>
           <p class="det-desc">Estes são apps da LeuName Softwares em destaque na loja. A ordem muda com as categorias que você segue.</p>
           <div class="opcoes-menu"><button type="button" data-fecha data-secao="Sugestões para você">Ver todas as sugestões</button>
-          <button type="button" data-fecha data-rolar="seguir">Escolher minhas categorias</button></div>`, 'Fechar');
+          </div>`, 'Fechar');
       }
       const av = t.closest('[data-avisar]'); if (av) {
         const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem ${av.dataset.avisar === 'jogos' ? 'os jogos' : 'os livros'} na LeuApps.`;
