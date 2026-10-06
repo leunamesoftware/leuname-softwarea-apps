@@ -42,12 +42,16 @@
     h2 { font-size: 18px; font-weight: 600; margin: 18px 0 10px; }
     .sub-titulo { margin: -6px 0 10px; color: var(--suave); font-size: 14px; }
 
-    /* Aviso para baixar a LeuApps no Android */
-    .baixar-app { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; margin: 8px 0 4px; padding: 14px; border-radius: 18px; background: var(--verde-claro); }
-    .baixar-app img { width: 52px; height: 52px; border-radius: 14px; }
-    .baixar-app b { display: block; font-size: 16px; }
-    .baixar-app p { margin: 2px 0 0; font-size: 13.5px; color: var(--suave); }
-    .baixar-app .acao { grid-column: 1 / -1; }
+
+    /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
+    .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
+    .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
+    .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
+    .pagina-app .det-topo img { width: 84px; height: 84px; border-radius: 20px; }
+    .pagina-app .instalar-app { display: flex; justify-content: center; margin: 4px 0 6px; }
+    .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
+    .pagina-app .det-telas img { height: 300px; }
+    .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
 
     /* Lista de apps */
     .lista { list-style: none; padding: 0; margin: 0; display: grid; }
@@ -153,7 +157,6 @@
 
   <main>
     <section id="aba-loja">
-      <div id="baixar-app" hidden></div>
       <h2>Apps da LeuName Softwares</h2>
       <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
     </section>
@@ -409,11 +412,20 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('tab-servicos').addEventListener('click', () => aba('servicos'));
     $('busca').addEventListener('input', () => { if ($('aba-loja').hidden) aba('loja'); mostrar(); });
 
-    // ---- Android no navegador: oferecer o app LeuApps (instala os apps com um toque) ----
+    // ---- Android no navegador: só a página do app LeuApps (como a página de um app na loja) ----
+    // A loja completa (instalar, abrir, desinstalar) fica dentro do app LeuApps.
     if (android && !N) {
-      $('baixar-app').hidden = false;
-      $('baixar-app').innerHTML = `<div class="baixar-app"><img src="/img/leuapps-192.webp" alt=""><div><b>Baixe o app LeuApps</b><p>Instale todos os nossos apps com um toque, direto na tela do celular.</p></div>
-        <a class="acao" href="/baixar/leuapps.apk" id="baixar-leuapps">Baixar o app LeuApps</a></div>`;
+      document.body.classList.add('so-app');
+      const pag = document.createElement('section'); pag.className = 'pagina-app';
+      pag.innerHTML = `
+        <div class="det-topo"><img src="/img/leuapps-192.png" alt=""><div><h1>LeuApps</h1><div class="det-dev">LeuName Softwares</div><div class="det-compra">Loja de aplicativos</div></div></div>
+        <ul class="det-fatos"><li><b>Grátis</b>para baixar</li><li><b>Android</b>funciona em</li><li><b id="qtd-apps">3 apps</b>na loja</li></ul>
+        <div class="instalar-app"><a class="acao" href="/baixar/leuapps.apk" id="baixar-leuapps">Instalar</a></div>
+        <h2>Sobre este app</h2>
+        <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele vai direto para a tela do seu celular, com ícone próprio. Atualizações chegam sozinhas.</p>
+        <ul class="chips"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
+        <p class="nota">Depois de baixar, toque no arquivo <b>LeuApps.apk</b> e em <b>Instalar</b>.</p>`;
+      document.body.prepend(pag);
       $('baixar-leuapps').addEventListener('click', () => setTimeout(() => folha(`<h3>Instalar o LeuApps</h3><p class="sub">O arquivo está baixando. Quando terminar:</p>
         <ol><li>Toque em <b>LeuApps.apk</b> (na notificação ou em Downloads).</li><li>Se o celular pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>.</li><li>Toque em <b>Instalar</b>. Pronto: abra o LeuApps pelo ícone.</li></ol>`, 'Entendi'), 600));
     }
@@ -432,6 +444,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
       apps = d; lerInstalados(); mostrar(); mostrarDetalhe();
+      if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
       aba(['meus', 'servicos'].includes(a) ? a : 'loja');
