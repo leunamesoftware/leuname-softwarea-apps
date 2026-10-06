@@ -257,6 +257,55 @@
     .confianca svg { width: 24px; height: 24px; flex: none; fill: none; stroke: var(--verde-texto); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
     .confianca span { display: grid; gap: 2px; font-size: 13px; color: var(--suave); line-height: 1.3; } .confianca b { color: var(--texto); font-size: 14.5px; }
     .fim-loja { border-top: 4px solid transparent; border-image: var(--marca) 1; }
+    /* Página do app */
+    .det-barra-app { display: flex; align-items: center; } .det-barra-app .espaco { flex: 1; }
+    .det-barra-app .det-voltar { color: var(--texto); }
+    .det-barra-app [aria-pressed="true"] { color: var(--verde-texto); }
+    .det-topo-app { grid-template-columns: 84px 1fr; } .det-topo-app img { width: 84px; height: 84px; border-radius: 20px; }
+    .selo-livre { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 4px; background: #2E9E5B; color: #fff; font-size: 13px; font-weight: 800; }
+    .det-botoes-grandes > * { min-height: 48px; font-size: 16px; }
+    .det-secao { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 28px; }
+    .det-secao h2 { margin: 0 !important; }
+    .det-h2 { margin-top: 28px !important; }
+    .det-resumo { margin: 10px 0 14px; font-size: 19px; line-height: 1.4; color: var(--texto); }
+    .det-texto { margin: 10px 0 14px; font-size: 15px; color: var(--suave); }
+    .det-etiquetas { gap: 8px; }
+    .det-etiquetas button { flex: none; min-height: 38px; padding: 0 16px; border-radius: 10px; border: 1.5px solid var(--linha); background: none; color: var(--texto); font: inherit; font-size: 14.5px; font-weight: 600; }
+    .materia { position: relative; min-height: 200px; border-radius: 20px; overflow: hidden; background-size: cover; background-position: center; color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 14px; margin-top: 10px; }
+    .materia-selo { align-self: flex-start; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.88); color: #241B4A; font-size: 13.5px; font-weight: 700; }
+    .materia-rodape { display: flex; align-items: flex-end; gap: 12px; } .materia-rodape > div { flex: 1; display: grid; gap: 4px; }
+    .materia-rodape b { font-size: 18px; line-height: 1.25; } .materia-rodape small { font-size: 13.5px; opacity: .9; }
+    .materia-rodape button { flex: none; min-height: 40px; padding: 0 20px; border: 0; border-radius: 999px; background: #fff; color: #241B4A; font: inherit; font-weight: 700; }
+    .dados-quadro { list-style: none; margin: 0; padding: 16px; border: 1.5px solid var(--linha); border-radius: 16px; display: grid; gap: 16px; }
+    .dados-quadro li { display: flex; gap: 14px; align-items: flex-start; } .dados-quadro li > svg { flex: none; color: var(--suave); margin-top: 2px; }
+    .dados-quadro span { display: grid; gap: 3px; font-size: 13.5px; color: var(--suave); } .dados-quadro b { font-size: 15.5px; font-weight: 600; color: var(--texto); }
+    .dados-quadro .link-simples { padding: 4px 0 0 38px; }
+    .nota-resumo { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; margin: 6px 0 18px; }
+    .nota-grande { display: grid; justify-items: start; gap: 2px; } .nota-grande b { font-size: 54px; line-height: 1; font-weight: 800; letter-spacing: -1px; }
+    .nota-grande small { font-size: 13.5px; color: var(--suave); }
+    .estrelas { display: inline-flex; gap: 1px; color: var(--verde); }
+    .nota-barras { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; font-size: 13px; color: var(--suave); }
+    .nota-barras i { height: 10px; border-radius: 5px; background: var(--cartao-2); overflow: hidden; } .nota-barras em { display: block; height: 100%; border-radius: 5px; background: var(--verde); }
+    .sem-avaliacoes { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 22px 12px; border-radius: 16px; background: var(--cartao); color: var(--suave); margin: 10px 0 14px; }
+    .sem-avaliacoes svg { color: var(--verde); } .sem-avaliacoes b { color: var(--texto); font-size: 17px; }
+    .comentario { padding: 16px 0; border-top: 1px solid var(--linha); display: grid; gap: 8px; }
+    .comentario header { display: flex; align-items: center; gap: 12px; } .comentario header b { flex: 1; font-size: 16px; font-weight: 600; } .comentario header small { color: var(--suave); font-weight: 500; }
+    .avatar-comentario { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--botao); color: #fff; font-weight: 800; }
+    .comentario-nota { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--suave); }
+    .comentario p { margin: 0; font-size: 15.5px; line-height: 1.5; }
+    .resposta-dev { margin-left: 14px; padding: 10px 12px; border-radius: 12px; background: var(--cartao); display: grid; gap: 2px; font-size: 14px; } .resposta-dev small { color: var(--suave); }
+    .uteis { color: var(--suave); font-size: 13.5px; }
+    .util { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--suave); } .util span { flex: 1; }
+    .util button { min-height: 34px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linha); background: none; color: var(--texto); font: inherit; font-weight: 600; }
+    .util button[aria-pressed="true"] { border-color: var(--verde); color: var(--verde-texto); background: var(--verde-claro); }
+    .avaliar { margin-top: 10px; padding: 16px; border-radius: 16px; background: var(--cartao); display: grid; gap: 10px; }
+    .avaliar small { color: var(--suave); font-size: 13.5px; margin-top: -6px; }
+    .estrelas-escolher { display: flex; justify-content: space-between; max-width: 300px; }
+    .estrelas-escolher button { width: 48px; height: 48px; border: 0; background: none; color: var(--suave); padding: 0; display: grid; place-items: center; }
+    .estrelas-escolher button[aria-pressed="true"] { color: #F5B400; } .estrelas-escolher button[aria-pressed="true"] svg path { fill: currentColor; }
+    .avaliar textarea { width: 100%; border: 1.5px solid var(--linha); border-radius: 12px; padding: 10px 12px; font: inherit; font-size: 15px; background: var(--fundo); color: var(--texto); resize: vertical; }
+    .aviso-avaliacao { font-size: 13.5px; color: var(--suave); min-height: 1em; }
+    .notif-item { padding: 10px 4px; } .notif-item span { display: grid; gap: 2px; color: var(--suave); font-size: 14.5px; } .notif-item b { color: var(--texto); }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -1157,29 +1206,100 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden';
     }
+    // ================= PÁGINA DO APP (como a da Play, com o nosso jeito) =================
+    let minhaConta = null; // preenchida por conta()
+    const ICO = (d, w = 24) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const SETA_D = ICO('<path d="M5 12h14M13 6l6 6-6 6"/>', 20);
+    const estrelas = (n, tam = 16) => [1, 2, 3, 4, 5].map((k) => `<svg width="${tam}" height="${tam}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z" fill="${k <= Math.round(n) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`).join('');
+    const desejos = () => { try { return JSON.parse(localStorage.getItem('leuapps.desejos') || '[]'); } catch { return []; } };
+    // Segurança dos dados: o que cada app guarda de verdade (apps.json → dados), sem prometer o que não é.
+    const DADOS_PADRAO = { coleta: 'E-mail da conta e as informações que você cadastra no app', uso: 'Para o app funcionar e guardar suas informações com segurança' };
+    const avaliacoesCache = {};
     function mostrarDetalhe() {
       const a = todos.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
-      const preco = a.preco.split(' · ');
+      const salvo = desejos().includes(a.id), av = avaliacoesCache[a.id];
+      const novidade = (a.novidades || [])[0], dados = a.dados || DADOS_PADRAO;
+      const etiquetas = [...new Set([a.categoria, ...(a.tags || []), ...(a.secoes || [])])].slice(0, 8);
       detalhe.innerHTML = `
-        <div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div>
+        <div class="det-barra det-barra-app"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><span class="espaco"></span>
+          <button type="button" class="det-voltar" data-desejo="${esc(a.id)}" aria-label="${salvo ? 'Tirar da lista de desejos' : 'Salvar na lista de desejos'}" aria-pressed="${salvo}">${ICO(salvo ? '<path d="M6 3h12v18l-6-4-6 4z" fill="currentColor"/>' : '<path d="M6 3h12v18l-6-4-6 4z"/><path d="M12 7v6M9 10h6"/>')}</button>
+          <button type="button" class="det-voltar" data-mais-app="${esc(a.id)}" aria-label="Mais opções">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></div>
         <div class="det-corpo">
-          <div class="det-topo"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">LeuName Softwares</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
+          <div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">LeuName Softwares</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
           <ul class="det-fatos">
-            <li><b>${esc(preco[0])}</b>${esc(preco[1] || 'para começar')}</li>
-            <li><b>${esc(a.categoria)}</b>categoria</li>
+            <li>${av && av.total ? `<b>${String(av.media).replace('.', ',')} ★</b>${av.total} ${av.total > 1 ? 'avaliações' : 'avaliação'}` : '<b>Novo</b>sem avaliações ainda'}</li>
+            <li><b><span class="selo-livre">L</span></b>Classificação Livre</li>
             <li><b>${N && a.android ? 'Android' : 'Celular e PC'}</b>funciona em</li>
+            <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li>
           </ul>
-          <div class="det-botoes">${botoesDetalhe(a)}</div>
+          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>
           ${a.planos ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
           ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="180" height="320">`).join('')}</div>` : ''}
-          <h2>Sobre este app</h2><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
-          ${a.recursos ? `<ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
-          ${a.opcoes ? `<h2>Planos</h2><ul class="opcoes">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
+
+          <div class="det-secao"><h2>Sobre este app</h2><button class="seta" type="button" data-sobre="${esc(a.id)}" aria-label="Ler tudo sobre o app">${SETA_D}</button></div>
+          <p class="det-resumo">${esc(a.resumo)}</p>
+          <div class="rolar det-etiquetas">${etiquetas.map((g) => `<button type="button" data-secao="${esc(g)}">${esc(g)}</button>`).join('')}</div>
+
+          ${novidade ? `<h2 class="det-h2">Novidades do app</h2>
+          <div class="materia" style="background-image:linear-gradient(180deg, rgba(10,8,30,.05) 30%, rgba(10,8,30,.82)), url('${esc(a.destaque ? a.destaque.imagem : a.icone)}')">
+            <span class="materia-selo">Novidade · ${esc(novidade.data)}</span>
+            <div class="materia-rodape"><div><b>${esc(novidade.titulo)}</b><small>${esc(novidade.texto)}</small></div><button type="button" data-novidades-app="${esc(a.id)}">Ver</button></div>
+          </div>` : ''}
+
+          <div class="det-secao"><h2>Segurança dos dados</h2><button class="seta" type="button" data-dados="${esc(a.id)}" aria-label="Mais detalhes sobre os dados">${SETA_D}</button></div>
+          <p class="det-texto">Sua segurança começa quando você entende o que o app guarda e por quê. Estas são as informações da LeuName Softwares sobre este app.</p>
+          <ul class="dados-quadro">
+            <li>${ICO('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>')}<span><b>Não compartilhamos seus dados com terceiros</b>Não vendemos nem repassamos suas informações.</span></li>
+            <li>${ICO('<path d="M7 18a4.5 4.5 0 01-.7-8.95A6 6 0 0118 8.5a4.5 4.5 0 01-1 8.9"/><path d="M12 12v8M9 15l3-3 3 3"/>')}<span><b>O que o app guarda</b>${esc(dados.coleta)}.</span></li>
+            <li>${ICO('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>')}<span><b>Os dados são criptografados em trânsito</b>Tudo passa por conexão segura (HTTPS).</span></li>
+            <li>${ICO('<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>')}<span><b>Exclusão de conta disponível</b>Você pode pedir a exclusão dos seus dados pelo WhatsApp.</span></li>
+            <li><button type="button" class="link-simples" data-dados="${esc(a.id)}">Mais detalhes</button></li>
+          </ul>
+
+          <div class="det-secao"><h2>Notas e avaliações</h2></div>
+          <div id="avaliacoes-app">${blocoAvaliacoes(a, av)}</div>
+
+          ${a.recursos ? `<h2 class="det-h2">O que o app faz</h2><ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+          ${a.opcoes ? `<h2 class="det-h2">Planos</h2><ul class="opcoes">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
           <p class="det-info">Desenvolvedor: LeuName Softwares · Sempre na versão mais nova</p>
         </div>`;
       detalhe.hidden = false; document.body.style.overflow = 'hidden';
       detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      if (!av) carregarAvaliacoes(a.id);
+    }
+    async function carregarAvaliacoes(id) {
+      try {
+        const r = await fetch('/loja-api/avaliacoes?app=' + encodeURIComponent(id), { credentials: 'same-origin', cache: 'no-store' });
+        if (!r.ok) return;
+        avaliacoesCache[id] = await r.json();
+      } catch { return; }
+      const a = todos.find((x) => x.id === id);
+      if (location.hash.slice(1) === id && a) { const y = detalhe.scrollTop; mostrarDetalhe(); detalhe.scrollTop = y; }
+    }
+    function blocoAvaliacoes(a, av) {
+      if (!av) return '<p class="det-texto">Carregando avaliações…</p>';
+      const maxB = Math.max(1, ...Object.values(av.barras));
+      const resumo = av.total ? `<p class="det-texto">As avaliações são feitas por clientes com conta na LeuApps.</p>
+        <div class="nota-resumo"><div class="nota-grande"><b>${String(av.media).replace('.', ',')}</b><span class="estrelas">${estrelas(av.media, 14)}</span><small>${av.total.toLocaleString('pt-BR')}</small></div>
+        <div class="nota-barras">${[5, 4, 3, 2, 1].map((n) => `<span>${n}</span><i><em style="width:${Math.round(av.barras[n] / maxB * 100)}%"></em></i>`).join('')}</div></div>`
+        : `<div class="sem-avaliacoes">${ICO('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', 32)}<b>Ainda sem avaliações</b>Seja o primeiro a avaliar o ${esc(a.nome)}.</div>`;
+      const meu = av.minha;
+      const form = minhaConta ? `<div class="avaliar"><b>${meu ? 'Sua avaliação' : 'Avalie este app'}</b><small>Conte para outras pessoas o que você achou</small>
+          <div class="estrelas-escolher" role="radiogroup" aria-label="Sua nota">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-estrela="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${meu && k <= meu.nota}">${ICO('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', 34)}</button>`).join('')}</div>
+          <textarea id="texto-avaliacao" maxlength="500" rows="3" placeholder="Escreva um comentário (opcional)">${esc(meu ? meu.texto : '')}</textarea>
+          <button class="acao" type="button" data-enviar-avaliacao="${esc(a.id)}">${meu ? 'Atualizar avaliação' : 'Publicar avaliação'}</button><span class="aviso-avaliacao" id="aviso-avaliacao"></span></div>`
+        : `<div class="avaliar"><b>Avalie este app</b><small>Entre na sua conta da LeuApps para dar a sua nota.</small><a class="acao contorno" href="/loja/comprar?app=${esc(a.id)}&entrar=1">Entrar para avaliar</a></div>`;
+      const itens = av.itens.map((r) => `<article class="comentario">
+          <header><span class="avatar-comentario">${esc(r.nome[0] || '?').toUpperCase()}</span><b>${esc(r.nome)}${r.minha ? ' <small>(você)</small>' : ''}</b>
+            <button type="button" class="tres-pontos" data-denunciar="${esc(r.id)}" aria-label="Denunciar comentário">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></header>
+          <div class="comentario-nota"><span class="estrelas">${estrelas(r.nota, 13)}</span><small>${new Date(r.data).toLocaleDateString('pt-BR')}</small></div>
+          <p>${esc(r.texto)}</p>
+          ${r.resposta ? `<div class="resposta-dev"><b>LeuName Softwares</b><small>${new Date(r.respostaEm).toLocaleDateString('pt-BR')}</small><p>${esc(r.resposta)}</p></div>` : ''}
+          ${r.uteis ? `<small class="uteis">${r.uteis} ${r.uteis > 1 ? 'pessoas acharam' : 'pessoa achou'} esta avaliação útil</small>` : ''}
+          ${!r.minha && minhaConta ? `<div class="util"><span>Você achou este comentário útil?</span><button type="button" data-util="${esc(r.id)}" data-sim="1" aria-pressed="${r.voto === true}">Sim</button><button type="button" data-util="${esc(r.id)}" data-sim="0" aria-pressed="${r.voto === false}">Não</button></div>` : ''}
+        </article>`).join('');
+      return resumo + itens + form;
     }
     addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); });
 
@@ -1226,6 +1346,38 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
       }
       if (t.closest('[data-buscar-livros]')) { history.replaceState(null, '', location.pathname + location.search); paginaSecao.hidden = true; document.body.style.overflow = ''; aba('livros'); $('busca').focus(); return; }
+      // ---- página do app ----
+      const ds = t.closest('[data-desejo]'); if (ds) { const id = ds.dataset.desejo, l = desejos();
+        try { localStorage.setItem('leuapps.desejos', JSON.stringify(l.includes(id) ? l.filter((x) => x !== id) : [...l, id])); } catch {} const y = detalhe.scrollTop; mostrarDetalhe(); detalhe.scrollTop = y; return; }
+      const ma = t.closest('[data-mais-app]'); if (ma) { const a = todos.find((x) => x.id === ma.dataset.maisApp);
+        return folha(`<h2>${esc(a.nome)}</h2><div class="opcoes-menu"><button type="button" data-fecha data-compartilhar="${esc(a.id)}">Compartilhar</button><button type="button" data-fecha data-problema="${esc(a.id)}">Informar um problema</button></div>`, 'Fechar'); }
+      const cp = t.closest('[data-compartilhar]'); if (cp) { const a = todos.find((x) => x.id === cp.dataset.compartilhar), link = `${location.origin}/#${a.id}`;
+        if (navigator.share) navigator.share({ title: a.nome, text: a.resumo, url: link }).catch(() => {}); else navigator.clipboard?.writeText(link).then(() => folha('<h2>Link copiado</h2><p class="det-desc">Cole no WhatsApp para mandar para quem quiser.</p>', 'OK')); return; }
+      const pb = t.closest('[data-problema]'); if (pb) { const a = todos.find((x) => x.id === pb.dataset.problema);
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero informar um problema no ${a.nome}: `)}`, '_blank'); return; }
+      const sb = t.closest('[data-sobre]'); if (sb) { const a = todos.find((x) => x.id === sb.dataset.sobre);
+        return folha(`<h2>Sobre o ${esc(a.nome)}</h2><p class="det-desc">${esc(a.descricao || a.resumo)}</p>${a.recursos ? `<ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}<p class="det-info">Versão: ${esc(a.versao || 'sempre a mais nova')} · LeuName Softwares</p>`, 'Fechar'); }
+      const nv = t.closest('[data-novidades-app]'); if (nv) { const a = todos.find((x) => x.id === nv.dataset.novidadesApp);
+        return folha(`<h2>Novidades do ${esc(a.nome)}</h2><div class="lista-notif">${(a.novidades || []).map((n) => `<div class="notif-item"><span><small>${esc(n.data)}</small><b>${esc(n.titulo)}</b>${esc(n.texto)}</span></div>`).join('')}</div>`, 'Fechar'); }
+      const dd = t.closest('[data-dados]'); if (dd) { const a = todos.find((x) => x.id === dd.dataset.dados), d = a.dados || DADOS_PADRAO;
+        return folha(`<h2>Segurança dos dados</h2><p class="det-desc"><b>O que o ${esc(a.nome)} guarda:</b> ${esc(d.coleta)}.</p><p class="det-desc"><b>Para quê:</b> ${esc(d.uso)}.</p>
+          <p class="det-desc"><b>Compartilhamento:</b> não vendemos nem repassamos seus dados. Pagamentos são feitos pelo Mercado Pago, que recebe só o necessário para cobrar.</p>
+          <p class="det-desc"><b>Segurança:</b> conexão criptografada (HTTPS) e senha guardada de forma protegida.</p>
+          <p class="det-desc"><b>Excluir seus dados:</b> peça pelo WhatsApp e apagamos a sua conta.</p>`, 'Fechar'); }
+      const es = t.closest('[data-estrela]'); if (es) { const n = Number(es.dataset.estrela);
+        es.parentElement.querySelectorAll('[data-estrela]').forEach((b) => b.setAttribute('aria-pressed', Number(b.dataset.estrela) <= n)); es.parentElement.dataset.nota = n; return; }
+      const ea = t.closest('[data-enviar-avaliacao]'); if (ea) { const id = ea.dataset.enviarAvaliacao, box = ea.closest('.avaliar');
+        const nota = Number(box.querySelector('.estrelas-escolher').dataset.nota || (avaliacoesCache[id]?.minha?.nota || 0));
+        if (!nota) { $('aviso-avaliacao').textContent = 'Toque nas estrelas para dar a sua nota.'; return; }
+        ea.disabled = true; $('aviso-avaliacao').textContent = 'Enviando…';
+        fetch('/loja-api/avaliacoes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app: id, nota, texto: $('texto-avaliacao').value }) })
+          .then((r) => r.ok ? r.json() : Promise.reject(r.status)).then(() => { delete avaliacoesCache[id]; carregarAvaliacoes(id); folha('<h2>Obrigado pela avaliação!</h2><p class="det-desc">Ela já aparece na página do app.</p>', 'OK'); })
+          .catch((s) => { ea.disabled = false; $('aviso-avaliacao').textContent = s === 401 ? 'Entre na sua conta para avaliar.' : 'Não deu certo agora. Tente de novo.'; }); return; }
+      const ut = t.closest('[data-util]'); if (ut) { const id = location.hash.slice(1);
+        fetch('/loja-api/avaliacoes/util', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: ut.dataset.util, util: ut.dataset.sim === '1' }) })
+          .then(() => { delete avaliacoesCache[id]; carregarAvaliacoes(id); }).catch(() => {}); return; }
+      const dn = t.closest('[data-denunciar]'); if (dn) {
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero denunciar um comentário na LeuApps (código ${dn.dataset.denunciar}).`)}`, '_blank'); return; }
       const al = t.closest('[data-aba-livros]'); if (al) { abaLivros = al.dataset.abaLivros; mostrarLivros(); scrollTo(0, 0); return; }
       const lv = t.closest('[data-livro]'); if (lv) { const l = livros.find((x) => x.id === lv.dataset.livro); if (!l) return;
         if (l.link) { open(l.link, '_blank'); return; }
@@ -1243,6 +1395,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const nt = t.closest('[data-nota]'); if (nt) {
         const a = todos.find((x) => x.id === nt.dataset.nota);
         try { localStorage.setItem('leuapps.nota.' + a.id, nt.dataset.valor); } catch {}
+        // Com conta: a nota vai para o servidor e já conta na página do app.
+        if (minhaConta) {
+          fetch('/loja-api/avaliacoes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app: a.id, nota: Number(nt.dataset.valor) }) })
+            .then(() => { delete avaliacoesCache[a.id]; }).catch(() => {});
+          opiniao();
+          return folha(`<h2>Obrigado pela avaliação!</h2><p class="det-desc">Você deu ${'★'.repeat(Number(nt.dataset.valor))}${'☆'.repeat(5 - Number(nt.dataset.valor))} para o ${esc(a.nome)}. Quer escrever um comentário?</p>
+            <button class="acao" type="button" data-fecha data-detalhe="${esc(a.id)}">Escrever um comentário</button>`);
+        }
         opiniao();
         return folha(`<h2>Obrigado pela avaliação!</h2><p class="det-desc">Você deu ${'★'.repeat(Number(nt.dataset.valor))}${'☆'.repeat(5 - Number(nt.dataset.valor))} para o ${esc(a.nome)}. Quer contar o que achou?</p>
           <button class="acao" type="button" data-fecha data-resenha="${esc(a.id)}">Escrever uma resenha</button>`);
@@ -1319,6 +1479,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       try {
         const d = await (await fetch('/loja-api/conta', { cache: 'no-store', credentials: 'same-origin' })).json();
         if (!d.conta) return;
+        minhaConta = d.conta; if (!detalhe.hidden) mostrarDetalhe();
         const nome = String(d.conta.nome || '').trim().split(/\s+/)[0] || 'você';
         const inicial = nome[0].toUpperCase();
         const Nome = nome[0].toUpperCase() + nome.slice(1);

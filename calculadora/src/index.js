@@ -1,3 +1,4 @@
+import { listarAvaliacoes, avaliar, votarUtil, avaliacoesDoDono, esconderAvaliacao, responderAvaliacao } from './avaliacoes.js';
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
@@ -179,6 +180,32 @@ export default {
         // Entrou com a senha da Área do Dono: tem todos os apps, sem precisar de conta da loja.
         if (await donoLogado(env, req)) return json({ conta: { nome: 'Dono', email: env.DONO_EMAIL }, apps: await appsDaConta(env, null, env.DONO_EMAIL) });
         return json({ conta: null, apps: {} });
+      }
+
+      // ---- Notas e avaliações da LeuApps (ver: qualquer um; avaliar: só com conta) ----
+      if (pathname === '/api/avaliacoes' && m === 'GET') {
+        const conta = await contaDaSessao(env, req);
+        const r = await listarAvaliacoes(env, url.searchParams.get('app'), conta?.id || null);
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+      if ((pathname === '/api/avaliacoes' || pathname === '/api/avaliacoes/util') && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const conta = await contaDaSessao(env, req);
+        if (!conta) return json({ erro: 'sem_sessao' }, 401);
+        const r = await (pathname === '/api/avaliacoes' ? avaliar : votarUtil)(env, conta, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
+      }
+      if (pathname.startsWith('/api/dono/avaliacoes')) {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (pathname === '/api/dono/avaliacoes' && m === 'GET') return json({ avaliacoes: await avaliacoesDoDono(env) });
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const acao = { '/api/dono/avaliacoes/esconder': esconderAvaliacao, '/api/dono/avaliacoes/responder': responderAvaliacao }[pathname];
+        if (!acao) return json({ erro: 'nao_encontrado' }, 404);
+        const r = await acao(env, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
       }
 
       // ---- Área do Dono: login próprio, separado das contas dos apps ----

@@ -100,6 +100,14 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
     </div>
   </section>
 
+  <section class="roxo">
+    <h2>Avaliações da LeuApps</h2>
+    <div class="brinde">
+      <p class="nota" style="border:0;padding:0;">Notas e comentários que os clientes deixaram nos apps. Você pode <b>responder</b> (aparece embaixo do comentário, como "LeuName Softwares") ou <b>esconder</b> um comentário ofensivo.</p>
+      <ul id="av-lista"></ul>
+    </div>
+  </section>
+
   <section class="azul">
     <h2>Lojas de celular</h2>
     <p class="nota">Quando um app for para a Play Store ou outra loja de celular, as ferramentas dele entram aqui.</p>
@@ -171,6 +179,29 @@ document.getElementById('b-lista').addEventListener('click', async (e) => {
   carregarBrindes();
 });
 carregarBrindes();
+
+// Avaliações: responder e esconder.
+async function carregarAvaliacoes() {
+  const lista = document.getElementById('av-lista');
+  try {
+    const r = await fetch('/loja-api/dono/avaliacoes', { credentials: 'same-origin', cache: 'no-store' });
+    const { avaliacoes = [] } = await r.json();
+    lista.innerHTML = avaliacoes.length ? avaliacoes.map((a) => `<li style="display:grid;gap:6px;align-items:start">
+        <span><b>${esc(a.nome)}</b> · ${'★'.repeat(a.nota)}${'☆'.repeat(5 - a.nota)} · ${esc(a.app)}<small>${dataBR(a.atualizado_em)}${a.escondida ? ' · <b>escondida</b>' : ''}</small></span>
+        ${a.texto ? `<span>${esc(a.texto)}</span>` : '<span><small>(só a nota, sem comentário)</small></span>'}
+        ${a.resposta ? `<span><small>Sua resposta: ${esc(a.resposta)}</small></span>` : ''}
+        <span style="display:flex;gap:8px;flex-wrap:wrap">${a.texto ? `<button type="button" data-responder="${esc(a.id)}">Responder</button>` : ''}<button type="button" data-esconder="${esc(a.id)}" data-valor="${a.escondida ? '0' : '1'}">${a.escondida ? 'Mostrar de novo' : 'Esconder'}</button></span></li>`).join('')
+      : '<li><span><small>Nenhuma avaliação ainda.</small></span></li>';
+  } catch { lista.innerHTML = '<li><span><small>Sem internet agora.</small></span></li>'; }
+}
+document.getElementById('av-lista').addEventListener('click', async (e) => {
+  const rb = e.target.closest('[data-responder]'), eb = e.target.closest('[data-esconder]');
+  if (rb) { const resposta = prompt('Sua resposta (aparece embaixo do comentário):'); if (resposta === null) return;
+    await fetch('/loja-api/dono/avaliacoes/responder', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: rb.dataset.responder, resposta }) }).catch(() => {}); }
+  if (eb) await fetch('/loja-api/dono/avaliacoes/esconder', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: eb.dataset.esconder, esconder: eb.dataset.valor === '1' }) }).catch(() => {});
+  if (rb || eb) carregarAvaliacoes();
+});
+carregarAvaliacoes();
 
 document.getElementById('sair').addEventListener('click', async () => {
   await fetch('/loja-api/dono/sair', { method: 'POST', credentials: 'same-origin' }).catch(() => {});

@@ -104,7 +104,11 @@
       "Apps favoritos",
       "Ferramentas de negócios"
     ],
-    "escolha": true
+    "escolha": true,
+    "dados": {
+      "coleta": "Nome e e-mail da conta, e as receitas, ingredientes e preços que você cadastra",
+      "uso": "Para calcular seus preços e guardar suas receitas na sua conta"
+    }
   },
   {
     "id": "gestacell",
@@ -172,7 +176,11 @@
       "Premium",
       "Ferramentas de negócios",
       "Ferramentas e utilitários"
-    ]
+    ],
+    "dados": {
+      "coleta": "Nome e e-mail da conta, e os dados da sua loja (vendas, clientes, estoque e ordens de serviço) que você cadastra",
+      "uso": "Para o sistema da sua loja funcionar e guardar o histórico com segurança"
+    }
   },
   {
     "id": "radar",
@@ -240,6 +248,10 @@
       "Premium",
       "Ferramentas de negócios",
       "Ferramentas e utilitários"
-    ]
+    ],
+    "dados": {
+      "coleta": "Nome e e-mail da conta, e os documentos, contas e prazos que você cadastra",
+      "uso": "Para avisar você antes de cada vencimento"
+    }
   }
 ]
