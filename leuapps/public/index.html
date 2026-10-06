@@ -516,6 +516,13 @@
     .aval-ordem { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px; }
     .aval-ordem h2 { margin: 0; font-size: 19px; }
     .aval-ordem button { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; font: inherit; font-weight: 600; color: var(--texto); cursor: pointer; }
+    .lista-recentes { list-style: none; margin: 8px 0 18px; padding: 0; display: grid; gap: 14px; }
+    .recente { display: flex; align-items: center; gap: 14px; }
+    .recente img { width: 56px; height: 56px; border-radius: 14px; flex: none; }
+    .recente span { flex: 1; min-width: 0; }
+    .recente b { display: block; font-weight: 600; }
+    .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
+    .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
     .suspenso-fundo { position: fixed; inset: 0; z-index: 21; }
     .suspenso { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 52px); right: 10px; min-width: 240px; background: var(--fundo); border-radius: 14px; box-shadow: 0 8px 28px rgba(20,10,50,.22); padding: 6px 0; display: grid; }
     .suspenso button, .suspenso-check { display: flex; align-items: center; gap: 16px; padding: 14px 18px; background: none; border: 0; font: inherit; font-size: 16px; color: var(--texto); text-align: left; cursor: pointer; }
@@ -572,7 +579,7 @@
     <div class="topo-linha" id="topo-inicio">
       <img class="logo" src="/img/leuapps-192.webp" alt="LeuApps" width="40" height="40"><span class="saudacao" hidden><small id="saudacao">Olá</small></span>
       <span class="espaco"></span>
-      <button class="icone-topo" type="button" data-aba="voce" aria-label="Atualizações dos seus apps" id="atualizacoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-3-6.25"/><path d="M8.5 12l2.5 2.5L20 5.5"/></svg><span class="selo" id="selo-atualizar" hidden>0</span></button>
+      <button class="icone-topo" type="button" data-recentes aria-label="Atualizações dos seus apps" id="atualizacoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-3-6.25"/><path d="M8.5 12l2.5 2.5L20 5.5"/></svg><span class="selo" id="selo-atualizar" hidden>0</span></button>
       <button class="icone-topo" type="button" data-notificacoes aria-label="Notificações"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg></button>
       <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar">L</button>
     </div>
@@ -713,6 +720,28 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     // No app Android: versões instaladas de verdade (pacote → versionCode) e downloads em andamento.
     let versoes = {}, baixando = {}, pendente = null;
+    // "Instalado recentemente" (ícone ✓ lá em cima): guarda quando cada app terminou de instalar; o pontinho some quando a pessoa olha.
+    const lerJson = (k, pad) => { try { return JSON.parse(localStorage.getItem(k) || pad); } catch { return JSON.parse(pad); } };
+    const instaladosEm = lerJson('leuapps.instalados-em', '{}');
+    let recentesVistos = lerJson('leuapps.recentes-vistos', '0');
+    const DIA = 24 * 3600 * 1000;
+    const recentes = () => Object.entries(instaladosEm).filter(([id, t]) => Date.now() - t < 7 * DIA && apps.some((a) => a.id === id && situacao(a) !== 'nao')).sort((x, y) => y[1] - x[1]);
+    const recentesNaoVistos = () => recentes().filter(([, t]) => t > recentesVistos);
+    function marcarInstalado(id) { instaladosEm[id] = Date.now(); try { localStorage.setItem('leuapps.instalados-em', JSON.stringify(instaladosEm)); } catch {} }
+    function haQuanto(t) {
+      const m = Math.round((Date.now() - t) / 60000);
+      return m < 1 ? 'agora há pouco' : m < 60 ? `há ${m} minuto${m > 1 ? 's' : ''}` : m < 1440 ? `há ${Math.round(m / 60)} hora${m >= 90 ? 's' : ''}` : `há ${Math.round(m / 1440)} dia${m >= 2160 ? 's' : ''}`;
+    }
+    function folhaRecentes() {
+      const para = apps.filter((a) => situacao(a) === 'atualizar'), rec = recentes();
+      recentesVistos = Date.now(); try { localStorage.setItem('leuapps.recentes-vistos', String(recentesVistos)); } catch {}
+      const item = (a, sub, botao) => `<li class="recente"><img src="${esc(a.icone)}" alt=""><span><b>${esc(a.nome)}</b><small>${sub}</small></span>${botao}</li>`;
+      folha(`${para.length ? `<h2>Atualizações disponíveis</h2><ul class="lista-recentes">${para.map((a) => item(a, 'Versão nova disponível', `<button class="acao" type="button" data-fecha data-instalar="${esc(a.id)}">Atualizar</button>`)).join('')}</ul>` : ''}
+        <h2>Instalado recentemente</h2>${rec.length ? `<ul class="lista-recentes">${rec.map(([id, t]) => { const a = apps.find((x) => x.id === id); return item(a, `Instalado ${haQuanto(t)}`, `<button class="acao" type="button" data-fecha data-abrir="${esc(id)}">Abrir</button>`); }).join('')}</ul>`
+          : '<p class="det-desc">Nenhum app instalado nos últimos 7 dias. Seus apps ficam em Perfil.</p>'}
+        <button type="button" class="link-simples link-esquerda" data-fecha data-aba="voce">Ver todos os seus apps</button>`, 'Fechar');
+      mostrar();
+    }
     // Atualização automática (menu ⋮ do app): ligada por padrão; atualiza quando a pessoa abre a LeuApps.
     const autoDesligados = (() => { try { return JSON.parse(localStorage.getItem('leuapps.auto-desligado') || '[]'); } catch { return []; } })();
     const autoAtualizar = (id) => !autoDesligados.includes(id);
@@ -1185,8 +1214,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
-      const at = apps.filter((a) => situacao(a) === 'atualizar').length;
-      $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
+      const at = apps.filter((a) => situacao(a) === 'atualizar').length, novos = recentesNaoVistos().length;
+      $('selo-atualizar').hidden = !(at + novos); $('selo-atualizar').textContent = at + novos;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
       vitrines(); seguir(); opiniao();
       $('recomendados').innerHTML = daSecao('Recomendado para você').map(linhaVitrine).join('');
@@ -1238,7 +1267,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
-          meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
+          meus = [...new Set([...meus, id])]; gravar(meus); marcarInstalado(id); mostrar();
           avisar(`✓ ${a.nome} instalado! O ícone já está ${celular ? 'na tela do celular' : 'na área de trabalho'}.`);
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
@@ -1272,7 +1301,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       fim(id, ok, msg) {
         delete baixando[id]; lerInstalados(); mostrar();
         const a = todos.find((x) => x.id === id), nome = a ? a.nome : 'O app';
-        if (ok) { recemInstalados.add(id); if (!detalhe.hidden) mostrarDetalhe(); if (abrirSozinho && a && a.android) N.abrir(a.android.pacote); return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`); }
+        if (ok) { recemInstalados.add(id); marcarInstalado(id); mostrar(); if (!detalhe.hidden) mostrarDetalhe(); if (abrirSozinho && a && a.android) N.abrir(a.android.pacote); return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`); }
         if (msg === 'cancelado') return avisar('Download cancelado.');
         const m = String(msg || '');
         if (/abort|cancel|rejected/i.test(m)) return avisar('Instalação cancelada.');
@@ -1644,6 +1673,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       if (t.closest('[data-buscar-livros]')) { history.replaceState(null, '', location.pathname + location.search); paginaSecao.hidden = true; document.body.style.overflow = ''; aba('livros'); $('busca').focus(); return; }
       // ---- página do app ----
+      if (t.closest('[data-recentes]')) return folhaRecentes();
       const cc2 = t.closest('[data-cancelar]'); if (cc2) { if (N && N.cancelar) N.cancelar(cc2.dataset.cancelar); return; }
       if (t.closest('[data-ir-resenha]')) { const f = $('texto-avaliacao'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.focus({ preventScroll: true }); } else document.querySelector('#avaliacoes-app .avaliar')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
       const ar = t.closest('[data-avaliar-rapido]'); if (ar) { const id = ar.dataset.avaliarRapido, nota = Number(ar.dataset.valor);
