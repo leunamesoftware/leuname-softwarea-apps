@@ -11,7 +11,11 @@
   var loja = 'https://www.leunamesoftware.com.br/';
   var pedido = null, tela = null, estado = 'esperando';
 
-  addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedido = e; if (tela && estado !== 'pronto') desenhar('botao'); });
+  addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); pedido = e;
+    if (tela && estado === 'esperando') pedirInstalacao(); // a pessoa já tocou em Instalar: segue direto
+    else if (tela && estado === 'passos') desenhar('botao');
+  });
   addEventListener('appinstalled', function () { pedido = null; if (tela) desenhar('pronto'); });
 
   var p = new URLSearchParams(location.search);
@@ -46,9 +50,17 @@
       corpo = '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p><ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
-      corpo = '<div class="li-anel" aria-hidden="true"></div><p class="li-mini">Preparando a instalação…</p>';
+      corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando…</button><p class="li-mini">Só um instante</p>';
     }
     tela.querySelector('.li-corpo').innerHTML = corpo;
+  }
+
+  function pedirInstalacao() {
+    var q = pedido; pedido = null;
+    // Se o toque já "esfriou", o navegador recusa: volta o botão (agora pronto) para a pessoa tocar de novo.
+    var volta = function () { pedido = q; if (tela) desenhar('botao'); };
+    try { var r = q.prompt(); if (r && r.catch) r.catch(volta); } catch (e) { return volta(); }
+    q.userChoice.then(function (r) { if (tela) desenhar(r.outcome === 'accepted' ? 'pronto' : 'botao'); });
   }
 
   function abrir() {
@@ -68,6 +80,7 @@
       + '.li-sim:focus-visible,.li-nao:focus-visible,.li-voltar:focus-visible{outline:3px solid #2563EB;outline-offset:2px}'
       + '.li-ok{width:64px;height:64px;border-radius:50%;background:#E7F6EC;color:#1E8E4E;font-size:34px;font-weight:800;display:grid;place-items:center;justify-self:center}'
       + '.li-anel{width:40px;height:40px;border-radius:50%;border:4px solid #E6E1F5;border-top-color:' + cor + ';justify-self:center;animation:li-gira 1s linear infinite}'
+      + '.li-anel-mini{width:18px;height:18px;border-width:3px;border-color:rgba(255,255,255,.4);border-top-color:#fff;margin-right:10px}.li-sim:disabled{opacity:.85;cursor:default}'
       + '@keyframes li-gira{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.li-anel{animation:none}}'
       + '.li-fatos{display:flex;justify-content:space-around;gap:8px;border-top:1px solid #ECE8F5;padding-top:14px;color:#5D5A6B;font-size:13px;text-align:center}.li-fatos b{display:block;color:#1A1630;font-size:15px}';
     document.head.appendChild(s);
@@ -82,17 +95,16 @@
     tela.addEventListener('click', function (e) {
       if (e.target.closest('[data-voltar]')) { if (document.referrer && history.length > 1) history.back(); else location.href = loja; return; }
       if (e.target.closest('[data-usar]')) { tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
-      if (e.target.closest('[data-instalar]') && pedido) {
-        var q = pedido; pedido = null;
-        q.prompt();
-        q.userChoice.then(function (r) { if (tela) desenhar(r.outcome === 'accepted' ? 'pronto' : (pedido ? 'botao' : 'passos')); });
+      if (e.target.closest('[data-instalar]')) {
+        if (pedido) return pedirInstalacao();
+        // O navegador ainda não liberou o botão: espera um pouco; só mostra o passo a passo se ele não liberar.
+        desenhar('esperando');
+        setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 5000);
       }
     });
     document.documentElement.style.overflow = 'hidden';
     (document.body || document.documentElement).appendChild(tela);
-    if (pedido) desenhar('botao');
-    else if (ios || firefox) desenhar('passos');
-    else { desenhar('esperando'); setTimeout(function () { if (tela && estado === 'esperando') desenhar('passos'); }, 2500); }
+    desenhar(ios || (firefox && !celular) ? 'passos' : 'botao'); // no Chrome/Edge/Samsung: sempre o botão Instalar primeiro
   }
   // Abre na hora (cobre o app antes do login aparecer).
   if (document.body) abrir(); else addEventListener('DOMContentLoaded', abrir);
