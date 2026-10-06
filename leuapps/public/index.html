@@ -117,6 +117,23 @@
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
+    /* Capa grande no topo (como a da Play), passa por baixo da barra de cima */
+    .banner-topo { position: relative; margin: calc(-68px - env(safe-area-inset-top)) -16px 10px; padding: calc(68px + env(safe-area-inset-top)) 20px 22px; min-height: 440px; box-sizing: border-box; border-radius: 0 0 32px 32px; overflow: hidden; background: #0B1440; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; }
+    .capa-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .capa-texto, .capa-rodape { position: relative; }
+    .capa-texto h2 { margin: 0; font-size: 30px; line-height: 1.1; font-weight: 800; letter-spacing: -.5px; text-wrap: balance; }
+    .capa-texto p { margin: 6px 0 0; font-size: 17px; font-weight: 600; opacity: .92; }
+    .capa-rodape { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .capa-icones { display: flex; }
+    .capa-icones > * { width: 46px; height: 46px; border-radius: 12px; margin-right: -6px; border: 2px solid #0B1440; object-fit: cover; box-sizing: border-box; }
+    .capa-icones span { display: grid; place-items: center; background: #DCE6FF; color: #0B1440; font-weight: 800; font-size: 16px; }
+    .capa-botao { min-height: 46px; padding: 0 24px; border-radius: 999px; border: 0; background: #DCE6FF; color: #0B1440; font: inherit; font-size: 16.5px; font-weight: 700; }
+    .capa-botao:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+    .topo { transition: background-color .2s; }
+    body.na-capa .topo { background: transparent; }
+    body.na-capa #topo-inicio .icone-topo { color: #fff; }
+    body.na-capa .selo { border-color: #0E1A4A; }
+
     /* Atalhos (chips) */
     .chips-linha { position: sticky; top: calc(68px + env(safe-area-inset-top)); z-index: 4; background: var(--fundo); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 6px 16px; }
     .chips-linha::-webkit-scrollbar { display: none; }
@@ -266,10 +283,15 @@
   <main>
     <!-- Apps (início) -->
     <section id="aba-apps">
+      <div class="banner-topo" id="capa">
+        <img class="capa-img" src="/img/capa/capa-negocios.webp" alt="">
+        <div class="capa-texto"><h2>Apps para o seu negócio</h2><p>Venda mais e organize sua empresa</p></div>
+        <div class="capa-rodape"><div class="capa-icones" id="capa-icones"></div><button class="capa-botao" type="button" data-secao="Negócios">Explorar</button></div>
+      </div>
       <div class="chips-linha" id="chips"></div>
       <div class="rolar destaques" id="destaques"></div>
       <div class="secao" id="sugestoes">
-        <div class="secao-titulo"><h2>Sugestões para você</h2></div>
+        <div class="secao-titulo"><h2>Sugestões para você</h2><button class="seta" type="button" data-secao="Sugestões para você" aria-label="Ver todas as sugestões"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
       <div id="vitrines"></div>
@@ -426,7 +448,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const svg = (k) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
     $('chips').innerHTML = CHIPS.map(([nome, ic, tipo = 'secao', alvo = nome]) => `<button class="chip" type="button" data-${tipo}="${esc(alvo)}">${svg(ic)}${esc(nome)}</button>`).join('');
     let secaoAtual = null;
-    const daSecao = (s) => apps.filter((a) => (a.secoes || []).includes(s));
+    const daSecao = (s) => s === 'Sugestões para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : apps.filter((a) => (a.secoes || []).includes(s));
 
     // Selos das linhas (tudo verdadeiro: vem do apps.json).
     const SELO = { escolha: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', gratis: I.gratis, unico: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>', novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>' };
@@ -529,6 +551,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
       vitrines(); seguir();
+      const cn = daSecao('Negócios');
+      $('capa-icones').innerHTML = cn.slice(0, 3).map((a) => `<img src="${esc(a.icone)}" alt="">`).join('') + (cn.length > 3 ? `<span>+${cn.length - 3}</span>` : '');
+      naCapa();
       destaques(); bolinhas();
       if (!detalhe.hidden) mostrarDetalhe();
     }
@@ -661,7 +686,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
       if (qual === 'pesquisa' && apps.length) mostrar();
       try { localStorage.setItem('leuapps.aba', qual); } catch {}
-      scrollTo(0, 0);
+      scrollTo(0, 0); naCapa();
     }
 
     // ---- Cliques ----
@@ -690,6 +715,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const h = new Date().getHours();
     const bom = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
     $('saudacao').textContent = bom;
+
+    // ---- Barra de cima transparente enquanto a capa está embaixo dela
+    function naCapa() {
+      const c = $('capa');
+      document.body.classList.toggle('na-capa', !$('aba-apps').hidden && detalhe.hidden && scrollY < c.offsetHeight - 80);
+    }
+    addEventListener('scroll', naCapa, { passive: true });
 
     // ---- Destaques: bolinhas e passam sozinhos (param quando a pessoa mexe) ----
     let mexeu = false;
