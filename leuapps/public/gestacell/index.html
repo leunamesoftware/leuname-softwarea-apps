@@ -3370,21 +3370,17 @@ function setupPWA(){
     favicon.rel='icon'; favicon.type='image/png'; favicon.href=LOGO_DATA_URI;
     document.head.appendChild(favicon);
     const appleTouch=document.createElement('link');
-    appleTouch.rel='apple-touch-icon'; appleTouch.href=LOGO_DATA_URI;
+    appleTouch.rel='apple-touch-icon'; appleTouch.href=location.hostname==='gestacell.leunamesoftware.com.br'?'/img/gestacell-192.png':LOGO_DATA_URI;
     document.head.appendChild(appleTouch);
   }catch(e){ console.warn('Favicon indisponível neste ambiente.',e); }
-  try{
-    const manifest={
-      name:'Gestacell',short_name:'Gestacell',start_url:'.',display:'standalone',
-      background_color:'#F3F6FA',theme_color:'#0B2545',
-      icons:[{src:LOGO_DATA_URI,sizes:'512x512',type:'image/png'}]
-    };
-    const blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
-    const link=document.createElement('link'); link.rel='manifest'; link.href=URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  }catch(e){ console.warn('PWA manifest indisponível neste ambiente.',e); }
-  // Observação: registro de Service Worker para instalação completa (Adicionar à tela inicial)
-  // requer hospedagem própria em HTTPS; dentro do preview de artifact isso não é aplicável.
+  // Instalar como app (ícone próprio) só no endereço próprio: dentro da loja o celular acharia que já está instalado.
+  if(location.hostname==='gestacell.leunamesoftware.com.br'){
+    try{
+      const link=document.createElement('link'); link.rel='manifest'; link.href='/app.webmanifest';
+      document.head.appendChild(link);
+      if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
+    }catch(e){ console.warn('Instalação indisponível neste navegador.',e); }
+  }
 }
 
 let __booted=false;
@@ -3443,19 +3439,8 @@ setInterval(()=>{ syncNow().catch(()=>{}); }, 90000);
       a.style.cssText = 'position:fixed;right:10px;top:calc(9px + env(safe-area-inset-top));z-index:2147483647;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:12px;background:#fff;color:#C2410C;font:800 12px/1.1 Poppins,system-ui,sans-serif;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.28)';
       function por(el) { if (document.body) document.body.appendChild(el); else addEventListener('DOMContentLoaded', function () { document.body.appendChild(el); }); }
       por(a);
-      // Veio do "Colocar na tela inicial": explica o atalho do navegador.
-      if (new URLSearchParams(location.search).get('atalho') === '1') {
-        var ios = /iPhone|iPad/i.test(navigator.userAgent);
-        var d = document.createElement('div');
-        d.innerHTML = '<b>📲 Colocar na tela inicial</b><br>' + (ios
-          ? 'Toque em <b>Compartilhar</b> (quadrado com seta) e depois em <b>Adicionar à Tela de Início</b>.'
-          : 'Toque nos <b>⋮</b> do navegador (canto de cima) e depois em <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>.')
-          + '<button type="button" aria-label="Fechar" style="position:absolute;top:6px;right:8px;border:0;background:none;color:#fff;font-size:22px;cursor:pointer">×</button>';
-        d.style.cssText = 'position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));z-index:2147483647;background:#071A5C;color:#fff;border-radius:14px;padding:14px 40px 14px 14px;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 10px 26px rgba(0,0,0,.35)';
-        d.querySelector('button').onclick = function () { d.remove(); };
-        por(d);
-      }
     })();
   </script>
+  <script src="instalar.js" data-nome="Gestacell" data-icone="/img/gestacell-192.png" data-cor="#0B2545"></script>
 </body>
 </html>

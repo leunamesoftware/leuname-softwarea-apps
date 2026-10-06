@@ -64,7 +64,8 @@
       "/img/telas/quantocobrar-3.webp",
       "/img/telas/quantocobrar-4.webp",
       "/img/telas/quantocobrar-5.webp"
-    ]
+    ],
+    "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1"
   },
   {
     "id": "gestacell",
@@ -97,7 +98,8 @@
       "/img/telas/gestacell-3.webp",
       "/img/telas/gestacell-4.webp",
       "/img/telas/gestacell-1.webp"
-    ]
+    ],
+    "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1"
   },
   {
     "id": "radar",
@@ -131,6 +133,8 @@
       "/img/telas/radar-3.webp",
       "/img/telas/radar-4.webp",
       "/img/telas/radar-5.webp"
-    ]
+    ],
+    "instalar": "https://radar.leunamesoftware.com.br/",
+    "instalarPassos": true
   }
 ]

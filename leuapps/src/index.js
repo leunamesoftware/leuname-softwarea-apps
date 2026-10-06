@@ -11,6 +11,7 @@ function seguro(resp) {
 // Área do Dono (/dono/): só abre para a conta do dono logada (a sessão é a do servidor de vendas, CONTAS).
 // Manifesto e ícones ficam abertos porque o celular os busca sem a sessão na hora de instalar.
 const DONO_HOST = 'dono.leunamesoftware.com.br';
+const GESTACELL_HOST = 'gestacell.leunamesoftware.com.br';
 const DONO_LIVRE = /^\/dono\/(app\.webmanifest|robo-\d+\.png|sw\.js)$/;
 async function eDono(req, env) {
   if (!env.CONTAS || !env.DONO_EMAIL) return false;
@@ -95,6 +96,11 @@ export default {
     if (url.hostname !== DONO_HOST && (url.pathname === '/dono' || url.pathname.startsWith('/dono/'))) return Response.redirect(`https://${DONO_HOST}/`, 302);
     if (url.hostname === DONO_HOST) {
       if (url.pathname !== '/apps.json' && !url.pathname.startsWith('/img/') && !url.pathname.startsWith('/dono/')) url.pathname = '/dono' + url.pathname;
+      req = new Request(url, req);
+    }
+    // Gestacell no endereço próprio: gestacell.leunamesoftware.com.br/ mostra o que está em /gestacell/.
+    if (url.hostname === GESTACELL_HOST) {
+      if (!url.pathname.startsWith('/img/') && !url.pathname.startsWith('/gestacell/')) url.pathname = '/gestacell' + (url.pathname === '/' ? '/' : url.pathname);
       req = new Request(url, req);
     }
     if (url.pathname.startsWith('/dono/') && !DONO_LIVRE.test(url.pathname) && !(await eDono(req, env))) {
