@@ -1588,7 +1588,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <button type="button" class="link-simples link-esquerda" data-ir-resenha>${minha && minha.texto ? 'Editar sua resenha' : 'Escreva uma resenha'}</button>`;
     }
     // Quem fez o app (LeuName ou, no futuro, um vendedor de fora): apps.json → desenvolvedor.
-    const DEV_LEUNAME = { nome: 'LeuName Softwares', site: 'https://www.leunamesoftware.com.br', whatsapp: '5524998721557', telefone: '(24) 99872-1557', email: 'leunamesoftware@gmail.com', privacidade: '/privacidade.html' };
+    const DEV_LEUNAME = { nome: 'LeuName Softwares', site: 'https://www.leunamesoftware.com.br', whatsapp: '5524998721557', telefone: '(24) 99872-1557', email: 'suporte@leunamesoftware.com.br', privacidade: '/privacidade.html' };
     const dev = (a) => ({ ...DEV_LEUNAME, ...(a.desenvolvedor || {}) });
     function blocoSuporte(a, aberto) {
       const d = dev(a);
