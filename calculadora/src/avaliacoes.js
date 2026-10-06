@@ -57,10 +57,38 @@ export async function votarUtil(env, conta, d) {
   return { ok: true };
 }
 
+/** A pessoa apaga a própria avaliação daquele app. */
+export async function excluirAvaliacao(env, conta, d) {
+  const app = String(d?.app || '');
+  if (!APP_VALIDO.test(app)) return { erro: 'app', status: 400 };
+  const a = await env.DB.prepare('SELECT id FROM avaliacoes WHERE app = ? AND conta_id = ?').bind(app, conta.id).first();
+  if (!a) return { erro: 'nao_encontrado', status: 404 };
+  await env.DB.prepare('DELETE FROM avaliacoes_util WHERE avaliacao_id = ?').bind(a.id).run();
+  await env.DB.prepare('DELETE FROM avaliacoes_denuncias WHERE avaliacao_id = ?').bind(a.id).run();
+  await env.DB.prepare('DELETE FROM avaliacoes WHERE id = ?').bind(a.id).run();
+  return { ok: true };
+}
+
+export const MOTIVOS = ['spam', 'ofensivo', 'fora_do_assunto'];
+/** Denunciar o comentário de outra pessoa (vai para a Área do Dono). */
+export async function denunciarAvaliacao(env, conta, d) {
+  const id = String(d?.id || ''), motivo = String(d?.motivo || '');
+  if (!MOTIVOS.includes(motivo)) return { erro: 'motivo', status: 400 };
+  const a = await env.DB.prepare('SELECT conta_id FROM avaliacoes WHERE id = ?').bind(id).first();
+  if (!a) return { erro: 'nao_encontrado', status: 404 };
+  if (a.conta_id === conta.id) return { erro: 'propria', status: 400 };
+  await env.DB.prepare(`INSERT INTO avaliacoes_denuncias (avaliacao_id, conta_id, motivo, criado_em) VALUES (?, ?, ?, ?)
+    ON CONFLICT(avaliacao_id, conta_id) DO UPDATE SET motivo = excluded.motivo`).bind(id, conta.id, motivo, new Date().toISOString()).run();
+  return { ok: true };
+}
+
 // ---- Área do Dono ----
 export async function avaliacoesDoDono(env) {
   const { results } = await env.DB.prepare(
-    'SELECT id, app, nome, nota, texto, atualizado_em, escondida, resposta FROM avaliacoes ORDER BY atualizado_em DESC LIMIT 200').all();
+    `SELECT a.id, a.app, a.nome, a.nota, a.texto, a.atualizado_em, a.escondida, a.resposta,
+       (SELECT COUNT(*) FROM avaliacoes_denuncias d WHERE d.avaliacao_id = a.id) AS denuncias,
+       (SELECT GROUP_CONCAT(DISTINCT d.motivo) FROM avaliacoes_denuncias d WHERE d.avaliacao_id = a.id) AS motivos
+     FROM avaliacoes a ORDER BY denuncias DESC, a.atualizado_em DESC LIMIT 200`).all();
   return results;
 }
 export async function esconderAvaliacao(env, d) {

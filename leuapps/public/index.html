@@ -259,6 +259,61 @@
     .confianca svg { width: 24px; height: 24px; flex: none; fill: none; stroke: var(--verde-texto); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
     .confianca span { display: grid; gap: 2px; font-size: 13px; color: var(--suave); line-height: 1.3; } .confianca b { color: var(--texto); font-size: 14.5px; }
     .fim-loja { border-top: 4px solid transparent; border-image: var(--marca) 1; }
+    /* Página "Mais detalhes" dos dados */
+    .dados-topo { background: var(--cartao); padding-bottom: 28px; }
+    .dados-topo .det-barra { background: var(--cartao); }
+    .dados-aviso { margin-top: 18px; display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 18px; background: var(--fundo); color: var(--texto); font-size: 15.5px; }
+    .dados-aviso svg { flex: none; color: var(--suave); }
+    .dados-folha { position: relative; margin-top: -18px; background: var(--fundo); border-radius: 26px 26px 0 0; padding-top: 22px; }
+    .dados-folha h2 { font-size: 26px; margin: 0 0 6px; }
+    .dados-bloco { border-top: 1px solid var(--linha); padding: 20px 0 8px; }
+    .dados-ico { width: 52px; height: 52px; border-radius: 50%; background: var(--cartao); display: grid; place-items: center; color: var(--texto); }
+    .dados-bloco h3 { margin: 12px 0 2px; font-size: 22px; }
+    .dados-item { border-radius: 12px; }
+    .dados-item summary { list-style: none; display: flex; align-items: center; gap: 14px; padding: 12px 0; cursor: pointer; }
+    .dados-item summary::-webkit-details-marker { display: none; }
+    .dados-item summary > svg:first-child { flex: none; color: var(--suave); }
+    .dados-item summary span { flex: 1; display: grid; gap: 2px; } .dados-item summary b { font-size: 16.5px; } .dados-item summary small { color: var(--suave); font-size: 14px; }
+    .dados-item[open] summary > svg:last-child { transform: rotate(180deg); }
+    .dados-item p { margin: 0 0 12px 38px; color: var(--suave); font-size: 15px; }
+    .dados-praticas { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 14px; }
+    .dados-praticas li { display: grid; gap: 2px; color: var(--suave); font-size: 14.5px; } .dados-praticas b { color: var(--texto); font-size: 16px; }
+
+    /* Página do app: instalando, instalado e suporte */
+    .topo-instalando { display: grid; grid-template-columns: 84px 1fr auto; gap: 16px; align-items: center; }
+    .topo-instalando h1 { margin: 0 0 6px; font-size: 21px; font-weight: 800; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .anel { --pct: 0; position: relative; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center;
+      background: conic-gradient(var(--verde) calc(var(--pct) * 1%), var(--verde-claro) 0); }
+    .anel::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--fundo); }
+    .anel img { position: relative; width: 58px; height: 58px; border-radius: 16px; }
+    .anel.girando { background: conic-gradient(var(--verde) 0 25%, var(--verde-claro) 0); animation: girar 1s linear infinite; }
+    .anel.girando img { animation: girar 1s linear infinite reverse; }
+    @keyframes girar { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .anel.girando, .anel.girando img { animation: none; } }
+    .abrir-sozinho { margin-top: 16px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; background: var(--cartao); cursor: pointer; position: relative; }
+    .abrir-sozinho > span { flex: 1; display: flex; gap: 12px; align-items: center; } .abrir-sozinho > span > span { display: grid; gap: 2px; }
+    .abrir-sozinho small { color: var(--suave); font-size: 13.5px; }
+    .abrir-sozinho input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .abrir-sozinho i { flex: none; width: 52px; height: 30px; border-radius: 999px; background: var(--linha); position: relative; transition: background .2s; }
+    .abrir-sozinho i::after { content: ""; position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: var(--sombra); transition: left .2s; }
+    .abrir-sozinho input:checked + i { background: var(--verde); } .abrir-sozinho input:checked + i::after { left: 26px; }
+    .abrir-sozinho input:focus-visible + i { outline: 3px solid var(--verde-texto); outline-offset: 2px; }
+    .det-topo-app .pilula { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
+    .det-sub { display: block; color: var(--suave); font-size: 14px; margin-top: 2px; }
+    .ponto-novo { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--verde); vertical-align: middle; }
+    .det-texto-forte { color: var(--texto); font-size: 16px; }
+    .estrelas-largas { max-width: none; margin-top: 8px; }
+    .link-esquerda { padding-left: 0; font-size: 16px; }
+    .suporte { margin-top: 28px; }
+    .suporte summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .suporte summary::-webkit-details-marker { display: none; }
+    .suporte summary h2 { margin: 0 !important; }
+    .suporte[open] .seta-baixo svg { transform: rotate(180deg); }
+    .suporte ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px; }
+    .suporte a { display: flex; gap: 18px; align-items: flex-start; padding: 10px 0; color: var(--texto); text-decoration: none; }
+    .suporte a svg { flex: none; color: var(--suave); } .suporte a span { display: grid; gap: 4px; color: var(--suave); } .suporte a b { color: var(--texto); font-weight: 600; font-size: 16px; }
+    .sobre-dev { display: grid; gap: 4px; margin-top: 12px; color: var(--suave); } .sobre-dev b { color: var(--texto); font-size: 16px; }
+
     /* Página do app */
     .det-barra-app { display: flex; align-items: center; } .det-barra-app .espaco { flex: 1; }
     .det-barra-app .det-voltar { color: var(--texto); }
@@ -300,6 +355,9 @@
     .util { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--suave); } .util span { flex: 1; }
     .util button { min-height: 34px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--linha); background: none; color: var(--texto); font: inherit; font-weight: 600; }
     .util button[aria-pressed="true"] { border-color: var(--verde); color: var(--verde-texto); background: var(--verde-claro); }
+    .sua-avaliacao { margin-top: 10px; padding: 16px; border-radius: 16px; background: var(--cartao); display: grid; gap: 8px; }
+    .sua-avaliacao header { display: flex; align-items: center; justify-content: space-between; } .sua-avaliacao b { font-size: 17px; }
+    .sua-avaliacao p { margin: 0; font-size: 15.5px; }
     .avaliar { margin-top: 10px; padding: 16px; border-radius: 16px; background: var(--cartao); display: grid; gap: 10px; }
     .avaliar small { color: var(--suave); font-size: 13.5px; margin-top: -6px; }
     .estrelas-escolher { display: flex; justify-content: space-between; max-width: 300px; }
@@ -432,6 +490,48 @@
     .det-info { margin: 22px 0 0; font-size: 12.5px; color: var(--suave); }
 
     /* Folhas (planos, permissão, instruções) */
+    .detalhes-barra { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--linha, #dcd8e8); }
+    .detalhes-barra img { width: 40px; height: 40px; border-radius: 10px; }
+    .detalhes-barra h1 { font-size: 18px; margin: 0; }
+    .detalhes-barra small { color: var(--suave, #5d5a6b); }
+    .detalhes-pagina section { padding: 18px 0; border-bottom: 1px solid var(--linha, #dcd8e8); }
+    .detalhes-pagina section:last-child { border-bottom: 0; }
+    .detalhes-pagina h2 { font-size: 18px; font-weight: 600; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+    .detalhes-pagina p small { display: block; color: var(--suave, #5d5a6b); }
+    .detalhes-desc { white-space: pre-line; line-height: 1.55; }
+    .detalhes-recursos { padding-left: 20px; line-height: 1.7; }
+    .detalhes-livre { display: flex; gap: 16px; align-items: center; }
+    .detalhes-livre small { display: block; color: var(--suave, #5d5a6b); }
+    .detalhes-dados { margin: 0; display: grid; gap: 16px; }
+    .detalhes-dados div { display: flex; justify-content: space-between; gap: 16px; }
+    .detalhes-dados dt { color: var(--suave, #5d5a6b); }
+    .detalhes-dados dd { margin: 0; text-align: right; }
+    .detalhes-compat summary { display: flex; justify-content: space-between; align-items: center; list-style: none; cursor: pointer; font-size: 16px; margin-bottom: 14px; }
+    .detalhes-compat[open] summary svg { transform: rotate(180deg); }
+    .det-resumo-grande { font-size: 24px; line-height: 1.3; font-weight: 600; color: var(--texto); text-wrap: balance; }
+    .pilula-nota { font-size: 13px; font-weight: 700; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; vertical-align: middle; }
+    .rolar.chips-aval { display: flex; gap: 10px; padding: 12px 16px; margin: 0; }
+    .chips-aval button { flex: none; border: 1px solid var(--linha, #dcd8e8); background: var(--fundo); color: var(--texto); border-radius: 10px; padding: 8px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+    .chips-aval button[aria-pressed="true"] { background: var(--chip, #efeaff); border-color: transparent; color: var(--verde); }
+    .aval-ordem { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 10px; }
+    .aval-ordem h2 { margin: 0; font-size: 19px; }
+    .aval-ordem button { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; font: inherit; font-weight: 600; color: var(--texto); cursor: pointer; }
+    .suspenso-fundo { position: fixed; inset: 0; z-index: 21; }
+    .suspenso { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 52px); right: 10px; min-width: 240px; background: var(--fundo); border-radius: 14px; box-shadow: 0 8px 28px rgba(20,10,50,.22); padding: 6px 0; display: grid; }
+    .suspenso button, .suspenso-check { display: flex; align-items: center; gap: 16px; padding: 14px 18px; background: none; border: 0; font: inherit; font-size: 16px; color: var(--texto); text-align: left; cursor: pointer; }
+    .suspenso button:hover, .suspenso-check:hover { background: var(--cinza, rgba(0,0,0,.05)); }
+    .suspenso-check { justify-content: space-between; }
+    .suspenso-check input { width: 22px; height: 22px; accent-color: var(--verde); }
+    .dados-excluir { border: 1px solid var(--linha, #dcd8e8); border-radius: 14px; padding: 16px; margin-top: 12px; }
+    .dados-excluir b { display: block; font-size: 17px; }
+    .dados-excluir p { margin: 6px 0 12px; color: var(--suave, #5d5a6b); }
+    .dados-excluir a { display: inline-flex; align-items: center; gap: 8px; color: var(--verde); font-weight: 600; text-decoration: none; }
+    .dados-rodape { display: flex; gap: 12px; align-items: flex-start; margin: 22px 0 8px; color: var(--suave, #5d5a6b); }
+    .dados-rodape svg { flex: none; margin-top: 2px; }
+    .dados-rodape a { color: inherit; }
+    .det-rodape { margin: 26px 0 10px; display: grid; gap: 14px; }
+    .det-rodape a { display: flex; align-items: center; gap: 14px; color: var(--texto); font-weight: 600; text-decoration: none; }
+    .det-rodape p { margin: 0; color: var(--suave, #5d5a6b); }
     .folha-fundo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
     .folha { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--fundo); border-radius: 26px 26px 0 0; padding: 22px 18px calc(20px + env(safe-area-inset-bottom)); }
     .folha h3 { margin: 0 0 6px; font-size: 20px; font-weight: 500; }
@@ -613,6 +713,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     // No app Android: versões instaladas de verdade (pacote → versionCode) e downloads em andamento.
     let versoes = {}, baixando = {}, pendente = null;
+    // Atualização automática (menu ⋮ do app): ligada por padrão; atualiza quando a pessoa abre a LeuApps.
+    const autoDesligados = (() => { try { return JSON.parse(localStorage.getItem('leuapps.auto-desligado') || '[]'); } catch { return []; } })();
+    const autoAtualizar = (id) => !autoDesligados.includes(id);
+    function gravarAuto(id, ligado) {
+      const i = autoDesligados.indexOf(id); if (ligado && i >= 0) autoDesligados.splice(i, 1); if (!ligado && i < 0) autoDesligados.push(id);
+      try { localStorage.setItem('leuapps.auto-desligado', JSON.stringify(autoDesligados)); } catch {}
+    }
+    const jaAtualizados = new Set();
+    function atualizarSozinho() {
+      if (!N || !N.podeInstalar() || (navigator.connection && navigator.connection.saveData)) return;
+      for (const a of apps) if (situacao(a) === 'atualizar' && autoAtualizar(a.id) && !(a.id in baixando) && !jaAtualizados.has(a.id)) { jaAtualizados.add(a.id); instalar(a.id); }
+    }
     function lerInstalados() {
       if (!N) return;
       try { versoes = JSON.parse(N.instalados(JSON.stringify(todos.filter((a) => a.android).map((a) => a.android.pacote)))) || {}; } catch { versoes = {}; }
@@ -1156,11 +1268,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // Respostas do app Android (LeuNativo chama estas funções).
     window.leuNativo = {
-      progresso(id, pct) { baixando[id] = pct; mostrar(); },
+      progresso(id, pct) { baixando[id] = pct; const y = detalhe.scrollTop; mostrar(); if (!detalhe.hidden) detalhe.scrollTop = y; },
       fim(id, ok, msg) {
         delete baixando[id]; lerInstalados(); mostrar();
         const a = todos.find((x) => x.id === id), nome = a ? a.nome : 'O app';
-        if (ok) return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`);
+        if (ok) { recemInstalados.add(id); if (!detalhe.hidden) mostrarDetalhe(); if (abrirSozinho && a && a.android) N.abrir(a.android.pacote); return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`); }
+        if (msg === 'cancelado') return avisar('Download cancelado.');
         const m = String(msg || '');
         if (/abort|cancel|rejected/i.test(m)) return avisar('Instalação cancelada.');
         if (/INCOMPATIBLE|conflict|signature/i.test(m)) return avisar(`Já existe outra versão do ${nome} no celular (de outra loja). Desinstale ela e toque em Instalar de novo.`);
@@ -1181,9 +1294,93 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Página do app (link direto: www.leunamesoftware.com.br/#id) ----
     // Página da seção: abre pela seta (→) ou pelos atalhos; endereço #lista/Nome (o voltar do celular funciona).
     const paginaSecao = $('pagina-secao');
+    // "Mais detalhes" dos dados: página inteira, só com o que é verdade em cada app.
+    function itemDados(icone, titulo, resumo, detalhe) {
+      return `<details class="dados-item"><summary>${ICO(icone)}<span><b>${esc(titulo)}</b><small>${esc(resumo)}</small></span>${ICO('<path d="M6 9l6 6 6-6"/>', 20)}</summary><p>${esc(detalhe)}</p></details>`;
+    }
+    function mostrarPaginaDados(id) {
+      const a = todos.find((x) => x.id === id); if (!a) return;
+      const d = a.dados || DADOS_PADRAO, pago = Boolean(a.planos);
+      paginaSecao.innerHTML = `<div class="dados-topo"><div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button></div>
+          <div class="det-corpo"><div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">${esc(dev(a).nome)}</div></div></div>
+          <div class="dados-aviso">${ICO('<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M12 11v5M12 8v.01"/>')}<span>O desenvolvedor informou como o app coleta, usa e compartilha os seus dados.</span></div></div></div>
+        <div class="dados-folha det-corpo">
+          <h2>Seus dados</h2>
+          <p class="det-texto">Aqui está o que o ${esc(a.nome)} guarda, para quê, e com quem divide. Se algo mudar, esta página é atualizada.</p>
+          <div class="dados-bloco"><span class="dados-ico">${ICO('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>')}</span>
+            <h3>Dados compartilhados</h3><p class="det-texto">Dados que podem ser enviados para outras empresas</p>
+            ${pago ? itemDados('<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>', 'Dados de pagamento', 'Mercado Pago', 'Quando você compra, o Mercado Pago recebe só o necessário para cobrar (como nome, e-mail e o meio de pagamento). A LeuName não guarda o número do seu cartão.')
+              : '<p class="det-texto"><b>Nenhum dado é compartilhado com outras empresas.</b></p>'}
+          </div>
+          <div class="dados-bloco"><span class="dados-ico">${ICO('<path d="M7 18a4.5 4.5 0 01-.7-8.95A6 6 0 0118 8.5a4.5 4.5 0 01-1 8.9"/><path d="M12 12v8M9 15l3-3 3 3"/>')}</span>
+            <h3>Dados coletados</h3><p class="det-texto">Dados que o app guarda para funcionar</p>
+            ${itemDados('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/>', 'Informações pessoais', 'Nome e e-mail', 'Usados para criar a sua conta, entrar no app e mandar avisos importantes sobre a sua conta.')}
+            ${itemDados('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>', 'Informações do app', d.coleta.replace(/^Nome e e-mail da conta, e /, ''), d.uso + '.')}
+            ${pago ? itemDados('<path d="M4 7h16v13H4zM8 7V5h8v2"/>', 'Compras', 'Plano e data da compra', 'Para liberar o que você comprou e mostrar o seu plano. O pagamento em si fica com o Mercado Pago.') : ''}
+          </div>
+          <div class="dados-bloco"><span class="dados-ico">${ICO('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>')}</span>
+            <h3>Práticas de segurança</h3>
+            <ul class="dados-praticas"><li><b>Os dados são criptografados em trânsito</b>Tudo passa por conexão segura (HTTPS).</li>
+              <li><b>Senha protegida</b>A sua senha é guardada embaralhada (não dá para ler).</li>
+</ul>
+          </div>
+          <div class="dados-bloco"><span class="dados-ico">${ICO('<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>')}</span>
+            <h3>Exclusão de dados</h3><p class="det-texto">Você pode pedir para apagar a sua conta e tudo o que o app guardou.</p>
+            <div class="dados-excluir"><b>Excluir conta do app</b><p>Mande o pedido para ${esc(dev(a).nome)}. A conta e os dados ligados a ela são apagados, e você recebe a confirmação.</p>
+              <a href="https://wa.me/${esc(dev(a).whatsapp)}?text=${encodeURIComponent(`Olá! Quero excluir a minha conta do ${a.nome} e os dados ligados a ela. Meu e-mail da conta é: `)}" target="_blank" rel="noopener">Pedir a exclusão ${ICO('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>', 18)}</a></div>
+          </div>
+          <p class="dados-rodape">${ICO('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>', 18)}<span>Para saber mais, leia a <a href="${esc(dev(a).privacidade)}" target="_blank" rel="noopener">Política de Privacidade</a> de ${esc(dev(a).nome)}.</span></p>
+        </div>`;
+      paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden';
+    }
+    // "Detalhes" do app (seta de Novidades e de Conheça o app), como na Play: novidades, descrição completa e dados do app.
+    function mostrarPaginaDetalhes(id) {
+      const a = todos.find((x) => x.id === id); if (!a) return;
+      const d = dev(a), nov = a.novidades || [];
+      const aparelho = N && a.android ? 'Funciona no seu celular' : celular ? 'Funciona no seu celular (pelo navegador)' : 'Funciona no seu computador (pelo navegador)';
+      const linhas = [['Versão', a.versao || 'Sempre a mais nova'], nov[0] && ['Atualizado em', nov[0].data], ['Funciona em', a.android ? 'Android, iPhone e computador' : 'Celular e computador, pelo navegador'],
+        ['Oferecido por', d.nome], ['Preço', a.preco]].filter(Boolean);
+      paginaSecao.innerHTML = `<div class="det-barra detalhes-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button>
+          <img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><small>Detalhes</small></div></div>
+        <div class="det-corpo detalhes-pagina">
+          ${nov.length ? `<section><h2>Novidades <i class="ponto-novo" aria-hidden="true"></i></h2>${nov.map((n) => `<p><small>${esc(n.data)}</small><b>${esc(n.titulo)}</b> ${esc(n.texto)}</p>`).join('')}</section>` : ''}
+          <section><h2>Sobre este app</h2><p class="detalhes-desc">${esc(a.descricao || a.resumo)}</p>
+            ${a.recursos ? `<ul class="detalhes-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}</section>
+          <section><h2>Mais</h2><div class="detalhes-livre"><span class="selo-livre">L</span><span>Classificação Livre<small>Indicado para todas as idades</small></span></div></section>
+          <section><h2>Dados do app</h2><dl class="detalhes-dados">${linhas.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
+            <div><dt>Seus dados</dt><dd><button type="button" class="link-simples" data-dados="${esc(a.id)}">Ver mais</button></dd></div></dl></section>
+          <section><h2>Compatibilidade</h2><details class="detalhes-compat" open><summary>Este ${N || celular ? 'celular' : 'computador'}${ICO('<path d="M6 9l6 6 6-6"/>', 20)}</summary>
+            <dl class="detalhes-dados"><div><dt>Compatibilidade</dt><dd>${aparelho}</dd></div><div><dt>Versão</dt><dd>${esc(a.versao || 'Sempre a mais nova')}</dd></div></dl></details></section>
+        </div>`;
+      paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden';
+    }
+    let filtroAval = 'todos', ordemAval = 'relevantes';
+    function mostrarPaginaAvaliacoes(id) {
+      const a = todos.find((x) => x.id === id); if (!a) return;
+      const av = avaliacoesCache[id]; if (!av) { carregarAvaliacoes(id); }
+      const filtros = [['todos', 'Todas'], ['positivas', 'Positivas'], ['criticas', 'Críticas'], ...[5, 4, 3, 2, 1].map((n) => [String(n), n + ' ★'])];
+      const passa = (r) => filtroAval === 'todos' || (filtroAval === 'positivas' ? r.nota >= 4 : filtroAval === 'criticas' ? r.nota <= 2 : r.nota === Number(filtroAval));
+      const lista = av ? av.itens.filter(passa).sort((x, y) => ordemAval === 'recentes' ? y.data.localeCompare(x.data) : (y.uteis - x.uteis || y.data.localeCompare(x.data))) : [];
+      const nomeFiltro = filtros.find((f) => f[0] === filtroAval)[1];
+      paginaSecao.innerHTML = `<div class="det-barra detalhes-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button>
+          <img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}${av && av.total ? ` <span class="pilula-nota">${String(av.media).replace('.', ',')} ★</span>` : ''}</h1><small>Notas e avaliações</small></div></div>
+        <div class="rolar chips-aval">${filtros.map(([k, n]) => `<button type="button" data-filtro-aval="${k}" aria-pressed="${filtroAval === k}">${filtroAval === k ? '✓ ' : ''}${esc(n)}</button>`).join('')}</div>
+        <div class="det-corpo">
+          <div class="aval-ordem"><h2>${esc(nomeFiltro)}</h2><button type="button" data-ordem-aval>${ordemAval === 'recentes' ? 'Mais recentes' : 'Mais relevantes'} ${ICO('<path d="M4 7h16M7 12h10M10 17h4"/>', 20)}</button></div>
+          ${!av ? '<p class="det-texto">Carregando avaliações…</p>' : lista.length ? lista.map(comentarioHtml).join('') : '<div class="sem-avaliacoes"><b>Nenhuma avaliação aqui</b>Tente outro filtro.</div>'}
+        </div>`;
+      paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaSecao.hidden = false; document.body.style.overflow = 'hidden';
+    }
     function mostrarPaginaSecao() {
       const h = decodeURIComponent(location.hash.slice(1));
       if (todos.some((x) => x.id === h) || h.startsWith('curso/')) return; // abriu um app/curso por cima da lista: a lista fica embaixo
+      if (h.startsWith('dados/')) return mostrarPaginaDados(h.slice(6));
+      if (h.startsWith('sobre/')) return mostrarPaginaDetalhes(h.slice(6));
+      if (h.startsWith('avaliacoes/')) { if (paginaSecao.dataset.pagina !== h) { filtroAval = 'todos'; ordemAval = 'relevantes'; paginaSecao.scrollTop = 0; } paginaSecao.dataset.pagina = h; return mostrarPaginaAvaliacoes(h.slice(11)); }
+      paginaSecao.dataset.pagina = '';
       if (!h.startsWith('lista/')) { paginaSecao.hidden = true; if (detalhe.hidden) document.body.style.overflow = ''; return; }
       const nome = h.slice(6);
       const listaCats = { 'Categorias de apps': CHIPS.filter((c) => !c[2]).map((c) => [c[0], I[c[1]]]), 'Categorias de cursos': CHIPS_CURSOS.slice(4).map(([n, d]) => [n, d, 'cursos:' + n]), 'Categorias de livros': CHIPS_LIVROS.filter((c) => c[0] !== 'Categorias') }[nome];
@@ -1228,38 +1425,34 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Segurança dos dados: o que cada app guarda de verdade (apps.json → dados), sem prometer o que não é.
     const DADOS_PADRAO = { coleta: 'E-mail da conta e as informações que você cadastra no app', uso: 'Para o app funcionar e guardar suas informações com segurança' };
     const avaliacoesCache = {};
+    let editandoAvaliacao = null; // app cuja avaliação a pessoa está editando
     function mostrarDetalhe() {
       const a = todos.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
       const salvo = desejos().includes(a.id), av = avaliacoesCache[a.id];
       const novidade = (a.novidades || [])[0], dados = a.dados || DADOS_PADRAO;
       const etiquetas = [...new Set([a.categoria, ...(a.tags || []), ...(a.secoes || [])])].slice(0, 8);
-      detalhe.innerHTML = `
-        <div class="det-barra det-barra-app"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><span class="espaco"></span>
-          <button type="button" class="det-voltar" data-desejo="${esc(a.id)}" aria-label="${salvo ? 'Tirar dos favoritos' : 'Favoritar'}" aria-pressed="${salvo}">${ICO('<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"' + (salvo ? ' fill="currentColor"' : '') + '/>')}</button>
-          <button type="button" class="det-voltar" data-mais-app="${esc(a.id)}" aria-label="Mais opções">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></div>
-        <div class="det-corpo">
-          <div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">LeuName Softwares</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
-          <ul class="det-fatos">
-            <li>${av && av.total ? `<b>${String(av.media).replace('.', ',')} ★</b>${av.total} ${av.total > 1 ? 'avaliações' : 'avaliação'}` : '<b>Novo</b>sem avaliações ainda'}</li>
-            <li><b><span class="selo-livre">L</span></b>Classificação Livre</li>
-            <li><b>${N && a.android ? 'Android' : 'Celular e PC'}</b>funciona em</li>
-            <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li>
-          </ul>
-          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>
-          ${a.planos ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
+      const st = situacao(a), instalando = a.id in baixando, instalado = st !== 'nao' && !instalando && !recemInstalados.has(a.id);
+      const partes = {
+        planos: `
+          ${a.planos && situacao(a) === 'nao' && !(a.id in baixando) ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
+`,
+        telas: `
           ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="180" height="320">`).join('')}</div>` : ''}
-
+`,
+        sobre: `
           <div class="det-secao"><h2>Conheça o app</h2><button class="seta" type="button" data-sobre="${esc(a.id)}" aria-label="Ler tudo sobre o app">${SETA_D}</button></div>
-          <p class="det-resumo">${esc(a.resumo)}</p>
+          <p class="det-resumo${instalado ? ' det-resumo-grande' : ''}">${esc(a.resumo)}</p>
           <div class="rolar det-etiquetas">${etiquetas.map((g) => `<button type="button" data-secao="${esc(g)}">${esc(g)}</button>`).join('')}</div>
-
+`,
+        materia: `
           ${novidade ? `<h2 class="det-h2">Novidades do app</h2>
           <div class="materia" style="background-image:linear-gradient(180deg, rgba(10,8,30,.05) 30%, rgba(10,8,30,.82)), url('${esc(a.destaque ? a.destaque.imagem : a.icone)}')">
             <span class="materia-selo">Novidade · ${esc(novidade.data)}</span>
             <div class="materia-rodape"><div><b>${esc(novidade.titulo)}</b><small>${esc(novidade.texto)}</small></div><button type="button" data-novidades-app="${esc(a.id)}">Ver</button></div>
           </div>` : ''}
-
+`,
+        dados: `
           <div class="det-secao"><h2>Seus dados</h2><button class="seta" type="button" data-dados="${esc(a.id)}" aria-label="Mais detalhes sobre os dados">${SETA_D}</button></div>
           <p class="det-texto">Sua segurança começa quando você entende o que o app guarda e por quê. Estas são as informações da LeuName Softwares sobre este app.</p>
           <ul class="dados-quadro">
@@ -1269,17 +1462,101 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <li>${ICO('<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>')}<span><b>Exclusão de conta disponível</b>Você pode pedir a exclusão dos seus dados pelo WhatsApp.</span></li>
             <li><button type="button" class="link-simples" data-dados="${esc(a.id)}">Mais detalhes</button></li>
           </ul>
-
-          <div class="det-secao"><h2>O que os clientes dizem</h2></div>
+`,
+        aval: `
+          <div class="det-secao"><h2>O que os clientes dizem</h2>${av && av.itens.length ? `<button class="seta" type="button" data-todas-avaliacoes="${esc(a.id)}" aria-label="Ver todas as avaliações">${SETA_D}</button>` : ''}</div>
           <div id="avaliacoes-app">${blocoAvaliacoes(a, av)}</div>
-
+`,
+        extras: `
           ${a.recursos ? `<h2 class="det-h2">O que o app faz</h2><ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
           ${a.opcoes ? `<h2 class="det-h2">Planos</h2><ul class="opcoes">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
-          <p class="det-info">Desenvolvedor: LeuName Softwares · Sempre na versão mais nova</p>
+`,
+        sugestoes: sugestoesNoApp(a),
+        instalado: blocoInstalado(a, av),
+        fatos: `<ul class="det-fatos">
+            <li>${av && av.total ? `<b>${String(av.media).replace('.', ',')} ★</b>${av.total} ${av.total > 1 ? 'avaliações' : 'avaliação'}` : '<b>Novo</b>sem avaliações ainda'}</li>
+            <li><b><span class="selo-livre">L</span></b>Classificação Livre</li>
+            <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li></ul>`,
+        suporte: blocoSuporte(a, instalado),
+        rodape: `<div class="det-rodape">${a.planos ? `<a href="/loja/termos" target="_blank" rel="noopener">${ICO('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>')}<span>Desistência e reembolso em até 7 dias</span></a>
+            <p>O preço mostrado é o valor final que você paga.</p>` : '<p>Grátis para instalar. Sem anúncios.</p>'}</div>`,
+      };
+      // Ordem como na Play: instalado mostra Novidades, Avaliar e Suporte primeiro; instalando mostra sugestões logo embaixo.
+      const ordem = instalado ? ['instalado', 'materia', 'suporte', 'sobre', 'fatos', 'telas', 'dados', 'aval', 'extras', 'sugestoes', 'rodape']
+        : instalando || recemInstalados.has(a.id) ? ['sugestoes', 'telas', 'sobre', 'materia', 'dados', 'aval', 'extras', 'suporte', 'rodape']
+        : ['planos', 'telas', 'sobre', 'materia', 'dados', 'aval', 'extras', 'suporte', 'sugestoes', 'rodape'];
+      detalhe.innerHTML = `
+        <div class="det-barra det-barra-app"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><span class="espaco"></span>
+          <button type="button" class="det-voltar" data-desejo="${esc(a.id)}" aria-label="${salvo ? 'Tirar dos favoritos' : 'Favoritar'}" aria-pressed="${salvo}">${ICO('<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"' + (salvo ? ' fill="currentColor"' : '') + '/>')}</button>
+          <button type="button" class="det-voltar" data-mais-app="${esc(a.id)}" aria-label="Mais opções">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></div>
+        <div class="det-corpo">
+          ${cabecalhoApp(a, av)}
+          ${ordem.map((k) => partes[k]).join('')}
         </div>`;
       detalhe.hidden = false; document.body.style.overflow = 'hidden';
       detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       if (!av) carregarAvaliacoes(a.id);
+    }
+    // Topo da página do app em 3 estados (como na Play): para instalar, instalando (voltinha + Cancelar), instalado (Desinstalar/Abrir).
+    let abrirSozinho = (() => { try { return localStorage.getItem('leuapps.abrir-sozinho') === '1'; } catch { return false; } })();
+    const recemInstalados = new Set(); // instalados agora: a página mostra sugestões logo embaixo
+    function cabecalhoApp(a, av) {
+      const s = situacao(a);
+      if (a.id in baixando) {
+        const p = baixando[a.id], pct = p >= 0 ? Math.min(100, p) : 0;
+        const txt = p >= 100 ? 'Instalando…' : p >= 0 ? `${pct}% baixado` : 'Baixando…';
+        return `<div class="topo-instalando"><span class="anel ${p >= 0 && p < 100 ? '' : 'girando'}" style="--pct:${pct}"><img src="${esc(a.icone)}" alt=""></span>
+            <div><h1>${esc(a.nome)}</h1><span class="pilula">${txt}</span></div>
+            ${N && N.cancelar && p < 100 ? `<button class="acao contorno" type="button" data-cancelar="${esc(a.id)}">Cancelar</button>` : ''}</div>
+          <label class="abrir-sozinho"><span>${ICO('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', 20)}<span><b>Abrir quando terminar</b><small>O app abre sozinho depois da instalação</small></span></span>
+            <input type="checkbox" id="abrir-sozinho" ${abrirSozinho ? 'checked' : ''}><i aria-hidden="true"></i></label>`;
+      }
+      if (s !== 'nao') {
+        return `<div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1>${recemInstalados.has(a.id) ? `<span class="pilula">${ICO('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 14)} Instalado</span>` : `<div class="det-dev">${esc(dev(a).nome)}</div>`}</div></div>
+          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>`;
+      }
+      return `<div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">${esc(dev(a).nome)}</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
+          <ul class="det-fatos">
+            <li>${av && av.total ? `<b>${String(av.media).replace('.', ',')} ★</b>${av.total} ${av.total > 1 ? 'avaliações' : 'avaliação'}` : '<b>Novo</b>sem avaliações ainda'}</li>
+            <li><b><span class="selo-livre">L</span></b>Classificação Livre</li>
+            <li><b>${N && a.android ? 'Android' : 'Celular e PC'}</b>funciona em</li>
+            <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li>
+          </ul>
+          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>`;
+    }
+    // Logo depois de instalar (ou instalando): sugestões embaixo, como na Play.
+    function sugestoesNoApp(a) {
+      const outros = apps.filter((x) => x.id !== a.id);
+      if (!outros.length) return '';
+      return `<div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2></div>
+          <ul class="lista">${outros.map(linhaSugestao).join('')}</ul></div>
+        <div class="secao"><div class="secao-titulo"><h2>Mais da LeuName para você</h2><button class="seta" type="button" data-secao="Sugestões para você" aria-label="Ver todos">${SETA_D}</button></div>
+          <div class="rolar">${[...outros.map(iconeGrande), ...cursos.slice(0, 4).map(iconeCurso)].join('')}</div></div>`;
+    }
+    // App já instalado (abriu a página depois): Novidades com a data e "Avalie o app" com estrelas, como na Play.
+    function blocoInstalado(a, av) {
+      const n = (a.novidades || [])[0];
+      const minha = av && av.minha;
+      return `${n ? `<div class="det-secao"><div><h2>Novidades <i class="ponto-novo" aria-hidden="true"></i></h2><small class="det-sub">Última novidade: ${esc(n.data)}</small></div>
+            <button class="seta" type="button" data-novidades-app="${esc(a.id)}" aria-label="Ver todas as novidades">${SETA_D}</button></div>
+          <p class="det-texto det-texto-forte">${esc(n.titulo)}: ${esc(n.texto)}</p>` : ''}
+        <div class="det-secao"><div><h2>${minha ? 'Sua avaliação' : 'Avalie o app'}</h2><small class="det-sub">${minha ? 'Toque para mudar a sua nota' : 'Dê sua opinião'}</small></div></div>
+        <div class="estrelas-escolher estrelas-largas">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-avaliar-rapido="${esc(a.id)}" data-valor="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${Boolean(minha && k <= minha.nota)}">${ICO('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', 38)}</button>`).join('')}</div>
+        <button type="button" class="link-simples link-esquerda" data-ir-resenha>${minha && minha.texto ? 'Editar sua resenha' : 'Escreva uma resenha'}</button>`;
+    }
+    // Quem fez o app (LeuName ou, no futuro, um vendedor de fora): apps.json → desenvolvedor.
+    const DEV_LEUNAME = { nome: 'LeuName Softwares', site: 'https://www.leunamesoftware.com.br', whatsapp: '5524998721557', telefone: '(24) 99872-1557', email: 'leunamesoftware@gmail.com', privacidade: '/privacidade.html' };
+    const dev = (a) => ({ ...DEV_LEUNAME, ...(a.desenvolvedor || {}) });
+    function blocoSuporte(a, aberto) {
+      const d = dev(a);
+      return `<details class="suporte" ${aberto ? 'open' : ''}><summary><h2>Suporte do app</h2><span class="seta seta-baixo" aria-hidden="true">${ICO('<path d="M6 9l6 6 6-6"/>', 20)}</span></summary>
+        <ul>
+          ${d.site ? `<li><a href="${esc(d.site)}" target="_blank" rel="noopener">${ICO('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>')}<span><b>Site</b></span></a></li>` : ''}
+          ${d.whatsapp ? `<li><a href="https://wa.me/${esc(d.whatsapp)}?text=${encodeURIComponent('Olá! Preciso de ajuda com o ' + a.nome + '.')}" target="_blank" rel="noopener">${ICO('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/>')}<span><b>WhatsApp de suporte</b>${esc(d.telefone || '')}</span></a></li>` : ''}
+          ${d.email ? `<li><a href="mailto:${esc(d.email)}">${ICO('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>')}<span><b>E-mail</b>${esc(d.email)}</span></a></li>` : ''}
+          ${d.privacidade ? `<li><a href="${esc(d.privacidade)}" target="_blank" rel="noopener">${ICO('<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/>')}<span><b>Política de privacidade</b></span></a></li>` : ''}
+        </ul>
+        <div class="sobre-dev"><b>Sobre o desenvolvedor</b><span>${esc(d.nome)}</span>${d.cnpj ? `<span>CNPJ ${esc(d.cnpj)}</span>` : ''}${d.email ? `<span>${esc(d.email)}</span>` : ''}${d.endereco ? `<span>${esc(d.endereco)}</span>` : ''}${d.telefone ? `<span>${esc(d.telefone)}</span>` : ''}</div></details>`;
     }
     async function carregarAvaliacoes(id) {
       try {
@@ -1289,7 +1566,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       } catch { return; }
       const a = todos.find((x) => x.id === id);
       if (location.hash.slice(1) === id && a) { const y = detalhe.scrollTop; mostrarDetalhe(); detalhe.scrollTop = y; }
+      if (decodeURIComponent(location.hash.slice(1)) === 'avaliacoes/' + id) { const y = paginaSecao.scrollTop; mostrarPaginaSecao(); paginaSecao.scrollTop = y; }
     }
+    const comentarioHtml = (r) => `<article class="comentario">
+          <header><span class="avatar-comentario">${esc(r.nome[0] || '?').toUpperCase()}</span><b>${esc(r.nome)}${r.minha ? ' <small>(você)</small>' : ''}</b>
+            <button type="button" class="tres-pontos" data-denunciar="${esc(r.id)}" aria-label="Denunciar comentário">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></header>
+          <div class="comentario-nota"><span class="estrelas">${estrelas(r.nota, 13)}</span><small>${new Date(r.data).toLocaleDateString('pt-BR')}</small></div>
+          <p>${esc(r.texto)}</p>
+          ${r.resposta ? `<div class="resposta-dev"><b>LeuName Softwares</b><small>${new Date(r.respostaEm).toLocaleDateString('pt-BR')}</small><p>${esc(r.resposta)}</p></div>` : ''}
+          ${r.uteis ? `<small class="uteis">${r.uteis} ${r.uteis > 1 ? 'pessoas disseram' : 'pessoa disse'} que ajudou</small>` : ''}
+          ${!r.minha && minhaConta ? `<div class="util"><span>Este comentário ajudou?</span><button type="button" data-util="${esc(r.id)}" data-sim="1" aria-pressed="${r.voto === true}">Sim</button><button type="button" data-util="${esc(r.id)}" data-sim="0" aria-pressed="${r.voto === false}">Não</button></div>` : ''}
+
+        </article>`;
     function blocoAvaliacoes(a, av) {
       if (!av) return '<p class="det-texto">Carregando avaliações…</p>';
       const maxB = Math.max(1, ...Object.values(av.barras));
@@ -1298,20 +1586,16 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <div class="nota-barras">${[5, 4, 3, 2, 1].map((n) => `<span>${n}</span><i><em style="width:${Math.round(av.barras[n] / maxB * 100)}%"></em></i>`).join('')}</div></div>`
         : `<div class="sem-avaliacoes">${ICO('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', 32)}<b>Ainda sem avaliações</b>Seja o primeiro a avaliar o ${esc(a.nome)}.</div>`;
       const meu = av.minha;
-      const form = minhaConta ? `<div class="avaliar"><b>${meu ? 'Sua avaliação' : 'Avalie este app'}</b><small>Conte para outras pessoas o que você achou</small>
+      const editando = editandoAvaliacao === a.id;
+      const form = minhaConta && meu && !editando ? `<div class="sua-avaliacao"><header><b>Sua avaliação</b><button type="button" class="tres-pontos" data-menu-minha="${esc(a.id)}" aria-label="Opções da sua avaliação">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></header>
+          <span class="estrelas">${estrelas(meu.nota, 16)}</span>${meu.texto ? `<p>${esc(meu.texto)}</p>` : ''}<button type="button" class="link-simples link-esquerda" data-editar-avaliacao="${esc(a.id)}">Editar sua avaliação</button></div>`
+        : minhaConta ? `<div class="avaliar"><b>${meu ? 'Sua avaliação' : 'Avalie este app'}</b><small>Conte para outras pessoas o que você achou</small>
           <div class="estrelas-escolher" role="radiogroup" aria-label="Sua nota">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-estrela="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${meu && k <= meu.nota}">${ICO('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', 34)}</button>`).join('')}</div>
           <textarea id="texto-avaliacao" maxlength="500" rows="3" placeholder="Escreva um comentário (opcional)">${esc(meu ? meu.texto : '')}</textarea>
           <button class="acao" type="button" data-enviar-avaliacao="${esc(a.id)}">${meu ? 'Atualizar avaliação' : 'Publicar avaliação'}</button><span class="aviso-avaliacao" id="aviso-avaliacao"></span></div>`
         : `<div class="avaliar"><b>Avalie este app</b><small>Entre na sua conta da LeuApps para dar a sua nota.</small><a class="acao contorno" href="/loja/comprar?app=${esc(a.id)}&entrar=1">Entrar para avaliar</a></div>`;
-      const itens = av.itens.map((r) => `<article class="comentario">
-          <header><span class="avatar-comentario">${esc(r.nome[0] || '?').toUpperCase()}</span><b>${esc(r.nome)}${r.minha ? ' <small>(você)</small>' : ''}</b>
-            <button type="button" class="tres-pontos" data-denunciar="${esc(r.id)}" aria-label="Denunciar comentário">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></header>
-          <div class="comentario-nota"><span class="estrelas">${estrelas(r.nota, 13)}</span><small>${new Date(r.data).toLocaleDateString('pt-BR')}</small></div>
-          <p>${esc(r.texto)}</p>
-          ${r.resposta ? `<div class="resposta-dev"><b>LeuName Softwares</b><small>${new Date(r.respostaEm).toLocaleDateString('pt-BR')}</small><p>${esc(r.resposta)}</p></div>` : ''}
-          ${r.uteis ? `<small class="uteis">${r.uteis} ${r.uteis > 1 ? 'pessoas disseram' : 'pessoa disse'} que ajudou</small>` : ''}
-          ${!r.minha && minhaConta ? `<div class="util"><span>Este comentário ajudou?</span><button type="button" data-util="${esc(r.id)}" data-sim="1" aria-pressed="${r.voto === true}">Sim</button><button type="button" data-util="${esc(r.id)}" data-sim="0" aria-pressed="${r.voto === false}">Não</button></div>` : ''}
-        </article>`).join('');
+      const outras = av.itens.filter((r) => !r.minha);
+      const itens = outras.slice(0, 3).map(comentarioHtml).join('') + (outras.length > 3 ? `<button type="button" class="link-simples link-esquerda" data-todas-avaliacoes="${esc(a.id)}">Ver todas as avaliações</button>` : '');
       return resumo + itens + form;
     }
     addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); });
@@ -1360,23 +1644,34 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       if (t.closest('[data-buscar-livros]')) { history.replaceState(null, '', location.pathname + location.search); paginaSecao.hidden = true; document.body.style.overflow = ''; aba('livros'); $('busca').focus(); return; }
       // ---- página do app ----
+      const cc2 = t.closest('[data-cancelar]'); if (cc2) { if (N && N.cancelar) N.cancelar(cc2.dataset.cancelar); return; }
+      if (t.closest('[data-ir-resenha]')) { const f = $('texto-avaliacao'); if (f) { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.focus({ preventScroll: true }); } else document.querySelector('#avaliacoes-app .avaliar')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      const ar = t.closest('[data-avaliar-rapido]'); if (ar) { const id = ar.dataset.avaliarRapido, nota = Number(ar.dataset.valor);
+        if (!minhaConta) { location.href = `/loja/comprar?app=${encodeURIComponent(id)}&entrar=1`; return; }
+        const texto = avaliacoesCache[id]?.minha?.texto || '';
+        fetch('/loja-api/avaliacoes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app: id, nota, texto }) })
+          .then((r) => { if (!r.ok) throw 0; delete avaliacoesCache[id]; carregarAvaliacoes(id); avisar('✓ Avaliação salva. Obrigado!'); }).catch(() => avisar('Não deu para salvar agora. Tente de novo.')); return; }
       const ds = t.closest('[data-desejo]'); if (ds) { const id = ds.dataset.desejo, l = desejos();
         try { localStorage.setItem('leuapps.desejos', JSON.stringify(l.includes(id) ? l.filter((x) => x !== id) : [...l, id])); } catch {} const y = detalhe.scrollTop; mostrarDetalhe(); detalhe.scrollTop = y; return; }
       const ma = t.closest('[data-mais-app]'); if (ma) { const a = todos.find((x) => x.id === ma.dataset.maisApp);
-        return folha(`<h2>${esc(a.nome)}</h2><div class="opcoes-menu"><button type="button" data-fecha data-compartilhar="${esc(a.id)}">Compartilhar</button><button type="button" data-fecha data-problema="${esc(a.id)}">Informar um problema</button></div>`, 'Fechar'); }
+        const f = document.createElement('div'); f.className = 'suspenso-fundo';
+        const podeAuto = N && a.android && situacao(a) !== 'nao';
+        f.innerHTML = `<div class="suspenso" role="menu"><button type="button" role="menuitem" data-fecha data-compartilhar="${esc(a.id)}">${ICO('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>')}Compartilhar</button>
+          <button type="button" role="menuitem" data-fecha data-problema="${esc(a.id)}">${ICO('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>')}Informar um problema</button>
+          ${podeAuto ? `<label class="suspenso-check">Atualizar sozinho<input type="checkbox" id="auto-atualizar" ${autoAtualizar(a.id) ? 'checked' : ''}></label>` : ''}</div>`;
+        f.addEventListener('click', (ev) => { if (ev.target === f || ev.target.closest('[data-fecha]')) f.remove(); });
+        f.querySelector('#auto-atualizar')?.addEventListener('change', (ev) => { gravarAuto(a.id, ev.target.checked); avisar(ev.target.checked ? `O ${a.nome} vai se atualizar sozinho quando você abrir a LeuApps.` : `Atualização automática do ${a.nome} desligada.`); });
+        document.body.appendChild(f); return; }
+      const tav = t.closest('[data-todas-avaliacoes]'); if (tav) { location.hash = 'avaliacoes/' + tav.dataset.todasAvaliacoes; return; }
+      const fav = t.closest('[data-filtro-aval]'); if (fav) { filtroAval = fav.dataset.filtroAval; mostrarPaginaSecao(); return; }
+      if (t.closest('[data-ordem-aval]')) return folha(`<h2>Ordenar por</h2><div class="opcoes-menu">${[['relevantes', 'Mais relevantes'], ['recentes', 'Mais recentes']].map(([k, n]) => `<button type="button" data-fecha data-ordem="${k}">${ordemAval === k ? '✓ ' : ''}${n}</button>`).join('')}</div>`, 'Cancelar');
+      const oa = t.closest('[data-ordem]'); if (oa) { ordemAval = oa.dataset.ordem; mostrarPaginaSecao(); return; }
       const cp = t.closest('[data-compartilhar]'); if (cp) { const a = todos.find((x) => x.id === cp.dataset.compartilhar), link = `${location.origin}/#${a.id}`;
         if (navigator.share) navigator.share({ title: a.nome, text: a.resumo, url: link }).catch(() => {}); else navigator.clipboard?.writeText(link).then(() => folha('<h2>Link copiado</h2><p class="det-desc">Cole no WhatsApp para mandar para quem quiser.</p>', 'OK')); return; }
       const pb = t.closest('[data-problema]'); if (pb) { const a = todos.find((x) => x.id === pb.dataset.problema);
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero informar um problema no ${a.nome}: `)}`, '_blank'); return; }
-      const sb = t.closest('[data-sobre]'); if (sb) { const a = todos.find((x) => x.id === sb.dataset.sobre);
-        return folha(`<h2>Sobre o ${esc(a.nome)}</h2><p class="det-desc">${esc(a.descricao || a.resumo)}</p>${a.recursos ? `<ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}<p class="det-info">Versão: ${esc(a.versao || 'sempre a mais nova')} · LeuName Softwares</p>`, 'Fechar'); }
-      const nv = t.closest('[data-novidades-app]'); if (nv) { const a = todos.find((x) => x.id === nv.dataset.novidadesApp);
-        return folha(`<h2>Novidades do ${esc(a.nome)}</h2><div class="lista-notif">${(a.novidades || []).map((n) => `<div class="notif-item"><span><small>${esc(n.data)}</small><b>${esc(n.titulo)}</b>${esc(n.texto)}</span></div>`).join('')}</div>`, 'Fechar'); }
-      const dd = t.closest('[data-dados]'); if (dd) { const a = todos.find((x) => x.id === dd.dataset.dados), d = a.dados || DADOS_PADRAO;
-        return folha(`<h2>Seus dados</h2><p class="det-desc"><b>O que o ${esc(a.nome)} guarda:</b> ${esc(d.coleta)}.</p><p class="det-desc"><b>Para quê:</b> ${esc(d.uso)}.</p>
-          <p class="det-desc"><b>Compartilhamento:</b> não vendemos nem repassamos seus dados. Pagamentos são feitos pelo Mercado Pago, que recebe só o necessário para cobrar.</p>
-          <p class="det-desc"><b>Segurança:</b> conexão criptografada (HTTPS) e senha guardada de forma protegida.</p>
-          <p class="det-desc"><b>Excluir seus dados:</b> peça pelo WhatsApp e apagamos a sua conta.</p>`, 'Fechar'); }
+      const sb = t.closest('[data-sobre]') || t.closest('[data-novidades-app]'); if (sb) { location.hash = 'sobre/' + (sb.dataset.sobre || sb.dataset.novidadesApp); return; }
+      const dd = t.closest('[data-dados]'); if (dd) { location.hash = 'dados/' + dd.dataset.dados; return; }
       const es = t.closest('[data-estrela]'); if (es) { const n = Number(es.dataset.estrela);
         es.parentElement.querySelectorAll('[data-estrela]').forEach((b) => b.setAttribute('aria-pressed', Number(b.dataset.estrela) <= n)); es.parentElement.dataset.nota = n; return; }
       const ea = t.closest('[data-enviar-avaliacao]'); if (ea) { const id = ea.dataset.enviarAvaliacao, box = ea.closest('.avaliar');
@@ -1384,13 +1679,24 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (!nota) { $('aviso-avaliacao').textContent = 'Toque nas estrelas para dar a sua nota.'; return; }
         ea.disabled = true; $('aviso-avaliacao').textContent = 'Enviando…';
         fetch('/loja-api/avaliacoes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app: id, nota, texto: $('texto-avaliacao').value }) })
-          .then((r) => r.ok ? r.json() : Promise.reject(r.status)).then(() => { delete avaliacoesCache[id]; carregarAvaliacoes(id); folha('<h2>Obrigado pela avaliação!</h2><p class="det-desc">Ela já aparece na página do app.</p>', 'OK'); })
+          .then((r) => r.ok ? r.json() : Promise.reject(r.status)).then(() => { editandoAvaliacao = null; delete avaliacoesCache[id]; carregarAvaliacoes(id); folha('<h2>Obrigado pela avaliação!</h2><p class="det-desc">Ela já aparece na página do app.</p>', 'OK'); })
           .catch((s) => { ea.disabled = false; $('aviso-avaliacao').textContent = s === 401 ? 'Entre na sua conta para avaliar.' : 'Não deu certo agora. Tente de novo.'; }); return; }
-      const ut = t.closest('[data-util]'); if (ut) { const id = location.hash.slice(1);
+      const ut = t.closest('[data-util]'); if (ut) { const id = decodeURIComponent(location.hash.slice(1)).replace(/^avaliacoes\//, '');
         fetch('/loja-api/avaliacoes/util', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: ut.dataset.util, util: ut.dataset.sim === '1' }) })
           .then(() => { delete avaliacoesCache[id]; carregarAvaliacoes(id); }).catch(() => {}); return; }
       const dn = t.closest('[data-denunciar]'); if (dn) {
-        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero denunciar um comentário na LeuApps (código ${dn.dataset.denunciar}).`)}`, '_blank'); return; }
+        if (!minhaConta) return folha('<h2>Denunciar comentário</h2><p class="det-desc">Entre na sua conta da LeuApps para denunciar um comentário.</p>', 'OK');
+        return folha(`<h2>Denunciar comentário</h2><p class="det-desc">O que tem de errado com este comentário?</p>
+          <div class="opcoes-menu">${[['spam', 'É spam ou propaganda'], ['ofensivo', 'É ofensivo ou inadequado'], ['fora_do_assunto', 'Não tem a ver com o app']].map(([m, txt]) => `<button type="button" data-fecha data-motivo="${m}" data-id="${esc(dn.dataset.denunciar)}">${txt}</button>`).join('')}</div>`, 'Cancelar'); }
+      const mo = t.closest('[data-motivo]'); if (mo) {
+        fetch('/loja-api/avaliacoes/denunciar', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: mo.dataset.id, motivo: mo.dataset.motivo }) })
+          .then((r) => avisar(r.ok ? '✓ Denúncia enviada. Obrigado por avisar!' : 'Não deu para denunciar agora.')).catch(() => avisar('Sem internet agora.')); return; }
+      const mm = t.closest('[data-menu-minha]'); if (mm) return folha(`<h2>Sua avaliação</h2><div class="opcoes-menu"><button type="button" data-fecha data-editar-avaliacao="${esc(mm.dataset.menuMinha)}">Editar</button><button type="button" data-fecha data-excluir-avaliacao="${esc(mm.dataset.menuMinha)}">Excluir</button></div>`, 'Cancelar');
+      const ed = t.closest('[data-editar-avaliacao]'); if (ed) { editandoAvaliacao = ed.dataset.editarAvaliacao; const y = detalhe.scrollTop; mostrarDetalhe(); detalhe.scrollTop = y; $('texto-avaliacao')?.focus({ preventScroll: true }); return; }
+      const ex = t.closest('[data-excluir-avaliacao]'); if (ex) { const id = ex.dataset.excluirAvaliacao;
+        if (!confirm('Excluir a sua avaliação deste app?')) return;
+        fetch('/loja-api/avaliacoes/excluir', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ app: id }) })
+          .then((r) => { if (!r.ok) throw 0; try { localStorage.removeItem('leuapps.nota.' + id); } catch {} delete avaliacoesCache[id]; carregarAvaliacoes(id); avisar('Avaliação excluída.'); }).catch(() => avisar('Não deu para excluir agora.')); return; }
       const al = t.closest('[data-aba-livros]'); if (al) { abaLivros = al.dataset.abaLivros; mostrarLivros(); scrollTo(0, 0); return; }
       const lv = t.closest('[data-livro]'); if (lv) { const l = livros.find((x) => x.id === lv.dataset.livro); if (!l) return;
         if (l.link) { open(l.link, '_blank'); return; }
@@ -1443,6 +1749,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const rol = t.closest('[data-rolar]'); if (rol) return $(rol.dataset.rolar).scrollIntoView({ behavior: 'smooth' });
       const sv = t.closest('[data-servico]'); if (sv) return mostrarServicos(sv.dataset.servico);
     });
+    document.addEventListener('change', (e) => { if (e.target.id === 'abrir-sozinho') { abrirSozinho = e.target.checked; try { localStorage.setItem('leuapps.abrir-sozinho', abrirSozinho ? '1' : '0'); } catch {} } });
     $('busca').addEventListener('input', () => { secaoAtual = null; if (abaAtual === 'livros') return mostrarLivros(); mostrar(); });
     // Pesquisa por voz (quando o celular permite)
     const Voz = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1561,7 +1868,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao();
+      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); atualizarSozinho();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}

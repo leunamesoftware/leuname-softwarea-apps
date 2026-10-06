@@ -8,6 +8,7 @@ import android.os.Build
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 /**
@@ -16,9 +17,13 @@ import kotlin.concurrent.thread
  */
 object Instalador {
     private fun texto(s: String) = JSONObject.quote(s)
+    /** Downloads que a pessoa mandou cancelar (botão Cancelar na loja). */
+    private val cancelados = ConcurrentHashMap.newKeySet<String>()
+    fun cancelar(id: String) { cancelados.add(id) }
 
     fun instalar(a: MainActivity, id: String, endereco: String) = thread(name = "instalar-$id") {
         val idJs = texto(id)
+        cancelados.remove(id)
         try {
             var con = URL(endereco).openConnection() as HttpURLConnection
             con.instanceFollowRedirects = true
@@ -42,6 +47,12 @@ object Instalador {
                         while (true) {
                             val n = entrada.read(buf)
                             if (n < 0) break
+                            if (cancelados.remove(id)) {
+                                sessao.abandon()
+                                con.disconnect()
+                                a.js("leuNativo.fim($idJs, false, 'cancelado')")
+                                return@thread
+                            }
                             saida.write(buf, 0, n)
                             lidos += n
                             val pct = if (total > 0) (lidos * 100 / total).toInt() else -1

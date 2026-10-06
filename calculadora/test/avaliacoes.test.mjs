@@ -1,13 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { listarAvaliacoes, avaliar, votarUtil, esconderAvaliacao, responderAvaliacao } from '../src/avaliacoes.js';
+import { listarAvaliacoes, avaliar, votarUtil, excluirAvaliacao, denunciarAvaliacao, esconderAvaliacao, responderAvaliacao } from '../src/avaliacoes.js';
 
 // D1 de mentira, só com o que as avaliações usam.
 function banco() {
-  const av = []; const util = [];
+  const av = []; const util = []; const den = [];
   const prepare = (sql) => {
     const exec = (...a) => ({
-      first: async () => sql.startsWith('SELECT conta_id FROM avaliacoes') ? av.find((x) => x.id === a[0]) || null : null,
+      first: async () => sql.startsWith('SELECT conta_id FROM avaliacoes') ? av.find((x) => x.id === a[0]) || null
+        : sql.startsWith('SELECT id FROM avaliacoes WHERE app') ? av.find((x) => x.app === a[0] && x.conta_id === a[1]) || null : null,
       all: async () => {
         if (sql.includes('FROM avaliacoes a WHERE a.app')) return { results: av.filter((x) => x.app === a[0] && !x.escondida)
           .map((x) => ({ ...x, uteis: util.filter((u) => u.avaliacao_id === x.id && u.util === 1).length })) };
@@ -24,6 +25,8 @@ function banco() {
           const ja = util.find((u) => u.avaliacao_id === a[0] && u.conta_id === a[1]);
           if (ja) ja.util = a[2]; else util.push({ avaliacao_id: a[0], conta_id: a[1], util: a[2] });
         }
+        if (sql.startsWith('DELETE FROM avaliacoes WHERE id')) { const i = av.findIndex((x) => x.id === a[0]); if (i >= 0) av.splice(i, 1); }
+        if (sql.startsWith('INSERT INTO avaliacoes_denuncias')) den.push({ id: a[0], conta: a[1], motivo: a[2] });
         let changes = 0;
         if (sql.startsWith('UPDATE avaliacoes SET escondida')) { const x = av.find((v) => v.id === a[1]); if (x) { x.escondida = a[0]; changes = 1; } }
         if (sql.startsWith('UPDATE avaliacoes SET resposta')) { const x = av.find((v) => v.id === a[2]); if (x) { x.resposta = a[0]; changes = 1; } }
@@ -32,7 +35,7 @@ function banco() {
     });
     return { bind: exec, ...exec() };
   };
-  return { DB: { prepare }, av };
+  return { DB: { prepare }, av, den };
 }
 const ana = { id: 'c1', nome: 'Ana Souza', email: 'ana@x.com' };
 const bia = { id: 'c2', nome: '', email: 'bia@x.com' };
@@ -83,4 +86,17 @@ test('dono: responder aparece no comentário; esconder tira da página', async (
   await esconderAvaliacao(env, { id });
   assert.equal((await listarAvaliacoes(env, 'radar')).total, 0);
   assert.equal((await esconderAvaliacao(env, { id: 'nada' })).erro, 'nao_encontrado');
+});
+
+test('a pessoa exclui a própria avaliação; denúncia só no comentário dos outros e com motivo', async () => {
+  const env = banco();
+  await avaliar(env, ana, { app: 'gestacell', nota: 2, texto: 'Comentário' });
+  const id = env.av[0].id;
+  assert.equal((await denunciarAvaliacao(env, ana, { id, motivo: 'spam' })).erro, 'propria');
+  assert.equal((await denunciarAvaliacao(env, bia, { id, motivo: 'qualquer' })).erro, 'motivo');
+  assert.deepEqual(await denunciarAvaliacao(env, bia, { id, motivo: 'ofensivo' }), { ok: true });
+  assert.equal(env.den.length, 1);
+  assert.equal((await excluirAvaliacao(env, bia, { app: 'gestacell' })).erro, 'nao_encontrado', 'não apaga a avaliação dos outros');
+  assert.deepEqual(await excluirAvaliacao(env, ana, { app: 'gestacell' }), { ok: true });
+  assert.equal((await listarAvaliacoes(env, 'gestacell')).total, 0);
 });

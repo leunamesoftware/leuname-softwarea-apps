@@ -109,6 +109,9 @@ class Ponte(private val a: MainActivity) {
 
     @JavascriptInterface fun instalar(id: String, url: String) = Instalador.instalar(a, id, url)
 
+    /** Cancela o download em andamento (a instalação não acontece). */
+    @JavascriptInterface fun cancelar(id: String) = Instalador.cancelar(id)
+
     @JavascriptInterface fun abrir(pacote: String): Boolean {
         val abrir = pm.getLaunchIntentForPackage(pacote) ?: return false
         a.runOnUiThread { a.startActivity(abrir) }

@@ -1,4 +1,4 @@
-import { listarAvaliacoes, avaliar, votarUtil, avaliacoesDoDono, esconderAvaliacao, responderAvaliacao } from './avaliacoes.js';
+import { listarAvaliacoes, avaliar, votarUtil, excluirAvaliacao, denunciarAvaliacao, avaliacoesDoDono, esconderAvaliacao, responderAvaliacao } from './avaliacoes.js';
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
@@ -188,12 +188,13 @@ export default {
         const r = await listarAvaliacoes(env, url.searchParams.get('app'), conta?.id || null);
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
       }
-      if ((pathname === '/api/avaliacoes' || pathname === '/api/avaliacoes/util') && m === 'POST') {
+      const ACOES_AVALIACAO = { '/api/avaliacoes': avaliar, '/api/avaliacoes/util': votarUtil, '/api/avaliacoes/excluir': excluirAvaliacao, '/api/avaliacoes/denunciar': denunciarAvaliacao };
+      if (ACOES_AVALIACAO[pathname] && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
         const conta = await contaDaSessao(env, req);
         if (!conta) return json({ erro: 'sem_sessao' }, 401);
-        const r = await (pathname === '/api/avaliacoes' ? avaliar : votarUtil)(env, conta, await corpo(req));
+        const r = await ACOES_AVALIACAO[pathname](env, conta, await corpo(req));
         return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
       }
       if (pathname.startsWith('/api/dono/avaliacoes')) {
