@@ -1263,7 +1263,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) Chrome/Edge novos: instala com um toque, sem abrir o app antes.
+      // 2) Android sem o app LeuApps: baixa o app de verdade (APK). O Android instala e o ícone vai para a tela do celular,
+      //    abrindo como app (não como site).
+      if (/Android/i.test(ua) && a.android && a.android.apk) {
+        const l = document.createElement('a'); l.href = a.android.apk; l.download = ''; document.body.appendChild(l); l.click(); l.remove();
+        folha(`<h3>Baixando o ${esc(a.nome)}…</h3><p class="sub">Falta só um passo para o ícone ir para a tela do celular:</p>
+          <ol><li>Quando terminar de baixar, toque em <b>Abrir</b> (aparece embaixo da tela ou nas notificações).</li><li>Toque em <b>Instalar</b>.</li></ol>
+          <p class="sub">Se o celular pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>. É só na primeira vez.</p>
+          <p class="sub">Quer instalar os próximos com um toque, como na Play? Use o app LeuApps.</p>
+          <a class="acao contorno" href="/baixar/leuapps.apk">Baixar o app LeuApps</a>`, 'Fechar');
+        return;
+      }
+      // 3) Chrome/Edge novos no computador: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
@@ -1272,7 +1283,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
       }
-      // 3) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
+      // 4) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
       meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
       if (!a.instalar) return;
       if (!a.instalarPassos) { location.href = a.instalar; return; }
@@ -1285,7 +1296,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
-      if (N && a.android && N.abrir(a.android.pacote)) return;
+      if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
       const destino = !N && a.instalar ? a.instalar : link(a);
@@ -1611,7 +1622,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
         </article>`;
     function blocoAvaliacoes(a, av) {
-      if (!av) return '<p class="det-texto">Carregando avaliações…</p>';
+      if (!av || !av.barras) return '<p class="det-texto">Carregando avaliações…</p>';
       const maxB = Math.max(1, ...Object.values(av.barras));
       const resumo = av.total ? `<p class="det-texto">As avaliações são feitas por clientes com conta na LeuApps.</p>
         <div class="nota-resumo"><div class="nota-grande"><b>${String(av.media).replace('.', ',')}</b><span class="estrelas">${estrelas(av.media, 14)}</span><small>${av.total.toLocaleString('pt-BR')}</small></div>
@@ -1901,7 +1912,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); atualizarSozinho();
+      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app');
+      // Android sem o app LeuApps: os apps com APK não ficam marcados como "instalados" pelo navegador (antes viravam atalho de site).
+      if (!N && /Android/i.test(ua)) { const antes = meus.length; meus = meus.filter((id) => !(todos.find((x) => x.id === id) || {}).android); if (meus.length !== antes) gravar(meus); }
+      lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); atualizarSozinho();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
