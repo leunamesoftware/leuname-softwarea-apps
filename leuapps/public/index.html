@@ -534,8 +534,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('lista').innerHTML = `<ul class="lista">${[...apps].sort((x, y) => pontos(y) - pontos(x)).map((a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
           <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="info">${tags(a)}</span>
           <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`).join('')}</ul>`;
-      $('novidades').innerHTML = apps.flatMap((a) => (a.novidades || []).map((n) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
-          <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`)).join('');
+      // Uma novidade por app (a mais nova), para não repetir o mesmo app lado a lado.
+      $('novidades').innerHTML = apps.filter((a) => (a.novidades || []).length).map((a) => [a, a.novidades[0]]).map(([a, n]) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
+          <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
       const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       const naSecao = secaoAtual && !f;
