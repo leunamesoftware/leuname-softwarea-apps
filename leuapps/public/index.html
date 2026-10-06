@@ -33,6 +33,8 @@
     .abrir { min-width: 104px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: linear-gradient(135deg, #2F6BFF, #1B3FD6); color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; padding: 0 16px; box-shadow: 0 6px 14px rgba(27,63,214,.32); transition: transform .12s, box-shadow .12s; white-space: nowrap; }
     .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
     .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
+    .abrir.duas { flex-direction: column; gap: 1px; line-height: 1.1; padding: 6px 12px; }
+    .abrir.duas small { display: block; font-size: 12px; font-weight: 700; opacity: .85; }
     .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
     .opcoes { grid-column: 1 / -1; list-style: none; margin: 2px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
@@ -161,6 +163,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const ler = () => { try { return JSON.parse(localStorage.getItem('leuapps.meus') || '[]'); } catch { return []; } };
     const gravar = (v) => { try { localStorage.setItem('leuapps.meus', JSON.stringify(v)); } catch {} };
     let meus = ler();
+    // Celular ou computador (muda o texto do botão de instalar no aparelho).
+    const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
     function cartao(a) {
       const tem = meus.includes(a.id);
@@ -171,6 +175,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="botoes">${tem
             ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>`
             : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
+            ${a.instalar && tem ? `<button class="abrir claro duas" data-aparelho="${esc(a.id)}">📲 Instalar<small>no ${celular ? 'celular' : 'computador'}</small></button>` : ''}
             ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
             ${tem ? `<button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>` : ''}</div>
           ${a.opcoes ? `<ul class="opcoes" aria-label="Opções de plano">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
@@ -214,7 +219,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
     }
     // Instalar no aparelho: cada app tem endereço próprio e vira um ícone próprio (celular ou área de trabalho).
-    const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     function folha(html) {
       const f = document.createElement('div'); f.className = 'folha-fundo';
       f.innerHTML = `<div class="folha" role="dialog">${html}<button class="fechar-folha" type="button">Agora não</button></div>`;
@@ -264,7 +268,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <p class="det-preco">${esc(a.preco)}</p>
           <div class="det-botoes">${tem ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>` : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
             ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
-            ${a.instalar && tem ? `<button class="abrir claro" data-aparelho="${esc(a.id)}">📲 Instalar no aparelho</button>` : ''}</div>
+            ${a.instalar ? `<button class="abrir claro" data-aparelho="${esc(a.id)}">📲 Instalar no ${celular ? 'celular' : 'computador'}</button>` : ''}</div>
           ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="214" height="380">`).join('')}</div>` : ''}
           <h3>Sobre este app</h3><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
           ${a.recursos ? `<ul class="det-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
