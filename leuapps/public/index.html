@@ -349,7 +349,6 @@
         <div class="secao-titulo"><h2>Recomendado para você</h2><button class="seta" type="button" data-secao="Recomendado para você" aria-label="Ver todos os recomendados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista" id="recomendados"></ul>
       </div>
-      <div class="secao" id="telas-app"></div>
       <div id="vitrines"></div>
       <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Dê sua opinião</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
       <div class="secao seguir">
@@ -732,7 +731,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
-      vitrines(); seguir(); telasApp(); opiniao();
+      vitrines(); seguir(); opiniao();
       $('recomendados').innerHTML = daSecao('Recomendado para você').map(linhaVitrine).join('');
       const cn = daSecao('Negócios');
       $('capa-icones').innerHTML = cn.slice(0, 3).map((a) => `<img src="${esc(a.icone)}" alt="">`).join('') + (cn.length > 3 ? `<span>+${cn.length - 3}</span>` : '');
