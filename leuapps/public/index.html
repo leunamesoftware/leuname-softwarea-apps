@@ -111,6 +111,8 @@
     .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
     .selo-app { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 8px; background: var(--cartao); font-size: 13px; color: var(--texto); }
     .selo-app svg { color: var(--verde-texto); }
+    .selo-desconto { background: rgba(34,197,94,.2); font-weight: 700; }
+    .selo-app s { color: var(--suave); }
     .resumo-curto { font-size: 14px; color: var(--suave); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .seguir h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
     .seguir p { margin: 0 0 16px; color: var(--suave); font-size: 15px; }
@@ -133,6 +135,24 @@
     .interesse-carinhas button:active { transform: scale(.9); }
     .interesse-legenda { display: flex; justify-content: space-between; gap: 16px; font-size: 13.5px; color: var(--suave); }
     .interesse-legenda span { max-width: 45%; } .interesse-legenda span:last-child { text-align: right; }
+    /* Dê sua opinião */
+    .opiniao-fileira { gap: 14px; }
+    .opiniao-cartao { flex: 0 0 calc(100% - 60px); scroll-snap-align: start; display: grid; gap: 12px; }
+    .opiniao-cartao header { display: flex; align-items: center; gap: 12px; }
+    .opiniao-cartao header img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
+    .opiniao-cartao header small { display: block; color: var(--suave); font-size: 13.5px; }
+    .estrelas { display: flex; justify-content: space-between; max-width: 300px; }
+    .estrelas button { width: 44px; height: 44px; border: 0; background: none; padding: 0; color: var(--suave); display: grid; place-items: center; }
+    .estrelas button[aria-pressed="true"] { color: #F5B400; }
+    .resenha { justify-self: start; border: 0; background: none; padding: 4px 0; color: var(--verde-texto); font: inherit; font-weight: 700; font-size: 16px; }
+    /* Fim da loja (como o painel do Play Pass) */
+    .fim-loja { --fim-bolha: var(--cartao-2); margin: 34px -16px 0; padding: 26px 16px 30px; background: var(--cartao); display: grid; grid-template-columns: 1fr 120px; gap: 8px; align-items: center; overflow: hidden; }
+    .fim-marca { display: flex; align-items: center; gap: 10px; color: var(--suave); font-size: 15px; font-weight: 600; }
+    .fim-marca img { border-radius: 8px; }
+    .fim-loja h2 { margin: 14px 0 8px; font-size: 26px; line-height: 1.15; font-weight: 800; letter-spacing: -.4px; text-wrap: balance; }
+    .fim-loja p { margin: 0 0 18px; font-size: 16px; color: var(--suave); }
+    .fim-botao { min-height: 44px; padding: 0 26px; border-radius: 999px; border: 1.5px solid var(--suave); background: none; color: var(--verde-texto); font: inherit; font-weight: 700; font-size: 16px; }
+    .fim-arte { width: 140px; height: auto; margin-right: -24px; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -319,6 +339,7 @@
       </div>
       <div class="secao" id="telas-app"></div>
       <div id="vitrines"></div>
+      <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Dê sua opinião</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
       <div class="secao seguir">
         <h2>Siga suas categorias favoritas</h2>
         <p>Melhore as sugestões: os apps das categorias que você segue aparecem primeiro. Mude quando quiser.</p>
@@ -328,6 +349,23 @@
       <div class="secao">
         <div class="secao-titulo" id="bloco-novidades"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
         <div class="rolar" id="novidades"></div>
+      </div>
+      <div class="fim-loja">
+        <div class="fim-texto">
+          <div class="fim-marca"><img src="/img/leuapps-192.webp" alt="" width="28" height="28">LeuName Serviços</div>
+          <h2>Sua marca com cara profissional</h2>
+          <p>Logo, site e banners feitos para o seu negócio, com orçamento grátis.</p>
+          <button class="fim-botao" type="button" data-aba="servicos">Saiba mais</button>
+        </div>
+        <svg class="fim-arte" viewBox="0 0 160 260" aria-hidden="true">
+          <rect x="70" y="-10" width="70" height="44" rx="14" fill="#7B3FF2" opacity=".35"/>
+          <path d="M22 30l14 14M36 30L22 44" stroke="#FF3D7F" stroke-width="12" stroke-linecap="round" opacity=".55"/>
+          <path d="M60 70c30-22 80-14 96 18s6 74-26 92-82 12-100-20S30 92 60 70z" fill="var(--fim-bolha)"/>
+          <rect x="62" y="92" width="76" height="76" rx="20" fill="#2050F0"/>
+          <path d="M84 112l20 18-20 18z" fill="#fff"/><rect x="108" y="112" width="12" height="36" rx="4" fill="#00B8D9"/>
+          <path d="M20 196l26 15-26 15z" fill="#22C55E" opacity=".55"/>
+          <circle cx="104" cy="226" r="30" fill="#FF8A00" opacity=".35"/>
+        </svg>
       </div>
     </section>
 
@@ -472,7 +510,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const svg = (k) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
     $('chips').innerHTML = CHIPS.map(([nome, ic, tipo = 'secao', alvo = nome]) => `<button class="chip" type="button" data-${tipo}="${esc(alvo)}">${svg(ic)}${esc(nome)}</button>`).join('');
     let secaoAtual = null;
-    const daSecao = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : apps.filter((a) => (a.secoes || []).includes(s));
+    const daSecao = (s) => { const v = VITRINES.find((x) => x[0] === s && typeof x[1] === 'function'); return v ? apps.filter(v[1]) : daSecao0(s); };
+    const daSecao0 = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : apps.filter((a) => (a.secoes || []).includes(s));
 
     // Selos das linhas (tudo verdadeiro: vem do apps.json).
     const SELO = { instalado: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', escolha: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', gratis: I.gratis, unico: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>', novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>' };
@@ -481,17 +520,39 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const s = [];
       if (situacao(a) !== 'nao') s.push(['instalado', 'Instalado']);
       if (a.escolha) s.push(['escolha', 'Escolha da LeuName']);
+      const promo = a.promo && situacao(a) === 'nao' ? a.promo : null; // "promo": {"de": "R$ 30", "por": "R$ 19,90"} no apps.json
       if (/grátis/i.test(a.preco || '')) s.push(['gratis', 'Teste grátis']);
       if (/pagamento único/i.test(a.preco || '')) s.push(['unico', 'Pagamento único']);
       if (situacao(a) === 'atualizar') s.push(['novo', 'Atualização disponível']);
       else if ((a.novidades || []).length) s.push(['novo', 'Novidade']);
-      return s.map(([k, txt]) => `<span class="selo-app">${seloSvg(k)}${txt}</span>`).join('');
+      const num = (v) => Number(String(v).replace(/[^\d,]/g, '').replace(',', '.'));
+      const desc = promo ? Math.round((1 - num(promo.por) / num(promo.de)) * 100) : 0;
+      const dias = promo && promo.ate ? Math.ceil((new Date(promo.ate + 'T23:59:59') - Date.now()) / 864e5) : null; // "ate": "2026-10-31"
+      const fim = dias > 0 ? `<span class="selo-app">${seloSvg('unico')}Promoção</span><span class="selo-app">Termina ${dias === 1 ? 'hoje' : `em ${dias} dias`}</span>` : '';
+      return (desc > 0 ? `<span class="selo-app selo-desconto">-${desc}%</span><span class="selo-app"><s>${esc(promo.de)}</s>&nbsp;${esc(promo.por)}</span>` : '') + fim
+        + s.map(([k, txt]) => `<span class="selo-app">${seloSvg(k)}${txt}</span>`).join('');
     }
     // Vitrines com título e seta (como "Ação sem limites" na Play).
+    // Seção aparece sozinha quando tiver app. Por categoria: cada app aparece em uma só.
+    // Por escolha (função): pode repetir, como "Escolha dos editores" na Play.
     const VITRINES = [
       ['Para quem vende comida', 'Comer e beber'],
       ['Seu negócio sem complicação', 'Negócios'],
+      ['Escolha da LeuName: apps', (a) => a.escolha],
+      ['Ferramentas de negócios', 'Ferramentas'],
       ['Mais tempo no seu dia', 'Produtividade'],
+      ['Controle o seu dinheiro', 'Finanças'],
+      ['Em promoção', (a) => a.promo],
+      ['Aprenda algo novo', 'Educação'],
+      ['Compre e venda', 'Compras'],
+      ['Mantenha contato', 'Comunicação'],
+      ['Cuide da saúde', 'Saúde e fitness'],
+      ['Tire fotos mais bonitas', 'Fotografia'],
+      ['Para o seu dia a dia', 'Estilo de vida'],
+      ['Diversão para assistir', 'Entretenimento'],
+      ['Música e áudio', 'Música e áudio'],
+      ['Para viajar', 'Viagens'],
+      ['Para as crianças', 'Crianças'],
     ];
     const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
         <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
@@ -524,11 +585,24 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="interesse-carinhas">${['😞', '🙁', '😐', '🙂', '😄'].map((c, i) => `<button type="button" data-interesse="${esc(a.id)}" data-valor="${i + 1}" aria-label="Nota ${i + 1} de 5">${c}</button>`).join('')}</div>
           <div class="interesse-legenda"><span>Nem um pouco interessante</span><span>Muito interessante</span></div></div>`}`;
     }
+    // Dê sua opinião: apps instalados, 5 estrelas; a resenha vai para a LeuName pelo WhatsApp.
+    const ESTRELA = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>';
+    const notaDe = (id) => { try { return Number(localStorage.getItem('leuapps.nota.' + id)) || 0; } catch { return 0; } };
+    function opiniao() {
+      const meus = apps.filter((a) => situacao(a) !== 'nao');
+      $('opiniao').hidden = !meus.length;
+      $('opiniao-lista').innerHTML = meus.map((a) => { const n = notaDe(a.id);
+        return `<div class="opiniao-cartao"><header><img src="${esc(a.icone)}" alt=""><div><b>${esc(a.nome)}</b><small>Avalie este app</small></div></header>
+          <div class="estrelas">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-nota="${esc(a.id)}" data-valor="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${k <= n}">${ESTRELA.replace('fill="none"', k <= n ? 'fill="currentColor"' : 'fill="none"')}</button>`).join('')}</div>
+          <button class="resenha" type="button" data-resenha="${esc(a.id)}">Escreva uma resenha</button></div>`; }).join('');
+    }
     function vitrines() {
       const ja = new Set();
       $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
-        const lista = daSecao(s).filter((a) => !ja.has(a.id)); if (!lista.length) return '';
-        lista.forEach((a) => ja.add(a.id));
+        const porEscolha = typeof s === 'function';
+        const lista = porEscolha ? apps.filter(s) : daSecao(s).filter((a) => !ja.has(a.id)); if (!lista.length) return '';
+        if (!porEscolha) lista.forEach((a) => ja.add(a.id));
+        if (porEscolha) s = titulo;
         return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(s)}" aria-label="Ver ${esc(s)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
           <ul class="lista">${lista.map(linhaVitrine).join('')}</ul></div>`;
       }).join('');
@@ -597,7 +671,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
-      vitrines(); seguir(); telasApp();
+      vitrines(); seguir(); telasApp(); opiniao();
       $('recomendados').innerHTML = daSecao('Recomendado para você').map(linhaVitrine).join('');
       const cn = daSecao('Negócios');
       $('capa-icones').innerHTML = cn.slice(0, 3).map((a) => `<img src="${esc(a.icone)}" alt="">`).join('') + (cn.length > 3 ? `<span>+${cn.length - 3}</span>` : '');
@@ -746,6 +820,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const nt = t.closest('[data-nota]'); if (nt) { try { localStorage.setItem('leuapps.nota.' + nt.dataset.nota, nt.dataset.valor); } catch {} return opiniao(); }
+      const rs = t.closest('[data-resenha]'); if (rs) {
+        const a = apps.find((x) => x.id === rs.dataset.resenha), n = notaDe(a.id);
+        const txt = `Olá, LeuName Softwares! Minha opinião sobre o ${a.nome}${n ? ` (${n} de 5 estrelas)` : ''}: `;
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
+      }
       const it = t.closest('[data-interesse]'); if (it) {
         const a = apps.find((x) => x.id === it.dataset.interesse);
         try { localStorage.setItem('leuapps.interesse.' + a.id, it.dataset.valor); } catch {}
