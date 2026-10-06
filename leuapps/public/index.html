@@ -1398,7 +1398,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <div class="rolar chips-aval">${filtros.map(([k, n]) => `<button type="button" data-filtro-aval="${k}" aria-pressed="${filtroAval === k}">${filtroAval === k ? '✓ ' : ''}${esc(n)}</button>`).join('')}</div>
         <div class="det-corpo">
           <div class="aval-ordem"><h2>${esc(nomeFiltro)}</h2><button type="button" data-ordem-aval>${ordemAval === 'recentes' ? 'Mais recentes' : 'Mais relevantes'} ${ICO('<path d="M4 7h16M7 12h10M10 17h4"/>', 20)}</button></div>
-          ${!av ? '<p class="det-texto">Carregando avaliações…</p>' : lista.length ? lista.map(comentarioHtml).join('') : '<div class="sem-avaliacoes"><b>Nenhuma avaliação aqui</b>Tente outro filtro.</div>'}
+          ${!av ? '<p class="det-texto">Carregando avaliações…</p>' : lista.length ? lista.map(comentarioHtml).join('') : `<div class="sem-avaliacoes"><b>${av.itens.length ? 'Nenhuma avaliação aqui' : 'Ainda sem comentários'}</b>${av.itens.length ? 'Tente outro filtro.' : `Seja o primeiro a avaliar o ${esc(a.nome)}.`}</div>`}
         </div>`;
       paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       paginaSecao.hidden = false; document.body.style.overflow = 'hidden';
@@ -1493,7 +1493,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           </ul>
 `,
         aval: `
-          <div class="det-secao"><h2>O que os clientes dizem</h2>${av && av.itens.length ? `<button class="seta" type="button" data-todas-avaliacoes="${esc(a.id)}" aria-label="Ver todas as avaliações">${SETA_D}</button>` : ''}</div>
+          <div class="det-secao"><h2>O que os clientes dizem</h2><button class="seta" type="button" data-todas-avaliacoes="${esc(a.id)}" aria-label="Ver todas as avaliações">${SETA_D}</button></div>
           <div id="avaliacoes-app">${blocoAvaliacoes(a, av)}</div>
 `,
         extras: `
