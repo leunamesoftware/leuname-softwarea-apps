@@ -1,0 +1,74 @@
+[
+  {
+    "id": "preco-certo",
+    "nome": "Preço certo: quanto cobrar pelo que você vende",
+    "nomeCurto": "Preço certo",
+    "resumo": "Aprenda a calcular custo, preço de venda e lucro de doces, salgados e marmitas, sem chute.",
+    "icone": "/img/cursos/preco-certo.webp",
+    "destaque": { "imagem": "/img/cursos/preco-certo-capa.webp", "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo" },
+    "categorias": ["Grátis", "Em alta", "Vendas", "Culinária", "Finanças", "Empreendedorismo"],
+    "preco": "Grátis",
+    "nivel": "Iniciante",
+    "app": "quantocobrar",
+    "aulas": [
+      {
+        "titulo": "Por que tanta gente vende muito e não lucra",
+        "minutos": 4,
+        "texto": "<p>Muita gente que vende doces, salgados ou marmitas trabalha a semana inteira, vende tudo e, no fim do mês, não sobra dinheiro. Quase sempre o motivo é o mesmo: <b>o preço foi definido no chute</b>.</p><p>Os erros mais comuns são:</p><ul><li><b>Copiar o preço do concorrente</b> sem saber se ele está lucrando.</li><li><b>Contar só os ingredientes principais</b> e esquecer embalagem, gás, energia e o próprio tempo.</li><li><b>Achar que o dinheiro que entrou é lucro</b>, quando boa parte dele só está pagando os custos.</li></ul><p>Neste curso você vai aprender um jeito simples de fazer a conta: primeiro o custo de cada receita, depois os custos escondidos e, por fim, a margem de lucro.</p><p class=\"dica\">Tarefa da aula: anote três produtos que você vende hoje e o preço que você cobra. Vamos usar essa lista nas próximas aulas.</p>"
+      },
+      {
+        "titulo": "Custo dos ingredientes: a conta por receita",
+        "minutos": 6,
+        "texto": "<p>O primeiro passo é saber <b>quanto custa fazer uma receita inteira</b>. Para isso, calcule quanto custa cada ingrediente na quantidade que você usa.</p><p><b>A conta é:</b> preço do pacote ÷ quantidade do pacote × quantidade usada.</p><p><b>Exemplo (brigadeiro):</b></p><ul><li>Leite condensado: lata de 395 g por R$ 7,00 → usa 1 lata = <b>R$ 7,00</b></li><li>Chocolate em pó: 200 g por R$ 9,00 → usa 40 g = 9 ÷ 200 × 40 = <b>R$ 1,80</b></li><li>Manteiga: 200 g por R$ 10,00 → usa 20 g = <b>R$ 1,00</b></li><li>Granulado: 500 g por R$ 12,00 → usa 100 g = <b>R$ 2,40</b></li></ul><p>Total da receita: <b>R$ 12,20</b>. Se a receita rende 25 brigadeiros, cada um custa <b>R$ 0,49</b> só de ingredientes.</p><p class=\"dica\">Tarefa da aula: faça essa conta para um dos três produtos que você anotou.</p>"
+      },
+      {
+        "titulo": "Custos escondidos: embalagem, gás, energia e o seu tempo",
+        "minutos": 5,
+        "texto": "<p>Os ingredientes não são o único custo. Os <b>custos escondidos</b> são os que mais derrubam o lucro:</p><ul><li><b>Embalagem:</b> forminha, caixinha, sacola, etiqueta, guardanapo.</li><li><b>Gás e energia:</b> uma forma simples é somar 10% em cima do custo dos ingredientes.</li><li><b>Entrega:</b> combustível ou taxa do motoboy, quando você não cobra à parte.</li><li><b>O seu tempo:</b> se você levou 2 horas e quer ganhar R$ 15 por hora, são R$ 30 que precisam estar no preço.</li></ul><p><b>Continuando o exemplo:</b> 25 forminhas (R$ 3,00) + gás e energia (10% de R$ 12,20 = R$ 1,22) + 1 hora do seu trabalho (R$ 15,00).</p><p>Custo total: 12,20 + 3,00 + 1,22 + 15,00 = <b>R$ 31,42</b> → cada brigadeiro custa <b>R$ 1,26</b>.</p><p class=\"dica\">Repare: o custo real é mais que o dobro do custo só de ingredientes.</p>"
+      },
+      {
+        "titulo": "Margem de lucro: chegando no preço de venda",
+        "minutos": 5,
+        "texto": "<p>Agora que você sabe o custo, falta decidir <b>quanto quer ganhar</b> em cima dele. Isso é a margem de lucro.</p><p><b>A conta mais segura é:</b> preço de venda = custo ÷ (1 − margem).</p><p>Com margem de 40% (0,40): 1,26 ÷ 0,60 = <b>R$ 2,10</b> por brigadeiro.</p><p>Por que dividir e não só somar 40%? Porque assim os 40% ficam calculados <b>sobre o preço de venda</b>, e é isso que sobra de verdade para você em cada venda.</p><ul><li><b>Margem baixa (até 20%):</b> qualquer imprevisto vira prejuízo.</li><li><b>Margem saudável (30% a 50%):</b> sobra para reinvestir e para você.</li><li><b>Margem alta (acima de 60%):</b> funciona em produtos especiais, festas e encomendas.</li></ul><p class=\"dica\">Tarefa da aula: calcule o preço de venda dos seus três produtos e compare com o que você cobra hoje.</p>"
+      },
+      {
+        "titulo": "Na prática: o app faz a conta por você",
+        "minutos": 3,
+        "texto": "<p>Fazer essas contas no papel funciona, mas dá trabalho, e os preços dos ingredientes mudam toda semana.</p><p>O <b>Quanto Cobrar</b>, da LeuName, faz tudo isso sozinho:</p><ul><li>Você cadastra os ingredientes com o preço que pagou.</li><li>Monta a receita e ele calcula o custo de cada unidade.</li><li>Soma embalagem, gás e o seu tempo.</li><li>Mostra o preço de venda com a margem que você escolher.</li><li>Quando um ingrediente sobe, todas as receitas são recalculadas.</li></ul><p>Ele também tem um livro de receitas com foto e preço sugerido para você começar.</p><p class=\"dica\">Parabéns, você terminou o curso! Agora você sabe calcular o preço certo de qualquer produto.</p>"
+      }
+    ]
+  },
+  {
+    "id": "whatsapp-vendas",
+    "nome": "Venda mais pelo WhatsApp",
+    "nomeCurto": "Vendas no WhatsApp",
+    "resumo": "Perfil que passa confiança, status que vende, mensagens que fecham pedido e clientes que voltam.",
+    "icone": "/img/cursos/whatsapp-vendas.webp",
+    "destaque": { "imagem": "/img/cursos/whatsapp-vendas-capa.webp", "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia" },
+    "categorias": ["Grátis", "Em alta", "Vendas", "Marketing", "Atendimento", "Empreendedorismo"],
+    "preco": "Grátis",
+    "nivel": "Iniciante",
+    "aulas": [
+      {
+        "titulo": "Perfil comercial que passa confiança",
+        "minutos": 4,
+        "texto": "<p>O cliente decide em segundos se confia em você. O seu perfil é a primeira vitrine.</p><ul><li><b>Use o WhatsApp Business</b> (grátis): ele tem catálogo, mensagens automáticas e etiquetas.</li><li><b>Foto de perfil:</b> a sua logo ou uma foto do seu melhor produto, bem iluminada.</li><li><b>Nome:</b> o nome do negócio, não o seu apelido.</li><li><b>Descrição:</b> o que você vende, região de entrega e horário. Ex.: \"Doces para festa · Entrega no centro · Seg a sáb, 9h às 19h\".</li><li><b>Catálogo:</b> cadastre os produtos com foto, preço e descrição curta.</li></ul><p class=\"dica\">Tarefa da aula: arrume a foto, o nome e a descrição do seu perfil hoje.</p>"
+      },
+      {
+        "titulo": "Status que vende: o que postar e quando",
+        "minutos": 5,
+        "texto": "<p>O status é visto justamente por quem já tem o seu número, ou seja, pessoas que já conhecem você. É a forma mais barata de vender.</p><p><b>Uma rotina simples por dia:</b></p><ul><li><b>Manhã:</b> o produto do dia, com foto bonita e preço.</li><li><b>Tarde:</b> bastidores, como a massa sendo feita ou a embalagem sendo montada. Isso gera confiança.</li><li><b>Noite:</b> prova social, com um print (com permissão) de cliente elogiando.</li></ul><p><b>Dicas:</b> poste de 3 a 5 status por dia, sempre com uma chamada clara (\"Peça até as 17h\", \"Restam 6 unidades\") e evite textos longos.</p><p class=\"dica\">Tarefa da aula: poste amanhã a sequência manhã, tarde e noite.</p>"
+      },
+      {
+        "titulo": "Mensagens que fecham o pedido",
+        "minutos": 5,
+        "texto": "<p>Muita venda se perde na conversa. Responda <b>rápido</b>, de forma <b>clara</b> e sempre <b>conduzindo para o pedido</b>.</p><ul><li><b>Mensagem de saudação automática:</b> \"Oi! Que bom ter você aqui 😊 Veja nosso catálogo e me diga o que deseja.\"</li><li><b>Respostas rápidas:</b> deixe prontos o cardápio, a forma de pagamento e o prazo de entrega.</li><li><b>Pergunte para fechar:</b> em vez de \"qualquer coisa me avisa\", diga \"Posso separar 2 para você entregar amanhã às 15h?\"</li><li><b>Confirme tudo por escrito:</b> produto, quantidade, valor, endereço e horário.</li></ul><p class=\"dica\">Tarefa da aula: crie 3 respostas rápidas no WhatsApp Business.</p>"
+      },
+      {
+        "titulo": "Clientes que voltam: pós-venda e lista de transmissão",
+        "minutos": 4,
+        "texto": "<p>Vender de novo para quem já comprou é muito mais fácil do que conquistar um cliente novo.</p><ul><li><b>Pós-venda:</b> no dia seguinte, pergunte se a pessoa gostou. Isso gera elogios que viram prova social.</li><li><b>Etiquetas:</b> marque os clientes (Comprou, Festa, Encomenda) para saber com quem falar.</li><li><b>Lista de transmissão:</b> uma vez por semana, mande uma novidade ou promoção para quem salvou o seu número.</li><li><b>Datas especiais:</b> Dia das Mães, Páscoa e aniversários são ótimos para encomendas.</li></ul><p class=\"dica\">Parabéns, você terminou o curso! Use estes passos por um mês e compare as vendas.</p>"
+      }
+    ]
+  }
+]

@@ -153,7 +153,7 @@
     .fim-loja p { margin: 0 0 18px; font-size: 16px; color: var(--suave); }
     .fim-botao { min-height: 44px; padding: 0 26px; border-radius: 999px; border: 1.5px solid var(--suave); background: none; color: var(--verde-texto); font: inherit; font-weight: 700; font-size: 16px; }
     .fim-arte { width: 140px; height: auto; margin-right: -24px; }
-    /* Jogos e Livros (em breve) */
+    /* Livros (em breve) */
     .breve-capa { margin-top: 14px; padding: 28px 20px 24px; border-radius: 28px; color: #fff; display: grid; gap: 10px; justify-items: start; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.45), transparent 60%), #0E1A4A; }
     .breve-banner { display: grid; place-items: center; color: #fff; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.6), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.5), transparent 60%), #0E1A4A; }
     .breve-banner .breve-icone { margin-bottom: 40px; }
@@ -186,6 +186,26 @@
     .lista-cats button { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 18px; padding: 0 16px; border: 0; border-radius: 14px; background: none; color: var(--texto); font: inherit; font-size: 16.5px; text-align: left; }
     .lista-cats button svg { width: 24px; height: 24px; color: var(--verde-texto); flex: none; }
     .lista-cats button span { flex: 1; } .lista-cats small { color: var(--suave); font-size: 14px; }
+    /* Cursos */
+    .curso-capa { width: 100%; aspect-ratio: 2.15 / 1; object-fit: cover; border-radius: 22px; margin: 4px 0 16px; display: block; }
+    .curso-prog { height: 8px; border-radius: 4px; background: var(--cartao); overflow: hidden; margin: 16px 0 6px; }
+    .curso-prog i { display: block; height: 100%; background: var(--verde); border-radius: 4px; }
+    .curso-prog-txt { font-size: 13.5px; color: var(--suave); }
+    .aulas-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+    .aulas-lista button { width: 100%; display: flex; align-items: center; gap: 14px; padding: 12px 6px; border: 0; border-radius: 14px; background: none; color: var(--texto); font: inherit; text-align: left; }
+    .aula-num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--cartao); font-weight: 700; font-size: 15px; flex: none; }
+    .aula-num.feita { background: var(--verde); color: var(--no-verde); }
+    .aulas-lista span.txt { flex: 1; display: grid; gap: 2px; font-size: 15.5px; } .aulas-lista small { color: var(--suave); font-size: 13px; }
+    .aula-topo { color: var(--verde-texto); font-weight: 700; font-size: 14px; margin-top: 4px; }
+    .aula-titulo { margin: 6px 0 18px; font-size: 25px; line-height: 1.2; font-weight: 800; letter-spacing: -.3px; text-wrap: balance; }
+    .aula-texto { font-size: 16.5px; line-height: 1.6; max-width: 65ch; }
+    .aula-texto p { margin: 0 0 14px; } .aula-texto ul { padding-left: 22px; margin: 0 0 14px; } .aula-texto li { margin-bottom: 6px; }
+    .aula-texto .dica { padding: 14px 16px; border-radius: 16px; background: var(--verde-claro); color: var(--verde-texto); font-weight: 600; }
+    .aula-acoes { display: grid; gap: 10px; margin-top: 26px; } .aula-acoes .acao { min-height: 50px; font-size: 16px; }
+    .link-simples { border: 0; background: none; color: var(--verde-texto); font: inherit; font-weight: 700; padding: 10px; }
+    .curso-fim { text-align: center; padding: 40px 8px 20px; display: grid; gap: 12px; justify-items: center; }
+    .curso-fim .ok { width: 88px; height: 88px; border-radius: 50%; background: var(--verde); color: var(--no-verde); display: grid; place-items: center; }
+    .curso-fim h1 { margin: 6px 0 0; font-size: 26px; } .curso-fim p { margin: 0; color: var(--suave); max-width: 40ch; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -206,7 +226,7 @@
     body.na-capa #topo-inicio .icone-topo { color: #fff; }
     body.na-capa .selo { border-color: #0E1A4A; }
 
-    /* Apps, Jogos e Livros (como na Play): a barra de cima sobe junto com a página; só os atalhos ficam presos no topo */
+    /* Apps, Cursos e Livros (como na Play): a barra de cima sobe junto com a página; só os atalhos ficam presos no topo */
     body.rolar-topo .topo { position: relative; }
     body.rolar-topo .chips-linha { top: env(safe-area-inset-top, 0px); }
 
@@ -397,21 +417,13 @@
     </section>
 
     <!-- Pesquisa -->
-    <section id="aba-jogos" hidden>
-      <div class="chips-linha" id="chips-jogos"></div>
-      <!-- Como na aba Jogos da Play: cartão grande com a linha do jogo embaixo, depois Patrocinados · Sugestões -->
-      <div class="rolar destaques" id="dest-jogos" style="margin-top:12px">
-        <div class="dest-item" id="breve-jogos">
-          <div class="destaque breve-banner"><div class="breve-icone"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/></svg></div><span class="destaque-frase">Jogos da LeuName estão chegando</span></div>
-          <div class="linha dest-app">
-            <img src="/img/leuapps-192.webp" alt="">
-            <div style="min-width:0"><div class="nome">Jogos LeuName</div><div class="info">LeuName Softwares</div><span class="pilula">Em breve</span></div>
-            <div class="dest-botao"><button class="acao" type="button" data-avisar="jogos">Avisar</button></div>
-          </div>
-        </div>
-      </div>
-      <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
-        <ul class="lista" id="lista-jogos"></ul></div>
+    <section id="aba-cursos" hidden>
+      <div class="chips-linha" id="chips-cursos"></div>
+      <!-- Cursos (no lugar de Jogos): mesmo sistema da Play, para cursos grátis e pagos (cursos.json) -->
+      <div class="rolar destaques" id="dest-cursos" style="margin-top:12px"></div>
+      <div class="secao" id="continuar-cursos" hidden><div class="secao-titulo"><h2>Continue de onde parou</h2></div><ul class="lista" id="lista-continuar"></ul></div>
+      <div class="secao"><div class="secao-titulo"><h2>Sugestões para você</h2><button class="seta" type="button" data-secao="cursos:Todos" aria-label="Ver todos os cursos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><ul class="lista" id="lista-cursos"></ul></div>
+      <div id="vitrines-cursos"></div>
     </section>
     <section id="aba-livros" hidden>
       <div class="chips-linha" id="chips-livros"></div>
@@ -451,7 +463,7 @@
   <div class="rodape" aria-hidden="true"></div>
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
-    <button role="tab" id="tab-jogos" data-aba="jogos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".6" fill="currentColor"/><circle cx="17.5" cy="13" r=".6" fill="currentColor"/></svg></span>Jogos</button>
+    <button role="tab" id="tab-cursos" data-aba="cursos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg></span>Cursos</button>
     <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Apps</button>
     <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Pesquisa</button>
     <button role="tab" id="tab-livros" data-aba="livros" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-3.5L6 21z"/></svg></span>Livros</button>
@@ -460,6 +472,7 @@
 
   <section id="pagina-secao" class="pagina-secao" hidden aria-label="Lista de apps"></section>
   <section id="detalhe" class="detalhe" hidden aria-label="Página do app"></section>
+  <section id="pagina-curso" class="detalhe" hidden aria-label="Curso"></section>
 
   <script>
 // Link de divulgação www.leunamesoftware.com.br/quantocobrar abre aqui mesmo, já na página do app.
@@ -467,7 +480,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const $ = (id) => document.getElementById(id);
     const detalhe = $('detalhe');
-    let apps = [], todos = [], servicos = null; // apps = só aplicativos; todos = apps + jogos + livros (apps.json → tipo)
+    let apps = [], todos = [], servicos = null; // apps = só aplicativos; todos = apps + livros (apps.json → tipo)
 
     // ---- Onde a loja está aberta ----
     // No app LeuApps para Android existe window.LeuNativo: ele instala, abre e desinstala de verdade.
@@ -654,7 +667,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="estrelas">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-nota="${esc(a.id)}" data-valor="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${k <= n}">${ESTRELA.replace('fill="none"', k <= n ? 'fill="currentColor"' : 'fill="none"')}</button>`).join('')}</div>
           <button class="resenha" type="button" data-resenha="${esc(a.id)}">Escreva uma resenha</button></div>`; }).join('');
     }
-    // Jogos e Livros: mesmos atalhos da Play; os itens vêm do apps.json com "tipo": "jogo" ou "livro".
+    // Livros: mesmos atalhos da Play; os itens vêm do apps.json com "tipo": "livro". (Cursos ficam em cursos.json.)
     const G = (d) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
     const IG = {
       simulacao: '<rect x="3" y="9" width="18" height="8" rx="3"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M6 9l2-4h8l2 4"/>',
@@ -668,22 +681,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ebook: '<path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6"/>', audio: '<path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
       novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>', coracao: I.saude, sol: I.estilo,
     };
-    const CHIPS_JOGOS = [['Em alta', I.alta], ['Premium', I.premium], ['Crianças', I.criancas], ['Categorias', I.categorias], ['Simulação', IG.simulacao], ['Quebra-cabeças', IG.quebra], ['RPG', IG.rpg],
-      ['Educativos', IG.educ], ['Ação', IG.acao], ['Estratégia', IG.estrategia], ['Aventura', IG.aventura], ['Gerenciamento', IG.gerenc], ['Combinar 3', IG.combinar], ['Tiro', IG.tiro], ['Cartas', IG.cartas],
-      ['MMORPG', IG.mmorpg], ['Esportes', IG.esportes], ['Tabuleiro', IG.tabuleiro], ['Palavras', IG.palavras], ['Corrida', IG.corrida], ['Música', IG.musica], ['Conhecimentos', IG.conhec], ['Sandbox', IG.sandbox]];
+    const CHIPS_CURSOS = [['Em alta', I.alta], ['Grátis', I.gratis], ['Pagos', I.premium], ['Categorias', I.categorias], ['Vendas', I.compras], ['Culinária', I.comida],
+      ['Finanças', I.financas], ['Marketing', '<path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 010 6M19 6a8 8 0 010 12"/>'], ['Atendimento', I.comunicacao], ['Gestão', I.produtividade],
+      ['Empreendedorismo', I.negocios], ['Tecnologia', I.meus], ['Beleza', I.estilo], ['Idiomas', IG.palavras]];
     const CHIPS_LIVROS = [['E-books', IG.ebook], ['Audiolivros', IG.audio], ['Categorias', I.categorias], ['Mais vendidos', I.alta], ['Lançamentos', IG.novo], ['Gratuitos', I.gratis], ['Receitas', I.comida],
       ['Negócios', I.negocios], ['Finanças', I.financas], ['Autoajuda', IG.coracao], ['Infantil', I.criancas], ['Romance', IG.coracao], ['Estudos', I.educacao], ['Religião', IG.sol]];
     function lojasExtras() {
-      for (const [tipo, chips, nome] of [['jogos', CHIPS_JOGOS, 'jogo'], ['livros', CHIPS_LIVROS, 'livro']]) {
+      for (const [tipo, chips, nome] of [['livros', CHIPS_LIVROS, 'livro']]) {
         $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-secao="Categorias de ${tipo}">${G(d)}${esc(n)}</button>`
           : `<button class="chip" type="button" data-secao="${esc(n)}">${G(d)}${esc(n)}</button>`).join('');
         const itens = todos.filter((a) => a.tipo === nome);
         $('breve-' + tipo).hidden = Boolean(itens.length);
-        if ($('sec-' + tipo)) { $('sec-' + tipo).hidden = !itens.length; $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join(''); continue; }
-        // Jogos: cartões grandes dos jogos com destaque + Patrocinados · Sugestões
-        if ($('dest-' + tipo)) $('dest-' + tipo).querySelectorAll('.dest-item:not([id])').forEach((x) => x.remove());
-        if (itens.some((a) => a.destaque)) $('dest-' + tipo).insertAdjacentHTML('beforeend', itens.filter((a) => a.destaque).map(doApp).join(''));
-        $('lista-' + tipo).innerHTML = itens.map(linhaSugestao).join('') || '<li class="vazio-linha">Em breve: os jogos da LeuName vão aparecer aqui.</li>';
+        $('sec-' + tipo).hidden = !itens.length; $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
       }
     }
     const girar = (l, n) => l.length ? [...l.slice(n % l.length), ...l.slice(0, n % l.length)] : l; // cada bloco começa por um app diferente
@@ -702,6 +711,86 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(alvo)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: novos apps da LeuName vão aparecer aqui.</li>'}</ul></div>`;
     }
+    // ================= CURSOS (grátis e pagos) — dados em cursos.json =================
+    let cursos = [];
+    const progressoDe = (id) => { try { return JSON.parse(localStorage.getItem('leuapps.curso.' + id) || '[]'); } catch { return []; } };
+    const salvarProgresso = (id, v) => { try { localStorage.setItem('leuapps.curso.' + id, JSON.stringify(v)); } catch {} };
+    const gratis = (c) => /grátis/i.test(c.preco);
+    const minutos = (c) => c.aulas.reduce((s, a) => s + (a.minutos || 0), 0);
+    const metaCurso = (c) => `${c.aulas.length} aulas · ${minutos(c)} min`;
+    function cursosDe(cat) {
+      if (cat === 'Todos') return cursos;
+      if (cat === 'Grátis') return cursos.filter(gratis);
+      if (cat === 'Pagos') return cursos.filter((c) => !gratis(c));
+      return cursos.filter((c) => (c.categorias || []).includes(cat));
+    }
+    function botaoCurso(c) {
+      if (!gratis(c)) return `<button class="acao" type="button" data-comprar-curso="${esc(c.id)}">${esc(c.preco)}</button>`;
+      const f = progressoDe(c.id).length;
+      return `<button class="acao" type="button" data-curso-abrir="${esc(c.id)}">${f >= c.aulas.length ? 'Rever' : f ? 'Continuar' : 'Começar'}</button>`;
+    }
+    const linhaCurso = (c) => { const f = progressoDe(c.id).length;
+      return `<li><button class="linha linha-simples" type="button" data-curso="${esc(c.id)}">
+        <img src="${esc(c.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(c.nome)}</span><span class="resumo-curto">${esc(c.resumo)}</span>
+        <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : `${f} de ${c.aulas.length} aulas`}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
+    const cartaoCurso = (c) => `
+        <div class="dest-item">
+          <button class="destaque" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.destaque.imagem)}" alt=""><span class="dest-selo">${gratis(c) ? 'Curso grátis' : 'Curso'}</span><span class="destaque-frase">${esc(c.destaque.frase)}</span></button>
+          <div class="linha dest-app">
+            <img src="${esc(c.icone)}" alt="" data-curso="${esc(c.id)}" style="cursor:pointer">
+            <div data-curso="${esc(c.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(c.nomeCurto || c.nome)}</div><div class="info">LeuName Cursos</div><span class="pilula">${esc(c.preco)}</span></div>
+            <div class="dest-botao">${botaoCurso(c)}<small>${c.aulas.length} aulas</small></div>
+          </div>
+        </div>`;
+    const SECOES_CURSOS = [['Cursos grátis', 'Grátis', 'sempre'], ['Cursos pagos', 'Pagos', 'sempre'], ['Vendas', 'Vendas'], ['Culinária', 'Culinária'], ['Finanças', 'Finanças'], ['Marketing', 'Marketing']];
+    function mostrarCursos() {
+      $('chips-cursos').innerHTML = CHIPS_CURSOS.map(([n, d]) => `<button class="chip" type="button" data-secao="${n === 'Categorias' ? 'Categorias de cursos' : 'cursos:' + esc(n)}">${G(d)}${esc(n)}</button>`).join('');
+      $('dest-cursos').innerHTML = cursos.filter((c) => c.destaque).map(cartaoCurso).join('');
+      const andamento = cursos.filter((c) => { const f = progressoDe(c.id).length; return f && f < c.aulas.length; });
+      $('continuar-cursos').hidden = !andamento.length; $('lista-continuar').innerHTML = andamento.map(linhaCurso).join('');
+      $('lista-cursos').innerHTML = cursos.map(linhaCurso).join('') || '<li class="vazio-linha">Em breve: novos cursos da LeuName.</li>';
+      $('vitrines-cursos').innerHTML = SECOES_CURSOS.map(([titulo, cat, modo]) => { const l = cursosDe(cat); if (!l.length && modo !== 'sempre') return '';
+        return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="cursos:${esc(cat)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+          <ul class="lista">${l.map(linhaCurso).join('') || `<li class="vazio-linha">Em breve: ${cat === 'Pagos' ? 'cursos completos com certificado' : 'novos cursos'} da LeuName.</li>`}</ul></div>`; }).join('');
+    }
+    // Página do curso (#curso/id) e da aula (#curso/id/n)
+    const paginaCurso = $('pagina-curso');
+    const VOLTAR = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+    function mostrarCurso() {
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (!h.startsWith('curso/')) { paginaCurso.hidden = true; paginaCurso.innerHTML = ''; if (detalhe.hidden && paginaSecao.hidden) document.body.style.overflow = ''; return; }
+      const [, id, n, fim] = h.split('/'); const c = cursos.find((x) => x.id === id); if (!c) return;
+      const feitas = progressoDe(c.id), total = c.aulas.length;
+      let corpo;
+      if (fim === 'fim') {
+        const app = c.app && todos.find((a) => a.id === c.app);
+        corpo = `<div class="curso-fim"><div class="ok"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <h1>Parabéns!</h1><p>Você concluiu o curso <b>${esc(c.nome)}</b>.</p>
+          <div class="aula-acoes" style="width:100%;max-width:420px">${app ? `<button class="acao" type="button" data-detalhe="${esc(app.id)}">Conhecer o ${esc(app.nome)}</button>` : ''}
+          <button class="acao contorno" type="button" data-ir-cursos>Ver outros cursos</button></div></div>`;
+      } else if (n !== undefined && c.aulas[Number(n)]) {
+        const i = Number(n), a = c.aulas[i];
+        corpo = `<div class="aula-topo">Aula ${i + 1} de ${total} · ${a.minutos || 1} min</div><h1 class="aula-titulo">${esc(a.titulo)}</h1>
+          <div class="aula-texto">${a.texto}</div>
+          <div class="aula-acoes"><button class="acao" type="button" data-concluir-aula="${esc(c.id)}/${i}">${i + 1 < total ? 'Concluir aula e continuar' : 'Concluir o curso'}</button>
+          ${i > 0 ? `<button class="link-simples" type="button" data-aula="${esc(c.id)}/${i - 1}">← Aula anterior</button>` : ''}</div>`;
+      } else {
+        const pct = Math.round(feitas.length / total * 100);
+        corpo = `<img class="curso-capa" src="${esc(c.destaque ? c.destaque.imagem : c.icone)}" alt="">
+          <div class="det-topo"><img src="${esc(c.icone)}" alt=""><div><h1>${esc(c.nome)}</h1><div class="det-dev">LeuName Cursos</div></div></div>
+          <ul class="det-fatos"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>aulas</li><li><b>${minutos(c)} min</b>no total</li><li><b>${esc(c.nivel || 'Todos')}</b>nível</li></ul>
+          <div class="det-botoes">${botaoCurso(c)}</div>
+          ${feitas.length ? `<div class="curso-prog"><i style="width:${pct}%"></i></div><div class="curso-prog-txt">${feitas.length} de ${total} aulas concluídas</div>` : ''}
+          <h2>Sobre este curso</h2><p class="det-desc">${esc(c.resumo)}</p>
+          <h2>Aulas</h2><ol class="aulas-lista">${c.aulas.map((a, i) => `<li><button type="button" data-aula="${esc(c.id)}/${i}"><span class="aula-num ${feitas.includes(i) ? 'feita' : ''}">${feitas.includes(i) ? '✓' : i + 1}</span><span class="txt">${esc(a.titulo)}<small>${a.minutos || 1} min</small></span></button></li>`).join('')}</ol>
+          <p class="det-info">Curso da LeuName Softwares · ${gratis(c) ? 'Grátis e online' : 'Online'}</p>`;
+      }
+      paginaCurso.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${VOLTAR}</button></div><div class="det-corpo">${corpo}</div>`;
+      paginaCurso.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaCurso.hidden = false; paginaCurso.scrollTop = 0; document.body.style.overflow = 'hidden';
+    }
+    fetch('/cursos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { cursos = d; mostrarCursos(); mostrarCurso(); }).catch(() => {});
+
     function vitrines() {
       $('vitrines').innerHTML = VITRINES.map(vitrine).join('');
       $('vitrines2').innerHTML = VITRINES_FIM.map(vitrine).join('');
@@ -875,13 +964,22 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const paginaSecao = $('pagina-secao');
     function mostrarPaginaSecao() {
       const h = decodeURIComponent(location.hash.slice(1));
-      if (todos.some((x) => x.id === h)) return; // abriu um app por cima da lista: a lista fica embaixo
+      if (todos.some((x) => x.id === h) || h.startsWith('curso/')) return; // abriu um app/curso por cima da lista: a lista fica embaixo
       if (!h.startsWith('lista/')) { paginaSecao.hidden = true; if (detalhe.hidden) document.body.style.overflow = ''; return; }
       const nome = h.slice(6);
-      const listaCats = { 'Categorias de apps': CHIPS.filter((c) => !c[2]).map((c) => [c[0], I[c[1]]]), 'Categorias de jogos': CHIPS_JOGOS.slice(4), 'Categorias de livros': CHIPS_LIVROS.filter((c) => c[0] !== 'Categorias') }[nome];
+      const listaCats = { 'Categorias de apps': CHIPS.filter((c) => !c[2]).map((c) => [c[0], I[c[1]]]), 'Categorias de cursos': CHIPS_CURSOS.slice(4).map(([n, d]) => [n, d, 'cursos:' + n]), 'Categorias de livros': CHIPS_LIVROS.filter((c) => c[0] !== 'Categorias') }[nome];
       if (listaCats) {
         paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Categorias</h1></div>
-          <ul class="lista-cats">${listaCats.map(([n, d]) => `<li><button type="button" data-secao="${esc(n)}">${G(d)}<span>${esc(n)}</span><small>${daSecao(n).length || ''}</small></button></li>`).join('')}</ul>`;
+          <ul class="lista-cats">${listaCats.map(([n, d, alvo = n]) => `<li><button type="button" data-secao="${esc(alvo)}">${G(d)}<span>${esc(n)}</span><small>${(alvo.startsWith('cursos:') ? cursosDe(alvo.slice(7)) : daSecao(alvo)).length || ''}</small></button></li>`).join('')}</ul>`;
+        paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+        paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden'; return;
+      }
+      if (nome.startsWith('cursos:')) {
+        const cat = nome.slice(7), lista = cursosDe(cat), titulo = cat === 'Todos' ? 'Cursos' : cat;
+        paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(titulo)}</h1></div>
+          ${lista.length ? `<div class="grade">${lista.map((c) => `<button type="button" data-curso="${esc(c.id)}"><img src="${esc(c.icone)}" alt="" loading="lazy">
+            <span class="nome">${esc(c.nomeCurto || c.nome)}</span><span class="meta">${esc(c.preco)} · ${c.aulas.length} aulas</span></button>`).join('')}</div>`
+            : `<div class="em-breve"><b>Em breve: ${esc(titulo)}</b>Ainda não temos cursos aqui. Estamos preparando novidades.</div>`}`;
         paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
         paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden'; return;
       }
@@ -917,16 +1015,16 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       detalhe.hidden = false; document.body.style.overflow = 'hidden';
       detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
     }
-    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); });
+    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); });
 
     // ---- Abas (menu de baixo) ----
     function aba(qual) {
       secaoAtual = null;
-      if (location.hash.startsWith('#lista/')) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; document.body.style.overflow = ''; }
+      if (/^#(lista|curso)\//.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
-      document.body.classList.toggle('rolar-topo', ['apps', 'jogos', 'livros'].includes(qual));
+      document.body.classList.toggle('rolar-topo', ['apps', 'cursos', 'livros'].includes(qual));
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
-      for (const n of ['jogos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
+      for (const n of ['cursos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
       $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
       if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
       if (qual === 'pesquisa' && apps.length) mostrar();
@@ -955,9 +1053,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           </div>`, 'Fechar');
       }
       const av = t.closest('[data-avisar]'); if (av) {
-        const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem ${av.dataset.avisar === 'jogos' ? 'os jogos' : 'os livros'} na LeuApps.`;
+        const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem os livros na LeuApps.`;
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
       }
+      const ca = t.closest('[data-curso-abrir]'); if (ca) { const c = cursos.find((x) => x.id === ca.dataset.cursoAbrir), f = progressoDe(c.id);
+        const prox = c.aulas.findIndex((_, i) => !f.includes(i)); location.hash = `curso/${c.id}/${prox < 0 ? 0 : prox}`; return; }
+      const au = t.closest('[data-aula]'); if (au) { location.replace('#curso/' + au.dataset.aula); return; }
+      const ct = t.closest('[data-concluir-aula]'); if (ct) { const [id, n] = ct.dataset.concluirAula.split('/'), i = Number(n), c = cursos.find((x) => x.id === id);
+        salvarProgresso(id, [...new Set([...progressoDe(id), i])]); mostrarCursos();
+        location.replace(i + 1 < c.aulas.length ? `#curso/${id}/${i + 1}` : `#curso/${id}/x/fim`); return; }
+      const cc = t.closest('[data-comprar-curso]'); if (cc) { const c = cursos.find((x) => x.id === cc.dataset.comprarCurso);
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero o curso ${c.nome} (${c.preco}).`)}`, '_blank'); return; }
+      if (t.closest('[data-ir-cursos]')) { history.replaceState(null, '', location.pathname + location.search); paginaCurso.hidden = true; document.body.style.overflow = ''; return aba('cursos'); }
+      const cu = t.closest('[data-curso]'); if (cu) { location.hash = 'curso/' + cu.dataset.curso; return; }
       const nt = t.closest('[data-nota]'); if (nt) {
         const a = todos.find((x) => x.id === nt.dataset.nota);
         try { localStorage.setItem('leuapps.nota.' + a.id, nt.dataset.valor); } catch {}
@@ -1096,7 +1204,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
-      aba(['jogos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : 'apps');
+      if (a === 'jogos') a = 'cursos';
+      aba(['cursos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : 'apps');
     }).catch(() => { $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
     conta();
 
