@@ -1521,7 +1521,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <li><b><span class="selo-livre">L</span></b>Classificação Livre</li>
             <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li></ul>`,
         suporte: blocoSuporte(a, instalado),
-        rodape: `<div class="det-rodape">${a.planos ? `<a href="/loja/termos" target="_blank" rel="noopener">${ICO('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>')}<span>Desistência e reembolso em até 7 dias</span></a>
+        rodape: `<div class="det-rodape">${a.planos ? `<a href="/reembolso.html">${ICO('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>')}<span>Desistência e reembolso em até 7 dias</span></a>
             <p>O preço mostrado é o valor final que você paga.</p>` : '<p>Grátis para instalar. Sem anúncios.</p>'}</div>`,
       };
       // Ordem como na Play: instalado mostra Novidades, Avaliar e Suporte primeiro; instalando mostra sugestões logo embaixo.
