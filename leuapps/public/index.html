@@ -15,15 +15,16 @@
   <style>
     :root {
       --fundo: #FFFFFF; --cartao: #F2F4FB; --cartao-2: #E7EBF7; --texto: #121633; --suave: #5A6080; --linha: #DFE3F0;
-      --verde: #2050F0; --verde-claro: #E2E9FF; --verde-texto: #1A44D6; --no-verde: #FFFFFF; --perigo: #C0262D;
+      --verde: #6A35E8; --verde-claro: #EFE8FF; --verde-texto: #5A28D6; --no-verde: #FFFFFF; --perigo: #C0262D;
+      --botao: linear-gradient(120deg, #E8590C, #E5306E 50%, #6A35E8);
       --marca: linear-gradient(135deg, #FF8A00, #FF3D7F 35%, #7B3FF2 65%, #00B8D9);
       --sombra: 0 1px 2px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
     }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
       --fundo: #0B0E1E; --cartao: #161A30; --cartao-2: #20253F; --texto: #EEF0FA; --suave: #A3A9C6; --linha: #262C48;
-      --verde: #6E97FF; --verde-claro: #1D2A5C; --verde-texto: #9DB7FF; --no-verde: #07113A; --perigo: #FF8A8F; --sombra: none; } }
+      --verde: #B394FF; --verde-claro: #2A1F52; --verde-texto: #C7B2FF; --no-verde: #1A0F3D; --perigo: #FF8A8F; --sombra: none; } }
     :root[data-theme="dark"] { --fundo: #0B0E1E; --cartao: #161A30; --cartao-2: #20253F; --texto: #EEF0FA; --suave: #A3A9C6; --linha: #262C48;
-      --verde: #6E97FF; --verde-claro: #1D2A5C; --verde-texto: #9DB7FF; --no-verde: #07113A; --perigo: #FF8A8F; --sombra: none; }
+      --verde: #B394FF; --verde-claro: #2A1F52; --verde-texto: #C7B2FF; --no-verde: #1A0F3D; --perigo: #FF8A8F; --sombra: none; }
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
     html, body { background: var(--fundo); }
@@ -250,6 +251,12 @@
     .desafio-nota { padding: 0 14px 14px; font-size: 14px; color: var(--suave); margin: -4px 0 0; }
     .pontinhos { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
     .pontinhos i { width: 8px; height: 8px; border-radius: 50%; background: var(--linha); } .pontinhos i.ativo { background: var(--texto); }
+    /* Selos de confiança */
+    .confianca { list-style: none; margin: 30px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .confianca li { display: flex; gap: 10px; align-items: flex-start; padding: 14px 12px; border-radius: 16px; background: var(--cartao); }
+    .confianca svg { width: 24px; height: 24px; flex: none; fill: none; stroke: var(--verde-texto); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .confianca span { display: grid; gap: 2px; font-size: 13px; color: var(--suave); line-height: 1.3; } .confianca b { color: var(--texto); font-size: 14.5px; }
+    .fim-loja { border-top: 4px solid transparent; border-image: var(--marca) 1; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -295,7 +302,8 @@
     .icone-grande .nome { margin-top: 8px; font-size: 14.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
     /* Botões (pílulas) */
-    .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--verde); color: var(--no-verde); font-weight: 700; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--botao); color: #fff; font-weight: 700; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .acao.perigo, .acao.contorno { background-image: none; }
     .acao.contorno { background: none; color: var(--verde-texto); border: 1.5px solid var(--linha); }
     .acao.perigo { background: none; color: var(--perigo); border: 1.5px solid var(--linha); }
     .acao:active { transform: scale(.97); }
@@ -437,7 +445,7 @@
       </div>
       <div class="chips-linha" id="chips"></div>
       <div class="secao" id="sugestoes">
-        <div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+        <div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
       <div class="secao"><div class="secao-titulo"><h2>Novidades e destaques</h2></div><div class="rolar destaques" id="destaques"></div></div>
@@ -446,8 +454,14 @@
         <ul class="lista" id="recomendados"></ul>
       </div>
       <div id="vitrines"></div>
-      <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Dê sua opinião</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
+      <div class="secao" id="opiniao" hidden><div class="secao-titulo"><h2>Avalie seus apps</h2></div><div class="rolar opiniao-fileira" id="opiniao-lista"></div></div>
       <div id="vitrines2"></div>
+      <ul class="confianca" aria-label="Por que comprar na LeuApps">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><span><b>Pagamento seguro</b>Pix e cartão pelo Mercado Pago</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span><b>Suporte de verdade</b>Fale com a gente no WhatsApp</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg><span><b>Empresa brasileira</b>LeuName Softwares</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 11-3-6.25"/><path d="M8.5 12l2.5 2.5L20 5.5"/></svg><span><b>Sempre atualizado</b>Apps na versão mais nova</span></li>
+      </ul>
       <div class="fim-loja">
         <div class="fim-texto">
           <div class="fim-marca"><img src="/img/leuapps-192.webp" alt="" width="28" height="28">LeuName Serviços</div>
@@ -459,7 +473,7 @@
           <rect x="70" y="-10" width="70" height="44" rx="14" fill="#7B3FF2" opacity=".35"/>
           <path d="M22 30l14 14M36 30L22 44" stroke="#FF3D7F" stroke-width="12" stroke-linecap="round" opacity=".55"/>
           <path d="M60 70c30-22 80-14 96 18s6 74-26 92-82 12-100-20S30 92 60 70z" fill="var(--fim-bolha)"/>
-          <rect x="62" y="92" width="76" height="76" rx="20" fill="#2050F0"/>
+          <rect x="62" y="92" width="76" height="76" rx="20" fill="#6A35E8"/>
           <path d="M84 112l20 18-20 18z" fill="#fff"/><rect x="108" y="112" width="12" height="36" rx="4" fill="#00B8D9"/>
           <path d="M20 196l26 15-26 15z" fill="#22C55E" opacity=".55"/>
           <circle cx="104" cy="226" r="30" fill="#FF8A00" opacity=".35"/>
@@ -486,7 +500,7 @@
       <div id="explorar">
         <!-- Como a Pesquisa da Play: Explorar cursos (no lugar de jogos), Patrocinados · Sugestões, Explorar apps -->
         <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar cursos</h2></div><div class="categorias" id="categorias-cursos"></div></div>
-        <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="rolar" id="fileira-busca"></div></div>
+        <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="rolar" id="fileira-busca"></div></div>
         <div class="secao"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
       </div>
     </section>
@@ -502,7 +516,7 @@
       <div class="ola" id="ola">Olá!</div>
       <a class="cartao-conta" id="cartao-conta" href="/loja/comprar?app=quantocobrar&entrar=1"><span class="avatar" id="avatar3">L</span><span><small>Sua conta LeuName</small><b id="conta-texto">Entrar na sua conta</b></span></a>
       <!-- Como o "Você" da Play: missões com prêmio e desafios com contagem (feitos com os nossos cursos) -->
-      <div class="secao" id="bloco-missao"><div class="secao-titulo"><h2>Ganhe prêmios e aproveite benefícios</h2></div><div id="missao"></div></div>
+      <div class="secao" id="bloco-missao"><div class="secao-titulo"><h2>Missões e prêmios</h2></div><div id="missao"></div></div>
       <div class="secao" id="bloco-desafios"><div class="secao-titulo"><h2>Desafios</h2></div><div class="rolar desafios" id="desafios"></div><div class="pontinhos" id="pontos-desafios"></div></div>
       <div class="secao"><div class="secao-titulo"><h2>Seus apps</h2></div><ul class="lista" id="meus"></ul></div>
       <div class="secao"><ul class="opcoes-voce">
@@ -515,10 +529,10 @@
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
     <button role="tab" id="tab-cursos" data-aba="cursos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg></span>Cursos</button>
-    <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Apps</button>
-    <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Pesquisa</button>
+    <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Início</button>
+    <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Buscar</button>
     <button role="tab" id="tab-livros" data-aba="livros" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-3.5L6 21z"/></svg></span>Livros</button>
-    <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Você</button>
+    <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Perfil</button>
   </div></nav>
 
   <section id="pagina-secao" class="pagina-secao" hidden aria-label="Lista de apps"></section>
@@ -638,7 +652,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function selos(a) {
       const s = [];
       if (situacao(a) !== 'nao') s.push(['instalado', 'Instalado']);
-      if (a.escolha) s.push(['escolha', 'Escolha dos editores']);
+      if (a.escolha) s.push(['escolha', 'Escolha da LeuName']);
       const promo = a.promo && situacao(a) === 'nao' ? a.promo : null; // "promo": {"de": "R$ 30", "por": "R$ 19,90"} no apps.json
       if (/grátis/i.test(a.preco || '')) s.push(['gratis', 'Teste grátis']);
       if (/pagamento único/i.test(a.preco || '')) s.push(['unico', 'Pagamento único']);
@@ -658,23 +672,23 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // as outras só aparecem quando tiverem app (apps.json → secoes).
     const VITRINES = [
       ['Comunicação', 'Comunicação', 'mostrar-vazio'],
-      ['Enviar uma mensagem', 'Enviar uma mensagem', 'mostrar-vazio'],
+      ['Mensagens', 'Enviar uma mensagem', 'mostrar-vazio'],
       ['Sugestões para você', 'patrocinados', 1],
-      ['Mantenha contato', 'Mantenha contato', 'mostrar-vazio'],
+      ['Fale com quem importa', 'Mantenha contato', 'mostrar-vazio'],
       ['Rede social', 'Rede social', 'mostrar-vazio'],
-      ['Fazer novas conexões', 'Fazer novas conexões', 'mostrar-vazio'],
+      ['Conheça gente nova', 'Fazer novas conexões', 'mostrar-vazio'],
       ['Sugestões para você', 'patrocinados', 2],
-      ['Turismo e guia local', 'Turismo e guia local', 'mostrar-vazio'],
-      ['Escolha dos editores: apps', (a) => a.escolha, 'mostrar-vazio'],
-      ['Personalize seu dispositivo', 'Personalize seu dispositivo', 'mostrar-vazio'],
+      ['Passeios e a sua cidade', 'Turismo e guia local', 'mostrar-vazio'],
+      ['Escolha da LeuName', (a) => a.escolha, 'mostrar-vazio'],
+      ['Celular com a sua cara', 'Personalize seu dispositivo', 'mostrar-vazio'],
       ['Arte e design', 'Arte e design', 'mostrar-vazio'],
-      ['Ferramentas de negócios', 'Ferramentas de negócios', 'mostrar-vazio'],
-      ['Tire fotos mais bonitas', 'Tire fotos mais bonitas', 'mostrar-vazio'],
-      ['Apps favoritos', 'Apps favoritos', 'mostrar-vazio'],
-      ['Produtividade', 'Produtividade', 'mostrar-vazio'],
+      ['Para o seu negócio', 'Ferramentas de negócios', 'mostrar-vazio'],
+      ['Fotos que chamam atenção', 'Tire fotos mais bonitas', 'mostrar-vazio'],
+      ['Os queridinhos da LeuName', 'Apps favoritos', 'mostrar-vazio'],
+      ['Faça mais em menos tempo', 'Produtividade', 'mostrar-vazio'],
       ['Em promoção', (a) => a.promo],
     ];
-    const VITRINES_FIM = [['Ferramentas e utilitários', 'Ferramentas e utilitários', 'mostrar-vazio']]; // depois de "Dê sua opinião"
+    const VITRINES_FIM = [['Utilidades do dia a dia', 'Ferramentas e utilitários', 'mostrar-vazio']]; // depois de "Dê sua opinião"
     const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
         <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
         <span class="selos">${selos(a)}</span></span></button></li>`;
@@ -744,7 +758,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`;
     function vitrine([titulo, s, modo]) {
       if (s === 'patrocinados') { // "Patrocinados · Sugestões para você" repetido (cada um começa por outro app)
-        return `<div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+        return `<div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
           <ul class="lista">${girar([...apps].sort((x, y) => pontos(y) - pontos(x)), modo).map(linhaSugestao).join('')}</ul></div>`;
       }
       const porEscolha = typeof s === 'function';
@@ -758,7 +772,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Cada livro: { id, titulo, autor, capa, preco ("Grátis" ou "R$ 4,90"), precoAntigo?, tipo: "ebook"|"audiolivro",
     //               generos: [...], vendidos (número, para o ranking), lancamento ("2026-10-06"), link? }
     let livros = [], abaLivros = 'E-books', abaAtual = 'apps';
-    const ABAS_LIVROS = ['E-books', 'Audiolivros', 'Gêneros', 'Os mais vendidos', 'Lançamentos', 'Principais livros gratuitos'];
+    const ABAS_LIVROS = ['E-books', 'Audiolivros', 'Gêneros', 'Os mais vendidos', 'Lançamentos', 'Grátis para ler'];
     const GENEROS = [['Inspiradores', I.estilo], ['Cinema e TV', I.diversao], ['Vida saudável', I.saude], ['Negócios', I.negocios], ['Finanças', I.financas], ['Culinária', I.comida], ['Autoajuda', I.saude], ['Romance', '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>'],
       ['Infantil', I.criancas], ['Religião', I.estilo], ['Estudos', I.educacao], ['Biografias', I.meus], ['Ficção', IG.sandbox]];
     const hoje = () => new Date().toISOString().slice(0, 10);
@@ -768,7 +782,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const capaLivroGrade = (l) => `<button class="capa-livro" type="button" data-livro="${esc(l.id)}"><img src="${esc(l.capa)}" alt="" loading="lazy"><span class="nome">${esc(l.titulo)}</span><span class="preco-livro">${l.precoAntigo ? `<s>${esc(l.precoAntigo)}</s> ` : ''}${esc(l.preco)}</span></button>`;
     function livrosDe(filtro) {
       const tipo = abaLivros === 'Audiolivros' ? 'audiolivro' : 'ebook';
-      const base = livros.filter((l) => (l.tipo || 'ebook') === tipo || ['Os mais vendidos', 'Lançamentos', 'Principais livros gratuitos'].includes(abaLivros));
+      const base = livros.filter((l) => (l.tipo || 'ebook') === tipo || ['Os mais vendidos', 'Lançamentos', 'Grátis para ler'].includes(abaLivros));
       return ({ barato: () => base.filter((l) => valor(l.preco) < 5),
         vendidos: () => [...base].sort((a, b) => (b.vendidos || 0) - (a.vendidos || 0)),
         reduzidos: () => base.filter((l) => l.precoAntigo),
@@ -795,15 +809,15 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         html = `<div class="secao"><ul class="ranking">${l.map((x, i) => `<li><button type="button" data-livro="${esc(x.id)}"><span class="pos">${i + 1}</span><img src="${esc(x.capa)}" alt=""><span><b>${esc(x.titulo)}</b><br><small>${esc(x.autor || '')} · ${esc(x.preco)}</small></span></button></li>`).join('') || '<li class="vazio-linha">Em breve: o ranking dos livros mais vendidos.</li>'}</ul></div>`;
       } else if (abaLivros === 'Lançamentos') {
         html = fileiraLivros('Lançamentos', 'lancamentos');
-      } else if (abaLivros === 'Principais livros gratuitos') {
-        html = fileiraLivros('Principais livros gratuitos', 'gratis');
+      } else if (abaLivros === 'Grátis para ler') {
+        html = fileiraLivros('Grátis para ler', 'gratis');
       } else {
         const nome = abaLivros === 'Audiolivros' ? 'Audiolivros' : 'E-books';
         // Mesma sequência da Play (aba E-books)
-        html = fileiraLivros(`${nome} por menos de R$ 5`, 'barato') + fileiraLivros('Os mais vendidos', 'vendidos') + fileiraLivros('Preços reduzidos', 'reduzidos')
-          + fileiraLivros('Reflita com livros inspiradores', 'Inspiradores') + fileiraLivros('Livros levados para a tela', 'Cinema e TV')
-          + fileiraLivros('Livros para uma vida saudável', 'Vida saudável') + fileiraLivros('Lançamentos imperdíveis', 'lancamentos')
-          + fileiraLivros(`Novos descontos em ${nome.toLowerCase()}`, 'descontos', 'Ofertas fresquinhas') + fileiraLivros('Reserve antes do lançamento', 'reserva');
+        html = fileiraLivros(`${nome} até R$ 5`, 'barato') + fileiraLivros('Os mais vendidos', 'vendidos') + fileiraLivros('Preços reduzidos', 'reduzidos')
+          + fileiraLivros('Livros que inspiram', 'Inspiradores') + fileiraLivros('Viraram filme e série', 'Cinema e TV')
+          + fileiraLivros('Saúde e bem-estar', 'Vida saudável') + fileiraLivros('Novos na LeuApps', 'lancamentos')
+          + fileiraLivros('Descontos da semana', 'descontos', 'Preços que acabaram de baixar') + fileiraLivros('Chegando em breve', 'reserva', 'Garanta o seu antes de todo mundo');
       }
       $('conteudo-livros').innerHTML = html;
     }
@@ -1119,7 +1133,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       if (nome.startsWith('livros:')) {
         const filtro = nome.slice(7), l = livrosDe(filtro);
-        const titulos = { barato: 'Por menos de R$ 5', vendidos: 'Os mais vendidos', reduzidos: 'Preços reduzidos', gratis: 'Livros gratuitos', lancamentos: 'Lançamentos imperdíveis', descontos: 'Novos descontos', reserva: 'Reserve antes do lançamento' };
+        const titulos = { barato: 'Até R$ 5', vendidos: 'Os mais vendidos', reduzidos: 'Preços reduzidos', gratis: 'Grátis para ler', lancamentos: 'Novos na LeuApps', descontos: 'Descontos da semana', reserva: 'Chegando em breve' };
         const titulo = titulos[filtro] || filtro;
         paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(titulo)}</h1><button type="button" class="det-voltar lupa-livros" data-buscar-livros aria-label="Pesquisar livros"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button></div>
           ${l.length ? `<div class="grade grade-livros">${l.map(capaLivroGrade).join('')}</div>` : `<div class="em-breve"><b>Em breve: ${esc(titulo)}</b>Ainda não temos livros aqui. Estamos preparando novidades.</div>`}`;
