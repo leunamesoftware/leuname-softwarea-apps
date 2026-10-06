@@ -1223,7 +1223,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       x.font = '600 30px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillStyle = tinta; x.fillText(`Concluído em ${data}`, W / 2, 860);
       // assinatura (direita) e selo (esquerda)
       const ax = W - 470;
-      if (assinatura) { const h = 110, w = Math.min(380, assinatura.width * h / assinatura.height); x.drawImage(assinatura, ax - w / 2, 920, w, h); }
+      if (assinatura) {
+        // Cabe numa caixa de 400 x 150, encostando na linha (como assinatura de caneta), em tinta azul e traço um pouco mais grosso.
+        const f = Math.min(400 / assinatura.width, 150 / assinatura.height), w = Math.round(assinatura.width * f), h = Math.round(assinatura.height * f);
+        const tinta = document.createElement('canvas'); tinta.width = w + 2; tinta.height = h + 2; const t = tinta.getContext('2d');
+        for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1], [2, 1], [1, 2]]) t.drawImage(assinatura, dx * 0.6, dy * 0.6, w, h);
+        t.globalCompositeOperation = 'source-in'; t.fillStyle = '#1C2E7A'; t.fillRect(0, 0, tinta.width, tinta.height);
+        x.drawImage(tinta, ax - w / 2, 1052 - h);
+      }
       x.fillStyle = tinta; x.fillRect(ax - 210, 1040, 420, 2);
       x.font = '700 26px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('LeuName Softwares', ax, 1078);
       x.fillStyle = suave; x.font = '400 22px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('www.leunamesoftware.com.br', ax, 1110);
