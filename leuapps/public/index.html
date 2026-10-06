@@ -32,7 +32,7 @@
     a { color: inherit; }
     img { max-width: 100%; }
     :focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
-    .rolar { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; }
+    .rolar { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; }
     .rolar::-webkit-scrollbar { display: none; }
 
     /* Barra de cima */
@@ -92,10 +92,23 @@
     .novidade p { margin: 0; font-size: 14px; color: var(--suave); }
     .faixa-marca { height: 4px; border-radius: 4px; background: var(--marca); width: 48px; }
 
+    .icone-topo { position: relative; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; color: var(--texto); }
+    .selo { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #E5383B; color: #fff; font-size: 10px; font-weight: 800; line-height: 14px; text-align: center; border: 2px solid var(--fundo); box-sizing: border-box; }
+    .destaques { margin-top: 18px; gap: 14px; }
+    .dest-item { flex: 0 0 calc(100% - 30px); scroll-snap-align: start; display: grid; gap: 6px; }
+    .dest-item .destaque { flex: none; width: 100%; aspect-ratio: 2.15 / 1; max-height: none; }
+    .destaque-frase { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -.3px; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+    .dest-app { padding: 6px 0 0; }
+    .dest-app .info { font-size: 13.5px; }
+    .linha-simples { width: 100%; border: 0; background: none; text-align: left; grid-template-columns: 64px 1fr; }
+    .linha-simples > span { display: grid; gap: 1px; min-width: 0; }
+    .linha-simples .pilula { justify-self: start; }
+
     /* Atalhos (chips) */
-    .chips-linha { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 16px -16px 0; padding: 0 16px; }
+    .chips-linha { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 6px -16px 0; padding: 0 16px; }
     .chips-linha::-webkit-scrollbar { display: none; }
-    .chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 14px; border: 0; background: var(--cartao); font-size: 15px; font-weight: 500; }
+    .chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px 0 14px; border-radius: 999px; border: 0; background: var(--cartao); font-size: 15px; font-weight: 600; }
+    .chip svg { color: var(--verde-texto); }
 
     /* Lista de apps */
     .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
@@ -222,8 +235,10 @@
 <body>
   <header class="topo">
     <div class="topo-linha" id="topo-inicio">
-      <img class="logo" src="/img/leuapps-192.webp" alt="" width="38" height="38"><span class="saudacao"><small id="saudacao">Olá</small><span class="marca">LeuApps</span></span>
+      <img class="logo" src="/img/leuapps-192.webp" alt="LeuApps" width="40" height="40"><span class="saudacao" hidden><small id="saudacao">Olá</small></span>
       <span class="espaco"></span>
+      <button class="icone-topo" type="button" data-aba="voce" aria-label="Atualizações dos seus apps" id="atualizacoes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-3-6.25"/><path d="M8.5 12l2.5 2.5L20 5.5"/></svg><span class="selo" id="selo-atualizar" hidden>0</span></button>
+      <button class="icone-topo" type="button" data-rolar="bloco-novidades" aria-label="Novidades"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg></button>
       <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar">L</button>
     </div>
     <div class="topo-linha" id="topo-busca" hidden>
@@ -238,19 +253,23 @@
   <main>
     <!-- Apps (início) -->
     <section id="aba-apps">
-      <div class="rolar" id="destaques"></div>
-      <div class="bolinhas" id="bolinhas" aria-hidden="true"></div>
       <div class="chips-linha">
-        <button class="chip" type="button" data-rolar="sugestoes">📈 Em alta</button>
-        <button class="chip" type="button" data-aba="pesquisa">🧩 Categorias</button>
-        <button class="chip" type="button" data-aba="servicos">🎨 Criamos para você</button>
+        <button class="chip" type="button" data-rolar="sugestoes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20h16M6 20V11h3v9M11 20V5h3v15M16 20v-6h3v6"/></svg>Em alta</button>
+        <button class="chip" type="button" data-filtro="grátis"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-1.5-3-5-3.5-5-1.2C7 7 9 7 12 7c3 0 5 0 5-1.2C17 3.5 13.5 4 12 7z"/></svg>Grátis para testar</button>
+        <button class="chip" type="button" data-filtro="Empresa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/></svg>Para empresas</button>
+        <button class="chip" type="button" data-filtro="Receitas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5a6 6 0 1112 0V19a1 1 0 01-1 1H7a1 1 0 01-1-1z"/><path d="M6 16h12"/></svg>Receitas</button>
+        <button class="chip" type="button" data-filtro="Documentos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg>Documentos</button>
+        <button class="chip" type="button" data-aba="pesquisa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l3.5 6h-7z"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="17" cy="16.5" r="3.5"/></svg>Categorias</button>
+        <button class="chip" type="button" data-aba="servicos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg>Serviços</button>
+        <button class="chip" type="button" data-aba="voce"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>Meus apps</button>
       </div>
+      <div class="rolar destaques" id="destaques"></div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2>Sugestões para você</h2></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
       <div class="secao">
-        <div class="secao-titulo"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
+        <div class="secao-titulo" id="bloco-novidades"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
         <div class="rolar" id="novidades"></div>
       </div>
       <div class="secao">
@@ -367,12 +386,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const iconeGrande = (a) => `<button class="icone-grande" type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy"><div class="nome">${esc(a.nome)}</div><span class="pilula">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`;
     function destaques() {
       $('destaques').innerHTML = apps.filter((a) => a.destaque).map((a) => `
-        <button class="destaque" type="button" data-detalhe="${esc(a.id)}">
-          <img src="${esc(a.destaque.imagem)}" alt="">
-          <div class="destaque-texto"><div><b>${esc(a.destaque.titulo)}</b><span>${esc(a.destaque.frase)}</span>
-            <div class="mini"><img src="${esc(a.icone)}" alt="">LeuName Softwares</div></div>
-            <span class="acao">${situacao(a) === 'nao' ? 'Conhecer' : 'Abrir'}</span></div>
-        </button>`).join('');
+        <div class="dest-item">
+          <button class="destaque" type="button" data-detalhe="${esc(a.id)}">
+            <img src="${esc(a.destaque.imagem)}" alt="">
+            <span class="destaque-frase">${esc(a.destaque.frase)}</span>
+          </button>
+          <div class="linha dest-app">
+            <img src="${esc(a.icone)}" alt="" data-detalhe="${esc(a.id)}" style="cursor:pointer">
+            <div data-detalhe="${esc(a.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(a.nome)}</div>
+              <div class="info">LeuName Softwares</div><span class="pilula">${precoCurto(a)}</span> <span class="info">${esc((a.tags || [a.categoria])[0])}</span></div>
+            <div>${botaoLinha(a)}</div>
+          </div>
+        </div>`).join('');
     }
     function categorias() {
       const cores = { 'Receitas e vendas': '🧁', 'Gestão de loja': '📱', 'Documentos e prazos': '📄' };
@@ -382,17 +407,21 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function mostrar() {
       const f = $('busca').value.trim().toLowerCase();
-      $('lista').innerHTML = apps.map((a) => `<div class="promo">${linha(a).replace(/^<li>|<\/li>$/g, '')}
-        ${a.capturas ? `<div class="rolar">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" data-detalhe="${esc(a.id)}" width="106" height="210">`).join('')}</div>` : ''}</div>`).join('');
+      $('lista').innerHTML = `<ul class="lista">${apps.map((a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
+          <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="info">${tags(a)}</span>
+          <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`).join('')}</ul>`;
       $('novidades').innerHTML = apps.flatMap((a) => (a.novidades || []).map((n) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
           <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`)).join('');
       $('fileira').innerHTML = apps.map(iconeGrande).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
-      const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
+      const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       $('resultados').hidden = !f; $('explorar').hidden = Boolean(f);
       $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
+      const at = apps.filter((a) => situacao(a) === 'atualizar').length;
+      $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
+      $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
       destaques(); bolinhas();
       if (!detalhe.hidden) mostrarDetalhe();
     }
@@ -535,6 +564,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const fil = t.closest('[data-filtro]'); if (fil) { aba('pesquisa'); $('busca').value = fil.dataset.filtro; mostrar(); return; }
       const ab = t.closest('[data-aba]'); if (ab) return aba(ab.dataset.aba);
       const cat = t.closest('[data-categoria]'); if (cat) { $('busca').value = cat.dataset.categoria; mostrar(); return; }
       const rol = t.closest('[data-rolar]'); if (rol) return $(rol.dataset.rolar).scrollIntoView({ behavior: 'smooth' });
@@ -550,16 +580,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Destaques: bolinhas e passam sozinhos (param quando a pessoa mexe) ----
     let mexeu = false;
     const caixa = $('destaques');
-    function bolinhas() {
-      const n = caixa.children.length; if (!n) return;
-      const i = Math.round(caixa.scrollLeft / (caixa.children[0].offsetWidth + 12));
-      $('bolinhas').innerHTML = Array.from({ length: n }, (_, k) => `<i class="${k === i ? 'ativa' : ''}"></i>`).join('');
-    }
-    caixa.addEventListener('scroll', () => requestAnimationFrame(bolinhas), { passive: true });
+    function bolinhas() {}
     caixa.addEventListener('touchstart', () => { mexeu = true; }, { passive: true });
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
       if (mexeu || $('aba-apps').hidden || !detalhe.hidden || !caixa.children.length) return;
-      const w = caixa.children[0].offsetWidth + 12, n = caixa.children.length;
+      const w = caixa.children[0].offsetWidth + 14, n = caixa.children.length;
       const prox = (Math.round(caixa.scrollLeft / w) + 1) % n;
       caixa.scrollTo({ left: prox * w, behavior: 'smooth' });
     }, 5000);
