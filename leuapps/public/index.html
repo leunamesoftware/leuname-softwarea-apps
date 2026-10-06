@@ -720,6 +720,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const N = window.LeuNativo || null;
     const ua = navigator.userAgent;
     const android = /Android/i.test(ua);
+    // Loja aberta pelo ícone, numa janela própria (não no Chrome): ali o Android não deixa criar ícone de outro app.
+    const janelaApp = () => ['standalone', 'fullscreen', 'minimal-ui'].some((q) => matchMedia(`(display-mode: ${q})`).matches) || Boolean(navigator.standalone);
     const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
     const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
 
@@ -727,6 +729,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const ler = () => { try { return JSON.parse(localStorage.getItem('leuapps.meus') || '[]'); } catch { return []; } };
     const gravar = (v) => { try { localStorage.setItem('leuapps.meus', JSON.stringify(v)); } catch {} };
     let meus = ler();
+    // Apps que o Chrome pôs na tela do celular (ícone próprio). "meus" são os instalados dentro da LeuApps.
+    let icones = (() => { try { return JSON.parse(localStorage.getItem('leuapps.icones') || '[]'); } catch { return []; } })();
+    const gravarIcones = () => { try { localStorage.setItem('leuapps.icones', JSON.stringify(icones)); } catch {} };
 
     // No app Android: versões instaladas de verdade (pacote → versionCode) e downloads em andamento.
     let versoes = {}, baixando = {}, pendente = null;
@@ -775,6 +780,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (!v) return 'nao';
         return a.android.versao && v < a.android.versao ? 'atualizar' : 'instalado';
       }
+      if (a.abrirWww && !janelaApp()) return icones.includes(a.id) ? 'instalado' : 'nao'; // no Chrome: só conta o ícone na tela
       return meus.includes(a.id) ? 'instalado' : 'nao';
     }
     const barra = (id) => {
@@ -1225,7 +1231,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
       const dentro = apps.filter((a) => a.abrirWww && situacao(a) !== 'nao');
-      $('meus-apps').hidden = !dentro.length || Boolean(N);
+      $('meus-apps').hidden = !dentro.length || Boolean(N) || !janelaApp();
       $('grade-meus').innerHTML = dentro.map((a) => `<button type="button" data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt=""><span>${esc(a.nome)}</span></button>`).join('');
       const at = apps.filter((a) => situacao(a) === 'atualizar').length, novos = recentesNaoVistos().length;
       $('selo-atualizar').hidden = !(at + novos); $('selo-atualizar').textContent = at + novos;
@@ -1370,6 +1376,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function desinstalar(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android) { N.desinstalar(a.android.pacote); return; } // o Android pergunta; ao voltar a loja confere
+      if (!N && a.abrirWww && !janelaApp()) {
+        icones = icones.filter((x) => x !== id); gravarIcones(); recemInstalados.delete(id); mostrar(); mostrarDetalhe();
+        return folha(`<h3>Desinstalar o ${esc(a.nome)}</h3><p class="sub">Para tirar o ${esc(a.nome)} do celular, segure o ícone dele na tela e toque em <b>Desinstalar</b> (ou <b>Remover</b>).</p>`, 'Entendi');
+      }
       if (!N && a.abrirWww) {
         if (!confirm(`Desinstalar o ${a.nome} da LeuApps?\n\nSeus dados não são apagados.`)) return;
         meus = meus.filter((x) => x !== id); gravar(meus); delete instaladosEm[id];
@@ -1539,7 +1549,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const DADOS_PADRAO = { coleta: 'E-mail da conta e as informações que você cadastra no app', uso: 'Para o app funcionar e guardar suas informações com segurança' };
     const avaliacoesCache = {};
     let editandoAvaliacao = null; // app cuja avaliação a pessoa está editando
-    const janelaApp = () => ['standalone', 'fullscreen', 'minimal-ui'].some((q) => matchMedia(`(display-mode: ${q})`).matches) || Boolean(navigator.standalone);
     // Apps dentro do www (Gestacell, Quanto Cobrar): na página do app, a loja aponta para o manifesto do próprio app.
     // No Chrome, isso faz o botão Instalar da loja instalar aquele app direto (ícone próprio), sem abrir outra página.
     const pedidosApp = {}; let manifestoDe;
@@ -1959,7 +1968,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     });
     addEventListener('appinstalled', () => {
       const id = Object.keys(baixando).find((k) => baixando[k] === -2);
-      if (id) { delete baixando[id]; meus = [...new Set([...meus, id])]; gravar(meus); recemInstalados.add(id); marcarInstalado(id); mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+      if (id) { delete baixando[id]; icones = [...new Set([...icones, id])]; gravarIcones(); recemInstalados.add(id); marcarInstalado(id); mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
         const a = todos.find((x) => x.id === id); return avisar(`✓ ${a ? a.nome : 'App'} instalado! O ícone já está na tela do celular.`); }
       pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
     });
