@@ -45,6 +45,12 @@ export async function criarSenhaDono(env, req, d) {
   return { cookie: await abrir(env, req) };
 }
 
+/** Confere a senha de dono sem abrir sessão (para a senha de dono também valer no login comum da conta do dono). */
+export async function senhaDonoConfere(env, d) {
+  const a = await acesso(env);
+  return Boolean(a && mesmoEmail(env, d?.email) && senhaValida(d?.senha) && igual(await derivar(d.senha, a.senha_sal), a.senha_hash));
+}
+
 export async function entrarDono(env, req, d) {
   const a = await acesso(env);
   if (!a || !mesmoEmail(env, d?.email) || !senhaValida(d?.senha) || !igual(await derivar(d.senha, a.senha_sal), a.senha_hash)) return { erro: 'login_invalido', status: 401 };

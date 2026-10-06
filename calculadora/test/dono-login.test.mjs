@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono } from '../src/dono.js';
+import { estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, senhaDonoConfere } from '../src/dono.js';
 
 // D1 de mentira, só com as duas tabelas da Área do Dono.
 function banco() {
@@ -41,4 +41,13 @@ test('entrar confere a senha; trocar exige a atual e derruba as outras sessões'
   assert.ok(t.cookie);
   assert.equal((await estadoDono(env, pedido(valor(b.cookie)))).logado, false);
   assert.ok((await entrarDono(env, pedido(), { email: 'leunamesoftware@gmail.com', senha: 'nova123' })).cookie);
+});
+
+test('a senha de dono confere sem abrir sessão (vale no login comum da conta do dono)', async () => {
+  const env = banco();
+  assert.equal(await senhaDonoConfere(env, { email: 'leunamesoftware@gmail.com', senha: 'segredo1' }), false);
+  await criarSenhaDono(env, pedido(), { email: 'leunamesoftware@gmail.com', senha: 'segredo1' });
+  assert.equal(await senhaDonoConfere(env, { email: 'LeunameSoftware@gmail.com', senha: 'segredo1' }), true);
+  assert.equal(await senhaDonoConfere(env, { email: 'leunamesoftware@gmail.com', senha: 'errada1' }), false);
+  assert.equal(await senhaDonoConfere(env, { email: 'outro@x.com', senha: 'segredo1' }), false);
 });

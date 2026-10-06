@@ -530,6 +530,10 @@
     .recente b { display: block; font-weight: 600; }
     .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
+    .janela-app { position: fixed; inset: 0; z-index: 40; background: #041640; }
+    .janela-app iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .janela-voltar { position: fixed; left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center;
+      background: rgba(255,255,255,.88); color: #1A1630; box-shadow: 0 3px 10px rgba(0,0,0,.25); cursor: pointer; z-index: 41; }
     .grade-meus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 8px; padding: 8px 0 18px; }
     .grade-meus button { display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0; font: inherit; font-size: 12.5px; color: var(--texto); cursor: pointer; text-align: center; }
     .grade-meus img { width: 64px; height: 64px; border-radius: 18px; box-shadow: 0 3px 10px rgba(20,10,50,.15); }
@@ -1312,7 +1316,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       // 3) Dentro do ícone da LeuApps (janela própria): o Android não deixa criar ícone ali. O app instala DENTRO
       //    da LeuApps (voltinha), vai para "Meus apps" e abre aqui dentro, em tela cheia.
-      if (a.abrirWww) return instalarDentro(a);
+      if (a.abrirWww || (a.abrirFrame && (janelaApp() || !android))) return instalarDentro(a);
       // 4) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
@@ -1340,11 +1344,31 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const u = new URL(url);
       location.href = `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(url)};end`;
     }
-    function abrirApp(id) {
+    function mostrarJanelaApp() {
+      const h = decodeURIComponent(location.hash.slice(1)); let j = $('janela-app');
+      const a = h.startsWith('abrir/') ? todos.find((x) => x.id === h.slice(6) && x.abrirFrame) : null;
+      if (!a) { if (j) { j.remove(); document.body.style.overflow = ''; } return; }
+      if (j && j.dataset.app === a.id) return;
+      j?.remove(); j = document.createElement('div'); j.id = 'janela-app'; j.className = 'janela-app'; j.dataset.app = a.id;
+      j.innerHTML = `<iframe src="${esc(a.abrirFrame)}" title="${esc(a.nome)}" allow="camera; microphone; clipboard-read; clipboard-write; geolocation; fullscreen"></iframe>
+        <button type="button" class="janela-voltar" aria-label="Voltar para a LeuApps">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>', 20)}</button>`;
+      j.querySelector('.janela-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      document.body.appendChild(j); document.body.style.overflow = 'hidden';
+    }
+    async function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
+      // Apps de outro endereço (Radar) abrem aqui dentro, numa janela em tela cheia (a setinha do celular volta para a loja).
+      if (!N && a.abrirFrame && meus.includes(a.id)) {
+        if (a.exigeCompra) {
+          let tem = false;
+          try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
+          if (!tem) return planos(a.id, true);
+        }
+        location.hash = 'abrir/' + a.id; return;
+      }
       // Apps do www abrem aqui dentro da LeuApps (tela cheia, sem navegador).
       if (!N && a.abrirWww) { location.href = a.abrirWww + (a.abrirWww.includes('?') ? '&' : '?') + 'leuapps=1'; return; }
       const destino = !N && a.instalar ? a.instalar : link(a);
@@ -1354,16 +1378,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // ---- Apps instalados dentro da LeuApps ----
     async function instalarDentro(a) {
-      const id = a.id, arquivos = [a.abrirWww, a.icone, ...(a.arquivosWww || [])];
+      const id = a.id, arquivos = [a.abrirWww || a.abrirFrame, a.icone, ...(a.arquivosWww || [])];
       baixando[id] = 0; mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
       const inicio = Date.now();
       try {
         const cache = 'caches' in window ? await caches.open('leuapps-apps') : null;
         for (let i = 0; i < arquivos.length; i++) {
           if (!(id in baixando)) return; // cancelado
-          const r = await fetch(arquivos[i], { cache: 'no-cache', credentials: 'same-origin' });
-          if (!r.ok && i === 0) throw new Error('falhou');
-          if (cache && r.ok) await cache.put(arquivos[i], r.clone());
+          const deFora = new URL(arquivos[i], location.href).origin !== location.origin;
+          const r = await fetch(arquivos[i], { cache: 'no-cache', credentials: 'same-origin', mode: deFora ? 'no-cors' : 'cors' });
+          const ok = r.ok || r.type === 'opaque';
+          if (!ok && i === 0) throw new Error('falhou');
+          if (cache && ok) await cache.put(arquivos[i], r.clone());
           // a voltinha anda junto com os arquivos (e nunca some rápido demais para ver)
           const pct = Math.round((i + 1) * 100 / arquivos.length), espera = Math.max(0, 250 * (i + 1) - (Date.now() - inicio));
           await new Promise((ok) => setTimeout(ok, espera));
@@ -1508,7 +1534,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // "Meus apps": os apps da pessoa como a tela de um celular; toca e abre aqui dentro, em tela cheia.
     function mostrarMeusApps() {
-      const tem = (a) => N && a.android ? situacao(a) !== 'nao' : a.abrirWww && (meus.includes(a.id) || icones.includes(a.id));
+      const tem = (a) => N && a.android ? situacao(a) !== 'nao' : (a.abrirWww || a.abrirFrame) && (meus.includes(a.id) || icones.includes(a.id));
       const meusApps = apps.filter(tem), outros = apps.filter((a) => !tem(a));
       paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><h1>Meus apps</h1></div>
         <div class="det-corpo pagina-meus">
@@ -1764,7 +1790,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const itens = outras.slice(0, 3).map(comentarioHtml).join('') + (outras.length > 3 ? `<button type="button" class="link-simples link-esquerda" data-todas-avaliacoes="${esc(a.id)}">Ver todas as avaliações</button>` : '');
       return resumo + itens + form;
     }
-    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); });
+    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); mostrarJanelaApp(); });
 
     // ---- Abas (menu de baixo) ----
     function aba(qual, historico = true) {
@@ -2065,8 +2091,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
       todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app');
       // Apps marcados como instalados que não instalam dentro da LeuApps (sem o app Android): não dá para saber se estão no celular.
-      if (!N) { const antes = meus.length; meus = meus.filter((id) => (todos.find((x) => x.id === id) || {}).abrirWww); if (meus.length !== antes) gravar(meus); }
-      lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); atualizarSozinho();
+      if (!N) { const antes = meus.length; meus = meus.filter((id) => { const x = todos.find((y) => y.id === id) || {}; return x.abrirWww || x.abrirFrame; }); if (meus.length !== antes) gravar(meus); }
+      lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); mostrarJanelaApp(); atualizarSozinho();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}

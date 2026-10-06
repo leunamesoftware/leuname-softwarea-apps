@@ -3,7 +3,7 @@ import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
 import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.js';
-import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono } from './dono.js';
+import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { acessoDaChave, acessoDaConta, appsDaConta, eDono } from './planos.js';
@@ -136,7 +136,9 @@ export default {
           conta = (await contaParaCompra(env, email, email.split('@')[0], d.senha)).conta;
           return json({ ok: true, nome: conta.nome, novaConta: true }, 200, await abrirSessao(env, conta.id, req));
         }
-        if (!conta || !(await senhaConfere(conta, d?.senha))) return json({ erro: 'login_invalido' }, 401);
+        // Dono: a senha de dono também entra na conta dele (uma senha só para a loja e todos os apps).
+        const ok = conta && ((await senhaConfere(conta, d?.senha)) || (eDono(env, conta.email) && (await senhaDonoConfere(env, d))));
+        if (!ok) return json({ erro: 'login_invalido' }, 401);
         return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
       }
       // Conta grátis (sem compra): começa o teste de 2 dias (um por conta).
@@ -170,7 +172,12 @@ export default {
       if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
       if (pathname === '/api/conta' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
-        if (!conta) return json({ conta: null });
+        if (!conta) {
+          // Entrou pela Área do Dono (senha de dono): já entra na conta do dono em todos os apps, sem digitar de novo.
+          const doDono = (await donoLogado(env, req)) && (await buscarConta(env, env.DONO_EMAIL));
+          if (doDono) return json({ conta: { nome: doDono.nome, email: doDono.email }, acesso: await acessoDaConta(env, doDono.id) }, 200, await abrirSessao(env, doDono.id, req));
+          return json({ conta: null });
+        }
         return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
       }
       // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
