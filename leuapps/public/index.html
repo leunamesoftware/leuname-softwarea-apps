@@ -1795,7 +1795,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Abas (menu de baixo) ----
     function aba(qual, historico = true) {
       secaoAtual = null;
-      if (/^#(lista|curso)\//.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
+      if (/^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.body.classList.toggle('rolar-topo', ['apps', 'cursos'].includes(qual));
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
