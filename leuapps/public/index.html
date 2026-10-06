@@ -175,6 +175,10 @@
     .grade .nome { font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .grade .meta { font-size: 14px; color: var(--suave); }
     .pagina-secao .em-breve { padding-top: 60px; }
+    .lista-cats { list-style: none; margin: 0 auto; padding: 4px 8px 40px; max-width: 760px; }
+    .lista-cats button { width: 100%; min-height: 56px; display: flex; align-items: center; gap: 18px; padding: 0 16px; border: 0; border-radius: 14px; background: none; color: var(--texto); font: inherit; font-size: 16.5px; text-align: left; }
+    .lista-cats button svg { width: 24px; height: 24px; color: var(--verde-texto); flex: none; }
+    .lista-cats button span { flex: 1; } .lista-cats small { color: var(--suave); font-size: 14px; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -547,7 +551,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       meus: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
     };
     const CHIPS = [
-      ['Em alta', 'alta', 'rolar', 'sugestoes'], ['Premium', 'premium'], ['Crianças', 'criancas'], ['Categorias', 'categorias', 'aba', 'pesquisa'],
+      ['Em alta', 'alta', 'rolar', 'sugestoes'], ['Premium', 'premium'], ['Crianças', 'criancas'], ['Categorias', 'categorias', 'secao', 'Categorias de apps'],
       ['Grátis para testar', 'gratis'], ['Negócios', 'negocios'], ['Finanças', 'financas'], ['Produtividade', 'produtividade'],
       ['Comer e beber', 'comida'], ['Ferramentas', 'ferramentas'], ['Educação', 'educacao'], ['Compras', 'compras'],
       ['Comunicação', 'comunicacao'], ['Saúde e fitness', 'saude'], ['Estilo de vida', 'estilo'], ['Fotografia', 'foto'],
@@ -663,7 +667,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ['Negócios', I.negocios], ['Finanças', I.financas], ['Autoajuda', IG.coracao], ['Infantil', I.criancas], ['Romance', IG.coracao], ['Estudos', I.educacao], ['Religião', IG.sol]];
     function lojasExtras() {
       for (const [tipo, chips, nome] of [['jogos', CHIPS_JOGOS, 'jogo'], ['livros', CHIPS_LIVROS, 'livro']]) {
-        $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-aba="pesquisa">${G(d)}${esc(n)}</button>`
+        $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-secao="Categorias de ${tipo}">${G(d)}${esc(n)}</button>`
           : `<button class="chip" type="button" data-secao="${esc(n)}">${G(d)}${esc(n)}</button>`).join('');
         const itens = todos.filter((a) => a.tipo === nome);
         $('breve-' + tipo).hidden = Boolean(itens.length); $('sec-' + tipo).hidden = !itens.length;
@@ -856,7 +860,15 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const h = decodeURIComponent(location.hash.slice(1));
       if (todos.some((x) => x.id === h)) return; // abriu um app por cima da lista: a lista fica embaixo
       if (!h.startsWith('lista/')) { paginaSecao.hidden = true; if (detalhe.hidden) document.body.style.overflow = ''; return; }
-      const nome = h.slice(6), itens = daSecao(nome);
+      const nome = h.slice(6);
+      const listaCats = { 'Categorias de apps': CHIPS.filter((c) => !c[2]).map((c) => [c[0], I[c[1]]]), 'Categorias de jogos': CHIPS_JOGOS.slice(4), 'Categorias de livros': CHIPS_LIVROS.filter((c) => c[0] !== 'Categorias') }[nome];
+      if (listaCats) {
+        paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Categorias</h1></div>
+          <ul class="lista-cats">${listaCats.map(([n, d]) => `<li><button type="button" data-secao="${esc(n)}">${G(d)}<span>${esc(n)}</span><small>${daSecao(n).length || ''}</small></button></li>`).join('')}</ul>`;
+        paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+        paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden'; return;
+      }
+      const itens = daSecao(nome);
       paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(nome)}</h1></div>
         ${itens.length ? `<div class="grade">${itens.map((a) => `<button type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy">
           <span class="nome">${esc(a.nome)}</span><span class="meta">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`).join('')}</div>`
