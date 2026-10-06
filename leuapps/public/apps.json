@@ -82,6 +82,18 @@
     "tags": [
       "Receitas",
       "Calculadora de preço"
+    ],
+    "novidades": [
+      {
+        "titulo": "20 receitas novas chegando",
+        "texto": "Cinnamon roll, lasanha, pastel de nata e mais: duas por dia, com foto e preço calculado.",
+        "data": "out 2026"
+      },
+      {
+        "titulo": "Pesquise no livro de receitas",
+        "texto": "Digite o nome e vá direto para a receita.",
+        "data": "out 2026"
+      }
     ]
   },
   {
@@ -134,6 +146,13 @@
     "tags": [
       "Empresa",
       "Loja de celular"
+    ],
+    "novidades": [
+      {
+        "titulo": "Calculadoras inteligentes",
+        "texto": "Quanto cobrar no conserto, parcelas no cartão e o lucro real de cada venda.",
+        "data": "out 2026"
+      }
     ]
   },
   {
@@ -187,6 +206,13 @@
     "tags": [
       "Empresa",
       "Documentos"
+    ],
+    "novidades": [
+      {
+        "titulo": "Avisos antes de vencer",
+        "texto": "Documentos, contas e prazos da empresa num radar só.",
+        "data": "2026"
+      }
     ]
   }
 ]

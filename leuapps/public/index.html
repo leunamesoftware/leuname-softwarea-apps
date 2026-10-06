@@ -4,27 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#131416" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0B0E1E" media="(prefers-color-scheme: dark)">
   <title>LeuApps — aplicativos LeuName Softwares</title>
   <meta name="description" content="Todos os aplicativos da LeuName Softwares em um só lugar. Instale, abra e use, sempre atualizados.">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/img/leuapps-192.png">
   <link rel="apple-touch-icon" href="/img/leuapps-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <style>
     :root {
-      --fundo: #FFFFFF; --cartao: #F1F4F3; --cartao-2: #E6EBE9; --texto: #1B1D1C; --suave: #5B6360; --linha: #DDE3E0;
-      --verde: #0E7C4A; --verde-claro: #D7F1E2; --verde-texto: #0B6B3F; --no-verde: #FFFFFF; --perigo: #B42318;
+      --fundo: #FFFFFF; --cartao: #F2F4FB; --cartao-2: #E7EBF7; --texto: #121633; --suave: #5A6080; --linha: #DFE3F0;
+      --verde: #2050F0; --verde-claro: #E2E9FF; --verde-texto: #1A44D6; --no-verde: #FFFFFF; --perigo: #C0262D;
+      --marca: linear-gradient(135deg, #FF8A00, #FF3D7F 35%, #7B3FF2 65%, #00B8D9);
       --sombra: 0 1px 2px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
     }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-      --fundo: #131416; --cartao: #1F2123; --cartao-2: #2A2D30; --texto: #E6E9E8; --suave: #A5ADA9; --linha: #2E3235;
-      --verde: #5BD496; --verde-claro: #12402A; --verde-texto: #7FE0AC; --no-verde: #072415; --perigo: #FF8A80; --sombra: none; } }
-    :root[data-theme="dark"] { --fundo: #131416; --cartao: #1F2123; --cartao-2: #2A2D30; --texto: #E6E9E8; --suave: #A5ADA9; --linha: #2E3235;
-      --verde: #5BD496; --verde-claro: #12402A; --verde-texto: #7FE0AC; --no-verde: #072415; --perigo: #FF8A80; --sombra: none; }
+      --fundo: #0B0E1E; --cartao: #161A30; --cartao-2: #20253F; --texto: #EEF0FA; --suave: #A3A9C6; --linha: #262C48;
+      --verde: #6E97FF; --verde-claro: #1D2A5C; --verde-texto: #9DB7FF; --no-verde: #07113A; --perigo: #FF8A8F; --sombra: none; } }
+    :root[data-theme="dark"] { --fundo: #0B0E1E; --cartao: #161A30; --cartao-2: #20253F; --texto: #EEF0FA; --suave: #A3A9C6; --linha: #262C48;
+      --verde: #6E97FF; --verde-claro: #1D2A5C; --verde-texto: #9DB7FF; --no-verde: #07113A; --perigo: #FF8A8F; --sombra: none; }
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
     html, body { background: var(--fundo); }
-    body { margin: 0; min-height: 100dvh; font: 400 16px/1.4 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; min-height: 100dvh; font: 400 16px/1.45 "Plus Jakarta Sans", Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); -webkit-tap-highlight-color: transparent; }
     button { font: inherit; color: inherit; cursor: pointer; }
     a { color: inherit; }
     img { max-width: 100%; }
@@ -38,7 +41,7 @@
     .topo-linha .logo { width: 38px; height: 38px; border-radius: 11px; }
     .topo-linha .marca { font-size: 20px; font-weight: 500; }
     .topo-linha .espaco { flex: 1; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--verde-claro); color: var(--verde-texto); font-weight: 700; font-size: 17px; display: grid; place-items: center; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--marca); color: #fff; font-weight: 800; font-size: 17px; display: grid; place-items: center; }
     .busca { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 18px; border-radius: 999px; background: var(--cartao); }
     .busca svg { flex: none; color: var(--suave); }
     .busca input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 17px; color: var(--texto); outline: none; }
@@ -47,7 +50,7 @@
     main { max-width: 760px; margin: 0 auto; padding: 0 16px 16px; }
     .secao { margin-top: 26px; }
     .secao-titulo { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
-    .secao-titulo h2 { flex: 1; margin: 0; font-size: 20px; font-weight: 500; }
+    .secao-titulo h2 { flex: 1; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
     .seta { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--cartao); display: grid; place-items: center; }
 
     /* Destaques (cartões grandes) */
@@ -55,11 +58,39 @@
     .destaque > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .destaque::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.78)); }
     .destaque-texto { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
-    .destaque-texto b { display: block; font-size: 24px; font-weight: 500; line-height: 1.15; }
+    .destaque-texto b { display: block; font-size: 25px; font-weight: 800; line-height: 1.12; letter-spacing: -.3px; }
     .destaque-texto span { display: block; font-size: 14.5px; opacity: .92; }
     .destaque-texto .mini { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; }
     .destaque-texto .mini img { width: 40px; height: 40px; border-radius: 11px; }
-    .destaque-texto .acao { background: #E6F7EE; color: #0B4A2C; }
+    .destaque-texto .acao { background: #fff; color: #1A2A6C; }
+
+    /* Abertura (ao abrir pelo ícone) */
+    .abertura { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; align-content: center; gap: 18px; background: #0B0E1E; transition: opacity .35s ease; }
+    .abertura img { width: 112px; height: 112px; border-radius: 30px; animation: surgir .7s cubic-bezier(.2,.9,.3,1.3) both; box-shadow: 0 18px 50px rgba(110,151,255,.35); }
+    .abertura b { color: #fff; font-size: 26px; font-weight: 800; letter-spacing: .3px; animation: surgir .7s .12s both; }
+    .abertura.sai { opacity: 0; pointer-events: none; }
+    @keyframes surgir { from { opacity: 0; transform: scale(.7) translateY(10px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .abertura img, .abertura b { animation: none; } }
+    .saudacao { display: grid; line-height: 1.15; }
+    .saudacao small { font-size: 12.5px; color: var(--suave); font-weight: 500; }
+    .saudacao .marca { font-size: 21px; font-weight: 800; letter-spacing: -.2px; }
+    .bolinhas { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+    .bolinhas i { width: 7px; height: 7px; border-radius: 99px; background: var(--linha); transition: width .25s, background .25s; }
+    .bolinhas i.ativa { width: 22px; background: var(--verde); }
+
+    /* Cartão de app com as telas (como os anúncios da loja) */
+    .promo { border-radius: 24px; background: var(--cartao); padding: 14px 0 14px; margin-bottom: 14px; }
+    .promo .linha { padding: 0 14px 12px; }
+    .promo .rolar { margin: 0; padding: 0 14px; gap: 8px; }
+    .promo .rolar img { flex: 0 0 auto; height: 210px; width: auto; max-width: none; border-radius: 14px; scroll-snap-align: start; }
+
+    /* Novidades */
+    .novidade { flex: 0 0 min(300px, 82%); scroll-snap-align: start; border-radius: 22px; padding: 16px; background: var(--cartao); border: 0; text-align: left; display: grid; gap: 8px; align-content: start; }
+    .novidade header { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--suave); }
+    .novidade header img { width: 36px; height: 36px; border-radius: 10px; }
+    .novidade b { font-size: 16.5px; font-weight: 700; line-height: 1.25; }
+    .novidade p { margin: 0; font-size: 14px; color: var(--suave); }
+    .faixa-marca { height: 4px; border-radius: 4px; background: var(--marca); width: 48px; }
 
     /* Atalhos (chips) */
     .chips-linha { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 16px -16px 0; padding: 0 16px; }
@@ -81,7 +112,7 @@
     .icone-grande .nome { margin-top: 8px; font-size: 14.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
     /* Botões (pílulas) */
-    .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--verde); color: var(--no-verde); font-weight: 600; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--verde); color: var(--no-verde); font-weight: 700; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
     .acao.contorno { background: none; color: var(--verde-texto); border: 1.5px solid var(--linha); }
     .acao.perigo { background: none; color: var(--perigo); border: 1.5px solid var(--linha); }
     .acao:active { transform: scale(.97); }
@@ -113,7 +144,7 @@
     .protegido { -webkit-touch-callout: none; user-select: none; }
 
     /* Você */
-    .ola { text-align: center; font-size: 34px; font-weight: 500; margin: 18px 0 14px; }
+    .ola { text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -.5px; margin: 18px 0 14px; }
     .cartao-conta { display: flex; align-items: center; gap: 14px; margin: 0 auto; max-width: 420px; padding: 12px 18px 12px 12px; border-radius: 999px; background: var(--cartao); text-decoration: none; }
     .cartao-conta .avatar { flex: none; width: 46px; height: 46px; }
     .cartao-conta small { display: block; color: var(--suave); font-size: 13.5px; }
@@ -130,7 +161,7 @@
     .det-corpo { max-width: 760px; margin: 0 auto; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
     .det-topo { display: grid; grid-template-columns: 76px 1fr; gap: 18px; align-items: center; }
     .det-topo img { width: 76px; height: 76px; border-radius: 18px; box-shadow: var(--sombra); }
-    .det-topo h1 { margin: 0; font-size: 23px; font-weight: 500; line-height: 1.2; }
+    .det-topo h1 { margin: 0; font-size: 24px; font-weight: 800; line-height: 1.15; letter-spacing: -.3px; }
     .det-dev { color: var(--verde-texto); font-weight: 600; font-size: 14.5px; }
     .det-compra { color: var(--suave); font-size: 12.5px; }
     .det-fatos { display: flex; margin: 20px 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
@@ -143,7 +174,7 @@
     .det-planos-btn { width: 100%; margin-top: 10px; }
     .det-telas { margin-top: 22px; }
     .det-telas img { flex: 0 0 auto; height: 320px; width: auto; max-width: none; border-radius: 14px; scroll-snap-align: start; background: var(--cartao); }
-    .detalhe h2 { font-size: 20px; font-weight: 500; margin: 24px 0 8px; }
+    .detalhe h2 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; }
     .det-desc { margin: 0 0 12px; color: var(--suave); font-size: 15px; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
     .tags li { border: 1px solid var(--linha); border-radius: 10px; padding: 7px 12px; font-size: 13.5px; }
@@ -191,7 +222,7 @@
 <body>
   <header class="topo">
     <div class="topo-linha" id="topo-inicio">
-      <img class="logo" src="/img/leuapps-192.webp" alt="" width="38" height="38"><span class="marca">LeuApps</span>
+      <img class="logo" src="/img/leuapps-192.webp" alt="" width="38" height="38"><span class="saudacao"><small id="saudacao">Olá</small><span class="marca">LeuApps</span></span>
       <span class="espaco"></span>
       <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar">L</button>
     </div>
@@ -208,6 +239,7 @@
     <!-- Apps (início) -->
     <section id="aba-apps">
       <div class="rolar" id="destaques"></div>
+      <div class="bolinhas" id="bolinhas" aria-hidden="true"></div>
       <div class="chips-linha">
         <button class="chip" type="button" data-rolar="sugestoes">📈 Em alta</button>
         <button class="chip" type="button" data-aba="pesquisa">🧩 Categorias</button>
@@ -215,7 +247,11 @@
       </div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2>Sugestões para você</h2></div>
-        <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
+        <div id="lista"><p class="vazio">Carregando…</p></div>
+      </div>
+      <div class="secao">
+        <div class="secao-titulo"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
+        <div class="rolar" id="novidades"></div>
       </div>
       <div class="secao">
         <div class="secao-titulo"><h2>Feitos pela LeuName</h2><button class="seta" type="button" data-aba="pesquisa" aria-label="Ver todos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
@@ -346,7 +382,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function mostrar() {
       const f = $('busca').value.trim().toLowerCase();
-      $('lista').innerHTML = apps.map(linha).join('');
+      $('lista').innerHTML = apps.map((a) => `<div class="promo">${linha(a).replace(/^<li>|<\/li>$/g, '')}
+        ${a.capturas ? `<div class="rolar">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" data-detalhe="${esc(a.id)}" width="106" height="210">`).join('')}</div>` : ''}</div>`).join('');
+      $('novidades').innerHTML = apps.flatMap((a) => (a.novidades || []).map((n) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
+          <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`)).join('');
       $('fileira').innerHTML = apps.map(iconeGrande).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
       const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
@@ -354,7 +393,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
-      destaques();
+      destaques(); bolinhas();
       if (!detalhe.hidden) mostrarDetalhe();
     }
 
@@ -503,6 +542,28 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     });
     $('busca').addEventListener('input', mostrar);
 
+    // ---- Saudação pelo horário ----
+    const h = new Date().getHours();
+    const bom = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+    $('saudacao').textContent = bom;
+
+    // ---- Destaques: bolinhas e passam sozinhos (param quando a pessoa mexe) ----
+    let mexeu = false;
+    const caixa = $('destaques');
+    function bolinhas() {
+      const n = caixa.children.length; if (!n) return;
+      const i = Math.round(caixa.scrollLeft / (caixa.children[0].offsetWidth + 12));
+      $('bolinhas').innerHTML = Array.from({ length: n }, (_, k) => `<i class="${k === i ? 'ativa' : ''}"></i>`).join('');
+    }
+    caixa.addEventListener('scroll', () => requestAnimationFrame(bolinhas), { passive: true });
+    caixa.addEventListener('touchstart', () => { mexeu = true; }, { passive: true });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
+      if (mexeu || $('aba-apps').hidden || !detalhe.hidden || !caixa.children.length) return;
+      const w = caixa.children[0].offsetWidth + 12, n = caixa.children.length;
+      const prox = (Math.round(caixa.scrollLeft / w) + 1) % n;
+      caixa.scrollTo({ left: prox * w, behavior: 'smooth' });
+    }, 5000);
+
     // ---- Você: nome e conta ----
     async function conta() {
       try {
@@ -510,7 +571,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (!d.conta) return;
         const nome = String(d.conta.nome || '').trim().split(/\s+/)[0] || 'você';
         const inicial = nome[0].toUpperCase();
-        $('ola').textContent = `Olá, ${nome[0].toUpperCase() + nome.slice(1)}!`;
+        const Nome = nome[0].toUpperCase() + nome.slice(1);
+        $('ola').textContent = `Olá, ${Nome}!`;
+        $('saudacao').textContent = `${bom}, ${Nome}`;
         $('conta-texto').textContent = d.conta.email;
         for (const id of ['avatar', 'avatar2', 'avatar3']) $(id).textContent = inicial;
         $('cartao-conta').removeAttribute('href');
@@ -579,8 +642,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
       aba(['pesquisa', 'servicos', 'voce'].includes(a) ? a : 'apps');
-    }).catch(() => { $('lista').innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
+    }).catch(() => { $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
     conta();
+
+    // Abertura com o logo, só quando a LeuApps abre pelo ícone (uma vez por abertura).
+    try {
+      if ((instalada || N) && !sessionStorage.getItem('leuapps.abriu')) {
+        sessionStorage.setItem('leuapps.abriu', '1');
+        const ab = document.createElement('div'); ab.className = 'abertura';
+        ab.innerHTML = '<img src="/img/leuapps-192.png" alt=""><b>LeuApps</b>';
+        document.body.appendChild(ab);
+        setTimeout(() => { ab.classList.add('sai'); setTimeout(() => ab.remove(), 400); }, 1100);
+      }
+    } catch {}
 
     if ('serviceWorker' in navigator && !N) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
