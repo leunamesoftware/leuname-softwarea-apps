@@ -33,8 +33,6 @@
     .abrir { min-width: 104px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: linear-gradient(135deg, #2F6BFF, #1B3FD6); color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; padding: 0 16px; box-shadow: 0 6px 14px rgba(27,63,214,.32); transition: transform .12s, box-shadow .12s; white-space: nowrap; }
     .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
     .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
-    .abrir.duas { flex-direction: column; gap: 1px; line-height: 1.1; padding: 6px 12px; }
-    .abrir.duas small { display: block; font-size: 12px; font-weight: 700; opacity: .85; }
     .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
     .opcoes { grid-column: 1 / -1; list-style: none; margin: 2px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
@@ -166,18 +164,16 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // Celular ou computador (muda o texto do botão de instalar no aparelho).
     const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
     const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
+    // Botões de cada app: Abrir (usa aqui na loja), Instalar (ícone próprio no aparelho) e Comprar.
+    const botoes = (a) => `<a class="abrir verde" href="${esc(link(a))}" data-abre="${esc(a.id)}">▶ Abrir</a>
+            ${a.instalar ? `<button class="abrir" data-aparelho="${esc(a.id)}">📲 Instalar</button>` : ''}
+            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}`;
     function cartao(a) {
-      const tem = meus.includes(a.id);
       return `
         <li class="app">
           <img src="${esc(a.icone)}" alt="" loading="lazy" data-detalhe="${esc(a.id)}" style="cursor:pointer">
           <div data-detalhe="${esc(a.id)}" style="cursor:pointer"><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span><span class="ver-mais">Ver detalhes ›</span></div>
-          <div class="botoes">${tem
-            ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>`
-            : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
-            ${a.instalar && tem ? `<button class="abrir claro duas" data-aparelho="${esc(a.id)}">📲 Instalar<small>no ${celular ? 'celular' : 'computador'}</small></button>` : ''}
-            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
-            ${tem ? `<button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>` : ''}</div>
+          <div class="botoes">${botoes(a)}</div>
           ${a.opcoes ? `<ul class="opcoes" aria-label="Opções de plano">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
         </li>`;
     }
@@ -187,13 +183,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       lista.innerHTML = vis.map(cartao).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
       const mi = apps.filter((a) => meus.includes(a.id));
       document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(link(a))}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
-        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Escolha abaixo e toque em Instalar.</li>';
-      document.getElementById('tela').innerHTML = mi.map((a) => `
+        || '<li class="vazio" style="grid-column:1/-1">Os apps que você abrir aparecem aqui. Escolha abaixo e toque em Abrir.</li>';
+      document.getElementById('tela').innerHTML = apps.filter((a) => a.instalar).map((a) => `
         <li class="app">
           <img src="${esc(a.icone)}" alt="" loading="lazy">
           <div><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div></div>
           <div class="botoes"><button class="abrir claro" data-aparelho="${esc(a.id)}">📲 Instalar</button></div>
-        </li>`).join('') || '<li class="vazio">Instale um app na Loja primeiro. Depois ele aparece aqui.</li>';
+        </li>`).join('');
       const resto = apps.filter((a) => !meus.includes(a.id));
       document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
       document.getElementById('descubra').hidden = !resto.length;
@@ -213,10 +209,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function aoClicar(e) {
       const det = e.target.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
       const cmp = e.target.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
-      const ins = e.target.closest('[data-instalar]'), tir = e.target.closest('[data-tirar]');
-      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); ins.textContent = '✓ Instalado'; ins.classList.add('verde'); setTimeout(() => mostrar(document.getElementById('busca').value), 500); ondeUsar(ins.dataset.instalar); }
       const apa = e.target.closest('[data-aparelho]'); if (apa) instalarNoAparelho(apa.dataset.aparelho);
-      if (tir && confirm('Tirar este app de "Meus apps"? Os dados dele continuam guardados.')) { meus = meus.filter((x) => x !== tir.dataset.tirar); gravar(meus); mostrar(document.getElementById('busca').value); }
     }
     // Instalar no aparelho: cada app tem endereço próprio e vira um ícone próprio (celular ou área de trabalho).
     function folha(html) {
@@ -225,12 +218,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha') || e.target.closest('[data-aparelho]')) f.remove(); });
       f.querySelector('[data-aparelho]')?.addEventListener('click', (e) => instalarNoAparelho(e.target.closest('[data-aparelho]').dataset.aparelho));
       document.body.appendChild(f);
-    }
-    function ondeUsar(id) {
-      const a = apps.find((x) => x.id === id); if (!a || !a.instalar) return;
-      folha(`<h3>${esc(a.nome)} está em Meus apps ✓</h3>
-        <p class="sub">Quer também o ícone do ${esc(a.nome)} ${celular ? 'na tela do celular' : 'na área de trabalho do computador'}? Ele abre direto, sem passar pela loja.</p>
-        <button class="abrir" type="button" data-aparelho="${esc(a.id)}" style="width:100%;margin-top:6px">📲 Instalar no ${celular ? 'celular' : 'computador'}</button>`);
     }
     function instalarNoAparelho(id) {
       const a = apps.find((x) => x.id === id); if (!a || !a.instalar) return;
@@ -244,6 +231,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <a class="abrir" href="${esc(a.instalar)}" style="display:block;text-align:center">Abrir o ${esc(a.nome)}</a>`);
     }
     document.getElementById('tela').addEventListener('click', (e) => { const b = e.target.closest('[data-aparelho]'); if (b) instalarNoAparelho(b.dataset.aparelho); });
+
+    // Abrir um app já coloca ele em "Meus apps".
+    document.addEventListener('click', (e) => { const ab = e.target.closest('[data-abre]'); if (ab && !meus.includes(ab.dataset.abre)) { meus = [...meus, ab.dataset.abre]; gravar(meus); } }, true);
 
     // Apps que só abrem depois de comprados (exigeCompra): confere a conta antes de abrir.
     document.addEventListener('click', async (e) => {
@@ -260,15 +250,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function mostrarDetalhe() {
       const a = apps.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
-      const tem = meus.includes(a.id);
       detalhe.innerHTML = `
         <div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">‹ Voltar</button></div>
         <div class="det-corpo">
           <div class="det-topo"><img src="${esc(a.icone)}" alt=""><div><h2>${esc(a.nome)}</h2><p class="det-dev">LeuName Softwares</p><p class="cat">${esc(a.categoria)}</p></div></div>
           <p class="det-preco">${esc(a.preco)}</p>
-          <div class="det-botoes">${tem ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>` : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>`}
-            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
-            ${a.instalar ? `<button class="abrir claro" data-aparelho="${esc(a.id)}">📲 Instalar no ${celular ? 'celular' : 'computador'}</button>` : ''}</div>
+          <div class="det-botoes">${botoes(a)}</div>
           ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="214" height="380">`).join('')}</div>` : ''}
           <h3>Sobre este app</h3><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
           ${a.recursos ? `<ul class="det-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
@@ -278,8 +265,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       detalhe.querySelector('.det-voltar').onclick = () => history.length > 1 ? history.back() : (location.hash = '');
     }
     detalhe.addEventListener('click', (e) => {
-      const ins = e.target.closest('[data-instalar]');
-      if (ins) { meus = [...new Set([...meus, ins.dataset.instalar])]; gravar(meus); mostrar(document.getElementById('busca').value); mostrarDetalhe(); ondeUsar(ins.dataset.instalar); return; }
       const apa = e.target.closest('[data-aparelho]'); if (apa) return instalarNoAparelho(apa.dataset.aparelho);
       const cmp = e.target.closest('[data-comprar]'); if (cmp) planos(cmp.dataset.comprar);
     });

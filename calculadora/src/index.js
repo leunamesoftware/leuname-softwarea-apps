@@ -236,8 +236,11 @@ export default {
           const dono = Boolean(conta && eDono(env, conta.email));
           const agora = Date.now();
           const liberada = (r) => !r.liberarEm || Date.parse(r.liberarEm) <= agora;
-          const visiveis = RECEITAS.filter((r) => dono || liberada(r))
-            .map((r) => (liberada(r) ? r : { ...r, agendada: r.liberarEm }));
+          // Quem ganhou presente (brinde) tem acesso total: já vê também as receitas agendadas que têm foto (sem a marca).
+          const presente = acesso.plano === 'brinde';
+          const comFoto = (r) => !r.fotoProvisoria && r.liberarEm !== 'aguardando-foto';
+          const visiveis = RECEITAS.filter((r) => dono || liberada(r) || (presente && comFoto(r)))
+            .map((r) => (liberada(r) || !dono ? r : { ...r, agendada: r.liberarEm }));
           const receitas = visiveis.map((r, i) => (i >= acesso.receitas
             ? { id: r.id, nome: r.nome, categoria: r.categoria, foto: r.foto, bloqueada: true }
             : { ...r, rendimentoObservado: stats(r) }));
