@@ -565,14 +565,14 @@
 
     /* Menu de baixo */
     .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 13; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
-    .menu div { display: grid; grid-template-columns: repeat(6, 1fr); width: 100%; max-width: 560px; }
+    .menu div { display: grid; grid-template-columns: repeat(6, 1fr); width: 100%; max-width: 560px; align-items: end; }
     .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
     .menu button span { display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; }
     .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
     @media (max-width: 420px) { .menu button { font-size: 11.5px; } .menu button span { width: 48px; } }
     .menu .menu-meus { color: var(--verde-texto); font-weight: 700; cursor: pointer; white-space: nowrap; }
-    .menu .menu-meus .bola { width: 56px; height: 32px; border-radius: 999px; background: var(--botao); color: #fff; box-shadow: 0 3px 8px rgba(106,53,232,.3); }
-    .menu .menu-meus .bola svg { width: 25px; height: 25px; }
+    .menu .menu-meus .bola { width: 46px; height: 46px; margin-top: -16px; border-radius: 15px; background: var(--botao); color: #fff; box-shadow: 0 4px 12px rgba(106,53,232,.35); border: 2px solid var(--cartao); }
+    .menu .menu-meus .bola svg { width: 26px; height: 26px; }
     .menu .menu-meus:active .bola { transform: scale(.95); }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
     .rodape { height: calc(var(--altura-menu, 80px) + 8px); }
@@ -700,7 +700,7 @@
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
     <button role="tab" id="tab-cursos" data-aba="cursos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/><path d="M22 9v6"/></svg></span>Cursos</button>
-    <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Início</button>
+    <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9v11h13V9"/><path d="M10 20v-6h4v6"/></svg></span>Início</button>
     <button type="button" class="menu-meus" data-meus-apps aria-label="Abrir meus apps"><span class="bola"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5.5" y="1.8" width="13" height="20.4" rx="2.8"/><rect x="8.2" y="6" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><rect x="12.8" y="6" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><rect x="8.2" y="10.6" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><rect x="12.8" y="10.6" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><path d="M10.5 18.6h3"/></svg></span>Meus apps</button>
     <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Buscar</button>
     <button role="tab" id="tab-livros" data-aba="livros" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-3.5L6 21z"/></svg></span>Livros</button>
