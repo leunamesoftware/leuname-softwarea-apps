@@ -568,6 +568,10 @@
     .plano .acao { grid-column: 1 / -1; }
     .nota-plano { grid-column: 1 / -1; margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--verde-claro); font-size: 13px; }
     .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; vertical-align: middle; background: var(--verde-claro); color: var(--verde-texto); }
+    .folha .campo { display: grid; gap: 4px; margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+    .folha .campo input { min-height: 46px; border: 1px solid var(--linha, #C9C6D3); border-radius: 12px; padding: 0 12px; font: inherit; font-weight: 400; background: var(--fundo); color: var(--texto); }
+    .folha .erro-conta { color: #B3261E; font-size: 14px; margin: 0 0 10px; }
+    .folha .trocar-conta { display: block; width: 100%; margin: 8px 0 0; border: 0; background: none; color: var(--verde-texto); font: inherit; font-weight: 600; cursor: pointer; }
     .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: var(--verde-texto); font-weight: 600; }
     .fechar-folha { width: 100%; margin-top: 6px; border: 0; background: none; font-weight: 600; color: var(--suave); padding: 10px; }
     .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #2B3030; color: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(0,0,0,.3); font-size: 14.5px; }
@@ -1264,9 +1268,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       document.body.appendChild(f);
       return f;
     }
-    function planos(id, paraAbrir) {
+    function planos(id, paraAbrir, testes = {}) {
       const a = todos.find((x) => x.id === id); if (!a || !a.planos) return;
-      folha(`<h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
+      const acabou = testes[id]?.acabou;
+      const teste = a.teste && !testes[id] ? `<button class="acao" type="button" data-fecha data-testar="${esc(id)}">Testar ${a.teste} dias grátis</button>
+        <p class="sub" style="text-align:center;margin-top:6px">Sem cartão. Depois, se gostar, escolha um plano.</p>` : '';
+      folha(`<h3>${esc(a.nome)}</h3><p class="sub">${acabou ? 'O seu teste grátis terminou. Para continuar usando, escolha um plano.' : paraAbrir ? 'Para abrir, teste grátis ou escolha um plano.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>${teste}
         ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
           <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p>${p.nota ? `<p class="nota-plano">${esc(p.nota)}</p>` : ''}<a class="acao" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
         ${a.planos[0].url.startsWith('/loja/') ? `<a class="ja-comprei" href="${esc(a.planos[0].url)}&entrar=1">Já comprei: entrar com minha conta</a>` : ''}`, 'Fechar');
@@ -1359,9 +1366,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // Apps de outro endereço (Radar) abrem aqui dentro, numa janela em tela cheia (a setinha do celular volta para a loja).
       if (!N && a.abrirFrame && meus.includes(a.id)) {
         if (a.exigeCompra) {
-          let tem = false;
-          try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
-          if (!tem) return planos(a.id, true);
+          let d = {};
+          try { d = await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json(); } catch {}
+          if (!d.apps?.[a.id]) return planos(a.id, true, d.testes);
         }
         location.hash = 'abrir/' + a.id; return;
       }
@@ -1440,9 +1447,56 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       },
     };
     async function conferirCompra(a, destino) {
-      let tem = false;
-      try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
-      if (tem) abrirNoChrome(destino); else planos(a.id, true);
+      let d = {};
+      try { d = await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json(); } catch {}
+      if (d.apps?.[a.id]) abrirNoChrome(destino); else planos(a.id, true, d.testes);
+    }
+    // ---- Teste grátis (Gestacell, Radar): fica na conta do cliente, um por conta ----
+    const postar = (url, dados) => fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+    async function testar(id) {
+      const a = todos.find((x) => x.id === id); if (!a) return;
+      let r;
+      try { r = await postar('/loja-api/conta/teste', { app: id }); } catch { return avisar('Sem internet. Conecte-se e tente de novo.'); }
+      if (r.status === 401) return contaParaTestar(a);
+      const d = await r.json().catch(() => ({}));
+      if (d.erro === 'teste_acabou') return planos(id, true, { [id]: d });
+      if (!r.ok) return avisar('Não deu para começar o teste agora. Tente de novo.');
+      avisar(`✓ Teste grátis do ${a.nome} liberado até ${new Date(d.expiraEm).toLocaleDateString('pt-BR')}.`);
+      if (a.abrirFrame && !meus.includes(id)) return instalar(id);
+      abrirApp(id);
+    }
+    // Sem conta: cria (nome, e-mail e senha) ou entra, e começa o teste na hora.
+    function contaParaTestar(a, entrar = false) {
+      const f = folha(`<h3>${entrar ? 'Entrar na sua conta' : `Testar o ${esc(a.nome)} grátis`}</h3>
+        <p class="sub">${entrar ? 'Use o e-mail e a senha da sua conta LeuName.' : `Crie a sua conta para usar ${a.teste} dias grátis. A mesma conta serve em todos os apps da LeuApps.`}</p>
+        <form novalidate>
+          ${entrar ? '' : '<label class="campo">Seu nome<input id="tc-nome" autocomplete="name" maxlength="80"></label>'}
+          <label class="campo">E-mail<input id="tc-email" type="email" inputmode="email" autocomplete="email" maxlength="120"></label>
+          <label class="campo">${entrar ? 'Senha' : 'Crie uma senha'}<input id="tc-senha" type="password" autocomplete="${entrar ? 'current-password' : 'new-password'}" maxlength="100"${entrar ? '' : ' placeholder="Mínimo 6 caracteres"'}></label>
+          <p class="erro-conta" role="alert" hidden></p>
+          <button class="acao" type="submit">${entrar ? 'Entrar e começar o teste' : 'Começar o teste grátis'}</button>
+          <button class="trocar-conta" type="button">${entrar ? 'Ainda não tenho conta' : 'Já tenho conta: entrar'}</button>
+        </form>`, 'Agora não');
+      const form = f.querySelector('form'), erro = f.querySelector('.erro-conta');
+      const falha = (t) => { erro.textContent = t; erro.hidden = false; };
+      f.querySelector('.trocar-conta').onclick = () => { f.remove(); contaParaTestar(a, !entrar); };
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nome = entrar ? '' : f.querySelector('#tc-nome').value.trim(), email = f.querySelector('#tc-email').value.trim(), senha = f.querySelector('#tc-senha').value;
+        if (!entrar && nome.length < 2) return falha('Digite o seu nome.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return falha('Confira o seu e-mail.');
+        if (senha.length < 6) return falha(entrar ? 'Digite a sua senha.' : 'Crie uma senha com pelo menos 6 caracteres.');
+        const b = form.querySelector('.acao'); b.disabled = true; erro.hidden = true;
+        try {
+          const r = await postar(entrar ? '/loja-api/conta/entrar' : '/loja-api/conta/criar', entrar ? { email, senha } : { nome, email, senha });
+          if (!r.ok) {
+            const c = (await r.json().catch(() => ({}))).erro;
+            b.disabled = false;
+            return falha(r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : c === 'senha_incorreta' ? 'Este e-mail já tem conta. Toque em "Já tenho conta: entrar".' : entrar ? 'E-mail ou senha não conferem.' : 'Não deu para criar a conta. Confira os dados.');
+          }
+          f.remove(); testar(a.id);
+        } catch { b.disabled = false; falha('Sem internet. Conecte-se e tente de novo.'); }
+      });
     }
 
     // ---- Página do app (link direto: www.leunamesoftware.com.br/#id) ----
@@ -1826,6 +1880,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const abr = t.closest('[data-abrir]'); if (abr) return abrirApp(abr.dataset.abrir);
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
+      const tst = t.closest('[data-testar]'); if (tst) return testar(tst.dataset.testar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
       if (t.closest('[data-notificacoes]')) {
         const itens = apps.flatMap((a) => (a.novidades || []).map((n) => [a, n]));

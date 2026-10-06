@@ -6,7 +6,7 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { acessoDaChave, acessoDaConta, appsDaConta, eDono } from './planos.js';
+import { acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
 import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
@@ -180,10 +180,21 @@ export default {
         }
         return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
       }
+      // Teste grátis de 7 dias do Gestacell ou do Radar (precisa estar logado; um por conta em cada app).
+      if (pathname === '/api/conta/teste' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const conta = await contaDaSessao(env, req);
+        if (!conta) return json({ erro: 'sem_sessao' }, 401);
+        const d = await corpo(req);
+        const t = await comecarTeste(env, conta.id, String(d?.app || ''));
+        if (!t) return json({ erro: 'app_invalido' }, 400);
+        if (t.acabou) return json({ erro: 'teste_acabou', ...t }, 409);
+        return json({ ok: true, ...t });
+      }
       // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
       if (pathname === '/api/conta/apps' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
-        if (conta) return json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email) });
+        if (conta) return json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email), testes: await testesDaConta(env, conta.id) });
         // Entrou com a senha da Área do Dono: tem todos os apps, sem precisar de conta da loja.
         if (await donoLogado(env, req)) return json({ conta: { nome: 'Dono', email: env.DONO_EMAIL }, apps: await appsDaConta(env, null, env.DONO_EMAIL) });
         return json({ conta: null, apps: {} });

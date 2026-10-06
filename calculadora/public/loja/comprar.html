@@ -18,7 +18,16 @@
     .trocar { display: block; width: 100%; margin-top: 12px; background: none; border: 0; color: #1B3FD6; font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; }
     .botao { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; box-shadow: 0 10px 22px rgba(27,63,214,.35) !important; }
     .nota-atualizacao { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #EEF3FF; color: #1F2A44; font-size: 13.5px; line-height: 1.45; }
-    .unico { display: inline-block; margin: 0 0 12px; padding: 4px 12px; border-radius: 99px; background: #E8F7EE; color: #15803D; font-size: 13px; font-weight: 800; }
+    .planos { border: 0; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
+    .planos legend { font-weight: 800; margin-bottom: 8px; padding: 0; }
+    .plano { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px; padding: 12px 14px; border: 2px solid #DCE3F5; border-radius: 14px; cursor: pointer; background: #fff; }
+    .plano input { width: 20px; height: 20px; margin: 0; accent-color: #1B3FD6; grid-row: span 2; }
+    .plano b { font-size: 16px; color: #1F2A44; }
+    .plano .valor { font-weight: 800; color: #1B3FD6; white-space: nowrap; text-align: right; }
+    .plano small { grid-column: 2 / 4; color: #55607A; font-size: 13px; line-height: 1.35; }
+    .plano:has(input:checked) { border-color: #1B3FD6; background: #F3F6FF; }
+    .plano:has(input:focus-visible) { outline: 3px solid #2563EB; outline-offset: 2px; }
+    .selo-plano { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 99px; background: #E8F7EE; color: #15803D; font-size: 11.5px; font-weight: 800; vertical-align: 2px; }
   </style>
 </head>
 <body>
@@ -29,8 +38,8 @@
     <ul class="itens" id="itens"></ul>
 
     <form id="form" class="cartao" novalidate>
-      <span class="unico">✅ Pagamento único · sem mensalidade</span>
-      <p class="nota-atualizacao">✅ <b>Plano único vitalício:</b> paga uma vez, o app é seu para sempre.<br>🔄 <b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.</p>
+      <fieldset class="planos" id="planos"><legend>Escolha como quer pagar</legend></fieldset>
+      <p class="nota-atualizacao" id="nota-plano"></p>
       <label for="nome">Seu nome</label>
       <input id="nome" autocomplete="name" required maxlength="80">
       <label for="email">Seu e-mail</label>
@@ -53,6 +62,7 @@
         <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
       </div>
       <p class="seguro">Pagamento seguro pelo Mercado Pago. O app é liberado na sua conta assim que o pagamento é aprovado. 7 dias para desistir.</p>
+      <a class="trocar" id="testar" href="/">Quero testar 7 dias grátis primeiro</a>
       <button class="trocar" type="button" data-trocar>Já comprei: entrar com minha conta</button>
     </form>
 
@@ -73,21 +83,42 @@
   <script>
     // O preço que vale é o do servidor (planos.js); aqui é só a apresentação.
     const PRODUTOS = {
-      gestacell: { nome: 'Gestacell', preco: 'R$ 30,00', parcelas: 'Pix ou cartão em até 3x', url: '/gestacell/',
-        itens: ['🧾 Vendas, ordens de serviço (OS) e orçamentos', '📦 Estoque, clientes e financeiro da loja', '🔄 Funciona sem internet e sincroniza entre aparelhos'] },
-      radar: { nome: 'Radar Preventivo', preco: 'R$ 20,00', parcelas: 'Pix ou cartão em até 2x', url: 'https://radar.leunamesoftware.com.br',
-        itens: ['📅 Avisa antes de vencer documentos, contas e prazos', '🏢 Tudo da empresa organizado num lugar só', '🔔 Lembretes para nunca perder um prazo'] },
+      gestacell: { nome: 'Gestacell', url: '/gestacell/',
+        itens: ['🧾 Vendas, ordens de serviço (OS) e orçamentos', '📦 Estoque, clientes e financeiro da loja', '🔄 Funciona sem internet e sincroniza entre aparelhos'],
+        planos: { mensal: 19.9, anual: 39.9, unico: 49.9 } },
+      radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br',
+        itens: ['📅 Avisa antes de vencer documentos, contas e prazos', '🏢 Tudo da empresa organizado num lugar só', '🔔 Lembretes para nunca perder um prazo'],
+        planos: { mensal: 9.9, anual: 29.9, unico: 39.9 } },
     };
-    const app = new URLSearchParams(location.search).get('app');
+    const busca = new URLSearchParams(location.search);
+    const app = busca.get('app');
     const P = PRODUTOS[app];
     if (!P) location.replace('/');
+    const reais = (v) => 'R$ ' + v.toFixed(2).replace('.', ',');
+    // id do plano no servidor: gestacell_mensal, gestacell_anual e gestacell (pagamento único).
+    const TIPOS = {
+      mensal: { id: `${app}_mensal`, nome: 'Mensal', valor: `${reais(P.planos.mensal)}/mês`, como: 'Cartão de crédito. Renova sozinho todo mês; cancele quando quiser.',
+        nota: '💳 <b>Mensal:</b> cobrado no cartão todo mês. Se cancelar, o app continua até o fim do mês já pago.' },
+      anual: { id: `${app}_anual`, nome: 'Anual', valor: `${reais(P.planos.anual)}/ano`, como: `Dá ${reais(P.planos.anual / 12)} por mês. Pix ou cartão em até 3x.`, selo: 'Mais em conta',
+        nota: '📅 <b>Anual:</b> paga uma vez e usa por 1 ano. Não renova sozinho: perto de vencer, você escolhe se quer continuar.' },
+      unico: { id: app, nome: 'Pagamento único', valor: reais(P.planos.unico), como: 'Paga uma vez e é seu para sempre. Pix ou cartão em até 3x.',
+        nota: '✅ <b>Pagamento único:</b> paga uma vez, o app é seu para sempre.<br>🔄 <b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.' },
+    };
+    const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : 'anual';
     document.title = `Comprar ${P.nome} — LeuApps`;
     document.getElementById('icone').src = `/img/${app}-192.png`;
     document.getElementById('titulo').textContent = P.nome;
-    document.getElementById('resumo').innerHTML = `Licença vitalícia por <b style="white-space:nowrap">${P.preco}</b><br>${P.parcelas}`;
+    document.getElementById('resumo').innerHTML = `A partir de <b style="white-space:nowrap">${reais(P.planos.mensal)}/mês</b><br>7 dias grátis para testar antes de pagar`;
     document.getElementById('itens').innerHTML = P.itens.map((t) => `<li>${t}</li>`).join('');
+    document.getElementById('testar').href = app === 'radar' ? '/#radar' : P.url;
+    document.getElementById('planos').insertAdjacentHTML('beforeend', Object.entries(TIPOS).map(([k, t]) =>
+      `<label class="plano"><input type="radio" name="plano" id="plano-${k}" value="${k}"${k === inicial ? ' checked' : ''}><b>${t.nome}${t.selo ? `<span class="selo-plano">${t.selo}</span>` : ''}</b><span class="valor">${t.valor}</span><small>${t.como}</small></label>`).join(''));
     const pagar = document.getElementById('pagar');
-    pagar.textContent = `Pagar ${P.preco} com Pix ou cartão`;
+    const escolhido = () => TIPOS[document.querySelector('input[name=plano]:checked')?.value || inicial];
+    const textoPagar = () => { const t = escolhido(); return t === TIPOS.mensal ? `Assinar por ${t.valor} no cartão` : `Pagar ${t.valor} com Pix ou cartão`; };
+    const mostrarPlano = () => { pagar.textContent = textoPagar(); document.getElementById('nota-plano').innerHTML = escolhido().nota; };
+    document.getElementById('planos').addEventListener('change', mostrarPlano);
+    mostrarPlano();
     const formCompra = document.getElementById('form'), formEntrar = document.getElementById('entrar');
     document.querySelectorAll('[data-trocar]').forEach((b) => b.addEventListener('click', () => {
       formCompra.style.display = formCompra.style.display === 'none' ? '' : 'none';
@@ -106,14 +137,14 @@
       if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
       erro.textContent = ''; pagar.disabled = true; pagar.textContent = 'Abrindo o pagamento...';
       try {
-        const r = await post('/loja-api/comprar', { nome, email, senha, plano: app });
+        const r = await post('/loja-api/comprar', { nome, email, senha, plano: escolhido().id });
         const d = await r.json().catch(() => ({}));
         if (!r.ok || !d.url) throw new Error(d.erro === 'senha_incorreta' ? 'Este e-mail já tem conta e a senha não confere. Use a senha da sua conta ou toque em "Esqueci a senha".' : d.erro === 'pagamento_indisponivel' ? 'O pagamento está sendo ativado. Tente de novo em alguns minutos.' : 'Não foi possível abrir o pagamento. Tente de novo.');
         try { localStorage.setItem('loja.pedido', JSON.stringify(d.pedido)); } catch {}
         location.href = d.url;
       } catch (e) {
         erro.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.';
-        pagar.disabled = false; pagar.textContent = `Pagar ${P.preco} com Pix ou cartão`;
+        pagar.disabled = false; pagar.textContent = textoPagar();
       }
     });
 

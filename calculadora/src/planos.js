@@ -11,9 +11,14 @@ export const PLANOS = {
   // Só para o dono testar a compra de verdade (link direto /comprar?plano=teste); não aparece para clientes.
   teste: { preco: 1, receitas: Infinity, dias: 1, titulo: 'Quanto Cobrar — teste de compra (1 dia)' },
   mensal: { preco: 2.99, receitas: Infinity, dias: 33, assinatura: true, titulo: 'Quanto Cobrar Pro — todas as receitas + calculadora (mensal)' },
-  // Outros apps da LeuApps: pagamento único, licença vitalícia (atualizações futuras são vendidas à parte).
-  gestacell: { app: 'gestacell', licenca: 'leuname-gestao', preco: 30, parcelas: 3, titulo: 'Gestacell — licença vitalícia (pagamento único)' },
-  radar: { app: 'radar', licenca: 'radar-preventivo', preco: 20, parcelas: 2, titulo: 'Radar Preventivo — licença vitalícia (pagamento único)' },
+  // Outros apps da LeuApps: mensal (cartão, renova sozinho), anual ou pagamento único (é seu para sempre).
+  // O acesso fica na conta do cliente (e-mail + senha); a chave é só controle interno.
+  gestacell: { app: 'gestacell', licenca: 'leuname-gestao', preco: 49.9, parcelas: 3, titulo: 'Gestacell — pagamento único (para sempre)' },
+  gestacell_anual: { app: 'gestacell', licenca: 'leuname-gestao', preco: 39.9, dias: 366, parcelas: 3, titulo: 'Gestacell — plano anual' },
+  gestacell_mensal: { app: 'gestacell', licenca: 'leuname-gestao', preco: 19.9, dias: 33, assinatura: true, titulo: 'Gestacell — plano mensal' },
+  radar: { app: 'radar', licenca: 'radar-preventivo', preco: 39.9, parcelas: 3, titulo: 'Radar Preventivo — pagamento único (para sempre)' },
+  radar_anual: { app: 'radar', licenca: 'radar-preventivo', preco: 29.9, dias: 366, parcelas: 3, titulo: 'Radar Preventivo — plano anual' },
+  radar_mensal: { app: 'radar', licenca: 'radar-preventivo', preco: 9.9, dias: 33, assinatura: true, titulo: 'Radar Preventivo — plano mensal' },
 };
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';
 const PLANOS_RECEITAS = Object.keys(PLANOS).filter((k) => PLANOS[k].app === 'quantocobrar');
@@ -90,6 +95,30 @@ async function licencaDoDono(env, appId) {
   return l?.chave || emitirLicenca(env, 'Dono (LeuName Softwares)', env.DONO_EMAIL, appId, 'dono');
 }
 
+// Teste grátis dos outros apps (um por conta em cada app). O Quanto Cobrar tem o teste dele (2 dias).
+export const TESTE_DIAS = { gestacell: 7, radar: 7 };
+const fimDoTeste = (inicio, app) => new Date(new Date(inicio).getTime() + TESTE_DIAS[app] * 864e5).toISOString();
+
+/** Testes que a conta já começou: { gestacell: { inicio, expiraEm, acabou } }. */
+export async function testesDaConta(env, contaId) {
+  if (!contaId) return {};
+  const { results } = await env.DB.prepare('SELECT app, inicio FROM testes_apps WHERE conta_id = ?').bind(contaId).all();
+  const testes = {};
+  for (const r of results) {
+    if (!TESTE_DIAS[r.app]) continue;
+    const expiraEm = fimDoTeste(r.inicio, r.app);
+    testes[r.app] = { inicio: r.inicio, expiraEm, acabou: new Date(expiraEm).getTime() < Date.now() };
+  }
+  return testes;
+}
+
+/** Começa o teste grátis do app (só na primeira vez; depois devolve o mesmo teste, mesmo que já tenha acabado). */
+export async function comecarTeste(env, contaId, app) {
+  if (!TESTE_DIAS[app]) return null;
+  await env.DB.prepare('INSERT OR IGNORE INTO testes_apps (conta_id, app, inicio) VALUES (?, ?, ?)').bind(contaId, app, new Date().toISOString()).run();
+  return (await testesDaConta(env, contaId))[app] || null;
+}
+
 /** Licenças vitalícias dos outros apps que a conta comprou: { gestacell: { chave }, radar: { chave } }. O dono tem todas. */
 export async function appsDaConta(env, contaId, email) {
   if (eDono(env, email)) {
@@ -101,12 +130,20 @@ export async function appsDaConta(env, contaId, email) {
     }
     return apps;
   }
-  const { results } = await env.DB.prepare("SELECT plano, chave FROM pedidos WHERE conta_id = ? AND status = 'pago' AND chave IS NOT NULL ORDER BY criado_em")
-    .bind(contaId).all();
+  // Mensal e anual valem até vencer (com 1 dia de tolerância); pagamento único vale para sempre.
+  const { results } = await env.DB.prepare(`SELECT p.plano, p.chave, a.expira_em FROM pedidos p LEFT JOIN acessos a ON a.chave = p.chave
+    WHERE p.conta_id = ? AND p.status = 'pago' AND p.chave IS NOT NULL ORDER BY p.criado_em`).bind(contaId).all();
   const apps = {};
   for (const r of results) {
     const app = PLANOS[r.plano]?.app;
-    if (app && app !== 'quantocobrar') apps[app] = { chave: r.chave };
+    if (!app || app === 'quantocobrar') continue;
+    if (r.expira_em && avaliar({ plano: r.plano, expira_em: r.expira_em }).venceu) continue;
+    // O plano sem vencimento (único) ganha de um plano com prazo.
+    if (apps[app] && !apps[app].expiraEm) continue;
+    apps[app] = { chave: r.chave, plano: r.plano, expiraEm: r.expira_em || null };
   }
+  // Sem compra valendo: o teste grátis (enquanto não acabar) também libera o app.
+  const testes = await testesDaConta(env, contaId);
+  for (const [app, t] of Object.entries(testes)) if (!apps[app] && !t.acabou) apps[app] = { teste: true, expiraEm: t.expiraEm };
   return apps;
 }

@@ -857,15 +857,40 @@ function authFooterHTML(){
 /* Compra pela loja LeuApps (www.leunamesoftware.com.br): a licença fica na conta (e-mail + senha)
    do cliente. Entrou na conta -> o app busca a chave dela sozinho. Chave antiga continua valendo. */
 const LOJA_COMPRA='/loja/comprar?app=gestacell';
+// Chave que veio de plano com prazo (mensal, anual ou teste grátis): o app confere a conta de novo ao abrir.
+const CONTA_EXPIRA_LS_KEY='leuname_conta_expira_em';
+let __testesConta={};
+async function gerarChaveTeste(){
+  const letras='0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const g2=Array.from(crypto.getRandomValues(new Uint8Array(4)),(b)=>letras[b%letras.length]).join('');
+  return 'LEU-TRIA-'+g2+'-'+(await licenseChecksum('TRIA',g2));
+}
+/* Lê o acesso da conta: true = liberado, false = a conta não tem o Gestacell, null = sem internet/servidor. */
 async function chaveDaConta(){
   try{
     const r=await fetch('/loja-api/conta/apps',{cache:'no-store',credentials:'same-origin'});
-    if(!r.ok) return false;
-    const chave=(await r.json())?.apps?.gestacell?.chave;
-    if(!chave||!(await licenseKeyValid(chave))) return false;
-    lsSet(LICENSE_LS_KEY,chave); lsSet(LICENSE_REVOKED_LS_KEY,'');
-    return true;
-  }catch(e){ return false; }
+    if(!r.ok) return null;
+    const d=await r.json(); __testesConta=d?.testes||{};
+    const g=d?.apps?.gestacell;
+    if(g?.chave && await licenseKeyValid(g.chave)){
+      lsSet(LICENSE_LS_KEY,g.chave); lsSet(LICENSE_REVOKED_LS_KEY,''); lsSet(CONTA_EXPIRA_LS_KEY,g.expiraEm||''); return true;
+    }
+    if(g?.teste){
+      let k=lsGet(LICENSE_LS_KEY);
+      if(!isTrialKey(k)||!(await licenseKeyValid(k))) k=await gerarChaveTeste();
+      lsSet(LICENSE_LS_KEY,k); lsSet(LICENSE_REVOKED_LS_KEY,'');
+      lsSet(TRIAL_INICIO_LS_KEY,String(new Date(g.expiraEm).getTime()-TRIAL_DIAS*86400000)); lsSet(CONTA_EXPIRA_LS_KEY,g.expiraEm); return true;
+    }
+    return false;
+  }catch(e){ return null; }
+}
+/* Mensal, anual ou teste: confere na conta se ainda vale. Sem internet, vale até a data guardada (+1 dia). */
+async function acessoDaContaValendo(){
+  const expira=lsGet(CONTA_EXPIRA_LS_KEY);
+  if(!expira) return true; // pagamento único ou chave antiga
+  const ok=await chaveDaConta();
+  if(ok!==null) return ok;
+  return Date.now() < new Date(expira).getTime()+86400000;
 }
 /* Entra na conta da loja; se não der e for o e-mail do dono, tenta a senha da Área do Dono. */
 async function entrarNaConta(email,senha){
@@ -874,59 +899,89 @@ async function entrarNaConta(email,senha){
   if(!r.ok && r.status!==429) r=await tentar('/loja-api/dono/entrar');
   if(!r.ok) throw new Error(r.status===429?'Muitas tentativas. Espere um minuto.':'E-mail ou senha não conferem.');
 }
-function renderLicenseGate(errMsg){
+async function criarConta(nome,email,senha){
+  const r=await fetch('/loja-api/conta/criar',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,email,senha})});
+  if(r.ok) return;
+  const c=(await r.json().catch(()=>({}))).erro;
+  throw new Error(r.status===429?'Muitas tentativas. Espere um minuto.':c==='senha_incorreta'?'Este e-mail já tem conta. Toque em "Já tenho conta" e entre.':'Não deu para criar a conta. Confira os dados.');
+}
+/* Começa (ou retoma) o teste grátis da conta logada. 'sem_conta' = precisa entrar ou criar a conta. */
+async function comecarTesteGratis(){
+  const r=await fetch('/loja-api/conta/teste',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({app:'gestacell'})});
+  if(r.status===401) return 'sem_conta';
+  const d=await r.json().catch(()=>({}));
+  if(d.erro==='teste_acabou'){ __testesConta.gestacell=d; return 'acabou'; }
+  if(!r.ok) throw new Error('Não deu para começar o teste agora. Tente de novo.');
+  return (await chaveDaConta())?'ok':'erro';
+}
+function renderLicenseGate(errMsg,modo){
   document.getElementById('app-root').classList.remove('ready');
   const root=document.getElementById('auth-root');
+  const testeAcabou=__testesConta?.gestacell?.acabou;
+  const criando=modo==='criar';
   root.innerHTML=`
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Gestacell</h2>
-    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br><b>Pagamento único de R$ 30</b>, sem mensalidade.</p>
-    <div class="callout info" style="margin-bottom:14px;"><span>${ic('key',15)}</span><span><b>Plano único vitalício:</b> o app é seu para sempre.<br><b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.</span></div>
+    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br>${testeAcabou?'Planos a partir de <b>R$ 19,90/mês</b>.':'<b>7 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.'}</p>
     ${errMsg?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
-    <a class="btn primary" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;">🛒 Comprar o Gestacell · R$ 30</a>
+    ${criando?`
+    <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Crie a sua conta para testar grátis</p>
+    <div class="field"><label>Seu nome</label><input id="cg-nome" autocomplete="name" maxlength="80"></div>
+    <div class="field" style="margin-top:10px;"><label>E-mail</label><input id="cg-email" type="email" autocomplete="email" placeholder="voce@email.com"></div>
+    <div class="field" style="margin-top:10px;"><label>Crie uma senha</label><input id="cg-senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
+    <div id="cg-erro" class="callout warn hidden" style="margin-top:10px;"></div>
+    <button class="btn primary" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:12px;">Começar 7 dias grátis</button>
+    <p class="small center" style="margin-top:12px;"><a href="#" id="cg-modo">Já tenho conta: entrar</a></p>`:`
+    ${testeAcabou?'':`<button class="btn primary" id="cg-testar" style="width:100%;justify-content:center;padding:12px;">🎁 Testar 7 dias grátis</button>`}
+    <a class="btn ${testeAcabou?'primary':'outline'}" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;margin-top:10px;">🛒 Ver planos · a partir de R$ 19,90/mês</a>
     <div class="divider" style="margin:18px 0 12px;"></div>
-    <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Já comprou? Entre com a sua conta</p>
-    <div class="field"><label>E-mail da compra</label><input id="cg-email" type="email" autocomplete="username" placeholder="voce@email.com"></div>
+    <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Já tem conta? Entre</p>
+    <div class="field"><label>E-mail</label><input id="cg-email" type="email" autocomplete="username" placeholder="voce@email.com"></div>
     <div class="field" style="margin-top:10px;"><label>Senha</label><input id="cg-senha" type="password" autocomplete="current-password"></div>
     <div id="cg-erro" class="callout warn hidden" style="margin-top:10px;"></div>
     <button class="btn outline" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:11px;">Entrar</button>
-    <p class="small center" style="margin-top:12px;"><a href="https://quantocobrar.leunamesoftware.com.br/recuperar">Esqueci a senha</a> · <a href="#" id="cg-chave">Tenho uma chave de licença</a></p>
-    <div id="cg-chave-box" class="hidden" style="margin-top:10px;">
-      <div class="field"><label>Chave de licença</label><input id="lic-key" placeholder="LEU-XXXX-XXXX-XXXX" style="text-transform:uppercase;"></div>
-      <button class="btn outline" id="lic-activate" style="width:100%;justify-content:center;margin-top:10px;padding:11px;">Ativar chave</button>
-    </div>
+    <p class="small center" style="margin-top:12px;"><a href="https://quantocobrar.leunamesoftware.com.br/recuperar">Esqueci a senha</a></p>`}
     ${authFooterHTML()}
   </div></div>`;
   const erro=(t)=>{ const b=document.getElementById('cg-erro'); b.textContent=t; b.classList.remove('hidden'); };
-  const entrar=async()=>{
+  const liberar=(t)=>{ toast(t,'success'); __booted=false; boot(); };
+  // Depois de entrar ou criar a conta: libera se já tem o app; se não, começa o teste (se ainda não usou).
+  const depoisDaConta=async(querTeste)=>{
+    if(await chaveDaConta()) return liberar('Gestacell liberado!');
+    if(!querTeste && __testesConta?.gestacell) throw new Error(__testesConta.gestacell.acabou?'O teste grátis desta conta terminou. Escolha um plano para continuar.':'Esta conta ainda não tem o Gestacell.');
+    const t=await comecarTesteGratis();
+    if(t==='ok') return liberar('Teste grátis de 7 dias liberado!');
+    if(t==='acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+    throw new Error('Não deu para liberar agora. Tente de novo.');
+  };
+  const btn=document.getElementById('cg-entrar'), rotulo=btn.textContent;
+  const enviar=async()=>{
+    const nome=criando?document.getElementById('cg-nome').value.trim():'';
     const email=document.getElementById('cg-email').value.trim(), senha=document.getElementById('cg-senha').value;
+    if(criando && nome.length<2){ erro('Digite o seu nome.'); return; }
     if(!email||!senha){ erro('Digite o e-mail e a senha.'); return; }
-    const btn=document.getElementById('cg-entrar'); btn.disabled=true; btn.textContent='Entrando...';
+    if(criando && senha.length<6){ erro('Crie uma senha com pelo menos 6 caracteres.'); return; }
+    btn.disabled=true; btn.textContent=criando?'Liberando...':'Entrando...';
     try{
-      await entrarNaConta(email,senha);
-      if(!(await chaveDaConta())) throw new Error('Esta conta ainda não comprou o Gestacell.');
-      toast('Gestacell liberado!','success');
-      __booted=false; boot();
-    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); btn.disabled=false; btn.textContent='Entrar'; }
+      if(criando) await criarConta(nome,email,senha); else await entrarNaConta(email,senha);
+      await depoisDaConta(criando);
+    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); btn.disabled=false; btn.textContent=rotulo; }
   };
-  document.getElementById('cg-entrar').onclick=entrar;
-  document.getElementById('cg-senha').addEventListener('keydown',(e)=>{ if(e.key==='Enter') entrar(); });
-  document.getElementById('cg-chave').onclick=(e)=>{ e.preventDefault(); document.getElementById('cg-chave-box').classList.toggle('hidden'); document.getElementById('lic-key').focus(); };
-  const doActivate=async()=>{
-    const btn=document.getElementById('lic-activate');
-    const raw=document.getElementById('lic-key').value.trim().toUpperCase();
-    if(!raw){ renderLicenseGate('Digite a chave de licença.'); return; }
-    if(isTrialKey(raw)){ renderLicenseGate('O teste grátis terminou. Compre a licença para continuar.'); return; }
-    btn.disabled=true; btn.textContent='Verificando...';
-    const valid=await licenseKeyValid(raw);
-    if(!valid){ renderLicenseGate('Chave de licença inválida. Verifique e tente novamente.'); return; }
-    lsSet(LICENSE_LS_KEY,raw);
-    toast('Licença ativada com sucesso!','success');
-    __booted=false; boot();
+  btn.onclick=enviar;
+  document.getElementById('cg-senha').addEventListener('keydown',(e)=>{ if(e.key==='Enter') enviar(); });
+  document.getElementById('cg-modo')?.addEventListener('click',(e)=>{ e.preventDefault(); renderLicenseGate('',''); });
+  const testar=document.getElementById('cg-testar');
+  if(testar) testar.onclick=async()=>{
+    testar.disabled=true; testar.textContent='Liberando...';
+    try{
+      const t=await comecarTesteGratis();
+      if(t==='sem_conta') return renderLicenseGate('','criar');
+      if(t==='ok') return liberar('Teste grátis de 7 dias liberado!');
+      if(t==='acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+      throw new Error('Não deu para liberar agora. Tente de novo.');
+    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); testar.disabled=false; testar.textContent='🎁 Testar 7 dias grátis'; }
   };
-  document.getElementById('lic-activate').onclick=doActivate;
-  document.getElementById('lic-key').addEventListener('keydown',(e)=>{ if(e.key==='Enter') doActivate(); });
 }
 
 function renderLicenseRevoked(){
@@ -3392,9 +3447,14 @@ async function boot(){
   try{ await openDB(); }catch(e){ console.error('Falha ao abrir banco local',e); }
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
-  // Sem teste grátis: só abre com licença (comprada na loja LeuApps ou chave antiga).
-  if(!(await isLicenseActivated()) || trialExpirado()){
-    if(!(await chaveDaConta())){ renderLicenseGate(trialExpirado()?'Seu período de teste terminou. Para continuar usando, compre a licença.':''); return; }
+  // Abre com o acesso da conta da loja (teste grátis de 7 dias, mensal, anual ou pagamento único) ou chave antiga.
+  if(!(await isLicenseActivated()) || trialExpirado() || !(await acessoDaContaValendo())){
+    const tinha=lsGet(LICENSE_LS_KEY);
+    if(!(await chaveDaConta())){
+      lsSet(LICENSE_LS_KEY,''); lsSet(CONTA_EXPIRA_LS_KEY,'');
+      renderLicenseGate(tinha?(isTrialKey(tinha)?'O seu teste grátis terminou. Escolha um plano para continuar usando.':'O seu plano terminou. Escolha um plano para continuar usando.'):'');
+      return;
+    }
   }
   if(lsGet(LICENSE_REVOKED_LS_KEY)==='1'){
     renderLicenseRevoked();

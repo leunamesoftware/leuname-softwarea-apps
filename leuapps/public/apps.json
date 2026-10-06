@@ -68,7 +68,12 @@
     "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1",
     "manifestWww": "/quantocobrar/manifest.webmanifest?v=5",
     "abrirWww": "/quantocobrar/app/",
-    "arquivosWww": ["/quantocobrar/app/app.js", "/quantocobrar/app/app.css", "/quantocobrar/app/calculo.js", "/quantocobrar/img/logo.webp"],
+    "arquivosWww": [
+      "/quantocobrar/app/app.js",
+      "/quantocobrar/app/app.css",
+      "/quantocobrar/app/calculo.js",
+      "/quantocobrar/img/logo.webp"
+    ],
     "instalarDireto": {
       "url": "https://quantocobrar.leunamesoftware.com.br/app/",
       "id": "https://quantocobrar.leunamesoftware.com.br/app/"
@@ -120,14 +125,30 @@
     "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
     "icone": "/img/gestacell-192.webp",
     "url": "/gestacell/",
-    "preco": "R$ 30 · pagamento único",
+    "preco": "7 dias grátis · planos a partir de R$ 19,90/mês",
     "planos": [
       {
-        "nome": "Plano único vitalício",
+        "nome": "Mensal",
+        "tipo": "assinatura",
+        "preco": "R$ 19,90/mês",
+        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · vendas, OS, estoque, clientes e financeiro",
+        "url": "/loja/comprar?app=gestacell&plano=mensal",
+        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
+      },
+      {
+        "nome": "Anual",
         "tipo": "unico",
-        "preco": "R$ 30,00",
+        "preco": "R$ 39,90/ano",
+        "detalhe": "Paga uma vez, vale 1 ano · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=gestacell&plano=anual",
+        "nota": "🔄 Atualizações incluídas durante 1 ano."
+      },
+      {
+        "nome": "Para sempre",
+        "tipo": "unico",
+        "preco": "R$ 49,90",
         "detalhe": "Paga uma vez, é seu para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
-        "url": "/loja/comprar?app=gestacell",
+        "url": "/loja/comprar?app=gestacell&plano=unico",
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ],
@@ -148,7 +169,11 @@
     "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
     "manifestWww": "/gestacell/www.webmanifest",
     "abrirWww": "/gestacell/",
-    "arquivosWww": ["/gestacell/instalar.js", "/img/gestacell-192.png", "/img/gestacell-512.png"],
+    "arquivosWww": [
+      "/gestacell/instalar.js",
+      "/img/gestacell-192.png",
+      "/img/gestacell-512.png"
+    ],
     "instalarDireto": {
       "url": "https://gestacell.leunamesoftware.com.br/",
       "id": "https://gestacell.leunamesoftware.com.br/?app=gestacell"
@@ -186,7 +211,25 @@
     "dados": {
       "coleta": "Nome e e-mail da conta, e os dados da sua loja (vendas, clientes, estoque e ordens de serviço) que você cadastra",
       "uso": "Para o sistema da sua loja funcionar e guardar o histórico com segurança"
-    }
+    },
+    "teste": 7,
+    "opcoes": [
+      [
+        "Mensal",
+        "R$ 19,90/mês",
+        "no cartão, cancele quando quiser"
+      ],
+      [
+        "Anual",
+        "R$ 39,90/ano",
+        "Pix ou cartão em até 3x"
+      ],
+      [
+        "Para sempre",
+        "R$ 49,90",
+        "paga uma vez só"
+      ]
+    ]
   },
   {
     "id": "radar",
@@ -195,15 +238,31 @@
     "resumo": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
     "icone": "/img/radar-192.webp",
     "url": "https://radar.leunamesoftware.com.br",
-    "preco": "R$ 20 · pagamento único",
+    "preco": "7 dias grátis · planos a partir de R$ 9,90/mês",
     "exigeCompra": true,
     "planos": [
       {
-        "nome": "Plano único vitalício",
+        "nome": "Mensal",
+        "tipo": "assinatura",
+        "preco": "R$ 9,90/mês",
+        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · avisos de documentos, contas e prazos",
+        "url": "/loja/comprar?app=radar&plano=mensal",
+        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
+      },
+      {
+        "nome": "Anual",
         "tipo": "unico",
-        "preco": "R$ 20,00",
-        "detalhe": "Paga uma vez, é seu para sempre · avisos de documentos, contas e prazos · Pix ou cartão em até 2x",
-        "url": "/loja/comprar?app=radar",
+        "preco": "R$ 29,90/ano",
+        "detalhe": "Paga uma vez, vale 1 ano · avisos de documentos, contas e prazos · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=radar&plano=anual",
+        "nota": "🔄 Atualizações incluídas durante 1 ano."
+      },
+      {
+        "nome": "Para sempre",
+        "tipo": "unico",
+        "preco": "R$ 39,90",
+        "detalhe": "Paga uma vez, é seu para sempre · avisos de documentos, contas e prazos · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=radar&plano=unico",
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ],
@@ -258,6 +317,24 @@
     "dados": {
       "coleta": "Nome e e-mail da conta, e os documentos, contas e prazos que você cadastra",
       "uso": "Para avisar você antes de cada vencimento"
-    }
+    },
+    "teste": 7,
+    "opcoes": [
+      [
+        "Mensal",
+        "R$ 9,90/mês",
+        "no cartão, cancele quando quiser"
+      ],
+      [
+        "Anual",
+        "R$ 29,90/ano",
+        "Pix ou cartão em até 3x"
+      ],
+      [
+        "Para sempre",
+        "R$ 39,90",
+        "paga uma vez só"
+      ]
+    ]
   }
 ]
