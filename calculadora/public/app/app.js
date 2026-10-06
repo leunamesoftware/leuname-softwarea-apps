@@ -1042,7 +1042,7 @@ function telaHistorico() {
   }));
 }
 
-const NOMES_PLANO = { dono: '👑 Dono · tudo liberado', basico: '📦 Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste', completo: 'Completo', gratis: 'Grátis' };
+const NOMES_PLANO = { dono: '👑 Dono · tudo liberado', brinde: '🎁 Pro de presente', basico: '📦 Básico (vitalício)', anual: '👑 Pro anual', mensal: '👑 Pro mensal', teste: 'Teste', completo: 'Completo', gratis: 'Grátis' };
 function htmlConta() {
   const a = estado.acesso || {};
   const plano = NOMES_PLANO[a.plano] || 'Grátis';

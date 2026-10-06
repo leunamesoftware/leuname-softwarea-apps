@@ -1,6 +1,7 @@
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
+import { listarBrindes, darBrinde, tirarBrinde } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
@@ -176,6 +177,16 @@ export default {
 
       // ---- Área do Dono: login próprio, separado das contas dos apps ----
       if (pathname === '/api/dono/estado' && m === 'GET') return json(await estadoDono(env, req));
+      // Brindes (só o dono): dar o Quanto Cobrar Pro de graça para um e-mail.
+      if (pathname === '/api/dono/brindes' || pathname === '/api/dono/brindes/remover') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (m === 'GET' && pathname === '/api/dono/brindes') return json({ brindes: await listarBrindes(env) });
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
+      }
       if (pathname.startsWith('/api/dono/') && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);

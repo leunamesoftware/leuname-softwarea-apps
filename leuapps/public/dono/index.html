@@ -49,6 +49,16 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
 .senha input { font: inherit; min-height: 44px; border: 1px solid #D6D0C8; border-radius: 10px; padding: 0 12px; }
 .senha button { font: inherit; font-weight: 800; min-height: 46px; border: 0; border-radius: 12px; background: var(--roxo); color: #fff; cursor: pointer; }
 #s-msg { margin: 0; font-weight: 700; }
+.brinde { background: var(--cartao); border: 1px solid var(--linha); border-left: 5px solid var(--cor); border-radius: 14px; padding: 12px; display: grid; gap: 10px; }
+.brinde form { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.brinde input, .brinde select { font: inherit; min-height: 44px; border: 1px solid #D6D0C8; border-radius: 10px; padding: 0 12px; min-width: 0; background: #fff; }
+.brinde button { font: inherit; font-weight: 800; min-height: 44px; border: 0; border-radius: 12px; background: var(--cor); color: #fff; padding: 0 16px; cursor: pointer; }
+.brinde ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.brinde li { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--linha); padding-top: 8px; font-size: 14px; }
+.brinde li span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.brinde li small { display: block; color: var(--suave); }
+.brinde li button { background: transparent; color: #B91C1C; border: 1px solid #F1C4C4; min-height: 36px; padding: 0 10px; font-size: 13px; }
+#b-msg { margin: 0; font-weight: 700; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -74,6 +84,20 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
   <section class="laranja">
     <h2>Apps da loja</h2>
     <div class="cards" id="apps"><p class="nota">Carregando…</p></div>
+  </section>
+
+  <section class="laranja">
+    <h2>Brindes · Quanto Cobrar de graça</h2>
+    <div class="brinde">
+      <p class="nota" style="border:0;padding:0;">Coloque o e-mail da pessoa. Quando ela entrar no Quanto Cobrar com esse e-mail (e a senha dela), ganha o 👑 Pro completo, sem comprar.</p>
+      <form id="form-brinde">
+        <input id="b-email" type="email" placeholder="email@da-pessoa.com" autocomplete="off" required aria-label="E-mail da pessoa">
+        <select id="b-dias" aria-label="Por quanto tempo"><option value="">Sem prazo</option><option value="30">30 dias</option><option value="90">3 meses</option><option value="365">1 ano</option></select>
+        <button type="submit" style="grid-column:1/-1">🎁 Dar o presente</button>
+      </form>
+      <p id="b-msg" hidden></p>
+      <ul id="b-lista"></ul>
+    </div>
   </section>
 
   <section class="azul">
@@ -119,6 +143,34 @@ document.getElementById('form-senha').addEventListener('submit', async (e) => {
     mostrar(erro === 'senha_atual' ? 'A senha atual não confere.' : erro === 'senha_curta' ? 'A nova senha precisa ter pelo menos 6 caracteres.' : erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não deu para trocar agora. Tente de novo.');
   } catch { mostrar('Sem internet. Tente de novo.'); }
 });
+
+// Brindes: liberar o Quanto Cobrar Pro de graça para um e-mail.
+const bMsg = (t, ok) => { const m = document.getElementById('b-msg'); m.textContent = t; m.style.color = ok ? '#15803D' : '#B91C1C'; m.hidden = false; };
+const dataBR = (iso) => new Date(iso).toLocaleDateString('pt-BR');
+async function carregarBrindes() {
+  const lista = document.getElementById('b-lista');
+  try {
+    const r = await fetch('/loja-api/dono/brindes', { credentials: 'same-origin', cache: 'no-store' });
+    const { brindes = [] } = await r.json();
+    lista.innerHTML = brindes.length ? brindes.map((b) => `<li><span>${esc(b.email)}<small>${b.expira_em ? 'até ' + dataBR(b.expira_em) : 'sem prazo'} · dado em ${dataBR(b.criado_em)}</small></span><button type="button" data-tirar="${esc(b.email)}">Tirar</button></li>`).join('')
+      : '<li><span><small>Nenhum presente dado ainda.</small></span></li>';
+  } catch { lista.innerHTML = '<li><span><small>Sem internet agora.</small></span></li>'; }
+}
+document.getElementById('form-brinde').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('b-email').value.trim();
+  const r = await fetch('/loja-api/dono/brindes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, dias: document.getElementById('b-dias').value }) }).catch(() => null);
+  if (!r) return bMsg('Sem internet. Tente de novo.');
+  if (!r.ok) return bMsg((await r.json().catch(() => ({}))).erro === 'email' ? 'Confira o e-mail.' : 'Não deu para salvar agora.');
+  e.target.reset(); bMsg(`Pronto! ${email} já tem o Pro de presente.`, true); carregarBrindes();
+});
+document.getElementById('b-lista').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-tirar]'); if (!b || !confirm(`Tirar o presente de ${b.dataset.tirar}?`)) return;
+  await fetch('/loja-api/dono/brindes/remover', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: b.dataset.tirar }) }).catch(() => {});
+  carregarBrindes();
+});
+carregarBrindes();
 
 document.getElementById('sair').addEventListener('click', async () => {
   await fetch('/loja-api/dono/sair', { method: 'POST', credentials: 'same-origin' }).catch(() => {});

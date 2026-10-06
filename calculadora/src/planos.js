@@ -1,4 +1,5 @@
 import { emitirLicenca } from './licencas.js';
+import { brindeDoEmail } from './brindes.js';
 
 // Planos à venda e o que cada um libera.
 export const RECEITAS_GRATIS = 2;
@@ -45,6 +46,9 @@ export async function acessoDaConta(env, contaId) {
   const conta = await env.DB.prepare('SELECT email, criado_em, sem_teste FROM contas WHERE id = ?').bind(contaId).first();
   // O dono tem tudo liberado, sempre, sem comprar nem vencer.
   if (eDono(env, conta?.email)) return { plano: 'dono', receitas: Infinity };
+  // Presente do dono para este e-mail: Pro completo sem comprar.
+  const brinde = conta?.email ? await brindeDoEmail(env, conta.email) : null;
+  if (brinde) return brinde;
   const { results: todasCompras } = await env.DB.prepare("SELECT a.plano, a.expira_em FROM pedidos p JOIN acessos a ON a.chave = p.chave WHERE p.conta_id = ? AND p.status = 'pago'")
     .bind(contaId).all();
   const compras = todasCompras.filter((x) => PLANOS_RECEITAS.includes(x.plano)).map(avaliar);
