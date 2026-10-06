@@ -523,6 +523,15 @@
     .recente b { display: block; font-weight: 600; }
     .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
+    .meus-apps { padding-top: 6px; }
+    .grade-meus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; padding: 0 16px 8px; }
+    .grade-meus button { display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0; font: inherit; font-size: 12.5px; color: var(--texto); cursor: pointer; text-align: center; }
+    .grade-meus img { width: 60px; height: 60px; border-radius: 16px; box-shadow: 0 3px 10px rgba(20,10,50,.15); }
+    .grade-meus span { line-height: 1.2; max-width: 76px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .loja-app { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .loja-app img { width: 48px; height: 48px; border-radius: 12px; }
+    .loja-app b { display: block; }
+    .loja-app small { color: var(--suave, #5d5a6b); }
     .suspenso-fundo { position: fixed; inset: 0; z-index: 21; }
     .suspenso { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 52px); right: 10px; min-width: 240px; background: var(--fundo); border-radius: 14px; box-shadow: 0 8px 28px rgba(20,10,50,.22); padding: 6px 0; display: grid; }
     .suspenso button, .suspenso-check { display: flex; align-items: center; gap: 16px; padding: 14px 18px; background: none; border: 0; font: inherit; font-size: 16px; color: var(--texto); text-align: left; cursor: pointer; }
@@ -602,6 +611,7 @@
         <div class="capa-rodape"><div class="capa-icones" id="capa-icones"></div><button class="capa-botao" type="button" data-secao="Negócios">Explorar</button></div>
       </div>
       <div class="chips-linha" id="chips"></div>
+      <div class="secao meus-apps" id="meus-apps" hidden><div class="secao-titulo"><h2>Meus apps</h2></div><div class="grade-meus" id="grade-meus"></div></div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
@@ -1214,6 +1224,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
+      const dentro = apps.filter((a) => a.abrirWww && situacao(a) !== 'nao');
+      $('meus-apps').hidden = !dentro.length || Boolean(N);
+      $('grade-meus').innerHTML = dentro.map((a) => `<button type="button" data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt=""><span>${esc(a.nome)}</span></button>`).join('');
       const at = apps.filter((a) => situacao(a) === 'atualizar').length, novos = recentesNaoVistos().length;
       $('selo-atualizar').hidden = !(at + novos); $('selo-atualizar').textContent = at + novos;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
@@ -1263,31 +1276,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) App dentro do www: espera um instante o Chrome oferecer a instalação deste app e instala daqui mesmo.
-      if (a.manifestWww && !pedidosApp[id] && !N && !janelaApp() && 'onbeforeinstallprompt' in window) {
-        trocarManifesto(a);
-        for (let i = 0; i < 12 && !pedidosApp[id]; i++) await new Promise((ok) => setTimeout(ok, 250));
-        if (!pedidosApp[id]) {
-          return folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">Se o ${esc(a.nome)} já está instalado, é só abrir pelo ícone na tela. Se ainda não está:</p>
-            <ol><li>Toque nos <b>⋮</b> do Chrome.</li><li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>`, 'Entendi');
-        }
-      }
-      if (pedidosApp[id]) {
-        const q = pedidosApp[id]; delete pedidosApp[id];
-        q.prompt();
-        const r = await q.userChoice;
-        if (r.outcome !== 'accepted') return;
-        baixando[id] = -2; mostrar(); mostrarDetalhe();
-        // Só marca como instalado quando o Chrome avisar (appinstalled). Se não avisar, volta ao normal.
-        setTimeout(() => { if (baixando[id] === -2) { delete baixando[id]; mostrar(); mostrarDetalhe(); } }, 60000);
-        return;
-      }
-      // LeuApps instalada como app (janela própria): ali o Android não deixa instalar. Os apps se instalam pela loja no Chrome.
-      if (android && !N && janelaApp()) {
-        return folha(`<h3>Instale pelo Chrome</h3><p class="sub">Dentro desta janela o Android não deixa instalar apps. Pelo Chrome é com dois toques, sem permissão:</p>
-          <ol><li>Abra o <b>Chrome</b> e entre em <b>www.leunamesoftware.com.br</b>.</li><li>Toque no ${esc(a.nome)} e em <b>Instalar</b>.</li><li>Confirme em <b>Instalar</b>.</li></ol>
-          <p class="sub">Depois pode apagar este ícone da LeuApps: a loja fica no Chrome.</p>`, 'Entendi');
-      }
+      // 2) Apps do www: instalam DENTRO da LeuApps (como num celular): baixa os arquivos do app com a voltinha,
+      //    o app vai para "Meus apps" e abre aqui dentro, em tela cheia, sem navegador e sem pedir permissão.
+      if (a.abrirWww) return instalarDentro(a);
       // 2b) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
@@ -1320,15 +1311,52 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
-      // Apps dentro do www instalados pela loja: abrem pelo endereço do www (o Chrome leva para o app instalado).
-      const destino = !N && a.abrirWww && instaladosEm[a.id] ? a.abrirWww : !N && a.instalar ? a.instalar : link(a);
+      // Apps do www abrem aqui dentro da LeuApps (tela cheia, sem navegador).
+      if (!N && a.abrirWww) { location.href = a.abrirWww + (a.abrirWww.includes('?') ? '&' : '?') + 'leuapps=1'; return; }
+      const destino = !N && a.instalar ? a.instalar : link(a);
       if (a.exigeCompra) return conferirCompra(a, destino);
       if (!N && a.instalar) return abrirNoChrome(destino);
       location.href = destino;
     }
+    // ---- Apps instalados dentro da LeuApps ----
+    async function instalarDentro(a) {
+      const id = a.id, arquivos = [a.abrirWww, a.icone, ...(a.arquivosWww || [])];
+      baixando[id] = 0; mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+      const inicio = Date.now();
+      try {
+        const cache = 'caches' in window ? await caches.open('leuapps-apps') : null;
+        for (let i = 0; i < arquivos.length; i++) {
+          if (!(id in baixando)) return; // cancelado
+          const r = await fetch(arquivos[i], { cache: 'no-cache', credentials: 'same-origin' });
+          if (!r.ok && i === 0) throw new Error('falhou');
+          if (cache && r.ok) await cache.put(arquivos[i], r.clone());
+          // a voltinha anda junto com os arquivos (e nunca some rápido demais para ver)
+          const pct = Math.round((i + 1) * 100 / arquivos.length), espera = Math.max(0, 250 * (i + 1) - (Date.now() - inicio));
+          await new Promise((ok) => setTimeout(ok, espera));
+          baixando[id] = Math.min(pct, 99); const y = detalhe.scrollTop; mostrar(); if (location.hash.slice(1) === id) { mostrarDetalhe(); detalhe.scrollTop = y; }
+        }
+      } catch {
+        delete baixando[id]; mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+        return avisar(`Não deu para instalar o ${a.nome} agora. Confira a internet e tente de novo.`);
+      }
+      delete baixando[id];
+      meus = [...new Set([...meus, id])]; gravar(meus); recemInstalados.add(id); marcarInstalado(id);
+      mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+      let jaViu = false; try { jaViu = localStorage.getItem('leuapps.viu-dentro') === '1'; localStorage.setItem('leuapps.viu-dentro', '1'); } catch {}
+      if (jaViu) return avisar(`✓ ${a.nome} instalado! Ele fica em Meus apps.`);
+      folha(`<div class="loja-app"><img src="${esc(a.icone)}" alt=""><div><b>${esc(a.nome)} instalado!</b><small>Ele fica em Meus apps, aqui na LeuApps</small></div></div>
+        <p class="sub">Os apps da LeuApps abrem <b>aqui dentro</b>, em tela cheia, como no celular. É só abrir a LeuApps e tocar no app em <b>Meus apps</b>.</p>
+        <button class="acao" type="button" data-fecha data-abrir="${esc(id)}">Abrir o ${esc(a.nome)}</button>`, 'Depois');
+    }
     function desinstalar(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android) { N.desinstalar(a.android.pacote); return; } // o Android pergunta; ao voltar a loja confere
+      if (!N && a.abrirWww) {
+        if (!confirm(`Desinstalar o ${a.nome} da LeuApps?\n\nSeus dados não são apagados.`)) return;
+        meus = meus.filter((x) => x !== id); gravar(meus); delete instaladosEm[id];
+        try { localStorage.setItem('leuapps.instalados-em', JSON.stringify(instaladosEm)); } catch {}
+        recemInstalados.delete(id); mostrar(); mostrarDetalhe(); return avisar(`${a.nome} desinstalado.`);
+      }
       if (!confirm(`Desinstalar o ${a.nome}?\n\nSe o ícone dele está na tela do celular ou na área de trabalho, segure o ícone e toque em Desinstalar (ou Remover).`)) return;
       meus = meus.filter((x) => x !== id); gravar(meus); mostrar();
     }
@@ -1502,7 +1530,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const quer = a && a.manifestWww ? a : null;
       if ((quer && quer.id) === manifestoDe && link) return;
       manifestoDe = quer ? quer.id : null;
-      if (!quer && android) { link?.remove(); return; } // no Android a loja em si não é instalada (só os apps)
       if (!link) { link = document.createElement('link'); link.rel = 'manifest'; document.head.appendChild(link); }
       link.href = quer ? quer.manifestWww : '/manifest.webmanifest';
     }
@@ -1913,7 +1940,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
     });
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
-    if (false && android && !N && !instalada) { // a loja em si não é mais instalada no Android: só os apps
+    if (android && !N && !instalada) {
       document.body.classList.add('so-app');
       const pag = document.createElement('section'); pag.className = 'pagina-app';
       pag.innerHTML = `
@@ -1960,8 +1987,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
       todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app');
-      // Android sem o app LeuApps: os apps com APK não ficam marcados como "instalados" pelo navegador (antes viravam atalho de site).
-      if (!N && /Android/i.test(ua)) { const antes = meus.length; meus = meus.filter((id) => !(todos.find((x) => x.id === id) || {}).android); if (meus.length !== antes) gravar(meus); }
+      // Apps marcados como instalados que não instalam dentro da LeuApps (sem o app Android): não dá para saber se estão no celular.
+      if (!N) { const antes = meus.length; meus = meus.filter((id) => (todos.find((x) => x.id === id) || {}).abrirWww); if (meus.length !== antes) gravar(meus); }
       lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); atualizarSozinho();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');

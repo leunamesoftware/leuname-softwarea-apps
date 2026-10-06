@@ -68,6 +68,7 @@
     "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1",
     "manifestWww": "/quantocobrar/manifest.webmanifest?v=5",
     "abrirWww": "/quantocobrar/app/",
+    "arquivosWww": ["/quantocobrar/app/app.js", "/quantocobrar/app/app.css", "/quantocobrar/app/calculo.js", "/quantocobrar/img/logo.webp"],
     "instalarDireto": {
       "url": "https://quantocobrar.leunamesoftware.com.br/app/",
       "id": "https://quantocobrar.leunamesoftware.com.br/app/"
@@ -147,6 +148,7 @@
     "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
     "manifestWww": "/gestacell/www.webmanifest",
     "abrirWww": "/gestacell/",
+    "arquivosWww": ["/gestacell/instalar.js", "/img/gestacell-192.png", "/img/gestacell-512.png"],
     "instalarDireto": {
       "url": "https://gestacell.leunamesoftware.com.br/",
       "id": "https://gestacell.leunamesoftware.com.br/?app=gestacell"
