@@ -3376,8 +3376,7 @@ function setupPWA(){
   // Instalar como app (ícone próprio) só no endereço próprio: dentro da loja o celular acharia que já está instalado.
   if(location.hostname==='gestacell.leunamesoftware.com.br'){
     try{
-      const link=document.createElement('link'); link.rel='manifest'; link.href='/app.webmanifest';
-      document.head.appendChild(link);
+      if(!document.querySelector('link[rel=manifest]')){ const link=document.createElement('link'); link.rel='manifest'; link.href='/app.webmanifest'; document.head.appendChild(link); }
       if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(()=>{});
     }catch(e){ console.warn('Instalação indisponível neste navegador.',e); }
   }

@@ -33,6 +33,7 @@
     .abrir { min-width: 104px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: linear-gradient(135deg, #2F6BFF, #1B3FD6); color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; padding: 0 16px; box-shadow: 0 6px 14px rgba(27,63,214,.32); transition: transform .12s, box-shadow .12s; white-space: nowrap; }
     .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
     .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
+    .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #15803D; color: #fff; font-weight: 800; border-radius: 14px; padding: 14px 16px; box-shadow: 0 10px 24px rgba(0,0,0,.3); text-align: center; }
     .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
     .opcoes { grid-column: 1 / -1; list-style: none; margin: 2px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
@@ -225,9 +226,27 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
 
     // Instalar: entra em "Meus apps" e já coloca o ícone no celular/computador (o app abre com o botão Instalar).
-    function instalar(id) {
+    function marcarInstalado(id) {
       meus = [...new Set([...meus, id])]; gravar(meus);
       mostrar(document.getElementById('busca').value); if (!detalhe.hidden) mostrarDetalhe();
+    }
+    function avisar(texto) {
+      const t = document.createElement('div'); t.className = 'aviso-loja'; t.setAttribute('role', 'status'); t.textContent = texto;
+      document.body.appendChild(t); setTimeout(() => t.remove(), 4500);
+    }
+    async function instalar(id) {
+      const a = apps.find((x) => x.id === id); if (!a) return;
+      // Chrome/Edge novos: a loja instala direto, com um toque (como a Play Store), sem abrir o app antes.
+      if (a.instalarDireto && 'install' in navigator) {
+        try {
+          await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
+          marcarInstalado(id);
+          avisar(`✓ ${a.nome} instalado! O ícone já está ${celular ? 'na tela do celular' : 'na área de trabalho'}.`);
+          return;
+        } catch (e) { if (e && e.name === 'AbortError') return; } // cancelou: não faz nada
+      }
+      // Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
+      marcarInstalado(id);
       instalarNoAparelho(id);
     }
     function desinstalar(id) {

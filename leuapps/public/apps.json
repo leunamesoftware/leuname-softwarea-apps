@@ -65,7 +65,11 @@
       "/img/telas/quantocobrar-4.webp",
       "/img/telas/quantocobrar-5.webp"
     ],
-    "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1"
+    "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1",
+    "instalarDireto": {
+      "url": "https://quantocobrar.leunamesoftware.com.br/app/",
+      "id": "https://quantocobrar.leunamesoftware.com.br/app/"
+    }
   },
   {
     "id": "gestacell",
@@ -99,7 +103,11 @@
       "/img/telas/gestacell-4.webp",
       "/img/telas/gestacell-1.webp"
     ],
-    "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1"
+    "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
+    "instalarDireto": {
+      "url": "https://gestacell.leunamesoftware.com.br/",
+      "id": "https://gestacell.leunamesoftware.com.br/?app=gestacell"
+    }
   },
   {
     "id": "radar",
@@ -135,6 +143,10 @@
       "/img/telas/radar-5.webp"
     ],
     "instalar": "https://radar.leunamesoftware.com.br/",
-    "instalarPassos": true
+    "instalarPassos": true,
+    "instalarDireto": {
+      "url": "https://radar.leunamesoftware.com.br/",
+      "id": "https://radar.leunamesoftware.com.br/"
+    }
   }
 ]

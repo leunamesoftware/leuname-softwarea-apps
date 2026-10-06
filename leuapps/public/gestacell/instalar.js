@@ -36,7 +36,7 @@
     var corpo = estado === 'pronto'
       ? '<p class="li-texto">Pronto! O <b>' + nome + '</b> já está ' + onde + '. Abra pelo ícone, como qualquer app.</p><button type="button" class="li-sim" data-fechar>OK</button>'
       : pedido
-        ? '<p class="li-texto">Coloque o <b>' + nome + '</b> ' + onde + ' e abra direto pelo ícone, sem passar pela loja.</p><button type="button" class="li-sim" data-instalar>📲 Instalar agora</button><button type="button" class="li-nao" data-fechar>Agora não</button>'
+        ? '<p class="li-texto">Falta só <b>um toque</b> para o <b>' + nome + '</b> ficar ' + onde + ', abrindo direto pelo ícone.</p><button type="button" class="li-sim" data-instalar>📲 Instalar agora</button><button type="button" class="li-nao" data-fechar>Agora não</button>'
         : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p><ol class="li-passos">' + passos() + '</ol><button type="button" class="li-nao" data-fechar>Fechar</button>';
     cartao.querySelector('.li-corpo').innerHTML = corpo;
   }

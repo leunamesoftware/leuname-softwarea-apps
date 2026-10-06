@@ -108,6 +108,10 @@ export default {
     }
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);
+    // Gestacell no endereço próprio: o manifesto vai já no HTML, para a loja conseguir instalar com um toque.
+    if (url.hostname === GESTACELL_HOST && arquivo.status === 200 && (arquivo.headers.get('Content-Type') || '').includes('text/html')) {
+      return seguro(new HTMLRewriter().on('head', { element: (e) => e.append('<link rel="manifest" href="/app.webmanifest">', { html: true }) }).transform(arquivo));
+    }
     if (arquivo.status !== 404) return seguro(arquivo);
     if (env.SITE_ANTIGO && url.hostname !== 'apps.leunamesoftware.com.br') {
       if (url.pathname === '/site-antigo') url.pathname = '/';
