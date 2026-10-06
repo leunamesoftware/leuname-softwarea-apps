@@ -94,7 +94,11 @@ async function licencaDoDono(env, appId) {
 export async function appsDaConta(env, contaId, email) {
   if (eDono(env, email)) {
     const apps = {};
-    for (const p of Object.values(PLANOS)) if (p.licenca) apps[p.app] = { chave: await licencaDoDono(env, p.licenca) };
+    // Um app com problema na licença não pode tirar os outros do dono.
+    for (const p of Object.values(PLANOS)) {
+      if (!p.licenca || apps[p.app]) continue;
+      try { apps[p.app] = { chave: await licencaDoDono(env, p.licenca) }; } catch (e) { console.error('licença do dono', p.licenca, e?.message); }
+    }
     return apps;
   }
   const { results } = await env.DB.prepare("SELECT plano, chave FROM pedidos WHERE conta_id = ? AND status = 'pago' AND chave IS NOT NULL ORDER BY criado_em")
