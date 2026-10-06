@@ -8,13 +8,11 @@
   var nome = (eu && eu.dataset.nome) || document.title;
   var icone = (eu && eu.dataset.icone) || '';
   var cor = (eu && eu.dataset.cor) || '#6A35E8';
-  var apk = (eu && eu.dataset.apk) || ''; // Android: instala o app de verdade (APK), que abre como app e não como site
   var loja = 'https://www.leunamesoftware.com.br/';
   var pedido = null, tela = null, estado = 'esperando';
 
   addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault(); pedido = e;
-    if (android) return;
     if (tela && estado === 'esperando') pedirInstalacao(); // a pessoa já tocou em Instalar: segue direto
     else if (tela && estado === 'passos') desenhar('botao');
   });
@@ -31,7 +29,6 @@
   var celular = ios || /Android|Mobile/i.test(ua);
   var firefox = /Firefox\//.test(ua);
   var onde = celular ? 'na tela do seu celular' : 'na área de trabalho do seu computador';
-  var android = /Android/i.test(ua) && apk;
 
   function passos() {
     if (ios) return '<li>Toque em <b>Compartilhar</b> (o quadrado com a seta, embaixo ou em cima da tela).</li><li>Desça e toque em <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>.</li>';
@@ -47,14 +44,10 @@
       corpo = '<div class="li-ok" aria-hidden="true">✓</div><p class="li-texto"><b>' + nome + ' instalado!</b> O ícone já está ' + onde + '.</p>'
         + '<p class="li-texto">Abra o app pelo ícone. Lá dentro você cria a sua conta (nome, e-mail e senha) e começa a usar.</p>'
         + '<a class="li-sim" href="' + loja + '">Voltar para a LeuApps</a><button type="button" class="li-nao" data-usar>Abrir aqui mesmo</button>';
-    } else if (novo === 'apk') {
-      corpo = '<p class="li-texto"><b>Baixando o ' + nome + '…</b> Falta só um passo:</p><ol class="li-passos"><li>Quando terminar de baixar, toque em <b>Abrir</b> (aparece embaixo da tela ou nas notificações).</li><li>Toque em <b>Instalar</b>. O ícone vai para a tela do celular.</li></ol>'
-        + '<p class="li-mini">Se o celular pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>. É só na primeira vez.</p>'
-        + '<a class="li-nao" href="' + apk + '">Baixar de novo</a>';
     } else if (novo === 'botao') {
       corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>';
     } else if (novo === 'passos') {
-      corpo = '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p><ol class="li-passos">' + passos() + '</ol>'
+      corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
         + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
     } else {
       corpo = '<button type="button" class="li-sim" disabled><span class="li-anel li-anel-mini" aria-hidden="true"></span>Preparando…</button><p class="li-mini">Só um instante</p>';
@@ -103,7 +96,6 @@
       if (e.target.closest('[data-voltar]')) { if (document.referrer && history.length > 1) history.back(); else location.href = loja; return; }
       if (e.target.closest('[data-usar]')) { tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
       if (e.target.closest('[data-instalar]')) {
-        if (android) { var l = document.createElement('a'); l.href = apk; l.download = ''; document.body.appendChild(l); l.click(); l.remove(); return desenhar('apk'); }
         if (pedido) return pedirInstalacao();
         // O navegador ainda não liberou o botão: espera um pouco; só mostra o passo a passo se ele não liberar.
         desenhar('esperando');
