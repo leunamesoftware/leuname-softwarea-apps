@@ -73,7 +73,16 @@
     "android": {
       "pacote": "com.leunamesoftwares.quantocobrar",
       "apk": "https://quantocobrar.leunamesoftware.com.br/baixar"
-    }
+    },
+    "destaque": {
+      "imagem": "/img/destaques/quantocobrar.webp",
+      "titulo": "Quanto Cobrar",
+      "frase": "Receitas que vendem e o preço certo de cada uma"
+    },
+    "tags": [
+      "Receitas",
+      "Calculadora de preço"
+    ]
   },
   {
     "id": "gestacell",
@@ -116,7 +125,16 @@
       "pacote": "com.leunamesoftwares.gestacell",
       "apk": "https://www.leunamesoftware.com.br/baixar/gestacell.apk",
       "versao": 101
-    }
+    },
+    "destaque": {
+      "imagem": "/img/destaques/gestacell.webp",
+      "titulo": "Gestacell",
+      "frase": "Vendas, OS, estoque e calculadoras da loja de celular"
+    },
+    "tags": [
+      "Empresa",
+      "Loja de celular"
+    ]
   },
   {
     "id": "radar",
@@ -160,6 +178,15 @@
     "android": {
       "pacote": "com.radarpreventivo.app",
       "apk": "https://radar.leunamesoftware.com.br/baixar/RadarPreventivo.apk"
-    }
+    },
+    "destaque": {
+      "imagem": "/img/destaques/radar.webp",
+      "titulo": "Radar Preventivo",
+      "frase": "Avisa antes de vencer: documentos, contas e prazos"
+    },
+    "tags": [
+      "Empresa",
+      "Documentos"
+    ]
   }
 ]

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#121418" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#131416" media="(prefers-color-scheme: dark)">
   <title>LeuApps — aplicativos LeuName Softwares</title>
   <meta name="description" content="Todos os aplicativos da LeuName Softwares em um só lugar. Instale, abra e use, sempre atualizados.">
   <link rel="manifest" href="/manifest.webmanifest">
@@ -12,55 +12,73 @@
   <link rel="apple-touch-icon" href="/img/leuapps-192.png">
   <style>
     :root {
-      --fundo: #FFFFFF; --cartao: #F4F6F5; --texto: #1C1F1E; --suave: #5E6662; --linha: #E2E6E4;
-      --verde: #0E7C4A; --verde-claro: #E3F4EA; --verde-texto: #0B6B3F; --no-verde: #FFFFFF; --perigo: #B42318;
-      --sombra: 0 1px 2px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.06);
+      --fundo: #FFFFFF; --cartao: #F1F4F3; --cartao-2: #E6EBE9; --texto: #1B1D1C; --suave: #5B6360; --linha: #DDE3E0;
+      --verde: #0E7C4A; --verde-claro: #D7F1E2; --verde-texto: #0B6B3F; --no-verde: #FFFFFF; --perigo: #B42318;
+      --sombra: 0 1px 2px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
     }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-      --fundo: #121418; --cartao: #1E2226; --texto: #E8ECEA; --suave: #A7B0AC; --linha: #2C3236;
-      --verde: #57CF8F; --verde-claro: #1D3A2B; --verde-texto: #79DCA6; --no-verde: #0A2617; --perigo: #FF8A80;
-      --sombra: none; } }
-    :root[data-theme="dark"] { --fundo: #121418; --cartao: #1E2226; --texto: #E8ECEA; --suave: #A7B0AC; --linha: #2C3236;
-      --verde: #57CF8F; --verde-claro: #1D3A2B; --verde-texto: #79DCA6; --no-verde: #0A2617; --perigo: #FF8A80; --sombra: none; }
+      --fundo: #131416; --cartao: #1F2123; --cartao-2: #2A2D30; --texto: #E6E9E8; --suave: #A5ADA9; --linha: #2E3235;
+      --verde: #5BD496; --verde-claro: #12402A; --verde-texto: #7FE0AC; --no-verde: #072415; --perigo: #FF8A80; --sombra: none; } }
+    :root[data-theme="dark"] { --fundo: #131416; --cartao: #1F2123; --cartao-2: #2A2D30; --texto: #E6E9E8; --suave: #A5ADA9; --linha: #2E3235;
+      --verde: #5BD496; --verde-claro: #12402A; --verde-texto: #7FE0AC; --no-verde: #072415; --perigo: #FF8A80; --sombra: none; }
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
     html, body { background: var(--fundo); }
-    body { margin: 0; min-height: 100dvh; font: 400 16px/1.45 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; min-height: 100dvh; font: 400 16px/1.4 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); -webkit-tap-highlight-color: transparent; }
     button { font: inherit; color: inherit; cursor: pointer; }
     a { color: inherit; }
+    img { max-width: 100%; }
     :focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+    .rolar { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; }
+    .rolar::-webkit-scrollbar { display: none; }
 
-    /* Barra de cima: pesquisa + marca */
-    .topo { position: sticky; top: 0; z-index: 5; background: var(--fundo); padding: calc(10px + env(safe-area-inset-top)) 16px 10px; }
-    .busca { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 8px 0 14px; border-radius: 999px; background: var(--cartao); }
+    /* Barra de cima */
+    .topo { position: sticky; top: 0; z-index: 5; background: var(--fundo); padding: calc(8px + env(safe-area-inset-top)) 16px 8px; }
+    .topo-linha { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; min-height: 52px; }
+    .topo-linha .logo { width: 38px; height: 38px; border-radius: 11px; }
+    .topo-linha .marca { font-size: 20px; font-weight: 500; }
+    .topo-linha .espaco { flex: 1; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--verde-claro); color: var(--verde-texto); font-weight: 700; font-size: 17px; display: grid; place-items: center; }
+    .busca { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 18px; border-radius: 999px; background: var(--cartao); }
     .busca svg { flex: none; color: var(--suave); }
-    .busca input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; color: var(--texto); outline: none; }
+    .busca input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 17px; color: var(--texto); outline: none; }
     .busca input::placeholder { color: var(--suave); }
-    .busca img { width: 34px; height: 34px; border-radius: 10px; }
 
-    main { max-width: 760px; margin: 0 auto; padding: 4px 16px 16px; }
-    h2 { font-size: 18px; font-weight: 600; margin: 18px 0 10px; }
-    .sub-titulo { margin: -6px 0 10px; color: var(--suave); font-size: 14px; }
+    main { max-width: 760px; margin: 0 auto; padding: 0 16px 16px; }
+    .secao { margin-top: 26px; }
+    .secao-titulo { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
+    .secao-titulo h2 { flex: 1; margin: 0; font-size: 20px; font-weight: 500; }
+    .seta { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--cartao); display: grid; place-items: center; }
 
+    /* Destaques (cartões grandes) */
+    .destaque { position: relative; flex: 0 0 calc(100% - 28px); scroll-snap-align: start; border-radius: 26px; overflow: hidden; aspect-ratio: 27 / 16; max-height: 360px; border: 0; padding: 0; text-align: left; background: var(--cartao); }
+    .destaque > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .destaque::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.78)); }
+    .destaque-texto { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
+    .destaque-texto b { display: block; font-size: 24px; font-weight: 500; line-height: 1.15; }
+    .destaque-texto span { display: block; font-size: 14.5px; opacity: .92; }
+    .destaque-texto .mini { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; }
+    .destaque-texto .mini img { width: 40px; height: 40px; border-radius: 11px; }
+    .destaque-texto .acao { background: #E6F7EE; color: #0B4A2C; }
 
-    /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
-    .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
-    .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
-    .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
-    .pagina-app .det-topo img { width: 84px; height: 84px; border-radius: 20px; }
-    .pagina-app .instalar-app { display: flex; justify-content: center; margin: 4px 0 6px; }
-    .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
-    .pagina-app .det-telas img { height: 300px; }
-    .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
+    /* Atalhos (chips) */
+    .chips-linha { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 16px -16px 0; padding: 0 16px; }
+    .chips-linha::-webkit-scrollbar { display: none; }
+    .chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 14px; border: 0; background: var(--cartao); font-size: 15px; font-weight: 500; }
 
     /* Lista de apps */
-    .lista { list-style: none; padding: 0; margin: 0; display: grid; }
-    .linha { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 10px 0; }
+    .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+    .linha { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 8px 0; }
     .linha img { width: 64px; height: 64px; border-radius: 16px; box-shadow: var(--sombra); display: block; }
-    .linha .nome { font-size: 16px; font-weight: 500; }
-    .linha .info { font-size: 13.5px; color: var(--suave); }
-    .linha .preco { font-size: 13px; color: var(--suave); }
-    .linha .estado { font-size: 12.5px; color: var(--verde-texto); font-weight: 600; }
+    .linha .nome { font-size: 16.5px; }
+    .linha .info { font-size: 14px; color: var(--suave); }
+    .pilula { display: inline-block; margin-top: 4px; padding: 2px 9px; border-radius: 8px; background: var(--cartao); font-size: 13px; color: var(--texto); }
+    .pilula.verde { background: var(--verde-claro); color: var(--verde-texto); font-weight: 600; }
+
+    /* Fileira de ícones grandes */
+    .icone-grande { flex: 0 0 112px; scroll-snap-align: start; border: 0; background: none; padding: 0; text-align: left; }
+    .icone-grande img { width: 112px; height: 112px; border-radius: 26px; box-shadow: var(--sombra); display: block; }
+    .icone-grande .nome { margin-top: 8px; font-size: 14.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
     /* Botões (pílulas) */
     .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--verde); color: var(--no-verde); font-weight: 600; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
@@ -74,40 +92,65 @@
     @keyframes indo { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
     @media (prefers-reduced-motion: reduce) { .barra.indo i { animation: none; width: 100% !important; } }
 
-    /* Meus apps */
-    .grade { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 18px 8px; }
-    .grade button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; text-align: center; width: 100%; }
-    .grade img { width: 60px; height: 60px; border-radius: 16px; box-shadow: var(--sombra); }
-    .vazio { color: var(--suave); text-align: center; padding: 24px 8px; font-size: 14.5px; }
+    /* Pesquisa: explorar por categoria */
+    .categorias { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .categoria { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 76px; padding: 0 16px 0 18px; border-radius: 6px; border: 0; background: var(--cartao); font-size: 15.5px; font-weight: 500; text-align: left; }
+    .categoria:first-child { border-top-left-radius: 22px; } .categoria:nth-child(2) { border-top-right-radius: 22px; }
+    .categoria:nth-last-child(2):nth-child(odd) { border-bottom-left-radius: 22px; } .categoria:last-child { border-bottom-right-radius: 22px; }
+    .categoria span { font-size: 34px; }
+
+    /* Serviços: abas + fileiras de exemplos */
+    .abas-texto { display: flex; gap: 26px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--linha); margin: 4px -16px 0; padding: 0 16px; }
+    .abas-texto::-webkit-scrollbar { display: none; }
+    .abas-texto button { flex: none; border: 0; background: none; padding: 12px 2px; font-size: 16px; font-weight: 500; color: var(--suave); border-bottom: 3px solid transparent; }
+    .abas-texto button[aria-selected="true"] { color: var(--verde-texto); border-color: var(--verde); }
+    .capa { flex: 0 0 auto; scroll-snap-align: start; width: 210px; }
+    .capa figure { position: relative; margin: 0; border-radius: 10px; overflow: hidden; background: var(--cartao); aspect-ratio: 3 / 4; }
+    .capa figure img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; user-select: none; }
+    .capa figure::after { content: "DEMONSTRAÇÃO"; position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.6); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .5px; }
+    .capa .nome { margin-top: 8px; font-size: 15px; }
+    .whats { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border-radius: 999px; background: var(--verde); color: var(--no-verde); font-weight: 600; text-decoration: none; margin-top: 18px; }
+    .protegido { -webkit-touch-callout: none; user-select: none; }
+
+    /* Você */
+    .ola { text-align: center; font-size: 34px; font-weight: 500; margin: 18px 0 14px; }
+    .cartao-conta { display: flex; align-items: center; gap: 14px; margin: 0 auto; max-width: 420px; padding: 12px 18px 12px 12px; border-radius: 999px; background: var(--cartao); text-decoration: none; }
+    .cartao-conta .avatar { flex: none; width: 46px; height: 46px; }
+    .cartao-conta small { display: block; color: var(--suave); font-size: 13.5px; }
+    .cartao-conta b { font-weight: 500; font-size: 16px; }
+    .opcoes-voce { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+    .opcoes-voce a, .opcoes-voce button { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 56px; padding: 0 4px; border: 0; background: none; text-decoration: none; font-size: 16px; text-align: left; }
+    .opcoes-voce span { width: 28px; text-align: center; font-size: 20px; }
+    .vazio { color: var(--suave); text-align: center; padding: 20px 8px; font-size: 14.5px; }
 
     /* Página do app */
     .detalhe { position: fixed; inset: 0; z-index: 15; overflow-y: auto; background: var(--fundo); }
     .det-barra { position: sticky; top: 0; z-index: 1; background: var(--fundo); padding: calc(6px + env(safe-area-inset-top)) 6px 6px; }
     .det-voltar { width: 48px; height: 48px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; }
     .det-corpo { max-width: 760px; margin: 0 auto; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
-    .det-topo { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; }
-    .det-topo img { width: 72px; height: 72px; border-radius: 18px; box-shadow: var(--sombra); }
-    .det-topo h1 { margin: 0; font-size: 22px; font-weight: 500; line-height: 1.2; }
+    .det-topo { display: grid; grid-template-columns: 76px 1fr; gap: 18px; align-items: center; }
+    .det-topo img { width: 76px; height: 76px; border-radius: 18px; box-shadow: var(--sombra); }
+    .det-topo h1 { margin: 0; font-size: 23px; font-weight: 500; line-height: 1.2; }
     .det-dev { color: var(--verde-texto); font-weight: 600; font-size: 14.5px; }
     .det-compra { color: var(--suave); font-size: 12.5px; }
-    .det-fatos { display: flex; margin: 18px 0; padding: 0; list-style: none; overflow-x: auto; }
+    .det-fatos { display: flex; margin: 20px 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
     .det-fatos li { flex: 1 0 auto; min-width: 96px; padding: 0 12px; text-align: center; border-left: 1px solid var(--linha); font-size: 12.5px; color: var(--suave); }
     .det-fatos li:first-child { border-left: 0; }
     .det-fatos b { display: block; color: var(--texto); font-size: 14px; font-weight: 600; }
     .det-botoes { display: flex; gap: 10px; }
-    .det-botoes > * { flex: 1; min-height: 44px; font-size: 15px; }
+    .det-botoes > * { flex: 1; min-height: 42px; font-size: 15px; }
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
-    .det-telas { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 20px -16px 4px; padding: 0 16px 8px; }
-    .det-telas img { flex: 0 0 auto; height: 330px; width: auto; max-width: none; border-radius: 14px; border: 1px solid var(--linha); scroll-snap-align: start; background: var(--cartao); }
-    .detalhe h2 { font-size: 18px; margin: 20px 0 8px; }
+    .det-telas { margin-top: 22px; }
+    .det-telas img { flex: 0 0 auto; height: 320px; width: auto; max-width: none; border-radius: 14px; scroll-snap-align: start; background: var(--cartao); }
+    .detalhe h2 { font-size: 20px; font-weight: 500; margin: 24px 0 8px; }
     .det-desc { margin: 0 0 12px; color: var(--suave); font-size: 15px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
-    .chips li { border: 1px solid var(--linha); border-radius: 10px; padding: 7px 12px; font-size: 13.5px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+    .tags li { border: 1px solid var(--linha); border-radius: 10px; padding: 7px 12px; font-size: 13.5px; }
     .opcoes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
     .opcoes li { padding: 12px; border-radius: 14px; background: var(--cartao); display: grid; gap: 2px; }
     .opcoes b { font-size: 14px; font-weight: 600; } .opcoes span { font-size: 17px; font-weight: 700; color: var(--verde-texto); } .opcoes small { font-size: 12.5px; color: var(--suave); }
-    .det-info { margin: 20px 0 0; font-size: 12.5px; color: var(--suave); }
+    .det-info { margin: 22px 0 0; font-size: 12.5px; color: var(--suave); }
 
     /* Folhas (planos, permissão, instruções) */
     .folha-fundo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
@@ -124,65 +167,95 @@
     .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; vertical-align: middle; background: var(--verde-claro); color: var(--verde-texto); }
     .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: var(--verde-texto); font-weight: 600; }
     .fechar-folha { width: 100%; margin-top: 6px; border: 0; background: none; font-weight: 600; color: var(--suave); padding: 10px; }
-    .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #2B3030; color: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(0,0,0,.3); font-size: 14.5px; }
+    .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #2B3030; color: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(0,0,0,.3); font-size: 14.5px; }
 
     /* Menu de baixo */
-    .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; background: var(--fundo); border-top: 1px solid var(--linha); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
-    .menu div { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; max-width: 520px; }
-    .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 4px 0; font-size: 12.5px; font-weight: 500; color: var(--suave); }
+    .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
+    .menu div { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; max-width: 560px; }
+    .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
     .menu button span { display: grid; place-items: center; width: 64px; height: 32px; border-radius: 999px; }
-    .menu button[aria-selected="true"] { color: var(--texto); font-weight: 600; }
+    .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
+    .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); margin: 0; }
 
-    /* Serviços sob encomenda */
-    .servico { background: var(--cartao); border-radius: 18px; padding: 14px; margin-bottom: 14px; }
-    .servico h3 { margin: 0; font-size: 17px; font-weight: 600; } .servico p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
-    .galeria { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; margin: 0 -2px 10px; }
-    .galeria figure { position: relative; flex: 0 0 auto; margin: 0; scroll-snap-align: start; border-radius: 14px; overflow: hidden; }
-    .galeria img { display: block; height: 170px; width: auto; pointer-events: none; -webkit-user-drag: none; user-select: none; }
-    .galeria figure::after { content: "DEMONSTRAÇÃO"; position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.65); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .5px; }
-    .whats { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 999px; background: #128C4A; color: #fff; font-weight: 600; text-decoration: none; }
-    .protegido { -webkit-touch-callout: none; user-select: none; }
-    .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 16px 16px calc(100px + env(safe-area-inset-bottom)); margin: 0; }
+    /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
+    .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
+    .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
+    .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
+    .pagina-app .det-topo img { width: 84px; height: 84px; border-radius: 20px; }
+    .pagina-app .instalar-app { display: flex; justify-content: center; margin: 4px 0 6px; }
+    .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
+    .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
   </style>
 </head>
 <body>
   <header class="topo">
-    <label class="busca">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="busca" type="search" placeholder="Pesquisar apps" aria-label="Pesquisar apps" autocomplete="off">
-      <img src="/img/leuapps-192.webp" alt="LeuApps" width="34" height="34">
-    </label>
+    <div class="topo-linha" id="topo-inicio">
+      <img class="logo" src="/img/leuapps-192.webp" alt="" width="38" height="38"><span class="marca">LeuApps</span>
+      <span class="espaco"></span>
+      <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar">L</button>
+    </div>
+    <div class="topo-linha" id="topo-busca" hidden>
+      <label class="busca">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="busca" type="search" placeholder="Pesquisar apps" aria-label="Pesquisar apps" autocomplete="off">
+      </label>
+      <button class="avatar" type="button" data-aba="voce" aria-label="Você" id="avatar2">L</button>
+    </div>
   </header>
 
   <main>
-    <section id="aba-loja">
-      <h2>Apps da LeuName Softwares</h2>
-      <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
-    </section>
-
-    <section id="aba-meus" hidden>
-      <h2>Meus apps</h2>
-      <ul class="grade" id="meus"></ul>
-      <div id="descubra">
-        <h2>Para você instalar</h2>
-        <ul class="lista" id="sugestoes"></ul>
+    <!-- Apps (início) -->
+    <section id="aba-apps">
+      <div class="rolar" id="destaques"></div>
+      <div class="chips-linha">
+        <button class="chip" type="button" data-rolar="sugestoes">📈 Em alta</button>
+        <button class="chip" type="button" data-aba="pesquisa">🧩 Categorias</button>
+        <button class="chip" type="button" data-aba="servicos">🎨 Criamos para você</button>
+      </div>
+      <div class="secao" id="sugestoes">
+        <div class="secao-titulo"><h2>Sugestões para você</h2></div>
+        <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
+      </div>
+      <div class="secao">
+        <div class="secao-titulo"><h2>Feitos pela LeuName</h2><button class="seta" type="button" data-aba="pesquisa" aria-label="Ver todos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        <div class="rolar" id="fileira"></div>
       </div>
     </section>
 
+    <!-- Pesquisa -->
+    <section id="aba-pesquisa" hidden>
+      <div id="resultados" hidden><div class="secao"><ul class="lista" id="lista-busca"></ul></div></div>
+      <div id="explorar">
+        <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
+        <div class="secao"><div class="secao-titulo"><h2>Sugestões para você</h2></div><div class="rolar" id="fileira-busca"></div></div>
+      </div>
+    </section>
+
+    <!-- Serviços (sob encomenda) -->
     <section id="aba-servicos" class="protegido" hidden>
-      <h2>Criamos para você</h2>
-      <p class="sub-titulo">Logomarca, site e banners sob encomenda. Orçamento grátis, valores a combinar.</p>
+      <nav class="abas-texto" id="abas-servicos" aria-label="Tipos de serviço"></nav>
       <div id="servicos"><p class="vazio">Carregando…</p></div>
-      <p class="sub-titulo" style="text-align:center;font-size:13px">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>
+    </section>
+
+    <!-- Você -->
+    <section id="aba-voce" hidden>
+      <div class="ola" id="ola">Olá!</div>
+      <a class="cartao-conta" id="cartao-conta" href="/loja/comprar?app=quantocobrar&entrar=1"><span class="avatar" id="avatar3">L</span><span><small>Sua conta LeuName</small><b id="conta-texto">Entrar na sua conta</b></span></a>
+      <div class="secao"><div class="secao-titulo"><h2>Seus apps</h2></div><ul class="lista" id="meus"></ul></div>
+      <div class="secao"><ul class="opcoes-voce">
+        <li><a id="ajuda" href="#" target="_blank" rel="noopener"><span>💬</span>Ajuda pelo WhatsApp</a></li>
+        <li><button type="button" data-aba="servicos"><span>🎨</span>Criamos para você: logo, site e banners</button></li>
+      </ul></div>
     </section>
   </main>
   <p class="rodape">© 2026 LeuName Softwares · Aplicativos sempre na versão mais nova.</p>
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
-    <button role="tab" id="tab-loja" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span>Apps</button>
-    <button role="tab" id="tab-meus" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>Meus apps</button>
-    <button role="tab" id="tab-servicos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg></span>Serviços</button>
+    <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Apps</button>
+    <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Pesquisa</button>
+    <button role="tab" id="tab-servicos" data-aba="servicos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg></span>Serviços</button>
+    <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Você</button>
   </div></nav>
 
   <section id="detalhe" class="detalhe" hidden aria-label="Página do app"></section>
@@ -192,8 +265,8 @@
 if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, '', '/#quantocobrar');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const $ = (id) => document.getElementById(id);
-    const lista = $('lista'), detalhe = $('detalhe');
-    let apps = [];
+    const detalhe = $('detalhe');
+    let apps = [], servicos = null;
 
     // ---- Onde a loja está aberta ----
     // No app LeuApps para Android existe window.LeuNativo: ele instala, abre e desinstala de verdade.
@@ -228,8 +301,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return `<div class="progresso" role="status"><span>${p >= 100 ? 'Instalando…' : p >= 0 ? `Baixando… ${p}%` : 'Baixando…'}</span>
         <div class="barra ${p >= 0 && p < 100 ? '' : 'indo'}"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div></div>`;
     };
-
-    // Botão da linha da lista (um só, como nas lojas de celular).
     function botaoLinha(a) {
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
@@ -237,7 +308,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (s === 'instalado') return `<button class="acao contorno" data-abrir="${esc(a.id)}">Abrir</button>`;
       return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
     }
-    // Botões da página do app: Instalar; depois Desinstalar + Abrir (ou Atualizar).
     function botoesDetalhe(a) {
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
@@ -245,26 +315,46 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return `<button class="acao perigo" data-tirar="${esc(a.id)}">Desinstalar</button>
         ${s === 'atualizar' ? `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>` : `<button class="acao" data-abrir="${esc(a.id)}">Abrir</button>`}`;
     }
+    const precoCurto = (a) => esc(a.preco.split(' · ')[0]);
+    const tags = (a) => esc((a.tags || [a.categoria]).join(' • '));
 
+    // ---- Desenho das telas ----
     function linha(a) {
       const s = situacao(a);
       return `<li><div class="linha">
           <img src="${esc(a.icone)}" alt="" loading="lazy" data-detalhe="${esc(a.id)}" style="cursor:pointer">
           <div data-detalhe="${esc(a.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(a.nome)}</div>
-            <div class="info">${esc(a.categoria)}</div>
-            ${s === 'instalado' ? '<div class="estado">✓ Instalado</div>' : s === 'atualizar' ? '<div class="estado">Atualização disponível</div>' : `<div class="preco">${esc(a.preco)}</div>`}</div>
+            <div class="info">${tags(a)}</div>
+            ${s === 'instalado' ? '<span class="pilula verde">✓ Instalado</span>' : s === 'atualizar' ? '<span class="pilula verde">Atualização</span>' : `<span class="pilula">${precoCurto(a)}</span>`}</div>
           <div>${botaoLinha(a)}</div></div></li>`;
+    }
+    const iconeGrande = (a) => `<button class="icone-grande" type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy"><div class="nome">${esc(a.nome)}</div><span class="pilula">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`;
+    function destaques() {
+      $('destaques').innerHTML = apps.filter((a) => a.destaque).map((a) => `
+        <button class="destaque" type="button" data-detalhe="${esc(a.id)}">
+          <img src="${esc(a.destaque.imagem)}" alt="">
+          <div class="destaque-texto"><div><b>${esc(a.destaque.titulo)}</b><span>${esc(a.destaque.frase)}</span>
+            <div class="mini"><img src="${esc(a.icone)}" alt="">LeuName Softwares</div></div>
+            <span class="acao">${situacao(a) === 'nao' ? 'Conhecer' : 'Abrir'}</span></div>
+        </button>`).join('');
+    }
+    function categorias() {
+      const cores = { 'Receitas e vendas': '🧁', 'Gestão de loja': '📱', 'Documentos e prazos': '📄' };
+      const cats = [...new Set(apps.map((a) => a.categoria))];
+      $('categorias').innerHTML = cats.map((c) => `<button class="categoria" type="button" data-categoria="${esc(c)}">${esc(c)}<span>${cores[c] || '🧩'}</span></button>`).join('')
+        + `<button class="categoria" type="button" data-aba="servicos">Logo, site e banners<span>🎨</span></button>`;
     }
     function mostrar() {
       const f = $('busca').value.trim().toLowerCase();
-      const vis = apps.filter((a) => !f || (a.nome + ' ' + a.categoria + ' ' + a.resumo).toLowerCase().includes(f));
-      lista.innerHTML = vis.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
+      $('lista').innerHTML = apps.map(linha).join('');
+      $('fileira').innerHTML = apps.map(iconeGrande).join('');
+      $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
+      const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
+      $('resultados').hidden = !f; $('explorar').hidden = Boolean(f);
+      $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
       const mi = apps.filter((a) => situacao(a) !== 'nao');
-      $('meus').innerHTML = mi.map((a) => `<li><button data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</button></li>`).join('')
-        || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Escolha abaixo e toque em Instalar.</li>';
-      const resto = apps.filter((a) => situacao(a) === 'nao');
-      $('sugestoes').innerHTML = resto.map(linha).join('');
-      $('descubra').hidden = !resto.length;
+      $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
+      destaques();
       if (!detalhe.hidden) mostrarDetalhe();
     }
 
@@ -289,7 +379,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       document.body.appendChild(t); setTimeout(() => t.remove(), 4500);
     }
 
-    // ---- Instalar ----
+    // ---- Instalar, abrir, desinstalar ----
     async function instalar(id) {
       const a = apps.find((x) => x.id === id); if (!a) return;
       // 1) App LeuApps para Android: baixa e instala de verdade (o Android confirma e põe o ícone na tela).
@@ -352,11 +442,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       voltou() {
         lerInstalados();
         if (pendente && N.podeInstalar()) { const id = pendente; pendente = null; instalar(id); return; }
-        mostrar();
+        mostrar(); conta();
       },
     };
-
-    // Apps que só abrem depois de comprados (exigeCompra): confere a conta antes de abrir.
     async function conferirCompra(a, destino) {
       let tem = false;
       try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
@@ -379,9 +467,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           </ul>
           <div class="det-botoes">${botoesDetalhe(a)}</div>
           ${a.planos ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
-          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="186" height="330">`).join('')}</div>` : ''}
+          ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="180" height="320">`).join('')}</div>` : ''}
           <h2>Sobre este app</h2><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
-          ${a.recursos ? `<ul class="chips">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+          ${a.recursos ? `<ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
           ${a.opcoes ? `<h2>Planos</h2><ul class="opcoes">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
           <p class="det-info">Desenvolvedor: LeuName Softwares · Sempre na versão mais nova</p>
         </div>`;
@@ -390,30 +478,46 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); });
 
+    // ---- Abas (menu de baixo) ----
+    function aba(qual) {
+      for (const n of ['apps', 'pesquisa', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
+      $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
+      if (qual === 'pesquisa' && !celular) $('busca').focus();
+      try { localStorage.setItem('leuapps.aba', qual); } catch {}
+      scrollTo(0, 0);
+    }
+
     // ---- Cliques ----
     document.addEventListener('click', (e) => {
       const t = e.target;
       if (t.closest('[data-permitir]') && N) return N.pedirPermissao();
-      const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
       const ins = t.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
       const abr = t.closest('[data-abrir]'); if (abr) return abrirApp(abr.dataset.abrir);
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
+      const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const ab = t.closest('[data-aba]'); if (ab) return aba(ab.dataset.aba);
+      const cat = t.closest('[data-categoria]'); if (cat) { $('busca').value = cat.dataset.categoria; mostrar(); return; }
+      const rol = t.closest('[data-rolar]'); if (rol) return $(rol.dataset.rolar).scrollIntoView({ behavior: 'smooth' });
+      const sv = t.closest('[data-servico]'); if (sv) return mostrarServicos(sv.dataset.servico);
     });
+    $('busca').addEventListener('input', mostrar);
 
-    // ---- Abas (menu de baixo) ----
-    function aba(qual) {
-      for (const n of ['loja', 'meus', 'servicos']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
-      try { localStorage.setItem('leuapps.aba', qual); } catch {}
-      scrollTo(0, 0);
+    // ---- Você: nome e conta ----
+    async function conta() {
+      try {
+        const d = await (await fetch('/loja-api/conta', { cache: 'no-store', credentials: 'same-origin' })).json();
+        if (!d.conta) return;
+        const nome = String(d.conta.nome || '').trim().split(/\s+/)[0] || 'você';
+        const inicial = nome[0].toUpperCase();
+        $('ola').textContent = `Olá, ${nome[0].toUpperCase() + nome.slice(1)}!`;
+        $('conta-texto').textContent = d.conta.email;
+        for (const id of ['avatar', 'avatar2', 'avatar3']) $(id).textContent = inicial;
+        $('cartao-conta').removeAttribute('href');
+      } catch {}
     }
-    $('tab-loja').addEventListener('click', () => aba('loja'));
-    $('tab-meus').addEventListener('click', () => aba('meus'));
-    $('tab-servicos').addEventListener('click', () => aba('servicos'));
-    $('busca').addEventListener('input', () => { if ($('aba-loja').hidden) aba('loja'); mostrar(); });
 
     // ---- Android no navegador: só a página do app LeuApps (como a página de um app na loja) ----
-    // A loja completa (instalar, abrir, desinstalar) fica dentro do app LeuApps.
     if (android && !N) {
       document.body.classList.add('so-app');
       const pag = document.createElement('section'); pag.className = 'pagina-app';
@@ -423,32 +527,39 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <div class="instalar-app"><a class="acao" href="/baixar/leuapps.apk" id="baixar-leuapps">Instalar</a></div>
         <h2>Sobre este app</h2>
         <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele vai direto para a tela do seu celular, com ícone próprio. Atualizações chegam sozinhas.</p>
-        <ul class="chips"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
+        <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
         <p class="nota">Depois de baixar, toque no arquivo <b>LeuApps.apk</b> e em <b>Instalar</b>.</p>`;
       document.body.prepend(pag);
       $('baixar-leuapps').addEventListener('click', () => setTimeout(() => folha(`<h3>Instalar o LeuApps</h3><p class="sub">O arquivo está baixando. Quando terminar:</p>
         <ol><li>Toque em <b>LeuApps.apk</b> (na notificação ou em Downloads).</li><li>Se o celular pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>.</li><li>Toque em <b>Instalar</b>. Pronto: abra o LeuApps pelo ícone.</li></ol>`, 'Entendi'), 600));
     }
 
-    // ---- Serviços sob encomenda: exemplos com marca d'água + orçamento grátis pelo WhatsApp ----
+    // ---- Serviços sob encomenda (abas + exemplos com marca d'água + orçamento pelo WhatsApp) ----
+    function mostrarServicos(qual) {
+      if (!servicos) return;
+      const s = servicos.itens.find((x) => x.id === qual) || servicos.itens[0];
+      $('abas-servicos').innerHTML = servicos.itens.map((x) => `<button type="button" data-servico="${esc(x.id)}" aria-selected="${x.id === s.id}">${esc(x.nome)}</button>`).join('');
+      const zap = (nome) => `https://wa.me/${servicos.whatsapp}?text=${encodeURIComponent(`Olá, LeuName Softwares! Vi no LeuApps e quero um orçamento grátis de ${nome}.`)}`;
+      $('servicos').innerHTML = `<div class="secao"><div class="secao-titulo"><h2>${esc(s.icone)} ${esc(s.nome)}</h2></div>
+          <p class="det-desc">${esc(s.resumo)}</p>
+          <div class="rolar">${s.imagens.map((i, k) => `<div class="capa"><figure><img src="${esc(i)}" alt="Exemplo de ${esc(s.nome)}" loading="lazy" draggable="false"></figure><div class="nome">Exemplo ${k + 1}</div><span class="pilula">Orçamento grátis</span></div>`).join('')}</div>
+          <a class="whats" href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">💬 Pedir orçamento grátis</a></div>
+        <p class="det-info" style="text-align:center">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>`;
+    }
     fetch('/servicos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      const zap = (nome) => `https://wa.me/${d.whatsapp}?text=${encodeURIComponent(`Olá, LeuName Softwares! Vi no LeuApps e quero um orçamento grátis de ${nome}.`)}`;
-      $('servicos').innerHTML = d.itens.map((s) => `
-        <article class="servico">
-          <h3>${esc(s.icone)} ${esc(s.nome)}</h3><p>${esc(s.resumo)}</p>
-          <div class="galeria">${s.imagens.map((i) => `<figure><img src="${esc(i)}" alt="Exemplo de ${esc(s.nome)}" loading="lazy" draggable="false"></figure>`).join('')}</div>
-          <a class="whats" href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">💬 Faça seu orçamento grátis</a>
-        </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:600;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
+      servicos = d; mostrarServicos();
+      $('ajuda').href = `https://wa.me/${d.whatsapp}?text=${encodeURIComponent('Olá, LeuName Softwares! Preciso de ajuda com a LeuApps.')}`;
     }).catch(() => {});
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      apps = d; lerInstalados(); mostrar(); mostrarDetalhe();
+      apps = d; lerInstalados(); categorias(); mostrar(); mostrarDetalhe();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
-      aba(['meus', 'servicos'].includes(a) ? a : 'loja');
-    }).catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
+      aba(['pesquisa', 'servicos', 'voce'].includes(a) ? a : 'apps');
+    }).catch(() => { $('lista').innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
+    conta();
 
     if ('serviceWorker' in navigator && !N) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
