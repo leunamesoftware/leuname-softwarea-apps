@@ -222,6 +222,34 @@
     .curso-fim { text-align: center; padding: 40px 8px 20px; display: grid; gap: 12px; justify-items: center; }
     .curso-fim .ok { width: 88px; height: 88px; border-radius: 50%; background: var(--verde); color: var(--no-verde); display: grid; place-items: center; }
     .curso-fim h1 { margin: 6px 0 0; font-size: 26px; } .curso-fim p { margin: 0; color: var(--suave); max-width: 40ch; }
+    /* Você: missão e desafios */
+    .missao { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; display: grid; gap: 14px; color: #3A2A00; background: linear-gradient(135deg, #FFD54A, #F5B21E); box-shadow: var(--sombra); }
+    .missao::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 70%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.18); }
+    .missao-prazo { position: relative; justify-self: start; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.75); font-size: 14px; font-weight: 700; }
+    .missao-arte { position: relative; display: flex; justify-content: center; align-items: center; gap: 28px; padding: 6px 0; }
+    .missao-arte img:first-child { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 8px 18px rgba(0,0,0,.2); transform: rotate(-6deg); }
+    .missao-arte img:last-child { width: 120px; height: 120px; }
+    .missao-rodape { position: relative; display: flex; align-items: center; gap: 12px; }
+    .missao-rodape b { flex: 1; font-size: 19px; line-height: 1.2; font-weight: 800; }
+    .missao-rodape button { flex: none; min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; background: #FFE58A; color: #3A2A00; font: inherit; font-weight: 700; }
+    .desafios { gap: 12px; }
+    .desafio { flex: 0 0 calc(100% - 28px); scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--cartao); display: grid; }
+    .desafio header { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: #fff; background: linear-gradient(120deg, #1A1F5C, #7B3FF2); }
+    .desafio header img { width: 48px; height: 48px; border-radius: 12px; }
+    .desafio header b { flex: 1; display: grid; font-size: 17px; } .desafio header small { font-weight: 500; opacity: .85; }
+    .desafio .premio { padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.35); font-weight: 700; font-size: 14px; }
+    .desafio-corpo { margin: 12px; padding: 12px; border-radius: 16px; background: var(--fundo); display: grid; gap: 8px; }
+    .desafio-info { font-size: 14px; color: var(--suave); }
+    .contagem { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; font-variant-numeric: tabular-nums; }
+    .contagem b { display: block; font-size: 30px; font-weight: 800; line-height: 1.1; } .contagem small { color: var(--suave); font-size: 13px; }
+    .desafio-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px 14px; }
+    .desafio-acoes button { min-height: 44px; border-radius: 999px; font: inherit; font-weight: 700; }
+    .desafio-acoes .contorno2 { border: 1.5px solid var(--linha); background: none; color: var(--verde-texto); }
+    .desafio-acoes .cheio { border: 0; background: var(--verde); color: var(--no-verde); }
+    .desafio-acoes .cheio:disabled { background: var(--linha); color: var(--suave); }
+    .desafio-nota { padding: 0 14px 14px; font-size: 14px; color: var(--suave); margin: -4px 0 0; }
+    .pontinhos { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+    .pontinhos i { width: 8px; height: 8px; border-radius: 50%; background: var(--linha); } .pontinhos i.ativo { background: var(--texto); }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -473,6 +501,9 @@
     <section id="aba-voce" hidden>
       <div class="ola" id="ola">Olá!</div>
       <a class="cartao-conta" id="cartao-conta" href="/loja/comprar?app=quantocobrar&entrar=1"><span class="avatar" id="avatar3">L</span><span><small>Sua conta LeuName</small><b id="conta-texto">Entrar na sua conta</b></span></a>
+      <!-- Como o "Você" da Play: missões com prêmio e desafios com contagem (feitos com os nossos cursos) -->
+      <div class="secao" id="bloco-missao"><div class="secao-titulo"><h2>Ganhe prêmios e aproveite benefícios</h2></div><div id="missao"></div></div>
+      <div class="secao" id="bloco-desafios"><div class="secao-titulo"><h2>Desafios</h2></div><div class="rolar desafios" id="desafios"></div><div class="pontinhos" id="pontos-desafios"></div></div>
       <div class="secao"><div class="secao-titulo"><h2>Seus apps</h2></div><ul class="lista" id="meus"></ul></div>
       <div class="secao"><ul class="opcoes-voce">
         <li><a id="ajuda" href="#" target="_blank" rel="noopener"><span>💬</span>Ajuda pelo WhatsApp</a></li>
@@ -811,6 +842,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         </div>`;
     const SECOES_CURSOS = [['Cursos grátis', 'Grátis', 'sempre'], ['Cursos pagos', 'Pagos', 'sempre'], ['Vendas', 'Vendas'], ['Culinária', 'Culinária'], ['Finanças', 'Finanças'], ['Marketing', 'Marketing']];
     function mostrarCursos() {
+      mostrarVoce();
       categoriasCursos(); fileiraBusca(); if ($('busca').value.trim()) mostrar();
       $('chips-cursos').innerHTML = CHIPS_CURSOS.map(([n, d]) => `<button class="chip" type="button" data-secao="${n === 'Categorias' ? 'Categorias de cursos' : 'cursos:' + esc(n)}">${G(d)}${esc(n)}</button>`).join('');
       $('dest-cursos').innerHTML = cursos.filter((c) => c.destaque).map(cartaoCurso).join('');
@@ -858,6 +890,38 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       paginaCurso.hidden = false; paginaCurso.scrollTop = 0; document.body.style.overflow = 'hidden';
     }
     fetch('/cursos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { cursos = d; mostrarCursos(); mostrarCurso(); }).catch(() => {});
+
+    // ================= VOCÊ: missão e desafios (de verdade, com os cursos) =================
+    // Missão: concluir um curso até o fim do mês → ganha o selo "Aluno LeuName" (fica na conta, no aparelho).
+    // Desafios: um por curso, terminar as aulas até domingo 23:59 (contagem regressiva real).
+    const fimDoMes = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59); };
+    const fimDaSemana = () => { const d = new Date(); const f = new Date(d); f.setDate(d.getDate() + ((7 - d.getDay()) % 7)); f.setHours(23, 59, 59, 0); return f; };
+    const dataBR = (d) => d.toLocaleDateString('pt-BR');
+    function mostrarVoce() {
+      if (!cursos.length) { $('bloco-missao').hidden = $('bloco-desafios').hidden = true; return; }
+      $('bloco-missao').hidden = $('bloco-desafios').hidden = false;
+      const alvo = cursos.find((c) => gratis(c) && progressoDe(c.id).length < c.aulas.length);
+      $('missao').innerHTML = alvo ? `<div class="missao"><span class="missao-prazo">◆ Comece até ${dataBR(fimDoMes())}</span>
+          <div class="missao-arte"><img src="${esc(alvo.icone)}" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
+          <div class="missao-rodape"><b>Conclua o curso ${esc(alvo.nomeCurto || alvo.nome)} e ganhe o selo Aluno LeuName</b><button type="button" data-curso="${esc(alvo.id)}">Ver missão</button></div></div>`
+        : `<div class="missao"><span class="missao-prazo">◆ Missão cumprida</span><div class="missao-arte"><img src="/img/leuapps-192.webp" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
+          <div class="missao-rodape"><b>Você ganhou o selo Aluno LeuName!</b><button type="button" data-ir-cursos>Mais cursos</button></div></div>`;
+      $('desafios').innerHTML = cursos.map((c) => { const f = progressoDe(c.id).length, falta = c.aulas.length - f;
+        return `<div class="desafio"><header><img src="${esc(c.icone)}" alt=""><b>${esc(c.nomeCurto || c.nome)}<small>Desafio da semana</small></b><span class="premio">◆ ${c.aulas.length} aulas</span></header>
+          <div class="desafio-corpo"><div class="desafio-info">${f} de ${c.aulas.length} aulas feitas · termina no domingo</div><div class="contagem" data-ate="${fimDaSemana().getTime()}"></div></div>
+          <div class="desafio-acoes"><button class="contorno2" type="button" data-curso="${esc(c.id)}">Ver curso</button><button class="cheio" type="button" data-curso-abrir="${esc(c.id)}" ${falta ? '' : 'disabled'}>${falta ? (f ? 'Continuar' : 'Começar') : 'Concluído ✓'}</button></div>
+          <p class="desafio-nota">${falta ? `Faltam ${falta} ${falta > 1 ? 'aulas' : 'aula'} para completar o desafio.` : 'Desafio completo. Parabéns!'}</p></div>`; }).join('');
+      $('pontos-desafios').innerHTML = cursos.length > 1 ? cursos.map((_, i) => `<i class="${i ? '' : 'ativo'}"></i>`).join('') : '';
+      contar();
+    }
+    function contar() {
+      document.querySelectorAll('.contagem').forEach((el) => { let s = Math.max(0, Math.floor((Number(el.dataset.ate) - Date.now()) / 1000));
+        const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
+        el.innerHTML = [[d, 'Dia'], [h, 'H'], [m, 'Min'], [s, 's']].map(([v, r]) => `<span><b>${String(v).padStart(2, '0')}</b><small>${r}</small></span>`).join(''); });
+    }
+    setInterval(() => { if (!$('aba-voce').hidden) contar(); }, 1000);
+    $('desafios').addEventListener('scroll', () => { const c = $('desafios'), i = Math.round(c.scrollLeft / (c.children[0]?.offsetWidth + 12 || 1));
+      [...$('pontos-desafios').children].forEach((p, k) => p.classList.toggle('ativo', k === i)); }, { passive: true });
 
     function vitrines() {
       $('vitrines').innerHTML = VITRINES.map(vitrine).join('');
