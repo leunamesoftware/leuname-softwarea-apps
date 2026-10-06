@@ -532,8 +532,6 @@
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
     .janela-app { position: fixed; inset: 0; z-index: 40; background: #041640; }
     .janela-app iframe { width: 100%; height: 100%; border: 0; display: block; }
-    .janela-voltar { position: fixed; left: 12px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 40px; height: 40px; border-radius: 50%; border: 0; display: grid; place-items: center;
-      background: rgba(255,255,255,.88); color: #1A1630; box-shadow: 0 3px 10px rgba(0,0,0,.25); cursor: pointer; z-index: 41; }
     .grade-meus { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 8px; padding: 8px 0 18px; }
     .grade-meus button { display: grid; justify-items: center; gap: 6px; background: none; border: 0; padding: 0; font: inherit; font-size: 12.5px; color: var(--texto); cursor: pointer; text-align: center; }
     .grade-meus img { width: 64px; height: 64px; border-radius: 18px; box-shadow: 0 3px 10px rgba(20,10,50,.15); }
@@ -1350,9 +1348,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (!a) { if (j) { j.remove(); document.body.style.overflow = ''; } return; }
       if (j && j.dataset.app === a.id) return;
       j?.remove(); j = document.createElement('div'); j.id = 'janela-app'; j.className = 'janela-app'; j.dataset.app = a.id;
-      j.innerHTML = `<iframe src="${esc(a.abrirFrame)}" title="${esc(a.nome)}" allow="camera; microphone; clipboard-read; clipboard-write; geolocation; fullscreen"></iframe>
-        <button type="button" class="janela-voltar" aria-label="Voltar para a LeuApps">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>', 20)}</button>`;
-      j.querySelector('.janela-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      j.innerHTML = `<iframe src="${esc(a.abrirFrame)}" title="${esc(a.nome)}" allow="camera; microphone; clipboard-read; clipboard-write; geolocation; fullscreen"></iframe>`;
       document.body.appendChild(j); document.body.style.overflow = 'hidden';
     }
     async function abrirApp(id) {
