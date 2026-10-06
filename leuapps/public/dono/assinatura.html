@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1C1917">
+<link rel="icon" href="/dono/robo-192.png">
+<title>Minha assinatura · Área do Dono</title>
+<style>
+:root { --fundo: #F7F5F2; --cartao: #fff; --texto: #1C1917; --suave: #6B6259; --linha: #E7E2DC; --roxo: #7C3AED; --verde: #16A34A; --verde-claro: #DCFCE7; --perigo: #B91C1C; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font: 500 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
+.topo { background: #1C1917; color: #fff; padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 14px; display: flex; align-items: center; gap: 10px; }
+.topo a { color: #fff; text-decoration: none; font-size: 22px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; }
+.topo a:focus-visible, button:focus-visible { outline: 3px solid #2563EB; outline-offset: 2px; }
+.topo h1 { margin: 0; font-size: 19px; font-weight: 800; }
+main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; display: grid; gap: 16px; }
+.cartao { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
+h2 { margin: 0; font-size: 17px; } p { margin: 0; color: var(--suave); }
+.quadro { position: relative; border: 2px dashed #CFC8BF; border-radius: 14px; background: #fff; touch-action: none; }
+.quadro canvas { display: block; width: 100%; height: 240px; cursor: crosshair; touch-action: none; }
+.quadro .guia { position: absolute; left: 8%; right: 8%; bottom: 58px; border-top: 2px solid #E7E2DC; pointer-events: none; }
+.quadro .dica { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; color: #A8A29E; font-size: 13px; pointer-events: none; }
+.botoes { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+button { font: inherit; font-weight: 800; min-height: 50px; border-radius: 14px; cursor: pointer; }
+.limpar { border: 1px solid var(--linha); background: #fff; color: var(--texto); }
+.salvar { border: 0; background: var(--roxo); color: #fff; }
+.salvar:disabled { opacity: .5; cursor: default; }
+.msg { margin: 0; font-weight: 700; } .msg.ok { color: var(--verde); } .msg.erro { color: var(--perigo); }
+.atual { display: grid; gap: 8px; justify-items: center; padding: 14px; border-radius: 14px; background: #FAFAF9; }
+.atual img { max-width: 100%; max-height: 110px; }
+.atual .linha { width: 70%; border-top: 2px solid #1C1917; }
+.atual b { font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="topo"><a href="/" aria-label="Voltar para a Área do Dono">←</a><h1>Minha assinatura</h1></header>
+<main>
+  <section class="cartao">
+    <h2>Assine aqui com o dedo</h2>
+    <p>Essa assinatura vai em todos os certificados dos cursos, em cima de "LeuName Softwares". Dica: deite o celular para ter mais espaço.</p>
+    <div class="quadro"><canvas id="quadro" aria-label="Quadro para assinar"></canvas><div class="guia"></div><div class="dica" id="dica">assine em cima da linha</div></div>
+    <div class="botoes"><button class="limpar" type="button" id="limpar">Limpar</button><button class="salvar" type="button" id="salvar" disabled>Salvar assinatura</button></div>
+    <p class="msg" id="msg" role="status"></p>
+  </section>
+  <section class="cartao">
+    <h2>Como está no certificado</h2>
+    <div class="atual" id="atual"><p id="sem">Ainda não tem assinatura salva.</p><img id="img-atual" alt="Sua assinatura salva" hidden><div class="linha"></div><b>LeuName Softwares</b></div>
+  </section>
+</main>
+<script>
+const cv = document.getElementById('quadro'), ctx = cv.getContext('2d');
+const salvar = document.getElementById('salvar'), msg = document.getElementById('msg');
+let tracos = [], atual = null, escala = 1;
+
+function ajustar() {
+  escala = Math.max(2, window.devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect();
+  cv.width = Math.round(r.width * escala); cv.height = Math.round(r.height * escala);
+  desenhar();
+}
+function desenhar() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.strokeStyle = '#111'; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 3.2 * escala;
+  for (const t of tracos) {
+    if (!t.length) continue;
+    ctx.beginPath(); ctx.moveTo(t[0].x * escala, t[0].y * escala);
+    if (t.length === 1) ctx.lineTo(t[0].x * escala + 0.1, t[0].y * escala);
+    // curva suave passando pelos pontos médios
+    for (let i = 1; i < t.length - 1; i++) {
+      const mx = (t[i].x + t[i + 1].x) / 2, my = (t[i].y + t[i + 1].y) / 2;
+      ctx.quadraticCurveTo(t[i].x * escala, t[i].y * escala, mx * escala, my * escala);
+    }
+    if (t.length > 1) { const u = t[t.length - 1]; ctx.lineTo(u.x * escala, u.y * escala); }
+    ctx.stroke();
+  }
+  document.getElementById('dica').hidden = tracos.length > 0;
+  salvar.disabled = !tracos.length;
+}
+const ponto = (e) => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+cv.addEventListener('pointerdown', (e) => { e.preventDefault(); cv.setPointerCapture(e.pointerId); atual = [ponto(e)]; tracos.push(atual); msg.textContent = ''; desenhar(); });
+cv.addEventListener('pointermove', (e) => { if (!atual) return; e.preventDefault(); atual.push(ponto(e)); desenhar(); });
+const soltar = () => { atual = null; };
+cv.addEventListener('pointerup', soltar); cv.addEventListener('pointercancel', soltar);
+document.getElementById('limpar').onclick = () => { tracos = []; msg.textContent = ''; desenhar(); };
+addEventListener('resize', () => { ajustar(); });
+
+// Recorta só a parte assinada (fundo transparente) para encaixar bem no certificado.
+function recorte() {
+  const { width: w, height: h } = cv, px = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (px[(y * w + x) * 4 + 3] > 10) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 <= x0 || y1 <= y0) return null;
+  const m = 8 * escala; x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m); x1 = Math.min(w, x1 + m); y1 = Math.min(h, y1 + m);
+  const fator = Math.min(1, 900 / (x1 - x0)), out = document.createElement('canvas');
+  out.width = Math.round((x1 - x0) * fator); out.height = Math.round((y1 - y0) * fator);
+  out.getContext('2d').drawImage(cv, x0, y0, x1 - x0, y1 - y0, 0, 0, out.width, out.height);
+  return out.toDataURL('image/png');
+}
+salvar.onclick = async () => {
+  const imagem = recorte(); if (!imagem) return;
+  salvar.disabled = true; salvar.textContent = 'Salvando…'; msg.className = 'msg'; msg.textContent = '';
+  try {
+    const r = await fetch('/loja-api/dono/assinatura', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imagem }) });
+    if (!r.ok) throw new Error(r.status === 403 ? 'Entre de novo na Área do Dono e tente outra vez.' : 'Não deu para salvar. Tente de novo.');
+    msg.className = 'msg ok'; msg.textContent = '✓ Assinatura salva! Os próximos certificados já saem assinados.';
+    tracos = []; desenhar(); mostrarAtual();
+  } catch (e) { msg.className = 'msg erro'; msg.textContent = navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.'; }
+  salvar.textContent = 'Salvar assinatura'; salvar.disabled = !tracos.length;
+};
+function mostrarAtual() {
+  const img = document.getElementById('img-atual');
+  img.onload = () => { img.hidden = false; document.getElementById('sem').hidden = true; };
+  img.onerror = () => { img.hidden = true; document.getElementById('sem').hidden = false; };
+  img.src = '/loja-api/assinatura.png?v=' + Date.now();
+}
+ajustar(); mostrarAtual();
+</script>
+</body>
+</html>

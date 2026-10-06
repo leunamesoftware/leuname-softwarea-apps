@@ -1195,7 +1195,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     async function desenharCertificado(c, nome) {
       const W = 1754, H = 1240, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       const x = cv.getContext('2d');
-      const assinatura = await carregarImg('/img/cursos/assinatura.png');
+      // Assinatura do dono (desenhada na Área do Dono e guardada no servidor).
+      const assinatura = (await carregarImg('/loja-api/assinatura.png?v=' + Date.now())) || (await carregarImg('/img/cursos/assinatura.png'));
       const tinta = '#1A1630', suave = '#5D5A6B', grad = x.createLinearGradient(0, 0, W, H);
       grad.addColorStop(0, '#FF8A00'); grad.addColorStop(0.5, '#E5306E'); grad.addColorStop(1, '#6A35E8');
       x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);

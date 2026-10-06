@@ -234,6 +234,27 @@ export default {
         if (!e.logado) { const c = await contaDaSessao(env, req); if (c && eDono(env, c.email)) e.logado = true; }
         return json(e);
       }
+      // Assinatura do dono nos certificados dos cursos: desenhada na Área do Dono, guardada aqui.
+      if (pathname === '/api/dono/assinatura') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const texto = await req.text();
+        if (texto.length > 400000) return json({ erro: 'imagem_grande' }, 413);
+        let imagem = '';
+        try { imagem = String(JSON.parse(texto)?.imagem || ''); } catch {}
+        if (!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(imagem)) return json({ erro: 'imagem_invalida' }, 400);
+        await env.DB.prepare(`INSERT INTO configuracoes (chave, valor, atualizado_em) VALUES ('assinatura', ?, ?)
+          ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor, atualizado_em = excluded.atualizado_em`).bind(imagem, new Date().toISOString()).run();
+        return json({ ok: true });
+      }
+      if (pathname === '/api/assinatura.png' && (m === 'GET' || m === 'HEAD')) {
+        const r = await env.DB.prepare("SELECT valor FROM configuracoes WHERE chave = 'assinatura'").first();
+        if (!r) return new Response('Sem assinatura.', { status: 404 });
+        const bytes = Uint8Array.from(atob(r.valor.split(',')[1]), (c) => c.charCodeAt(0));
+        return new Response(m === 'HEAD' ? null : bytes, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' } });
+      }
       // Brindes (só o dono): dar o Quanto Cobrar Pro de graça para um e-mail.
       if (pathname === '/api/dono/brindes' || pathname === '/api/dono/brindes/remover') {
         const conta = await contaDaSessao(env, req);
