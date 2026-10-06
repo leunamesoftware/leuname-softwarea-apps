@@ -1973,7 +1973,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
     });
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
-    if (false && android && !N && !instalada) { // (antiga página de instalar a LeuApps como app)
+    // Android no Chrome: abre a página da LeuApps com o botão Instalar (o Chrome põe a LeuApps na tela do celular).
+    if (android && !N && !instalada) {
       document.body.classList.add('so-app');
       const pag = document.createElement('section'); pag.className = 'pagina-app';
       pag.innerHTML = `
@@ -1981,7 +1982,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <ul class="det-fatos"><li><b>Grátis</b>para baixar</li><li><b>Android</b>funciona em</li><li><b id="qtd-apps">3 apps</b>na loja</li></ul>
         <div class="instalar-app"><button class="acao" type="button" id="instalar-leuapps">Instalar</button></div>
         <h2>Sobre este app</h2>
-        <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele vai direto para a tela do seu celular, com ícone próprio. Atualizações chegam sozinhas.</p>
+        <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele fica pronto em Meus apps, abrindo em tela cheia como no celular. Atualizações chegam sozinhas.</p>
         <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
         <p class="nota" id="nota-app">Depois de instalar, abra a LeuApps pelo ícone na tela do celular.</p>
 `;
