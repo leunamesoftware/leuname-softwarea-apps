@@ -588,9 +588,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const VITRINES = [
       ['Comunicação', 'Comunicação', 'mostrar-vazio'],
       ['Enviar uma mensagem', 'Enviar uma mensagem', 'mostrar-vazio'],
-      ['Sugestões para você', 'patrocinados'],
+      ['Sugestões para você', 'patrocinados', 1],
       ['Mantenha contato', 'Mantenha contato', 'mostrar-vazio'],
       ['Rede social', 'Rede social', 'mostrar-vazio'],
+      ['Fazer novas conexões', 'Fazer novas conexões', 'mostrar-vazio'],
+      ['Sugestões para você', 'patrocinados', 2],
       ['Escolha da LeuName: apps', (a) => a.escolha],
       ['Em promoção', (a) => a.promo],
     ];
@@ -665,13 +667,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
       }
     }
+    const girar = (l, n) => l.length ? [...l.slice(n % l.length), ...l.slice(0, n % l.length)] : l; // cada bloco começa por um app diferente
     const linhaSugestao = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
           <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="info">${tags(a)}</span>
           <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`;
     function vitrine([titulo, s, modo]) {
-      if (s === 'patrocinados') { // 2º "Patrocinados · Sugestões para você" (ordem invertida para não repetir igual ao 1º)
+      if (s === 'patrocinados') { // "Patrocinados · Sugestões para você" repetido (cada um começa por outro app)
         return `<div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Patrocinados ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
-          <ul class="lista">${[...apps].sort((x, y) => pontos(y) - pontos(x)).reverse().map(linhaSugestao).join('')}</ul></div>`;
+          <ul class="lista">${girar([...apps].sort((x, y) => pontos(y) - pontos(x)), modo).map(linhaSugestao).join('')}</ul></div>`;
       }
       const porEscolha = typeof s === 'function';
       const lista = porEscolha ? apps.filter(s) : daSecao(s);
