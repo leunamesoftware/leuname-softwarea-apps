@@ -199,6 +199,10 @@
     body.na-capa #topo-inicio .icone-topo { color: #fff; }
     body.na-capa .selo { border-color: #0E1A4A; }
 
+    /* Apps, Jogos e Livros (como na Play): a barra de cima sobe junto com a página; só os atalhos ficam presos no topo */
+    body.rolar-topo .topo { position: relative; }
+    body.rolar-topo .chips-linha { top: env(safe-area-inset-top, 0px); }
+
     /* Atalhos (chips) */
     .chips-linha { position: sticky; top: calc(68px + env(safe-area-inset-top)); z-index: 4; background: var(--fundo); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 6px 16px; }
     .chips-linha::-webkit-scrollbar { display: none; }
@@ -907,6 +911,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       secaoAtual = null;
       if (location.hash.startsWith('#lista/')) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
+      document.body.classList.toggle('rolar-topo', ['apps', 'jogos', 'livros'].includes(qual));
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
       for (const n of ['jogos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
       $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
