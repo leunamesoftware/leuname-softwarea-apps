@@ -118,6 +118,21 @@
     .seguir-lista button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px 0 14px; border-radius: 10px; border: 0; background: var(--cartao); font-size: 16px; font-weight: 600; color: var(--texto); }
     .seguir-lista button[aria-pressed="true"] { background: var(--verde); color: var(--fundo); }
     .mostrar-mais { display: block; margin: 14px auto 0; min-height: 44px; padding: 0 16px; border: 0; background: none; color: var(--verde-texto); font-size: 16px; font-weight: 700; }
+    /* Bloco de telas de um app + pergunta de interesse (como na Play) */
+    .telas-fileira { gap: 10px; }
+    .telas-fileira button { flex: 0 0 auto; padding: 0; border: 0; background: none; scroll-snap-align: start; }
+    .telas-fileira img { width: 128px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 14px; display: block; box-shadow: var(--sombra); }
+    #telas-app .dest-app { padding: 12px 0 0; }
+    #telas-app .dest-app .pilula { background: var(--cartao); }
+    .interesse { position: relative; margin-top: 16px; padding: 16px; border-radius: 18px; background: var(--cartao); display: grid; gap: 12px; }
+    .interesse::before { content: ""; position: absolute; left: 22px; top: -9px; border: 10px solid transparent; border-top: 0; border-bottom-color: var(--cartao); }
+    .interesse b { display: block; font-size: 17px; font-weight: 700; }
+    .interesse small { display: block; margin-top: 2px; font-size: 13.5px; color: var(--suave); }
+    .interesse-carinhas { display: flex; justify-content: space-between; }
+    .interesse-carinhas button { width: 48px; height: 48px; border: 0; border-radius: 50%; background: none; font-size: 32px; line-height: 1; padding: 0; }
+    .interesse-carinhas button:active { transform: scale(.9); }
+    .interesse-legenda { display: flex; justify-content: space-between; gap: 16px; font-size: 13.5px; color: var(--suave); }
+    .interesse-legenda span { max-width: 45%; } .interesse-legenda span:last-child { text-align: right; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -302,6 +317,7 @@
         <div class="secao-titulo"><h2>Recomendado para você</h2><button class="seta" type="button" data-secao="Recomendado para você" aria-label="Ver todos os recomendados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista" id="recomendados"></ul>
       </div>
+      <div class="secao" id="telas-app"></div>
       <div id="vitrines"></div>
       <div class="secao seguir">
         <h2>Siga suas categorias favoritas</h2>
@@ -491,6 +507,23 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('mostrar-mais').textContent = todasCats ? 'Mostrar menos' : 'Mostrar mais';
     }
     const pontos = (a) => (a.secoes || []).filter((s) => seguidas.includes(s)).length;
+    // Telas de um app (troca a cada dia) + "O quanto isso é interessante para você?"
+    function telasApp() {
+      const com = apps.filter((a) => (a.capturas || []).length);
+      if (!com.length) { $('telas-app').innerHTML = ''; return; }
+      const a = com[Math.floor(Date.now() / 864e5) % com.length];
+      let resposta = null; try { resposta = localStorage.getItem('leuapps.interesse.' + a.id); } catch {}
+      $('telas-app').innerHTML = `<div class="rolar telas-fileira">${a.capturas.map((c) => `<button type="button" data-detalhe="${esc(a.id)}"><img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy"></button>`).join('')}</div>
+        <div class="linha dest-app">
+          <img src="${esc(a.icone)}" alt="" data-detalhe="${esc(a.id)}" style="cursor:pointer">
+          <div data-detalhe="${esc(a.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(a.nome)}</div>
+            <div class="info">LeuName Softwares</div><span class="pilula">${precoCurto(a)}</span></div>
+          <div class="dest-botao">${botaoLinha(a)}</div>
+        </div>
+        ${resposta ? '' : `<div class="interesse"><div><b>O quanto isso é interessante para você?</b><small>Sua resposta ajuda a melhorar as sugestões da LeuApps.</small></div>
+          <div class="interesse-carinhas">${['😞', '🙁', '😐', '🙂', '😄'].map((c, i) => `<button type="button" data-interesse="${esc(a.id)}" data-valor="${i + 1}" aria-label="Nota ${i + 1} de 5">${c}</button>`).join('')}</div>
+          <div class="interesse-legenda"><span>Nem um pouco interessante</span><span>Muito interessante</span></div></div>`}`;
+    }
     function vitrines() {
       const ja = new Set();
       $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
@@ -564,7 +597,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
-      vitrines(); seguir();
+      vitrines(); seguir(); telasApp();
       $('recomendados').innerHTML = daSecao('Recomendado para você').map(linhaVitrine).join('');
       const cn = daSecao('Negócios');
       $('capa-icones').innerHTML = cn.slice(0, 3).map((a) => `<img src="${esc(a.icone)}" alt="">`).join('') + (cn.length > 3 ? `<span>+${cn.length - 3}</span>` : '');
@@ -713,6 +746,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const it = t.closest('[data-interesse]'); if (it) {
+        const a = apps.find((x) => x.id === it.dataset.interesse);
+        try { localStorage.setItem('leuapps.interesse.' + a.id, it.dataset.valor); } catch {}
+        if (Number(it.dataset.valor) >= 4 && a.secoes && a.secoes[0] && !seguidas.includes(a.secoes[0])) { seguidas = [...seguidas, a.secoes[0]]; try { localStorage.setItem('leuapps.seguidas', JSON.stringify(seguidas)); } catch {} }
+        it.closest('.interesse').innerHTML = '<b>Obrigado!</b><span>Vamos usar isso para melhorar as suas sugestões.</span>';
+        return;
+      }
       const sg = t.closest('[data-seguir]'); if (sg) { const c = sg.dataset.seguir; seguidas = seguidas.includes(c) ? seguidas.filter((x) => x !== c) : [...seguidas, c];
         try { localStorage.setItem('leuapps.seguidas', JSON.stringify(seguidas)); } catch {} return mostrar(); }
       if (t.closest('#mostrar-mais')) { todasCats = !todasCats; return seguir(); }
