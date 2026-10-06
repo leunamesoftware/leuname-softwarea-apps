@@ -153,6 +153,12 @@
     .fim-loja p { margin: 0 0 18px; font-size: 16px; color: var(--suave); }
     .fim-botao { min-height: 44px; padding: 0 26px; border-radius: 999px; border: 1.5px solid var(--suave); background: none; color: var(--verde-texto); font: inherit; font-weight: 700; font-size: 16px; }
     .fim-arte { width: 140px; height: auto; margin-right: -24px; }
+    /* Jogos e Livros (em breve) */
+    .breve-capa { margin-top: 14px; padding: 28px 20px 24px; border-radius: 28px; color: #fff; display: grid; gap: 10px; justify-items: start; background: radial-gradient(120% 90% at 85% 10%, rgba(255,61,127,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(0,184,217,.45), transparent 60%), #0E1A4A; }
+    .breve-livros { background: radial-gradient(120% 90% at 85% 10%, rgba(255,138,0,.55), transparent 60%), radial-gradient(90% 80% at 10% 90%, rgba(123,63,242,.5), transparent 60%), #1A1240; }
+    .breve-icone { width: 92px; height: 92px; border-radius: 26px; display: grid; place-items: center; background: rgba(255,255,255,.14); }
+    .breve-capa h2 { margin: 6px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
+    .breve-capa p { margin: 0 0 6px; font-size: 16px; opacity: .92; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -284,9 +290,9 @@
 
     /* Menu de baixo */
     .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; background: var(--cartao); padding: 10px 8px calc(10px + env(safe-area-inset-bottom)); }
-    .menu div { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; max-width: 560px; }
+    .menu div { display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; max-width: 560px; }
     .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 0; font-size: 13px; font-weight: 500; color: var(--suave); }
-    .menu button span { display: grid; place-items: center; width: 64px; height: 32px; border-radius: 999px; }
+    .menu button span { display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; }
     .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
     .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); margin: 0; }
@@ -371,6 +377,26 @@
     </section>
 
     <!-- Pesquisa -->
+    <section id="aba-jogos" hidden>
+      <div class="chips-linha" id="chips-jogos"></div>
+      <div class="breve-capa breve-jogos" id="breve-jogos">
+        <div class="breve-icone"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/></svg></div>
+        <h2>Jogos da LeuName</h2>
+        <p>Em breve: estamos preparando os primeiros jogos. Toque abaixo e avisamos você quando chegarem.</p>
+        <button class="capa-botao" type="button" data-avisar="jogos">Quero ser avisado</button>
+      </div>
+      <div class="secao" id="sec-jogos" hidden><div class="secao-titulo"><h2>Sugestões para você</h2></div><ul class="lista" id="lista-jogos"></ul></div>
+    </section>
+    <section id="aba-livros" hidden>
+      <div class="chips-linha" id="chips-livros"></div>
+      <div class="breve-capa breve-livros" id="breve-livros">
+        <div class="breve-icone"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg></div>
+        <h2>Livros e e-books</h2>
+        <p>Em breve: e-books de receitas, negócios e muito mais. Toque abaixo e avisamos você quando chegarem.</p>
+        <button class="capa-botao" type="button" data-avisar="livros">Quero ser avisado</button>
+      </div>
+      <div class="secao" id="sec-livros" hidden><div class="secao-titulo"><h2>Sugestões para você</h2></div><ul class="lista" id="lista-livros"></ul></div>
+    </section>
     <section id="aba-pesquisa" hidden>
       <div id="resultados" hidden><div class="secao"><div class="secao-titulo" id="titulo-secao" hidden><h2></h2></div><ul class="lista" id="lista-busca"></ul></div></div>
       <div id="explorar">
@@ -399,9 +425,10 @@
   <p class="rodape">© 2026 LeuName Softwares · Aplicativos sempre na versão mais nova.</p>
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
+    <button role="tab" id="tab-jogos" data-aba="jogos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".6" fill="currentColor"/><circle cx="17.5" cy="13" r=".6" fill="currentColor"/></svg></span>Jogos</button>
     <button role="tab" id="tab-apps" data-aba="apps" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg></span>Apps</button>
     <button role="tab" id="tab-pesquisa" data-aba="pesquisa" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>Pesquisa</button>
-    <button role="tab" id="tab-servicos" data-aba="servicos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg></span>Serviços</button>
+    <button role="tab" id="tab-livros" data-aba="livros" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-3.5L6 21z"/></svg></span>Livros</button>
     <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Você</button>
   </div></nav>
 
@@ -413,7 +440,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const $ = (id) => document.getElementById(id);
     const detalhe = $('detalhe');
-    let apps = [], servicos = null;
+    let apps = [], todos = [], servicos = null; // apps = só aplicativos; todos = apps + jogos + livros (apps.json → tipo)
 
     // ---- Onde a loja está aberta ----
     // No app LeuApps para Android existe window.LeuNativo: ele instala, abre e desinstala de verdade.
@@ -432,7 +459,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     let versoes = {}, baixando = {}, pendente = null;
     function lerInstalados() {
       if (!N) return;
-      try { versoes = JSON.parse(N.instalados(JSON.stringify(apps.filter((a) => a.android).map((a) => a.android.pacote)))) || {}; } catch { versoes = {}; }
+      try { versoes = JSON.parse(N.instalados(JSON.stringify(todos.filter((a) => a.android).map((a) => a.android.pacote)))) || {}; } catch { versoes = {}; }
     }
     /** 'nao' | 'instalado' | 'atualizar' */
     function situacao(a) {
@@ -512,7 +539,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('chips').innerHTML = CHIPS.map(([nome, ic, tipo = 'secao', alvo = nome]) => `<button class="chip" type="button" data-${tipo}="${esc(alvo)}">${svg(ic)}${esc(nome)}</button>`).join('');
     let secaoAtual = null;
     const daSecao = (s) => { const v = VITRINES.find((x) => x[0] === s && typeof x[1] === 'function'); return v ? apps.filter(v[1]) : daSecao0(s); };
-    const daSecao0 = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : apps.filter((a) => (a.secoes || []).includes(s));
+    const daSecao0 = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : todos.filter((a) => (a.secoes || []).includes(s));
 
     // Selos das linhas (tudo verdadeiro: vem do apps.json).
     const SELO = { instalado: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', escolha: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', gratis: I.gratis, unico: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>', novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>' };
@@ -597,6 +624,34 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="estrelas">${[1, 2, 3, 4, 5].map((k) => `<button type="button" data-nota="${esc(a.id)}" data-valor="${k}" aria-label="${k} de 5 estrelas" aria-pressed="${k <= n}">${ESTRELA.replace('fill="none"', k <= n ? 'fill="currentColor"' : 'fill="none"')}</button>`).join('')}</div>
           <button class="resenha" type="button" data-resenha="${esc(a.id)}">Escreva uma resenha</button></div>`; }).join('');
     }
+    // Jogos e Livros: mesmos atalhos da Play; os itens vêm do apps.json com "tipo": "jogo" ou "livro".
+    const G = (d) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const IG = {
+      simulacao: '<rect x="3" y="9" width="18" height="8" rx="3"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M6 9l2-4h8l2 4"/>',
+      quebra: '<path d="M4 8h4a2 2 0 114 0h4v4a2 2 0 110 4v4H4z"/>', rpg: '<path d="M14.5 4H20v5.5L9 20.5 4 19l-.5-5z"/><path d="M7 13l4 4"/>',
+      educ: I.educacao, acao: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>', estrategia: '<path d="M5 21V4M5 4h12l-3 4 3 4H5"/>', aventura: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+      gerenc: I.ferramentas, combinar: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/>', tiro: '<circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>',
+      cartas: '<rect x="4" y="5" width="11" height="15" rx="2"/><path d="M15 7l4 1-3 12-3-.8"/>', mmorpg: '<path d="M4 20L16 8M8 4l12 12M14 4h6v6M10 20H4v-6"/>', esportes: '<circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/>',
+      tabuleiro: '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/>',
+      palavras: '<path d="M4 20l6-16h4l6 16M7 14h10"/>', corrida: '<path d="M5 21V4h13l-2 4 2 4H5"/><path d="M9 4v8M13 4v8"/>', musica: I.musica, conhec: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0012 3z"/>',
+      sandbox: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>',
+      ebook: '<path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6"/>', audio: '<path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+      novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>', coracao: I.saude, sol: I.estilo,
+    };
+    const CHIPS_JOGOS = [['Em alta', I.alta], ['Premium', I.premium], ['Crianças', I.criancas], ['Categorias', I.categorias], ['Simulação', IG.simulacao], ['Quebra-cabeças', IG.quebra], ['RPG', IG.rpg],
+      ['Educativos', IG.educ], ['Ação', IG.acao], ['Estratégia', IG.estrategia], ['Aventura', IG.aventura], ['Gerenciamento', IG.gerenc], ['Combinar 3', IG.combinar], ['Tiro', IG.tiro], ['Cartas', IG.cartas],
+      ['MMORPG', IG.mmorpg], ['Esportes', IG.esportes], ['Tabuleiro', IG.tabuleiro], ['Palavras', IG.palavras], ['Corrida', IG.corrida], ['Música', IG.musica], ['Conhecimentos', IG.conhec], ['Sandbox', IG.sandbox]];
+    const CHIPS_LIVROS = [['E-books', IG.ebook], ['Audiolivros', IG.audio], ['Categorias', I.categorias], ['Mais vendidos', I.alta], ['Lançamentos', IG.novo], ['Gratuitos', I.gratis], ['Receitas', I.comida],
+      ['Negócios', I.negocios], ['Finanças', I.financas], ['Autoajuda', IG.coracao], ['Infantil', I.criancas], ['Romance', IG.coracao], ['Estudos', I.educacao], ['Religião', IG.sol]];
+    function lojasExtras() {
+      for (const [tipo, chips, nome] of [['jogos', CHIPS_JOGOS, 'jogo'], ['livros', CHIPS_LIVROS, 'livro']]) {
+        $('chips-' + tipo).innerHTML = chips.map(([n, d]) => n === 'Categorias' ? `<button class="chip" type="button" data-aba="pesquisa">${G(d)}${esc(n)}</button>`
+          : `<button class="chip" type="button" data-secao="${esc(n)}">${G(d)}${esc(n)}</button>`).join('');
+        const itens = todos.filter((a) => a.tipo === nome);
+        $('breve-' + tipo).hidden = Boolean(itens.length); $('sec-' + tipo).hidden = !itens.length;
+        $('lista-' + tipo).innerHTML = itens.map(linhaVitrine).join('');
+      }
+    }
     function vitrines() {
       const ja = new Set();
       $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
@@ -659,13 +714,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('novidades').innerHTML = apps.filter((a) => (a.novidades || []).length).map((a) => [a, a.novidades[0]]).map(([a, n]) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
           <header><img src="${esc(a.icone)}" alt="">${esc(a.nome)} · ${esc(n.data)}</header><b>${esc(n.titulo)}</b><p>${esc(n.texto)}</p></button>`).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
-      const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
+      const achados = todos.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
       const naSecao = secaoAtual && !f;
       $('resultados').hidden = !f && !naSecao; $('explorar').hidden = Boolean(f) || Boolean(naSecao);
       $('titulo-secao').hidden = !naSecao; $('titulo-secao').querySelector('h2').textContent = naSecao ? secaoAtual : '';
       if (naSecao) {
         const l = daSecao(secaoAtual);
-        $('lista-busca').innerHTML = l.map(linhaVitrine).join('') || `<li class="em-breve"><b>Em breve: ${esc(secaoAtual)}</b>Ainda não temos apps nesta categoria. Estamos preparando novidades.</li>`;
+        $('lista-busca').innerHTML = l.map(linhaVitrine).join('') || `<li class="em-breve"><b>Em breve: ${esc(secaoAtual)}</b>Ainda não temos nada nesta categoria. Estamos preparando novidades.</li>`;
       } else $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
@@ -690,7 +745,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return f;
     }
     function planos(id, paraAbrir) {
-      const a = apps.find((x) => x.id === id); if (!a || !a.planos) return;
+      const a = todos.find((x) => x.id === id); if (!a || !a.planos) return;
       folha(`<h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
         ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
           <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p>${p.nota ? `<p class="nota-plano">${esc(p.nota)}</p>` : ''}<a class="acao" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
@@ -704,7 +759,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     // ---- Instalar, abrir, desinstalar ----
     async function instalar(id) {
-      const a = apps.find((x) => x.id === id); if (!a) return;
+      const a = todos.find((x) => x.id === id); if (!a) return;
       // 1) App LeuApps para Android: baixa e instala de verdade (o Android confirma e põe o ícone na tela).
       if (N && a.android) {
         if (!N.podeInstalar()) {
@@ -739,13 +794,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <ol>${passos.map((x) => `<li>${x}</li>`).join('')}</ol><a class="acao" href="${esc(a.instalar)}">Abrir o ${esc(a.nome)}</a>`);
     }
     function abrirApp(id) {
-      const a = apps.find((x) => x.id === id); if (!a) return;
+      const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android && N.abrir(a.android.pacote)) return;
       if (a.exigeCompra) return conferirCompra(a, link(a));
       location.href = link(a);
     }
     function desinstalar(id) {
-      const a = apps.find((x) => x.id === id); if (!a) return;
+      const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android) { N.desinstalar(a.android.pacote); return; } // o Android pergunta; ao voltar a loja confere
       if (!confirm(`Desinstalar o ${a.nome}?\n\nSe o ícone dele está na tela do celular ou na área de trabalho, segure o ícone e toque em Desinstalar (ou Remover).`)) return;
       meus = meus.filter((x) => x !== id); gravar(meus); mostrar();
@@ -755,7 +810,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       progresso(id, pct) { baixando[id] = pct; mostrar(); },
       fim(id, ok, msg) {
         delete baixando[id]; lerInstalados(); mostrar();
-        const a = apps.find((x) => x.id === id), nome = a ? a.nome : 'O app';
+        const a = todos.find((x) => x.id === id), nome = a ? a.nome : 'O app';
         if (ok) return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`);
         const m = String(msg || '');
         if (/abort|cancel|rejected/i.test(m)) return avisar('Instalação cancelada.');
@@ -776,7 +831,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     // ---- Página do app (link direto: www.leunamesoftware.com.br/#id) ----
     function mostrarDetalhe() {
-      const a = apps.find((x) => x.id === location.hash.slice(1));
+      const a = todos.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
       const preco = a.preco.split(' · ');
       detalhe.innerHTML = `
@@ -806,7 +861,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       secaoAtual = null;
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
-      for (const n of ['apps', 'pesquisa', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
+      for (const n of ['jogos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
       $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
       if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
       if (qual === 'pesquisa' && apps.length) mostrar();
@@ -823,14 +878,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const av = t.closest('[data-avisar]'); if (av) {
+        const txt = `Olá, LeuName Softwares! Quero ser avisado quando chegarem ${av.dataset.avisar === 'jogos' ? 'os jogos' : 'os livros'} na LeuApps.`;
+        open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
+      }
       const nt = t.closest('[data-nota]'); if (nt) { try { localStorage.setItem('leuapps.nota.' + nt.dataset.nota, nt.dataset.valor); } catch {} return opiniao(); }
       const rs = t.closest('[data-resenha]'); if (rs) {
-        const a = apps.find((x) => x.id === rs.dataset.resenha), n = notaDe(a.id);
+        const a = todos.find((x) => x.id === rs.dataset.resenha), n = notaDe(a.id);
         const txt = `Olá, LeuName Softwares! Minha opinião sobre o ${a.nome}${n ? ` (${n} de 5 estrelas)` : ''}: `;
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(txt)}`, '_blank'); return;
       }
       const it = t.closest('[data-interesse]'); if (it) {
-        const a = apps.find((x) => x.id === it.dataset.interesse);
+        const a = todos.find((x) => x.id === it.dataset.interesse);
         try { localStorage.setItem('leuapps.interesse.' + a.id, it.dataset.valor); } catch {}
         if (Number(it.dataset.valor) >= 4 && a.secoes && a.secoes[0] && !seguidas.includes(a.secoes[0])) { seguidas = [...seguidas, a.secoes[0]]; try { localStorage.setItem('leuapps.seguidas', JSON.stringify(seguidas)); } catch {} }
         it.closest('.interesse').innerHTML = '<b>Obrigado!</b><span>Vamos usar isso para melhorar as suas sugestões.</span>';
@@ -951,11 +1010,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      apps = d; lerInstalados(); categorias(); mostrar(); mostrarDetalhe();
+      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
-      aba(['pesquisa', 'servicos', 'voce'].includes(a) ? a : 'apps');
+      aba(['jogos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : 'apps');
     }).catch(() => { $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
     conta();
 
