@@ -292,6 +292,7 @@
     .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); margin: 0; }
 
     /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
+    .na-apps .rodape { font-size: 0; padding-top: 0; padding-bottom: calc(var(--altura-menu, 80px) + env(safe-area-inset-bottom)); }
     .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
     .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
     .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
@@ -803,6 +804,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Abas (menu de baixo) ----
     function aba(qual) {
       secaoAtual = null;
+      document.body.classList.toggle('na-apps', qual === 'apps');
+      document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
       for (const n of ['apps', 'pesquisa', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
       $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
       if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
