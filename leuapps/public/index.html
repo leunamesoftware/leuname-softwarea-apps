@@ -3,328 +3,441 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#071A5C">
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121418" media="(prefers-color-scheme: dark)">
   <title>LeuApps — aplicativos LeuName Softwares</title>
-  <meta name="description" content="Todos os aplicativos da LeuName Softwares em um só lugar. Abra e use, sempre atualizados.">
+  <meta name="description" content="Todos os aplicativos da LeuName Softwares em um só lugar. Instale, abra e use, sempre atualizados.">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/img/leuapps-192.png">
   <link rel="apple-touch-icon" href="/img/leuapps-192.png">
   <style>
-    :root { --fundo: #F4F6FB; --cartao: #fff; --texto: #10162B; --suave: #5B6478; --linha: #E3E7F0; --azul: #1B4DFF; --azul-escuro: #071A5C; }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --fundo: #0B1022; --cartao: #141B33; --texto: #EEF1F8; --suave: #A3ACC2; --linha: #232C4A; } }
+    :root {
+      --fundo: #FFFFFF; --cartao: #F4F6F5; --texto: #1C1F1E; --suave: #5E6662; --linha: #E2E6E4;
+      --verde: #0E7C4A; --verde-claro: #E3F4EA; --verde-texto: #0B6B3F; --no-verde: #FFFFFF; --perigo: #B42318;
+      --sombra: 0 1px 2px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.06);
+    }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+      --fundo: #121418; --cartao: #1E2226; --texto: #E8ECEA; --suave: #A7B0AC; --linha: #2C3236;
+      --verde: #57CF8F; --verde-claro: #1D3A2B; --verde-texto: #79DCA6; --no-verde: #0A2617; --perigo: #FF8A80;
+      --sombra: none; } }
+    :root[data-theme="dark"] { --fundo: #121418; --cartao: #1E2226; --texto: #E8ECEA; --suave: #A7B0AC; --linha: #2C3236;
+      --verde: #57CF8F; --verde-claro: #1D3A2B; --verde-texto: #79DCA6; --no-verde: #0A2617; --perigo: #FF8A80; --sombra: none; }
     * { box-sizing: border-box; }
-    body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; margin: 0; font: 500 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
-    .topo { position: sticky; top: 0; z-index: 2; background: linear-gradient(135deg, #071A5C, #1B3FD6); color: #fff; padding: calc(14px + env(safe-area-inset-top)) 16px 16px; }
-    .marca { display: flex; align-items: center; gap: 10px; max-width: 720px; margin: 0 auto; }
-    .marca img { width: 40px; height: 40px; border-radius: 11px; }
-    .marca b { font-size: 21px; font-weight: 800; letter-spacing: .2px; }
-    .marca small { display: block; font-size: 12px; opacity: .8; font-weight: 600; }
-    .busca { max-width: 720px; margin: 12px auto 0; }
-    .busca input { width: 100%; min-height: 46px; border: 0; border-radius: 999px; padding: 0 18px; font: inherit; font-size: 16px; background: rgba(255,255,255,.95); color: #10162B; }
-    main { flex: 1; width: 100%; max-width: 720px; margin: 0 auto; padding: 16px 16px 40px; }
-    h2 { font-size: 17px; margin: 8px 0 12px; }
-    .lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-    .app { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 12px; }
-    .app img { width: 64px; height: 64px; border-radius: 16px; display: block; }
-    .app h3 { margin: 0; font-size: 16px; }
-    .app .cat { font-size: 13px; color: var(--suave); font-weight: 600; }
-    .app .resumo { margin: 2px 0 0; font-size: 13px; color: var(--suave); line-height: 1.35; }
-    .app .preco { display: inline-block; margin-top: 4px; font-size: 12px; font-weight: 800; color: #0F8A4B; }
-    .abrir { min-width: 104px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: linear-gradient(135deg, #2F6BFF, #1B3FD6); color: #fff; font-weight: 800; font-size: 15px; text-decoration: none; padding: 0 16px; box-shadow: 0 6px 14px rgba(27,63,214,.32); transition: transform .12s, box-shadow .12s; white-space: nowrap; }
-    .abrir:active { transform: scale(.96); box-shadow: 0 3px 8px rgba(27,63,214,.3); }
-    .abrir.verde { background: linear-gradient(135deg, #22C55E, #15803D); box-shadow: 0 6px 14px rgba(21,128,61,.3); }
-    .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #15803D; color: #fff; font-weight: 800; border-radius: 14px; padding: 14px 16px; box-shadow: 0 10px 24px rgba(0,0,0,.3); text-align: center; }
-    .abrir.claro { background: #EEF3FF; color: #1B3FD6; box-shadow: none; border: 1.5px solid #C9D6FF; }
-    .opcoes { grid-column: 1 / -1; list-style: none; margin: 2px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .opcoes li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 8px 4px; border-radius: 12px; background: #FFF6D6; color: #5C3D00; line-height: 1.2; }
-    .opcoes li:first-child { background: #EEF3FF; color: #1F2A44; }
-    .opcoes b { font-size: 12px; } .opcoes span { font-size: 14px; font-weight: 900; } .opcoes small { font-size: 10.5px; font-weight: 600; opacity: .85; }
-    .ver-mais { display: block; margin-top: 4px; font-size: 12px; font-weight: 800; color: var(--azul); }
+    [hidden] { display: none !important; }
+    html, body { background: var(--fundo); }
+    body { margin: 0; min-height: 100dvh; font: 400 16px/1.45 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--texto); -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+
+    /* Barra de cima: pesquisa + marca */
+    .topo { position: sticky; top: 0; z-index: 5; background: var(--fundo); padding: calc(10px + env(safe-area-inset-top)) 16px 10px; }
+    .busca { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 8px 0 14px; border-radius: 999px; background: var(--cartao); }
+    .busca svg { flex: none; color: var(--suave); }
+    .busca input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; color: var(--texto); outline: none; }
+    .busca input::placeholder { color: var(--suave); }
+    .busca img { width: 34px; height: 34px; border-radius: 10px; }
+
+    main { max-width: 760px; margin: 0 auto; padding: 4px 16px 16px; }
+    h2 { font-size: 18px; font-weight: 600; margin: 18px 0 10px; }
+    .sub-titulo { margin: -6px 0 10px; color: var(--suave); font-size: 14px; }
+
+    /* Aviso para baixar a LeuApps no Android */
+    .baixar-app { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: center; margin: 8px 0 4px; padding: 14px; border-radius: 18px; background: var(--verde-claro); }
+    .baixar-app img { width: 52px; height: 52px; border-radius: 14px; }
+    .baixar-app b { display: block; font-size: 16px; }
+    .baixar-app p { margin: 2px 0 0; font-size: 13.5px; color: var(--suave); }
+    .baixar-app .acao { grid-column: 1 / -1; }
+
+    /* Lista de apps */
+    .lista { list-style: none; padding: 0; margin: 0; display: grid; }
+    .linha { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 10px 0; }
+    .linha img { width: 64px; height: 64px; border-radius: 16px; box-shadow: var(--sombra); display: block; }
+    .linha .nome { font-size: 16px; font-weight: 500; }
+    .linha .info { font-size: 13.5px; color: var(--suave); }
+    .linha .preco { font-size: 13px; color: var(--suave); }
+    .linha .estado { font-size: 12.5px; color: var(--verde-texto); font-weight: 600; }
+
+    /* Botões (pílulas) */
+    .acao { min-height: 40px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--verde); color: var(--no-verde); font-weight: 600; font-size: 14.5px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .acao.contorno { background: none; color: var(--verde-texto); border: 1.5px solid var(--linha); }
+    .acao.perigo { background: none; color: var(--perigo); border: 1.5px solid var(--linha); }
+    .acao:active { transform: scale(.97); }
+    .progresso { min-width: 104px; display: grid; gap: 5px; justify-items: center; font-size: 12.5px; color: var(--suave); }
+    .barra { width: 100%; height: 4px; border-radius: 2px; background: var(--linha); overflow: hidden; }
+    .barra i { display: block; height: 100%; background: var(--verde); transition: width .2s; }
+    .barra.indo i { width: 35% !important; animation: indo 1.1s infinite ease-in-out; }
+    @keyframes indo { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+    @media (prefers-reduced-motion: reduce) { .barra.indo i { animation: none; width: 100% !important; } }
+
+    /* Meus apps */
+    .grade { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 18px 8px; }
+    .grade button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; text-align: center; width: 100%; }
+    .grade img { width: 60px; height: 60px; border-radius: 16px; box-shadow: var(--sombra); }
+    .vazio { color: var(--suave); text-align: center; padding: 24px 8px; font-size: 14.5px; }
+
+    /* Página do app */
     .detalhe { position: fixed; inset: 0; z-index: 15; overflow-y: auto; background: var(--fundo); }
-    .det-barra { position: sticky; top: 0; z-index: 1; background: linear-gradient(135deg, #071A5C, #1B3FD6); padding: calc(10px + env(safe-area-inset-top)) 12px 10px; }
-    .det-voltar { border: 0; background: rgba(255,255,255,.16); color: #fff; font: inherit; font-weight: 800; padding: 8px 14px; border-radius: 999px; cursor: pointer; }
-    .det-corpo { max-width: 720px; margin: 0 auto; padding: 18px 16px 40px; }
-    .det-topo { display: flex; gap: 14px; align-items: center; }
-    .det-topo img { width: 76px; height: 76px; border-radius: 18px; box-shadow: 0 6px 16px rgba(10,20,60,.2); }
-    .det-topo h2 { margin: 0; font-size: 22px; } .det-topo p { margin: 0; }
-    .det-dev { color: var(--azul); font-weight: 800; font-size: 14px; } .detalhe .cat { font-size: 13px; color: var(--suave); font-weight: 600; }
-    .det-preco { margin: 12px 0 10px; font-weight: 800; color: #0F8A4B; font-size: 14px; }
-    .det-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .det-botoes > :only-child { grid-column: 1 / -1; }
-    .det-botoes > * { width: 100%; min-height: 46px; font-size: 15px; }
-    .det-telas { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 18px -16px 6px; padding: 0 16px 8px; }
-    .det-telas img { flex: 0 0 auto; height: 380px; width: auto; border-radius: 16px; border: 1px solid var(--linha); scroll-snap-align: start; background: var(--cartao); }
-    .detalhe h3 { font-size: 17px; margin: 16px 0 6px; }
-    .det-desc { margin: 0 0 10px; color: var(--suave); font-size: 15px; }
-    .det-recursos { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-    .det-recursos li { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 10px 12px; font-size: 14px; font-weight: 600; }
-    .det-info { margin: 16px 0 0; font-size: 12.5px; color: var(--suave); text-align: center; }
-    .vazio { color: var(--suave); text-align: center; padding: 24px 0; }
-    .instalar { display: none; margin: 0 0 16px; padding: 14px; border-radius: 18px; background: var(--cartao); border: 2px solid var(--azul); }
-    .instalar b { display: block; }
-    .instalar p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
-    .instalar button { border: 0; font: inherit; cursor: pointer; }
-    .abas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; max-width: 720px; margin: 12px auto 0; padding: 4px; border-radius: 18px; background: rgba(255,255,255,.14); }
-    .abas button { border: 0; border-radius: 14px; background: none; font: inherit; font-weight: 800; font-size: 12.5px; line-height: 1.15; color: #fff; padding: 6px 2px 7px; white-space: nowrap; cursor: pointer; }
-    .abas button span { display: block; font-size: 18px; margin-bottom: 2px; }
-    .abas button[aria-selected="true"] { background: #fff; color: var(--azul-escuro); }
-    .secao-titulo { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-    .secao-titulo small { color: var(--suave); font-weight: 700; font-size: 13px; }
-    .grade { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 18px 10px; }
-    .grade a { display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: var(--texto); font-size: 13px; font-weight: 700; text-align: center; }
-    .grade img { width: 64px; height: 64px; border-radius: 16px; box-shadow: 0 4px 12px rgba(10,20,60,.18); }
-    .botoes { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
-    button.abrir { border: 0; font: inherit; font-weight: 800; cursor: pointer; }
-    .tirar { min-height: 42px; border: 1.5px solid #F3C4C4; border-radius: 14px; background: #fff; font: inherit; font-size: 15px; font-weight: 800; color: #B42318; cursor: pointer; }
-    /* Todos os botões do cartão com a mesma largura, altura e letra. */
-    .botoes { width: 124px; }
-    .botoes > * { width: 100%; min-width: 0; min-height: 42px; margin: 0; padding: 0 10px; font-size: 15px; box-sizing: border-box; }
-    button.abrir { font-size: 15px; }
-    .abrir.ouro { background: linear-gradient(135deg, #FBBF24, #F59E0B); color: #3B2300; box-shadow: 0 6px 14px rgba(245,158,11,.32); }
-    .folha-fundo { position: fixed; inset: 0; background: rgba(5,10,30,.55); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
-    .folha { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--fundo); border-radius: 22px 22px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
-    .folha h3 { margin: 0 0 4px; font-size: 19px; }
-    .folha .sub { margin: 0 0 14px; color: var(--suave); font-size: 14px; }
-    .plano { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
-    .plano b { font-size: 16px; } .plano .valor { font-size: 18px; font-weight: 900; color: var(--azul); text-align: right; }
+    .det-barra { position: sticky; top: 0; z-index: 1; background: var(--fundo); padding: calc(6px + env(safe-area-inset-top)) 6px 6px; }
+    .det-voltar { width: 48px; height: 48px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; }
+    .det-corpo { max-width: 760px; margin: 0 auto; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); }
+    .det-topo { display: grid; grid-template-columns: 72px 1fr; gap: 16px; align-items: center; }
+    .det-topo img { width: 72px; height: 72px; border-radius: 18px; box-shadow: var(--sombra); }
+    .det-topo h1 { margin: 0; font-size: 22px; font-weight: 500; line-height: 1.2; }
+    .det-dev { color: var(--verde-texto); font-weight: 600; font-size: 14.5px; }
+    .det-compra { color: var(--suave); font-size: 12.5px; }
+    .det-fatos { display: flex; margin: 18px 0; padding: 0; list-style: none; overflow-x: auto; }
+    .det-fatos li { flex: 1 0 auto; min-width: 96px; padding: 0 12px; text-align: center; border-left: 1px solid var(--linha); font-size: 12.5px; color: var(--suave); }
+    .det-fatos li:first-child { border-left: 0; }
+    .det-fatos b { display: block; color: var(--texto); font-size: 14px; font-weight: 600; }
+    .det-botoes { display: flex; gap: 10px; }
+    .det-botoes > * { flex: 1; min-height: 44px; font-size: 15px; }
+    .det-botoes .progresso { align-content: center; }
+    .det-planos-btn { width: 100%; margin-top: 10px; }
+    .det-telas { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 20px -16px 4px; padding: 0 16px 8px; }
+    .det-telas img { flex: 0 0 auto; height: 330px; width: auto; max-width: none; border-radius: 14px; border: 1px solid var(--linha); scroll-snap-align: start; background: var(--cartao); }
+    .detalhe h2 { font-size: 18px; margin: 20px 0 8px; }
+    .det-desc { margin: 0 0 12px; color: var(--suave); font-size: 15px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+    .chips li { border: 1px solid var(--linha); border-radius: 10px; padding: 7px 12px; font-size: 13.5px; }
+    .opcoes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+    .opcoes li { padding: 12px; border-radius: 14px; background: var(--cartao); display: grid; gap: 2px; }
+    .opcoes b { font-size: 14px; font-weight: 600; } .opcoes span { font-size: 17px; font-weight: 700; color: var(--verde-texto); } .opcoes small { font-size: 12.5px; color: var(--suave); }
+    .det-info { margin: 20px 0 0; font-size: 12.5px; color: var(--suave); }
+
+    /* Folhas (planos, permissão, instruções) */
+    .folha-fundo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 20; }
+    .folha { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; background: var(--fundo); border-radius: 26px 26px 0 0; padding: 22px 18px calc(20px + env(safe-area-inset-bottom)); }
+    .folha h3 { margin: 0 0 6px; font-size: 20px; font-weight: 500; }
+    .folha .sub { margin: 0 0 14px; color: var(--suave); font-size: 14.5px; }
+    .folha ol { margin: 0 0 14px; padding-left: 22px; display: grid; gap: 6px; }
+    .folha .acao { width: 100%; min-height: 46px; }
+    .plano { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; background: var(--cartao); border-radius: 18px; padding: 14px; margin-bottom: 10px; }
+    .plano b { font-size: 16px; font-weight: 600; } .plano .valor { font-size: 18px; font-weight: 700; color: var(--verde-texto); text-align: right; }
     .plano p { grid-column: 1 / -1; margin: 0; font-size: 13px; color: var(--suave); }
-    .plano .abrir { grid-column: 1 / -1; }
-    .nota-plano { grid-column: 1 / -1; margin: 0; padding: 8px 10px; border-radius: 10px; background: #EEF3FF; color: #1F2A44; font-size: 13px; font-weight: 700; }
-    .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: #1B3FD6; font-weight: 800; }
-    .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; vertical-align: middle; }
-    .selo-tipo.unico { background: #DCFCE7; color: #166534; } .selo-tipo.assinatura { background: #E0E7FF; color: #3730A3; }
-    .fechar-folha { width: 100%; margin-top: 4px; border: 0; background: none; font: inherit; font-weight: 700; color: var(--suave); padding: 10px; cursor: pointer; }
-    .rodape { margin-top: 32px; text-align: center; font-size: 13px; color: var(--suave); padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
+    .plano .acao { grid-column: 1 / -1; }
+    .nota-plano { grid-column: 1 / -1; margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--verde-claro); font-size: 13px; }
+    .selo-tipo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; vertical-align: middle; background: var(--verde-claro); color: var(--verde-texto); }
+    .ja-comprei { display: block; margin: 4px 0 8px; text-align: center; color: var(--verde-texto); font-weight: 600; }
+    .fechar-folha { width: 100%; margin-top: 6px; border: 0; background: none; font-weight: 600; color: var(--suave); padding: 10px; }
+    .aviso-loja { position: fixed; left: 16px; right: 16px; bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 60; max-width: 520px; margin: 0 auto; background: #2B3030; color: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(0,0,0,.3); font-size: 14.5px; }
+
+    /* Menu de baixo */
+    .menu { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; justify-content: center; background: var(--fundo); border-top: 1px solid var(--linha); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); }
+    .menu div { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; max-width: 520px; }
+    .menu button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 4px 0; font-size: 12.5px; font-weight: 500; color: var(--suave); }
+    .menu button span { display: grid; place-items: center; width: 64px; height: 32px; border-radius: 999px; }
+    .menu button[aria-selected="true"] { color: var(--texto); font-weight: 600; }
+    .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
+
     /* Serviços sob encomenda */
-    .servico { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 14px; margin-bottom: 14px; }
-    .servico h3 { margin: 0; font-size: 17px; } .servico p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
+    .servico { background: var(--cartao); border-radius: 18px; padding: 14px; margin-bottom: 14px; }
+    .servico h3 { margin: 0; font-size: 17px; font-weight: 600; } .servico p { margin: 4px 0 10px; font-size: 14px; color: var(--suave); }
     .galeria { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; margin: 0 -2px 10px; }
-    .galeria figure { position: relative; flex: 0 0 auto; margin: 0; scroll-snap-align: start; border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); }
+    .galeria figure { position: relative; flex: 0 0 auto; margin: 0; scroll-snap-align: start; border-radius: 14px; overflow: hidden; }
     .galeria img { display: block; height: 170px; width: auto; pointer-events: none; -webkit-user-drag: none; user-select: none; }
-    .galeria figure::after { content: "DEMONSTRAÇÃO"; position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(7,26,92,.82); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .5px; }
-    .whats { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 14px; background: linear-gradient(135deg, #25D366, #128C4A); color: #fff; font-weight: 800; text-decoration: none; box-shadow: 0 6px 14px rgba(18,140,74,.3); }
-    .servicos-topo { background: linear-gradient(135deg, #071A5C, #1B3FD6); color: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
-    .servicos-topo b { font-size: 18px; } .servicos-topo p { margin: 4px 0 0; font-size: 14px; opacity: .9; }
+    .galeria figure::after { content: "DEMONSTRAÇÃO"; position: absolute; left: 8px; top: 8px; padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.65); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .5px; }
+    .whats { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 999px; background: #128C4A; color: #fff; font-weight: 600; text-decoration: none; }
     .protegido { -webkit-touch-callout: none; user-select: none; }
-    @media (max-width: 380px) { .app { grid-template-columns: 52px 1fr; } .app img { width: 52px; height: 52px; } .abrir { grid-column: 1 / -1; } }
-    @media (max-width: 380px) { .botoes { grid-column: 1 / -1; width: 100%; } }
+    .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 16px 16px calc(100px + env(safe-area-inset-bottom)); margin: 0; }
   </style>
 </head>
 <body>
   <header class="topo">
-    <div class="marca"><img src="/img/leuapps-192.webp" alt="" width="40" height="40"><div><b>LeuApps</b><small>Aplicativos LeuName Softwares</small></div></div>
-    <nav class="abas" role="tablist">
-      <button role="tab" id="tab-loja" aria-selected="true"><span>🛍️</span>Loja</button>
-      <button role="tab" id="tab-meus" aria-selected="false"><span>📱</span>Meus apps</button>
-      <button role="tab" id="tab-servicos" aria-selected="false"><span>🎨</span>Serviços</button>
-    </nav>
-    <div class="busca"><input id="busca" type="search" placeholder="Buscar aplicativo" aria-label="Buscar aplicativo" autocomplete="off"></div>
+    <label class="busca">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="busca" type="search" placeholder="Pesquisar apps" aria-label="Pesquisar apps" autocomplete="off">
+      <img src="/img/leuapps-192.webp" alt="LeuApps" width="34" height="34">
+    </label>
   </header>
+
   <main>
-    <div class="instalar" id="instalar">
-      <b>📲 Coloque o LeuApps na tela do celular</b>
-      <p>Um ícone só, com todos os nossos aplicativos sempre atualizados.</p>
-      <button class="abrir" id="instalar-btn" type="button">Instalar</button>
-    </div>
     <section id="aba-loja">
-      <h2>Loja</h2>
+      <div id="baixar-app" hidden></div>
+      <h2>Apps da LeuName Softwares</h2>
       <ul class="lista" id="lista"><li class="vazio">Carregando…</li></ul>
     </section>
-    <section id="aba-servicos" class="protegido" hidden>
-      <div class="servicos-topo"><b>🎨 Criamos para você</b><p>Logomarca, site e banners sob encomenda. Orçamento grátis, valores a combinar.</p></div>
-      <div id="servicos"><p class="vazio">Carregando…</p></div>
-      <p class="resumo" style="text-align:center;color:var(--suave);font-size:13px">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>
-    </section>
+
     <section id="aba-meus" hidden>
       <h2>Meus apps</h2>
       <ul class="grade" id="meus"></ul>
       <div id="descubra">
-        <h2 class="secao-titulo" style="margin-top:28px">Descubra mais <small>toque em Instalar</small></h2>
+        <h2>Para você instalar</h2>
         <ul class="lista" id="sugestoes"></ul>
       </div>
     </section>
+
+    <section id="aba-servicos" class="protegido" hidden>
+      <h2>Criamos para você</h2>
+      <p class="sub-titulo">Logomarca, site e banners sob encomenda. Orçamento grátis, valores a combinar.</p>
+      <div id="servicos"><p class="vazio">Carregando…</p></div>
+      <p class="sub-titulo" style="text-align:center;font-size:13px">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>
+    </section>
   </main>
-  <section id="detalhe" class="detalhe" hidden aria-label="Detalhes do app"></section>
-  <p class="rodape">© 2026 LeuName Softwares · Todos os direitos reservados.<br>Aplicativos sempre na versão mais nova.</p>
+  <p class="rodape">© 2026 LeuName Softwares · Aplicativos sempre na versão mais nova.</p>
+
+  <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
+    <button role="tab" id="tab-loja" aria-selected="true"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span>Apps</button>
+    <button role="tab" id="tab-meus" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>Meus apps</button>
+    <button role="tab" id="tab-servicos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg></span>Serviços</button>
+  </div></nav>
+
+  <section id="detalhe" class="detalhe" hidden aria-label="Página do app"></section>
+
   <script>
 // Link de divulgação www.leunamesoftware.com.br/quantocobrar abre aqui mesmo, já na página do app.
 if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, '', '/#quantocobrar');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    const lista = document.getElementById('lista');
+    const $ = (id) => document.getElementById(id);
+    const lista = $('lista'), detalhe = $('detalhe');
     let apps = [];
-    // Apps instalados ficam guardados neste aparelho.
+
+    // ---- Onde a loja está aberta ----
+    // No app LeuApps para Android existe window.LeuNativo: ele instala, abre e desinstala de verdade.
+    const N = window.LeuNativo || null;
+    const ua = navigator.userAgent;
+    const android = /Android/i.test(ua);
+    const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
+
+    // Apps "instalados" no navegador (sem o app Android) ficam guardados neste aparelho.
     const ler = () => { try { return JSON.parse(localStorage.getItem('leuapps.meus') || '[]'); } catch { return []; } };
     const gravar = (v) => { try { localStorage.setItem('leuapps.meus', JSON.stringify(v)); } catch {} };
     let meus = ler();
-    // Celular ou computador (muda o texto do botão de instalar no aparelho).
-    const celular = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
-    const link = (a) => a.url + (a.url.includes('?') ? '&' : '?') + 'leuapps=1';
-    // Botões de cada app: Abrir (usa aqui na loja), Instalar (ícone próprio no aparelho) e Comprar.
-    // Como na Play Store: antes de instalar, "Instalar"; depois, "Abrir" e "Desinstalar".
-    const botoes = (a) => meus.includes(a.id)
-      ? `<a class="abrir verde" href="${esc(link(a))}">▶ Abrir</a>
-            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}
-            <button class="tirar" data-tirar="${esc(a.id)}">Desinstalar</button>`
-      : `<button class="abrir" data-instalar="${esc(a.id)}">⬇ Instalar</button>
-            ${a.planos ? `<button class="abrir ouro" data-comprar="${esc(a.id)}">🛒 Comprar</button>` : ''}`;
-    function cartao(a) {
-      return `
-        <li class="app">
-          <img src="${esc(a.icone)}" alt="" loading="lazy" data-detalhe="${esc(a.id)}" style="cursor:pointer">
-          <div data-detalhe="${esc(a.id)}" style="cursor:pointer"><h3>${esc(a.nome)}</h3><div class="cat">${esc(a.categoria)}</div><p class="resumo">${esc(a.resumo)}</p><span class="preco">${esc(a.preco)}</span><span class="ver-mais">Ver detalhes ›</span></div>
-          <div class="botoes">${botoes(a)}</div>
-          ${a.opcoes ? `<ul class="opcoes" aria-label="Opções de plano">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
-        </li>`;
+
+    // No app Android: versões instaladas de verdade (pacote → versionCode) e downloads em andamento.
+    let versoes = {}, baixando = {}, pendente = null;
+    function lerInstalados() {
+      if (!N) return;
+      try { versoes = JSON.parse(N.instalados(JSON.stringify(apps.filter((a) => a.android).map((a) => a.android.pacote)))) || {}; } catch { versoes = {}; }
     }
-    function mostrar(filtro = '') {
-      const f = filtro.trim().toLowerCase();
+    /** 'nao' | 'instalado' | 'atualizar' */
+    function situacao(a) {
+      if (N && a.android) {
+        const v = versoes[a.android.pacote];
+        if (!v) return 'nao';
+        return a.android.versao && v < a.android.versao ? 'atualizar' : 'instalado';
+      }
+      return meus.includes(a.id) ? 'instalado' : 'nao';
+    }
+    const barra = (id) => {
+      const p = baixando[id];
+      return `<div class="progresso" role="status"><span>${p >= 100 ? 'Instalando…' : p >= 0 ? `Baixando… ${p}%` : 'Baixando…'}</span>
+        <div class="barra ${p >= 0 && p < 100 ? '' : 'indo'}"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div></div>`;
+    };
+
+    // Botão da linha da lista (um só, como nas lojas de celular).
+    function botaoLinha(a) {
+      if (a.id in baixando) return barra(a.id);
+      const s = situacao(a);
+      if (s === 'atualizar') return `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>`;
+      if (s === 'instalado') return `<button class="acao contorno" data-abrir="${esc(a.id)}">Abrir</button>`;
+      return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
+    }
+    // Botões da página do app: Instalar; depois Desinstalar + Abrir (ou Atualizar).
+    function botoesDetalhe(a) {
+      if (a.id in baixando) return barra(a.id);
+      const s = situacao(a);
+      if (s === 'nao') return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
+      return `<button class="acao perigo" data-tirar="${esc(a.id)}">Desinstalar</button>
+        ${s === 'atualizar' ? `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>` : `<button class="acao" data-abrir="${esc(a.id)}">Abrir</button>`}`;
+    }
+
+    function linha(a) {
+      const s = situacao(a);
+      return `<li><div class="linha">
+          <img src="${esc(a.icone)}" alt="" loading="lazy" data-detalhe="${esc(a.id)}" style="cursor:pointer">
+          <div data-detalhe="${esc(a.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(a.nome)}</div>
+            <div class="info">${esc(a.categoria)}</div>
+            ${s === 'instalado' ? '<div class="estado">✓ Instalado</div>' : s === 'atualizar' ? '<div class="estado">Atualização disponível</div>' : `<div class="preco">${esc(a.preco)}</div>`}</div>
+          <div>${botaoLinha(a)}</div></div></li>`;
+    }
+    function mostrar() {
+      const f = $('busca').value.trim().toLowerCase();
       const vis = apps.filter((a) => !f || (a.nome + ' ' + a.categoria + ' ' + a.resumo).toLowerCase().includes(f));
-      lista.innerHTML = vis.map(cartao).join('') || '<li class="vazio">Nenhum aplicativo encontrado.</li>';
-      const mi = apps.filter((a) => meus.includes(a.id));
-      document.getElementById('meus').innerHTML = mi.map((a) => `<li><a href="${esc(link(a))}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</a></li>`).join('')
+      lista.innerHTML = vis.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
+      const mi = apps.filter((a) => situacao(a) !== 'nao');
+      $('meus').innerHTML = mi.map((a) => `<li><button data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt="">${esc(a.nome)}</button></li>`).join('')
         || '<li class="vazio" style="grid-column:1/-1">Você ainda não instalou nenhum app. Escolha abaixo e toque em Instalar.</li>';
-      const resto = apps.filter((a) => !meus.includes(a.id));
-      document.getElementById('sugestoes').innerHTML = resto.map(cartao).join('');
-      document.getElementById('descubra').hidden = !resto.length;
+      const resto = apps.filter((a) => situacao(a) === 'nao');
+      $('sugestoes').innerHTML = resto.map(linha).join('');
+      $('descubra').hidden = !resto.length;
+      if (!detalhe.hidden) mostrarDetalhe();
+    }
+
+    // ---- Folhas (planos, permissão, instruções) ----
+    function folha(html, fechar = 'Agora não') {
+      const f = document.createElement('div'); f.className = 'folha-fundo';
+      f.innerHTML = `<div class="folha" role="dialog">${html}<button class="fechar-folha" type="button">${fechar}</button></div>`;
+      f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha') || e.target.closest('[data-fecha]')) f.remove(); });
+      document.body.appendChild(f);
+      return f;
     }
     function planos(id, paraAbrir) {
       const a = apps.find((x) => x.id === id); if (!a || !a.planos) return;
-      const f = document.createElement('div'); f.className = 'folha-fundo';
-      f.innerHTML = `<div class="folha" role="dialog" aria-label="Planos ${esc(a.nome)}">
-        <h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
-        ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo ${esc(p.tipo)}">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
-          <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p>${p.nota ? `<p class="nota-plano">${esc(p.nota)}</p>` : ''}<a class="abrir" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
-        ${a.planos[0].url.startsWith('/loja/') ? `<a class="ja-comprei" href="${esc(a.planos[0].url)}&entrar=1">Já comprei: entrar com minha conta</a>` : ''}
-        <button class="fechar-folha" type="button">Fechar</button></div>`;
-      f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha')) f.remove(); });
-      document.body.appendChild(f);
+      folha(`<h3>${esc(a.nome)}</h3><p class="sub">${paraAbrir ? 'Para abrir, compre o app ou entre com a conta da sua compra.' : 'Escolha como quer pagar.'} Pagamento seguro pelo Mercado Pago, no Pix ou no cartão.</p>
+        ${a.planos.map((p) => `<div class="plano"><b>${esc(p.nome)}<span class="selo-tipo">${p.tipo === 'assinatura' ? 'Assinatura' : 'Pagamento único'}</span></b>
+          <span class="valor">${esc(p.preco)}</span><p>${esc(p.detalhe)}</p>${p.nota ? `<p class="nota-plano">${esc(p.nota)}</p>` : ''}<a class="acao" href="${esc(p.url)}">Escolher este</a></div>`).join('')}
+        ${a.planos[0].url.startsWith('/loja/') ? `<a class="ja-comprei" href="${esc(a.planos[0].url)}&entrar=1">Já comprei: entrar com minha conta</a>` : ''}`, 'Fechar');
     }
-    function aoClicar(e) {
-      const det = e.target.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
-      const cmp = e.target.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
-      const ins = e.target.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
-      const tir = e.target.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
+    function avisar(texto) {
+      document.querySelectorAll('.aviso-loja').forEach((x) => x.remove());
+      const t = document.createElement('div'); t.className = 'aviso-loja'; t.setAttribute('role', 'status'); t.textContent = texto;
+      document.body.appendChild(t); setTimeout(() => t.remove(), 4500);
     }
-    // Instalar no aparelho: cada app tem endereço próprio e vira um ícone próprio (celular ou área de trabalho).
-    function folha(html) {
-      const f = document.createElement('div'); f.className = 'folha-fundo';
-      f.innerHTML = `<div class="folha" role="dialog">${html}<button class="fechar-folha" type="button">Agora não</button></div>`;
-      f.addEventListener('click', (e) => { if (e.target === f || e.target.classList.contains('fechar-folha') || e.target.closest('[data-aparelho]')) f.remove(); });
-      f.querySelector('[data-aparelho]')?.addEventListener('click', (e) => instalarNoAparelho(e.target.closest('[data-aparelho]').dataset.aparelho));
-      document.body.appendChild(f);
-    }
-    function instalarNoAparelho(id) {
-      const a = apps.find((x) => x.id === id); if (!a || !a.instalar) return;
-      if (!a.instalarPassos) { location.href = a.instalar; return; } // o próprio app mostra o botão Instalar
-      const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // ---- Instalar ----
+    async function instalar(id) {
+      const a = apps.find((x) => x.id === id); if (!a) return;
+      // 1) App LeuApps para Android: baixa e instala de verdade (o Android confirma e põe o ícone na tela).
+      if (N && a.android) {
+        if (!N.podeInstalar()) {
+          pendente = id;
+          folha(`<h3>Permita instalar apps</h3><p class="sub">É só desta vez. O Android vai abrir a configuração:</p>
+            <ol><li>Ative <b>Permitir desta fonte</b>.</li><li>Volte para a LeuApps: o ${esc(a.nome)} começa a instalar.</li></ol>
+            <button class="acao" type="button" data-fecha data-permitir>Permitir</button>`);
+          return;
+        }
+        baixando[id] = 0; mostrar();
+        N.instalar(id, a.android.apk);
+        return;
+      }
+      // 2) Chrome/Edge novos: instala com um toque, sem abrir o app antes.
+      if (a.instalarDireto && 'install' in navigator) {
+        try {
+          await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
+          meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
+          avisar(`✓ ${a.nome} instalado! O ícone já está ${celular ? 'na tela do celular' : 'na área de trabalho'}.`);
+          return;
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      // 3) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
+      meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
+      if (!a.instalar) return;
+      if (!a.instalarPassos) { location.href = a.instalar; return; }
+      const ios = /iPhone|iPad|iPod/i.test(ua);
       const passos = ios ? ['Toque em <b>Compartilhar</b> (quadrado com a seta ⬆️).', 'Toque em <b>Adicionar à Tela de Início</b>.']
         : celular ? ['Toque nos <b>⋮</b> do navegador (canto de cima).', 'Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.']
         : ['Clique no ícone <b>⊕</b> no fim da barra de endereço,', 'ou no menu <b>⋮</b> → <b>Transmitir, salvar e compartilhar</b> → <b>Instalar</b>.'];
       folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">O ${esc(a.nome)} vai abrir. Quando abrir:</p>
-        <ol style="margin:0 0 12px;padding-left:22px;display:grid;gap:6px">${passos.map((x) => `<li>${x}</li>`).join('')}</ol>
-        <a class="abrir" href="${esc(a.instalar)}" style="display:block;text-align:center">Abrir o ${esc(a.nome)}</a>`);
+        <ol>${passos.map((x) => `<li>${x}</li>`).join('')}</ol><a class="acao" href="${esc(a.instalar)}">Abrir o ${esc(a.nome)}</a>`);
     }
-
-    // Instalar: entra em "Meus apps" e já coloca o ícone no celular/computador (o app abre com o botão Instalar).
-    function marcarInstalado(id) {
-      meus = [...new Set([...meus, id])]; gravar(meus);
-      mostrar(document.getElementById('busca').value); if (!detalhe.hidden) mostrarDetalhe();
-    }
-    function avisar(texto) {
-      const t = document.createElement('div'); t.className = 'aviso-loja'; t.setAttribute('role', 'status'); t.textContent = texto;
-      document.body.appendChild(t); setTimeout(() => t.remove(), 4500);
-    }
-    async function instalar(id) {
+    function abrirApp(id) {
       const a = apps.find((x) => x.id === id); if (!a) return;
-      // Chrome/Edge novos: a loja instala direto, com um toque (como a Play Store), sem abrir o app antes.
-      if (a.instalarDireto && 'install' in navigator) {
-        try {
-          await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
-          marcarInstalado(id);
-          avisar(`✓ ${a.nome} instalado! O ícone já está ${celular ? 'na tela do celular' : 'na área de trabalho'}.`);
-          return;
-        } catch (e) { if (e && e.name === 'AbortError') return; } // cancelou: não faz nada
-      }
-      // Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
-      marcarInstalado(id);
-      instalarNoAparelho(id);
+      if (N && a.android && N.abrir(a.android.pacote)) return;
+      if (a.exigeCompra) return conferirCompra(a, link(a));
+      location.href = link(a);
     }
     function desinstalar(id) {
       const a = apps.find((x) => x.id === id); if (!a) return;
+      if (N && a.android) { N.desinstalar(a.android.pacote); return; } // o Android pergunta; ao voltar a loja confere
       if (!confirm(`Desinstalar o ${a.nome}?\n\nSe o ícone dele está na tela do celular ou na área de trabalho, segure o ícone e toque em Desinstalar (ou Remover).`)) return;
-      meus = meus.filter((x) => x !== id); gravar(meus);
-      mostrar(document.getElementById('busca').value); if (!detalhe.hidden) mostrarDetalhe();
+      meus = meus.filter((x) => x !== id); gravar(meus); mostrar();
     }
+    // Respostas do app Android (LeuNativo chama estas funções).
+    window.leuNativo = {
+      progresso(id, pct) { baixando[id] = pct; mostrar(); },
+      fim(id, ok, msg) {
+        delete baixando[id]; lerInstalados(); mostrar();
+        const a = apps.find((x) => x.id === id), nome = a ? a.nome : 'O app';
+        if (ok) return avisar(`✓ ${nome} instalado! O ícone já está na tela do celular.`);
+        const m = String(msg || '');
+        if (/abort|cancel|rejected/i.test(m)) return avisar('Instalação cancelada.');
+        if (/INCOMPATIBLE|conflict|signature/i.test(m)) return avisar(`Já existe outra versão do ${nome} no celular (de outra loja). Desinstale ela e toque em Instalar de novo.`);
+        avisar(`Não deu para instalar o ${nome} agora. Confira a internet e tente de novo.`);
+      },
+      voltou() {
+        lerInstalados();
+        if (pendente && N.podeInstalar()) { const id = pendente; pendente = null; instalar(id); return; }
+        mostrar();
+      },
+    };
 
     // Apps que só abrem depois de comprados (exigeCompra): confere a conta antes de abrir.
-    document.addEventListener('click', async (e) => {
-      const el = e.target.closest('a[href]'); if (!el) return;
-      const a = apps.find((x) => x.exigeCompra && el.href.startsWith(x.url)); if (!a) return;
-      e.preventDefault();
+    async function conferirCompra(a, destino) {
       let tem = false;
       try { tem = Boolean((await (await fetch('/loja-api/conta/apps', { cache: 'no-store' })).json()).apps?.[a.id]); } catch {}
-      if (tem) location.href = el.href; else planos(a.id, true);
-    }, true);
-    lista.addEventListener('click', aoClicar);
-    // Página do app (como na loja do celular): telas, descrição e o que ele faz. Link direto: www.leunamesoftware.com.br/#id
-    const detalhe = document.getElementById('detalhe');
+      if (tem) location.href = destino; else planos(a.id, true);
+    }
+
+    // ---- Página do app (link direto: www.leunamesoftware.com.br/#id) ----
     function mostrarDetalhe() {
       const a = apps.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
+      const preco = a.preco.split(' · ');
       detalhe.innerHTML = `
-        <div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">‹ Voltar</button></div>
+        <div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div>
         <div class="det-corpo">
-          <div class="det-topo"><img src="${esc(a.icone)}" alt=""><div><h2>${esc(a.nome)}</h2><p class="det-dev">LeuName Softwares</p><p class="cat">${esc(a.categoria)}</p></div></div>
-          <p class="det-preco">${esc(a.preco)}</p>
-          <div class="det-botoes">${botoes(a)}</div>
-          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="214" height="380">`).join('')}</div>` : ''}
-          <h3>Sobre este app</h3><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
-          ${a.recursos ? `<ul class="det-recursos">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
-          <p class="det-info">Desenvolvedor: LeuName Softwares${a.versao ? ` · Versão ${esc(a.versao)}` : ''} · Funciona no celular e no computador</p>
+          <div class="det-topo"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">LeuName Softwares</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
+          <ul class="det-fatos">
+            <li><b>${esc(preco[0])}</b>${esc(preco[1] || 'para começar')}</li>
+            <li><b>${esc(a.categoria)}</b>categoria</li>
+            <li><b>${N && a.android ? 'Android' : 'Celular e PC'}</b>funciona em</li>
+          </ul>
+          <div class="det-botoes">${botoesDetalhe(a)}</div>
+          ${a.planos ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
+          ${a.capturas ? `<div class="det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="186" height="330">`).join('')}</div>` : ''}
+          <h2>Sobre este app</h2><p class="det-desc">${esc(a.descricao || a.resumo)}</p>
+          ${a.recursos ? `<ul class="chips">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+          ${a.opcoes ? `<h2>Planos</h2><ul class="opcoes">${a.opcoes.map(([n, v, d]) => `<li><b>${esc(n)}</b><span>${esc(v)}</span><small>${esc(d)}</small></li>`).join('')}</ul>` : ''}
+          <p class="det-info">Desenvolvedor: LeuName Softwares · Sempre na versão mais nova</p>
         </div>`;
-      detalhe.hidden = false; detalhe.scrollTop = 0; document.body.style.overflow = 'hidden';
-      detalhe.querySelector('.det-voltar').onclick = () => history.length > 1 ? history.back() : (location.hash = '');
+      detalhe.hidden = false; document.body.style.overflow = 'hidden';
+      detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
     }
-    detalhe.addEventListener('click', (e) => {
-      const ins = e.target.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
-      const tir = e.target.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
-      const cmp = e.target.closest('[data-comprar]'); if (cmp) planos(cmp.dataset.comprar);
+    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); });
+
+    // ---- Cliques ----
+    document.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t.closest('[data-permitir]') && N) return N.pedirPermissao();
+      const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const ins = t.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
+      const abr = t.closest('[data-abrir]'); if (abr) return abrirApp(abr.dataset.abrir);
+      const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
+      const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
     });
-    addEventListener('hashchange', mostrarDetalhe);
-    document.getElementById('sugestoes').addEventListener('click', aoClicar);
+
+    // ---- Abas (menu de baixo) ----
     function aba(qual) {
-      document.getElementById('aba-loja').hidden = qual !== 'loja';
-      document.getElementById('aba-meus').hidden = qual !== 'meus';
-      document.getElementById('aba-servicos').hidden = qual !== 'servicos';
-      document.getElementById('tab-servicos').setAttribute('aria-selected', qual === 'servicos');
-      document.getElementById('tab-loja').setAttribute('aria-selected', qual === 'loja');
-      document.getElementById('tab-meus').setAttribute('aria-selected', qual === 'meus');
-      document.querySelector('.busca').style.display = qual === 'loja' ? '' : 'none';
+      for (const n of ['loja', 'meus', 'servicos']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
       try { localStorage.setItem('leuapps.aba', qual); } catch {}
+      scrollTo(0, 0);
     }
-    document.getElementById('tab-loja').addEventListener('click', () => aba('loja'));
-    document.getElementById('tab-meus').addEventListener('click', () => aba('meus'));
-    document.getElementById('tab-servicos').addEventListener('click', () => aba('servicos'));
-    // Serviços sob encomenda: exemplos com marca d'água + orçamento grátis pelo WhatsApp.
+    $('tab-loja').addEventListener('click', () => aba('loja'));
+    $('tab-meus').addEventListener('click', () => aba('meus'));
+    $('tab-servicos').addEventListener('click', () => aba('servicos'));
+    $('busca').addEventListener('input', () => { if ($('aba-loja').hidden) aba('loja'); mostrar(); });
+
+    // ---- Android no navegador: oferecer o app LeuApps (instala os apps com um toque) ----
+    if (android && !N) {
+      $('baixar-app').hidden = false;
+      $('baixar-app').innerHTML = `<div class="baixar-app"><img src="/img/leuapps-192.webp" alt=""><div><b>Baixe o app LeuApps</b><p>Instale todos os nossos apps com um toque, direto na tela do celular.</p></div>
+        <a class="acao" href="/baixar/leuapps.apk" id="baixar-leuapps">Baixar o app LeuApps</a></div>`;
+      $('baixar-leuapps').addEventListener('click', () => setTimeout(() => folha(`<h3>Instalar o LeuApps</h3><p class="sub">O arquivo está baixando. Quando terminar:</p>
+        <ol><li>Toque em <b>LeuApps.apk</b> (na notificação ou em Downloads).</li><li>Se o celular pedir, toque em <b>Configurações</b> e ative <b>Permitir desta fonte</b>.</li><li>Toque em <b>Instalar</b>. Pronto: abra o LeuApps pelo ícone.</li></ol>`, 'Entendi'), 600));
+    }
+
+    // ---- Serviços sob encomenda: exemplos com marca d'água + orçamento grátis pelo WhatsApp ----
     fetch('/servicos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
       const zap = (nome) => `https://wa.me/${d.whatsapp}?text=${encodeURIComponent(`Olá, LeuName Softwares! Vi no LeuApps e quero um orçamento grátis de ${nome}.`)}`;
-      document.getElementById('servicos').innerHTML = d.itens.map((s) => `
+      $('servicos').innerHTML = d.itens.map((s) => `
         <article class="servico">
           <h3>${esc(s.icone)} ${esc(s.nome)}</h3><p>${esc(s.resumo)}</p>
           <div class="galeria">${s.imagens.map((i) => `<figure><img src="${esc(i)}" alt="Exemplo de ${esc(s.nome)}" loading="lazy" draggable="false"></figure>`).join('')}</div>
           <a class="whats" href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">💬 Faça seu orçamento grátis</a>
-        </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:700;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
+        </article>`).join('') + `<a class="whats" style="margin-bottom:14px;flex-direction:column;gap:0;padding:8px;line-height:1.25" href="${zap('um trabalho sob encomenda')}" target="_blank" rel="noopener">💬 Falar com a LeuName no WhatsApp<small style="font-weight:600;opacity:.9">${esc(d.whatsappTexto)}</small></a>`;
     }).catch(() => {});
-    document.getElementById('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
-    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { apps = d; mostrar(); mostrarDetalhe(); let a = new URLSearchParams(location.search).get('aba'); try { a = a || localStorage.getItem('leuapps.aba') || (meus.length ? 'meus' : 'loja'); } catch {} aba(['meus', 'servicos'].includes(a) ? a : 'loja'); })
-      .catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
-    document.getElementById('busca').addEventListener('input', (e) => mostrar(e.target.value));
+    $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // Instalar na tela inicial (navegador). No app Android isso não aparece.
-    let pedido = null;
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedido = e; document.getElementById('instalar').style.display = 'block'; });
-    document.getElementById('instalar-btn').addEventListener('click', async () => { if (!pedido) return; pedido.prompt(); await pedido.userChoice; pedido = null; document.getElementById('instalar').style.display = 'none'; });
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+      apps = d; lerInstalados(); mostrar(); mostrarDetalhe();
+      let a = new URLSearchParams(location.search).get('aba');
+      try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
+      aba(['meus', 'servicos'].includes(a) ? a : 'loja');
+    }).catch(() => { lista.innerHTML = '<li class="vazio">Sem internet. Conecte-se para ver os aplicativos.</li>'; });
+
+    if ('serviceWorker' in navigator && !N) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
 </body>
 </html>

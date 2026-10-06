@@ -69,6 +69,10 @@
     "instalarDireto": {
       "url": "https://quantocobrar.leunamesoftware.com.br/app/",
       "id": "https://quantocobrar.leunamesoftware.com.br/app/"
+    },
+    "android": {
+      "pacote": "com.leunamesoftwares.quantocobrar",
+      "apk": "https://quantocobrar.leunamesoftware.com.br/baixar"
     }
   },
   {
@@ -107,6 +111,11 @@
     "instalarDireto": {
       "url": "https://gestacell.leunamesoftware.com.br/",
       "id": "https://gestacell.leunamesoftware.com.br/?app=gestacell"
+    },
+    "android": {
+      "pacote": "com.leunamesoftwares.gestacell",
+      "apk": "https://www.leunamesoftware.com.br/baixar/gestacell.apk",
+      "versao": 101
     }
   },
   {
@@ -147,6 +156,10 @@
     "instalarDireto": {
       "url": "https://radar.leunamesoftware.com.br/",
       "id": "https://radar.leunamesoftware.com.br/"
+    },
+    "android": {
+      "pacote": "com.radarpreventivo.app",
+      "apk": "https://radar.leunamesoftware.com.br/baixar/RadarPreventivo.apk"
     }
   }
 ]
