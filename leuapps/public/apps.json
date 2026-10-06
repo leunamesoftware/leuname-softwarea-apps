@@ -94,7 +94,15 @@
         "texto": "Digite o nome e vá direto para a receita.",
         "data": "out 2026"
       }
-    ]
+    ],
+    "secoes": [
+      "Comer e beber",
+      "Negócios",
+      "Finanças",
+      "Ferramentas",
+      "Grátis para testar"
+    ],
+    "escolha": true
   },
   {
     "id": "gestacell",
@@ -153,6 +161,13 @@
         "texto": "Quanto cobrar no conserto, parcelas no cartão e o lucro real de cada venda.",
         "data": "out 2026"
       }
+    ],
+    "secoes": [
+      "Negócios",
+      "Finanças",
+      "Produtividade",
+      "Ferramentas",
+      "Premium"
     ]
   },
   {
@@ -213,6 +228,12 @@
         "texto": "Documentos, contas e prazos da empresa num radar só.",
         "data": "2026"
       }
+    ],
+    "secoes": [
+      "Negócios",
+      "Produtividade",
+      "Ferramentas",
+      "Premium"
     ]
   }
 ]

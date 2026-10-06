@@ -94,8 +94,8 @@
 
     .icone-topo { position: relative; width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; color: var(--texto); }
     .selo { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #E5383B; color: #fff; font-size: 10px; font-weight: 800; line-height: 14px; text-align: center; border: 2px solid var(--fundo); box-sizing: border-box; }
-    .destaques { margin-top: 18px; gap: 14px; }
-    .dest-item { flex: 0 0 calc(100% - 30px); scroll-snap-align: start; display: grid; gap: 6px; }
+    .destaques { position: relative; margin-top: 12px; gap: 14px; }
+    .dest-item { flex: 0 0 calc(100% - 44px); scroll-snap-align: center; display: grid; gap: 6px; }
     .dest-item .destaque { flex: none; width: 100%; aspect-ratio: 2.15 / 1; max-height: none; }
     .destaque-frase { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -.3px; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
     .dest-app { padding: 6px 0 0; }
@@ -103,9 +103,21 @@
     .linha-simples { width: 100%; border: 0; background: none; text-align: left; grid-template-columns: 64px 1fr; }
     .linha-simples > span { display: grid; gap: 1px; min-width: 0; }
     .linha-simples .pilula { justify-self: start; }
+    .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+    .selo-app { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 8px; background: var(--cartao); font-size: 13px; color: var(--texto); }
+    .selo-app svg { color: var(--verde-texto); }
+    .resumo-curto { font-size: 14px; color: var(--suave); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .seguir h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
+    .seguir p { margin: 0 0 16px; color: var(--suave); font-size: 15px; }
+    .seguir-lista { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .seguir-lista button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px 0 14px; border-radius: 10px; border: 0; background: var(--cartao); font-size: 16px; font-weight: 600; color: var(--texto); }
+    .seguir-lista button[aria-pressed="true"] { background: var(--verde); color: var(--fundo); }
+    .mostrar-mais { display: block; margin: 14px auto 0; min-height: 44px; padding: 0 16px; border: 0; background: none; color: var(--verde-texto); font-size: 16px; font-weight: 700; }
+    .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
+    .em-breve b { color: var(--texto); font-size: 17px; }
 
     /* Atalhos (chips) */
-    .chips-linha { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 6px -16px 0; padding: 0 16px; }
+    .chips-linha { position: sticky; top: calc(68px + env(safe-area-inset-top)); z-index: 4; background: var(--fundo); display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 6px 16px; }
     .chips-linha::-webkit-scrollbar { display: none; }
     .chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px 0 14px; border-radius: 999px; border: 0; background: var(--cartao); font-size: 15px; font-weight: 600; }
     .chip svg { color: var(--verde-texto); }
@@ -253,18 +265,18 @@
   <main>
     <!-- Apps (início) -->
     <section id="aba-apps">
-      <div class="chips-linha">
-        <button class="chip" type="button" data-rolar="sugestoes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20h16M6 20V11h3v9M11 20V5h3v15M16 20v-6h3v6"/></svg>Em alta</button>
-        <button class="chip" type="button" data-filtro="grátis"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-1.5-3-5-3.5-5-1.2C7 7 9 7 12 7c3 0 5 0 5-1.2C17 3.5 13.5 4 12 7z"/></svg>Grátis para testar</button>
-        <span id="chips-tags" style="display:contents"></span>
-        <button class="chip" type="button" data-aba="pesquisa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l3.5 6h-7z"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="17" cy="16.5" r="3.5"/></svg>Categorias</button>
-        <button class="chip" type="button" data-aba="servicos"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/></svg>Serviços</button>
-        <button class="chip" type="button" data-aba="voce"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>Meus apps</button>
-      </div>
+      <div class="chips-linha" id="chips"></div>
       <div class="rolar destaques" id="destaques"></div>
       <div class="secao" id="sugestoes">
         <div class="secao-titulo"><h2>Sugestões para você</h2></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
+      </div>
+      <div id="vitrines"></div>
+      <div class="secao seguir">
+        <h2>Siga suas categorias favoritas</h2>
+        <p>Melhore as sugestões: os apps das categorias que você segue aparecem primeiro. Mude quando quiser.</p>
+        <div class="seguir-lista" id="seguir"></div>
+        <button class="mostrar-mais" type="button" id="mostrar-mais">Mostrar mais</button>
       </div>
       <div class="secao">
         <div class="secao-titulo" id="bloco-novidades"><div style="flex:1"><h2>Novidades</h2><div class="faixa-marca" style="margin-top:6px"></div></div></div>
@@ -278,7 +290,7 @@
 
     <!-- Pesquisa -->
     <section id="aba-pesquisa" hidden>
-      <div id="resultados" hidden><div class="secao"><ul class="lista" id="lista-busca"></ul></div></div>
+      <div id="resultados" hidden><div class="secao"><div class="secao-titulo" id="titulo-secao" hidden><h2></h2></div><ul class="lista" id="lista-busca"></ul></div></div>
       <div id="explorar">
         <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
         <div class="secao"><div class="secao-titulo"><h2>Sugestões para você</h2></div><div class="rolar" id="fileira-busca"></div></div>
@@ -382,21 +394,84 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div>${botaoLinha(a)}</div></div></li>`;
     }
     const iconeGrande = (a) => `<button class="icone-grande" type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy"><div class="nome">${esc(a.nome)}</div><span class="pilula">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`;
-    // Atalhos do topo: um para cada etiqueta dos apps (app novo com etiqueta nova ganha atalho sozinho).
-    const ICONES_TAG = {
-      'Empresa': '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>',
-      'Receitas': '<path d="M6 13.5a6 6 0 1112 0V19a1 1 0 01-1 1H7a1 1 0 01-1-1z"/><path d="M6 16h12"/>',
-      'Documentos': '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
-      'Loja de celular': '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
-      'Calculadora de preço': '<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6.5h8M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h3.5"/>',
+    // ---- Atalhos do topo (igual à Play: passam para o lado). Cada app diz em quais seções aparece (apps.json → secoes).
+    const I = {
+      alta: '<path d="M4 20h16M6 20V11h3v9M11 20V5h3v15M16 20v-6h3v6"/>',
+      premium: '<path d="M6 4h12l3 5-9 11L3 9z"/><path d="M3 9h18M9 4l3 16 3-16"/>',
+      criancas: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/><circle cx="10" cy="11" r=".6"/><circle cx="14" cy="11" r=".6"/>',
+      categorias: '<path d="M12 3l3.5 6h-7z"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><circle cx="17" cy="16.5" r="3.5"/>',
+      gratis: '<path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13"/><path d="M12 7c-1.5-3-5-3.5-5-1.2C7 7 9 7 12 7c3 0 5 0 5-1.2C17 3.5 13.5 4 12 7z"/>',
+      negocios: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>',
+      financas: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9v.01M18 15v.01"/>',
+      produtividade: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
+      comida: '<path d="M6 13.5a6 6 0 1112 0V19a1 1 0 01-1 1H7a1 1 0 01-1-1z"/><path d="M6 16h12"/>',
+      ferramentas: '<path d="M14.5 6.5a4 4 0 00-5 5L4 17l3 3 5.5-5.5a4 4 0 005-5l-2.5 2.5-2.5-.5-.5-2.5z"/>',
+      educacao: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/>',
+      compras: '<path d="M6 7h12l-1 13H7z"/><path d="M9 7a3 3 0 016 0"/>',
+      comunicacao: '<path d="M4 5h16v11H9l-5 4z"/>',
+      saude: '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>',
+      estilo: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/>',
+      foto: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+      diversao: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/>',
+      musica: '<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+      viagens: '<path d="M12 21s-6-5.5-6-11a6 6 0 0112 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+      servicos: '<path d="M12 3l2.5 5.5L20 9.5l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-1z"/>',
+      meus: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
     };
-    const NOMES_TAG = { 'Empresa': 'Para empresas' };
-    function chipsTags() {
-      const vistas = [...new Set(apps.flatMap((a) => a.tags || [a.categoria]))];
-      $('chips-tags').innerHTML = vistas.map((g) => `<button class="chip" type="button" data-filtro="${esc(g)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONES_TAG[g] || '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/>'}</svg>${esc(NOMES_TAG[g] || g)}</button>`).join('');
+    const CHIPS = [
+      ['Em alta', 'alta', 'rolar', 'sugestoes'], ['Premium', 'premium'], ['Crianças', 'criancas'], ['Categorias', 'categorias', 'aba', 'pesquisa'],
+      ['Grátis para testar', 'gratis'], ['Negócios', 'negocios'], ['Finanças', 'financas'], ['Produtividade', 'produtividade'],
+      ['Comer e beber', 'comida'], ['Ferramentas', 'ferramentas'], ['Educação', 'educacao'], ['Compras', 'compras'],
+      ['Comunicação', 'comunicacao'], ['Saúde e fitness', 'saude'], ['Estilo de vida', 'estilo'], ['Fotografia', 'foto'],
+      ['Entretenimento', 'diversao'], ['Música e áudio', 'musica'], ['Viagens', 'viagens'],
+      ['Logo, site e banners', 'servicos', 'aba', 'servicos'], ['Meus apps', 'meus', 'aba', 'voce'],
+    ];
+    const svg = (k) => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+    $('chips').innerHTML = CHIPS.map(([nome, ic, tipo = 'secao', alvo = nome]) => `<button class="chip" type="button" data-${tipo}="${esc(alvo)}">${svg(ic)}${esc(nome)}</button>`).join('');
+    let secaoAtual = null;
+    const daSecao = (s) => apps.filter((a) => (a.secoes || []).includes(s));
+
+    // Selos das linhas (tudo verdadeiro: vem do apps.json).
+    const SELO = { escolha: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', gratis: I.gratis, unico: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>', novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>' };
+    const seloSvg = (k) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SELO[k]}</svg>`;
+    function selos(a) {
+      const s = [];
+      if (a.escolha) s.push(['escolha', 'Escolha da LeuName']);
+      if (/grátis/i.test(a.preco || '')) s.push(['gratis', 'Teste grátis']);
+      if (/pagamento único/i.test(a.preco || '')) s.push(['unico', 'Pagamento único']);
+      if (situacao(a) === 'atualizar') s.push(['novo', 'Atualização disponível']);
+      else if ((a.novidades || []).length) s.push(['novo', 'Novidade']);
+      return s.map(([k, txt]) => `<span class="selo-app">${seloSvg(k)}${txt}</span>`).join('');
+    }
+    // Vitrines com título e seta (como "Ação sem limites" na Play).
+    const VITRINES = [
+      ['Para quem vende comida', 'Comer e beber'],
+      ['Seu negócio sem complicação', 'Negócios'],
+      ['Mais tempo no seu dia', 'Produtividade'],
+    ];
+    const linhaVitrine = (a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
+        <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="resumo-curto">${esc(a.resumo)}</span>
+        <span class="selos">${selos(a)}</span></span></button></li>`;
+    // Siga suas categorias: guardado só neste aparelho; muda a ordem das sugestões.
+    let seguidas = []; try { seguidas = JSON.parse(localStorage.getItem('leuapps.seguidas') || '[]'); } catch {}
+    let todasCats = false;
+    function seguir() {
+      const cats = CHIPS.filter((c) => !c[2]).map((c) => c[0]);
+      const ver = todasCats ? cats : cats.slice(0, 6);
+      $('seguir').innerHTML = ver.map((c) => { const s = seguidas.includes(c);
+        return `<button type="button" data-seguir="${esc(c)}" aria-pressed="${s}">${s ? '✓' : '+'} ${esc(c)}</button>`; }).join('');
+      $('mostrar-mais').textContent = todasCats ? 'Mostrar menos' : 'Mostrar mais';
+    }
+    const pontos = (a) => (a.secoes || []).filter((s) => seguidas.includes(s)).length;
+    function vitrines() {
+      $('vitrines').innerHTML = VITRINES.map(([titulo, s]) => {
+        const lista = daSecao(s); if (!lista.length) return '';
+        return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(s)}" aria-label="Ver ${esc(s)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+          <ul class="lista">${lista.map(linhaVitrine).join('')}</ul></div>`;
+      }).join('');
     }
     function destaques() {
-      $('destaques').innerHTML = apps.filter((a) => a.destaque).map((a) => `
+      const doApp = (a) => `
         <div class="dest-item">
           <button class="destaque" type="button" data-detalhe="${esc(a.id)}">
             <img src="${esc(a.destaque.imagem)}" alt="">
@@ -405,10 +480,27 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="linha dest-app">
             <img src="${esc(a.icone)}" alt="" data-detalhe="${esc(a.id)}" style="cursor:pointer">
             <div data-detalhe="${esc(a.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(a.nome)}</div>
-              <div class="info">LeuName Softwares</div><span class="pilula">${precoCurto(a)}</span> <span class="info">${esc((a.tags || [a.categoria])[0])}</span></div>
+              <div class="info">LeuName Softwares</div><span class="pilula">${precoCurto(a)}</span></div>
             <div>${botaoLinha(a)}</div>
           </div>
-        </div>`).join('');
+        </div>`;
+      const doServico = (s) => `
+        <div class="dest-item">
+          <button class="destaque" type="button" data-pedir="${esc(s.id)}">
+            <img src="${esc(s.destaque.imagem)}" alt="">
+            <span class="destaque-frase">${esc(s.destaque.frase)}</span>
+          </button>
+          <div class="linha dest-app">
+            <img src="${esc(s.imagens[0])}" alt="" data-pedir="${esc(s.id)}" style="cursor:pointer;object-fit:cover">
+            <div data-pedir="${esc(s.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(s.nome)}</div>
+              <div class="info">LeuName Softwares</div><span class="pilula">Orçamento grátis</span></div>
+            <div><button class="acao" type="button" data-pedir="${esc(s.id)}">Pedir</button></div>
+          </div>
+        </div>`;
+      const a = apps.filter((x) => x.destaque), s = ((servicos && servicos.itens) || []).filter((x) => x.destaque);
+      const itens = [];
+      for (let i = 0; i < Math.max(a.length, s.length); i++) { if (a[i]) itens.push(doApp(a[i])); if (s[i]) itens.push(doServico(s[i])); }
+      $('destaques').innerHTML = itens.join('');
     }
     function categorias() {
       const cores = { 'Receitas e vendas': '🧁', 'Gestão de loja': '📱', 'Documentos e prazos': '📄' };
@@ -418,7 +510,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function mostrar() {
       const f = $('busca').value.trim().toLowerCase();
-      $('lista').innerHTML = `<ul class="lista">${apps.map((a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
+      $('lista').innerHTML = `<ul class="lista">${[...apps].sort((x, y) => pontos(y) - pontos(x)).map((a) => `<li><button class="linha linha-simples" type="button" data-detalhe="${esc(a.id)}">
           <img src="${esc(a.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(a.nome)}</span><span class="info">${tags(a)}</span>
           <span class="pilula ${situacao(a) === 'nao' ? '' : 'verde'}">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></span></button></li>`).join('')}</ul>`;
       $('novidades').innerHTML = apps.flatMap((a) => (a.novidades || []).map((n) => `<button class="novidade" type="button" data-detalhe="${esc(a.id)}">
@@ -426,14 +518,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       $('fileira').innerHTML = apps.map(iconeGrande).join('');
       $('fileira-busca').innerHTML = apps.map(iconeGrande).join('');
       const achados = apps.filter((a) => (a.nome + ' ' + a.categoria + ' ' + a.resumo + ' ' + (a.preco || '') + ' ' + (a.tags || []).join(' ')).toLowerCase().includes(f));
-      $('resultados').hidden = !f; $('explorar').hidden = Boolean(f);
-      $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
+      const naSecao = secaoAtual && !f;
+      $('resultados').hidden = !f && !naSecao; $('explorar').hidden = Boolean(f) || Boolean(naSecao);
+      $('titulo-secao').hidden = !naSecao; $('titulo-secao').querySelector('h2').textContent = naSecao ? secaoAtual : '';
+      if (naSecao) {
+        const l = daSecao(secaoAtual);
+        $('lista-busca').innerHTML = l.map(linhaVitrine).join('') || `<li class="em-breve"><b>Em breve: ${esc(secaoAtual)}</b>Ainda não temos apps nesta categoria. Estamos preparando novidades.</li>`;
+      } else $('lista-busca').innerHTML = achados.map(linha).join('') || '<li class="vazio">Nenhum app encontrado.</li>';
       const mi = apps.filter((a) => situacao(a) !== 'nao');
       $('meus').innerHTML = mi.map(linha).join('') || '<li class="vazio">Você ainda não instalou nenhum app. Toque em Apps e escolha um.</li>';
       const at = apps.filter((a) => situacao(a) === 'atualizar').length;
       $('selo-atualizar').hidden = !at; $('selo-atualizar').textContent = at;
       $('atualizacoes').setAttribute('aria-label', at ? `${at} ${at > 1 ? 'apps para atualizar' : 'app para atualizar'}` : 'Seus apps');
-      chipsTags();
+      vitrines(); seguir();
       destaques(); bolinhas();
       if (!detalhe.hidden) mostrarDetalhe();
     }
@@ -560,9 +657,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
 
     // ---- Abas (menu de baixo) ----
     function aba(qual) {
+      secaoAtual = null;
       for (const n of ['apps', 'pesquisa', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n).setAttribute('aria-selected', qual === n); }
       $('topo-inicio').hidden = qual === 'pesquisa'; $('topo-busca').hidden = qual !== 'pesquisa';
-      if (qual === 'pesquisa' && !celular) $('busca').focus();
+      if (qual === 'pesquisa' && !celular && !secaoAtual) $('busca').focus();
+      if (qual === 'pesquisa' && apps.length) mostrar();
       try { localStorage.setItem('leuapps.aba', qual); } catch {}
       scrollTo(0, 0);
     }
@@ -576,13 +675,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
+      const sg = t.closest('[data-seguir]'); if (sg) { const c = sg.dataset.seguir; seguidas = seguidas.includes(c) ? seguidas.filter((x) => x !== c) : [...seguidas, c];
+        try { localStorage.setItem('leuapps.seguidas', JSON.stringify(seguidas)); } catch {} return mostrar(); }
+      if (t.closest('#mostrar-mais')) { todasCats = !todasCats; return seguir(); }
+      const sec = t.closest('[data-secao]'); if (sec) { aba('pesquisa'); secaoAtual = sec.dataset.secao; $('busca').value = ''; mostrar(); return; }
+      const ped = t.closest('[data-pedir]'); if (ped) { aba('servicos'); return mostrarServicos(ped.dataset.pedir); }
       const fil = t.closest('[data-filtro]'); if (fil) { aba('pesquisa'); $('busca').value = fil.dataset.filtro; mostrar(); return; }
       const ab = t.closest('[data-aba]'); if (ab) return aba(ab.dataset.aba);
       const cat = t.closest('[data-categoria]'); if (cat) { $('busca').value = cat.dataset.categoria; mostrar(); return; }
       const rol = t.closest('[data-rolar]'); if (rol) return $(rol.dataset.rolar).scrollIntoView({ behavior: 'smooth' });
       const sv = t.closest('[data-servico]'); if (sv) return mostrarServicos(sv.dataset.servico);
     });
-    $('busca').addEventListener('input', mostrar);
+    $('busca').addEventListener('input', () => { secaoAtual = null; mostrar(); });
 
     // ---- Saudação pelo horário ----
     const h = new Date().getHours();
@@ -596,9 +700,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     caixa.addEventListener('touchstart', () => { mexeu = true; }, { passive: true });
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
       if (mexeu || $('aba-apps').hidden || !detalhe.hidden || !caixa.children.length) return;
-      const w = caixa.children[0].offsetWidth + 14, n = caixa.children.length;
-      const prox = (Math.round(caixa.scrollLeft / w) + 1) % n;
-      caixa.scrollTo({ left: prox * w, behavior: 'smooth' });
+      const itens = [...caixa.children], meio = caixa.scrollLeft + caixa.clientWidth / 2;
+      const agora = itens.reduce((m, el, i) => Math.abs(el.offsetLeft + el.offsetWidth / 2 - meio) < Math.abs(itens[m].offsetLeft + itens[m].offsetWidth / 2 - meio) ? i : m, 0);
+      const el = itens[(agora + 1) % itens.length];
+      caixa.scrollTo({ left: el.offsetLeft - (caixa.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
     }, 5000);
 
     // ---- Você: nome e conta ----
@@ -668,7 +773,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <p class="det-info" style="text-align:center">As imagens são exemplos de demonstração. O seu trabalho é criado do zero, com a sua marca.</p>`;
     }
     fetch('/servicos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      servicos = d; mostrarServicos();
+      servicos = d; mostrarServicos(); if (apps.length) destaques();
       $('ajuda').href = `https://wa.me/${d.whatsapp}?text=${encodeURIComponent('Olá, LeuName Softwares! Preciso de ajuda com a LeuApps.')}`;
     }).catch(() => {});
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());

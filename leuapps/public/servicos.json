@@ -7,21 +7,43 @@
       "nome": "Logomarcas",
       "icone": "✏️",
       "resumo": "Logo exclusiva para a sua marca, pronta para redes sociais, fachada e embalagem.",
-      "imagens": ["/img/servicos/logo1.jpg", "/img/servicos/logo2.jpg", "/img/servicos/logo3.jpg"]
+      "imagens": [
+        "/img/servicos/logo1.jpg",
+        "/img/servicos/logo2.jpg",
+        "/img/servicos/logo3.jpg"
+      ],
+      "destaque": {
+        "imagem": "/img/destaques/servico-logomarcas.webp",
+        "frase": "Sua marca com uma logo só sua"
+      }
     },
     {
       "id": "templates",
       "nome": "Templates de site",
       "icone": "🖥️",
       "resumo": "Modelo de site profissional para a sua loja ou empresa, com a sua cara.",
-      "imagens": ["/img/servicos/template1.jpg", "/img/servicos/template2.jpg"]
+      "imagens": [
+        "/img/servicos/template1.jpg",
+        "/img/servicos/template2.jpg"
+      ],
+      "destaque": {
+        "imagem": "/img/destaques/servico-templates.webp",
+        "frase": "Um site com a cara da sua loja"
+      }
     },
     {
       "id": "banners",
       "nome": "Banners e imagens",
       "icone": "🖼️",
       "resumo": "Banners para loja, promoções, Instagram e WhatsApp que chamam o cliente.",
-      "imagens": ["/img/servicos/banner1.jpg", "/img/servicos/banner2.jpg"]
+      "imagens": [
+        "/img/servicos/banner1.jpg",
+        "/img/servicos/banner2.jpg"
+      ],
+      "destaque": {
+        "imagem": "/img/destaques/servico-banners.webp",
+        "frase": "Banners que chamam o cliente"
+      }
     }
   ]
 }
