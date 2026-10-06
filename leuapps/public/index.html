@@ -165,6 +165,16 @@
     .opcoes-menu { display: grid; gap: 4px; margin-top: 8px; }
     .opcoes-menu button { min-height: 52px; border: 0; border-radius: 14px; background: var(--cartao); color: var(--texto); font: inherit; font-size: 16px; font-weight: 600; text-align: left; padding: 0 16px; }
     .vazio-linha { padding: 18px 16px; border-radius: 16px; background: var(--cartao); color: var(--suave); font-size: 15px; }
+    /* Página de uma seção (seta →): grade de ícones grandes, como na Play */
+    .pagina-secao { position: fixed; inset: 0 0 var(--altura-menu, 80px) 0; z-index: 14; overflow-y: auto; background: var(--fundo); }
+    .pagina-secao .det-barra { display: flex; align-items: center; gap: 8px; }
+    .pagina-secao h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .grade { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 14px; padding: 14px 16px 40px; }
+    .grade button { border: 0; background: none; padding: 0; text-align: left; display: grid; gap: 4px; align-content: start; color: var(--texto); }
+    .grade img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 22%; box-shadow: var(--sombra); margin-bottom: 6px; }
+    .grade .nome { font-size: 15px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .grade .meta { font-size: 14px; color: var(--suave); }
+    .pagina-secao .em-breve { padding-top: 60px; }
     .em-breve { padding: 28px 8px; text-align: center; color: var(--suave); display: grid; gap: 6px; justify-items: center; }
     .em-breve b { color: var(--texto); font-size: 17px; }
 
@@ -301,10 +311,9 @@
     .menu button span { display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; }
     .menu button[aria-selected="true"] { color: var(--verde-texto); font-weight: 600; }
     .menu button[aria-selected="true"] span { background: var(--verde-claro); color: var(--verde-texto); }
-    .rodape { text-align: center; font-size: 12.5px; color: var(--suave); padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); margin: 0; }
+    .rodape { height: calc(var(--altura-menu, 80px) + 8px); }
 
     /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
-    .na-apps .rodape { font-size: 0; padding-top: 0; padding-bottom: calc(var(--altura-menu, 80px) + env(safe-area-inset-bottom)); }
     .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
     .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
     .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
@@ -431,7 +440,7 @@
       </ul></div>
     </section>
   </main>
-  <p class="rodape">© 2026 LeuName Softwares · Aplicativos sempre na versão mais nova.</p>
+  <div class="rodape" aria-hidden="true"></div>
 
   <nav class="menu" role="tablist" aria-label="Seções da loja"><div>
     <button role="tab" id="tab-jogos" data-aba="jogos" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 014.9 6l-.6 3a2.5 2.5 0 01-4.3 1.2L15 15H9l-2 2.2A2.5 2.5 0 012.7 16l-.6-3A5 5 0 017 7z"/><path d="M7.5 10.5v3M6 12h3"/><circle cx="15.5" cy="11" r=".6" fill="currentColor"/><circle cx="17.5" cy="13" r=".6" fill="currentColor"/></svg></span>Jogos</button>
@@ -441,6 +450,7 @@
     <button role="tab" id="tab-voce" data-aba="voce" aria-selected="false"><span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg></span>Você</button>
   </div></nav>
 
+  <section id="pagina-secao" class="pagina-secao" hidden aria-label="Lista de apps"></section>
   <section id="detalhe" class="detalhe" hidden aria-label="Página do app"></section>
 
   <script>
@@ -840,6 +850,20 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
 
     // ---- Página do app (link direto: www.leunamesoftware.com.br/#id) ----
+    // Página da seção: abre pela seta (→) ou pelos atalhos; endereço #lista/Nome (o voltar do celular funciona).
+    const paginaSecao = $('pagina-secao');
+    function mostrarPaginaSecao() {
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (todos.some((x) => x.id === h)) return; // abriu um app por cima da lista: a lista fica embaixo
+      if (!h.startsWith('lista/')) { paginaSecao.hidden = true; if (detalhe.hidden) document.body.style.overflow = ''; return; }
+      const nome = h.slice(6), itens = daSecao(nome);
+      paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>${esc(nome)}</h1></div>
+        ${itens.length ? `<div class="grade">${itens.map((a) => `<button type="button" data-detalhe="${esc(a.id)}"><img src="${esc(a.icone)}" alt="" loading="lazy">
+          <span class="nome">${esc(a.nome)}</span><span class="meta">${situacao(a) === 'nao' ? precoCurto(a) : '✓ Instalado'}</span></button>`).join('')}</div>`
+          : `<div class="em-breve"><b>Em breve: ${esc(nome)}</b>Ainda não temos nada nesta categoria. Estamos preparando novidades.</div>`}`;
+      paginaSecao.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
+      paginaSecao.hidden = false; paginaSecao.scrollTop = 0; document.body.style.overflow = 'hidden';
+    }
     function mostrarDetalhe() {
       const a = todos.find((x) => x.id === location.hash.slice(1));
       if (!a) { detalhe.hidden = true; document.body.style.overflow = ''; return; }
@@ -864,11 +888,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       detalhe.hidden = false; document.body.style.overflow = 'hidden';
       detalhe.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
     }
-    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); });
+    addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); });
 
     // ---- Abas (menu de baixo) ----
     function aba(qual) {
       secaoAtual = null;
+      if (location.hash.startsWith('#lista/')) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
       for (const n of ['jogos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
@@ -914,7 +939,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const sg = t.closest('[data-seguir]'); if (sg) { const c = sg.dataset.seguir; seguidas = seguidas.includes(c) ? seguidas.filter((x) => x !== c) : [...seguidas, c];
         try { localStorage.setItem('leuapps.seguidas', JSON.stringify(seguidas)); } catch {} return mostrar(); }
       if (t.closest('#mostrar-mais')) { todasCats = !todasCats; return seguir(); }
-      const sec = t.closest('[data-secao]'); if (sec) { aba('pesquisa'); secaoAtual = sec.dataset.secao; $('busca').value = ''; mostrar(); return; }
+      const sec = t.closest('[data-secao]'); if (sec) { location.hash = 'lista/' + encodeURIComponent(sec.dataset.secao); return; }
       const ped = t.closest('[data-pedir]'); if (ped) { aba('servicos'); return mostrarServicos(ped.dataset.pedir); }
       const fil = t.closest('[data-filtro]'); if (fil) { aba('pesquisa'); $('busca').value = fil.dataset.filtro; mostrar(); return; }
       const ab = t.closest('[data-aba]'); if (ab) return aba(ab.dataset.aba);
@@ -1026,7 +1051,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('aba-servicos').addEventListener('contextmenu', (e) => e.preventDefault());
 
     fetch('/apps.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
-      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe();
+      todos = d; apps = d.filter((a) => !a.tipo || a.tipo === 'app'); lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao();
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
