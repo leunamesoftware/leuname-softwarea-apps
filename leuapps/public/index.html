@@ -523,6 +523,11 @@
     .recente b { display: block; font-weight: 600; }
     .recente small { display: inline-block; margin-top: 4px; background: var(--chip, #efeaff); border-radius: 8px; padding: 2px 8px; color: var(--suave, #5d5a6b); }
     .folha .lista-recentes .recente .acao { flex: none; width: auto; min-width: 0; padding: 10px 22px; margin: 0; }
+    .loja-app { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .loja-app img { width: 48px; height: 48px; border-radius: 12px; }
+    .loja-app b { display: block; }
+    .loja-app small { color: var(--suave, #5d5a6b); }
+    .folha .sub.pequeno { font-size: 13px; margin-top: 10px; }
     .suspenso-fundo { position: fixed; inset: 0; z-index: 21; }
     .suspenso { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 52px); right: 10px; min-width: 240px; background: var(--fundo); border-radius: 14px; box-shadow: 0 8px 28px rgba(20,10,50,.22); padding: 6px 0; display: grid; }
     .suspenso button, .suspenso-check { display: flex; align-items: center; gap: 16px; padding: 14px 18px; background: none; border: 0; font: inherit; font-size: 16px; color: var(--texto); text-align: left; cursor: pointer; }
@@ -1263,7 +1268,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
+      // 2) Android fora do app LeuApps: nunca abre o app como site. Leva para o app da loja LeuApps (só uma vez);
+      //    nele o Instalar baixa e põe o app direto na tela do celular.
+      if (/Android/i.test(ua) && a.android) return folhaLojaApp(a);
+      // 3) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
@@ -1272,7 +1280,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
       }
-      // 3) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
+      // 4) Outros navegadores: o app abre e mostra o botão "Instalar agora" (o navegador exige esse toque lá).
       meus = [...new Set([...meus, id])]; gravar(meus); mostrar();
       if (!a.instalar) return;
       if (!a.instalarPassos) { location.href = a.instalar; return; }
@@ -1283,11 +1291,20 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">O ${esc(a.nome)} vai abrir. Quando abrir:</p>
         <ol>${passos.map((x) => `<li>${x}</li>`).join('')}</ol><a class="acao" href="${esc(a.instalar)}">Abrir o ${esc(a.nome)}</a>`);
     }
+    function folhaLojaApp(a) {
+      folha(`<div class="loja-app"><img src="/img/leuapps-192.webp" alt=""><div><b>App LeuApps</b><small>A loja da LeuName no seu celular</small></div></div>
+        <h3>Instale o ${esc(a.nome)} direto no celular</h3>
+        <p class="sub">Para o Instalar mandar o app direto para a tela do celular (sem abrir site), use o app da nossa loja. É só na primeira vez:</p>
+        <ol><li>Toque em <b>Baixar o app LeuApps</b>.</li><li>Quando baixar, toque em <b>Abrir</b> e depois em <b>Instalar</b>.</li><li>Abra a LeuApps e toque em <b>Instalar</b> no ${esc(a.nome)}: ele vai direto para a tela do celular.</li></ol>
+        <a class="acao" href="/baixar/leuapps.apk">Baixar o app LeuApps</a>
+        <p class="sub pequeno">Se o celular pedir, ative <b>Permitir desta fonte</b>. É só uma vez.</p>`, 'Agora não');
+    }
     function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
       if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
+      if (!N && /Android/i.test(ua) && a.android) return folhaLojaApp(a);
       const destino = !N && a.instalar ? a.instalar : link(a);
       if (a.exigeCompra) return conferirCompra(a, destino);
       location.href = destino;
