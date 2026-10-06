@@ -1799,7 +1799,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const fav = t.closest('[data-filtro-aval]'); if (fav) { filtroAval = fav.dataset.filtroAval; mostrarPaginaSecao(); return; }
       if (t.closest('[data-ordem-aval]')) return folha(`<h2>Ordenar por</h2><div class="opcoes-menu">${[['relevantes', 'Mais relevantes'], ['recentes', 'Mais recentes']].map(([k, n]) => `<button type="button" data-fecha data-ordem="${k}">${ordemAval === k ? '✓ ' : ''}${n}</button>`).join('')}</div>`, 'Cancelar');
       const oa = t.closest('[data-ordem]'); if (oa) { ordemAval = oa.dataset.ordem; mostrarPaginaSecao(); return; }
-      const cp = t.closest('[data-compartilhar]'); if (cp) { const a = todos.find((x) => x.id === cp.dataset.compartilhar), link = `${location.origin}/#${a.id}`;
+      const cp = t.closest('[data-compartilhar]'); if (cp) { const a = todos.find((x) => x.id === cp.dataset.compartilhar), link = a.instalar ? `${location.origin}/instalar/${a.id}` : `${location.origin}/#${a.id}`;
         if (navigator.share) navigator.share({ title: a.nome, text: a.resumo, url: link }).catch(() => {}); else navigator.clipboard?.writeText(link).then(() => folha('<h2>Link copiado</h2><p class="det-desc">Cole no WhatsApp para mandar para quem quiser.</p>', 'OK')); return; }
       const pb = t.closest('[data-problema]'); if (pb) { const a = todos.find((x) => x.id === pb.dataset.problema);
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero informar um problema no ${a.nome}: `)}`, '_blank'); return; }

@@ -70,6 +70,18 @@ export default {
       if (url.hostname === 'leunamesoftware.com.br') url.hostname = 'www.leunamesoftware.com.br';
       return Response.redirect(url.toString(), 301);
     }
+    // Link de instalação de cada app (para mandar no WhatsApp): /instalar/<id> abre no Chrome a tela de instalar
+    // daquele app (botão Instalar → confirmação do Chrome → ícone na tela do celular, sem permissão).
+    const inst = url.pathname.match(/^\/instalar\/([a-z0-9-]{2,40})\/?$/);
+    if (inst && abrir) {
+      let destino = `${url.origin}/#${inst[1]}`;
+      try {
+        const lista = await (await env.ASSETS.fetch(new Request(url.origin + '/apps.json'))).json();
+        const app = lista.find((x) => x.id === inst[1]);
+        if (app && app.instalar) destino = app.instalar;
+      } catch {}
+      return Response.redirect(destino, 302);
+    }
     // Link curto de receita para o WhatsApp: /r/<id> abre o Quanto Cobrar direto nela.
     const curto = url.pathname.match(/^\/r\/([a-z0-9-]{2,60})\/?$/);
     if (curto) return Response.redirect(`${url.origin}/quantocobrar/app/?receita=${curto[1]}&leuapps=1`, 302);
