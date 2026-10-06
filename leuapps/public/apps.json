@@ -215,8 +215,7 @@
       "/img/telas/radar-4.webp",
       "/img/telas/radar-5.webp"
     ],
-    "instalar": "https://radar.leunamesoftware.com.br/",
-    "instalarPassos": true,
+    "instalar": "https://radar.leunamesoftware.com.br/?instalar=1",
     "instalarDireto": {
       "url": "https://radar.leunamesoftware.com.br/",
       "id": "https://radar.leunamesoftware.com.br/"
