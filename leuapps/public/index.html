@@ -1195,15 +1195,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     async function desenharCertificado(c, nome) {
       const W = 1754, H = 1240, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       const x = cv.getContext('2d');
-      const [logo, assinatura] = await Promise.all([carregarImg('/img/leuapps-512.png'), carregarImg('/img/cursos/assinatura.png')]);
+      const assinatura = await carregarImg('/img/cursos/assinatura.png');
       const tinta = '#1A1630', suave = '#5D5A6B', grad = x.createLinearGradient(0, 0, W, H);
       grad.addColorStop(0, '#FF8A00'); grad.addColorStop(0.5, '#E5306E'); grad.addColorStop(1, '#6A35E8');
       x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
       x.fillStyle = grad; x.fillRect(0, 0, W, 28); x.fillRect(0, H - 28, W, 28);           // faixas de cima e de baixo
       x.strokeStyle = grad; x.lineWidth = 6; x.strokeRect(60, 70, W - 120, H - 140);         // moldura
       x.strokeStyle = '#E6E1F5'; x.lineWidth = 2; x.strokeRect(80, 90, W - 160, H - 180);
-      if (logo) x.drawImage(logo, W / 2 - 60, 130, 120, 120);
-      x.textAlign = 'center'; x.fillStyle = tinta;
+      // No alto: o nome da empresa (sem ícone), depois "Certificado de conclusão".
+      x.textAlign = 'center'; x.fillStyle = grad;
+      x.font = '800 40px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '12px'; x.fillText('LEUNAME SOFTWARES', W / 2 + 6, 205);
+      const marca = x.measureText('LEUNAME SOFTWARES').width / 2 + 40;
+      x.fillRect(W / 2 - marca - 160, 191, 160, 3); x.fillRect(W / 2 + marca, 191, 160, 3);
+      x.fillStyle = tinta;
       x.font = '800 74px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '10px'; x.fillText('CERTIFICADO', W / 2, 340);
       x.fillStyle = grad; x.font = '700 30px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '8px'; x.fillText('DE CONCLUSÃO', W / 2, 392);
       x.letterSpacing = '0px'; x.fillStyle = suave; x.font = '400 32px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('Certificamos que', W / 2, 480);
@@ -1212,7 +1216,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       x.fillStyle = grad; x.fillRect(W / 2 - 360, 618, 720, 4);
       x.fillStyle = suave; x.font = '400 32px system-ui, "Segoe UI", Roboto, sans-serif';
       const horas = duracao(minutos(c)).replace(' h', ' horas').replace(/^1 horas/, '1 hora');
-      const texto = `concluiu o curso livre e gratuito “${c.nome}”, com carga horária de ${horas}, oferecido pela LeuName Softwares na LeuApps.`;
+      const texto = `concluiu o curso livre e gratuito “${c.nome}”, com carga horária de ${horas}, oferecido pela LeuName Softwares.`;
       linhas(x, texto, W - 420).forEach((l, k) => x.fillText(l, W / 2, 690 + k * 46));
       const data = dataConclusao(c).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
       x.font = '600 30px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillStyle = tinta; x.fillText(`Concluído em ${data}`, W / 2, 860);
@@ -1225,7 +1229,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const sx = 470, sy = 1000;
       x.beginPath(); x.arc(sx, sy, 96, 0, Math.PI * 2); x.fillStyle = grad; x.fill();
       x.beginPath(); x.arc(sx, sy, 80, 0, Math.PI * 2); x.strokeStyle = 'rgba(255,255,255,.7)'; x.lineWidth = 3; x.stroke();
-      x.fillStyle = '#FFFFFF'; x.font = '800 26px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('LeuApps', sx, sy - 12);
+      x.fillStyle = '#FFFFFF'; x.font = '800 26px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('LeuName', sx, sy - 12);
       x.font = '700 15px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '1px'; x.fillText('CURSO', sx, sy + 20); x.fillText('CONCLUÍDO', sx, sy + 40); x.letterSpacing = '0px';
       return cv;
     }
