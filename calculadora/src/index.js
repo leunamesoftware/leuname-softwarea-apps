@@ -209,7 +209,12 @@ export default {
       }
 
       // ---- Área do Dono: login próprio, separado das contas dos apps ----
-      if (pathname === '/api/dono/estado' && m === 'GET') return json(await estadoDono(env, req));
+      if (pathname === '/api/dono/estado' && m === 'GET') {
+        const e = await estadoDono(env, req);
+        // Logado com a conta do dono (mesmo e-mail) também conta como dono (a loja mostra o que falta colocar).
+        if (!e.logado) { const c = await contaDaSessao(env, req); if (c && eDono(env, c.email)) e.logado = true; }
+        return json(e);
+      }
       // Brindes (só o dono): dar o Quanto Cobrar Pro de graça para um e-mail.
       if (pathname === '/api/dono/brindes' || pathname === '/api/dono/brindes/remover') {
         const conta = await contaDaSessao(env, req);

@@ -188,6 +188,8 @@
     .lista-notif img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex: none; }
     .lista-notif span { display: grid; gap: 2px; color: var(--suave); }
     .lista-notif small { font-size: 12.5px; } .lista-notif b { color: var(--texto); font-size: 15.5px; }
+    .falta { border: 2px dashed var(--verde); background: var(--verde-claro) !important; color: var(--verde-texto) !important; display: grid; gap: 2px; }
+    .falta b { font-size: 15px; }
     .vazio-linha { padding: 18px 16px; border-radius: 16px; background: var(--cartao); color: var(--suave); font-size: 15px; }
     /* Página de uma seção (seta →): grade de ícones grandes, como na Play */
     .pagina-secao { position: fixed; inset: 0 0 var(--altura-menu, 80px) 0; z-index: 14; overflow-y: auto; background: var(--fundo); }
@@ -224,15 +226,15 @@
     .curso-fim .ok { width: 88px; height: 88px; border-radius: 50%; background: var(--verde); color: var(--no-verde); display: grid; place-items: center; }
     .curso-fim h1 { margin: 6px 0 0; font-size: 26px; } .curso-fim p { margin: 0; color: var(--suave); max-width: 40ch; }
     /* Você: missão e desafios */
-    .missao { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; display: grid; gap: 14px; color: #3A2A00; background: linear-gradient(135deg, #FFD54A, #F5B21E); box-shadow: var(--sombra); }
+    .missao { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; display: grid; gap: 14px; color: #fff; background: linear-gradient(135deg, #FF8A00, #E5306E 55%, #6A35E8); box-shadow: var(--sombra); }
     .missao::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 70%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.18); }
-    .missao-prazo { position: relative; justify-self: start; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.75); font-size: 14px; font-weight: 700; }
+    .missao-prazo { position: relative; justify-self: start; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.9); color: #4A1FB8; font-size: 14px; font-weight: 700; }
     .missao-arte { position: relative; display: flex; justify-content: center; align-items: center; gap: 28px; padding: 6px 0; }
     .missao-arte img:first-child { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 8px 18px rgba(0,0,0,.2); transform: rotate(-6deg); }
     .missao-arte img:last-child { width: 120px; height: 120px; }
     .missao-rodape { position: relative; display: flex; align-items: center; gap: 12px; }
     .missao-rodape b { flex: 1; font-size: 19px; line-height: 1.2; font-weight: 800; }
-    .missao-rodape button { flex: none; min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; background: #FFE58A; color: #3A2A00; font: inherit; font-weight: 700; }
+    .missao-rodape button { flex: none; min-height: 42px; padding: 0 18px; border: 0; border-radius: 999px; background: #fff; color: #4A1FB8; font: inherit; font-weight: 700; }
     .desafios { gap: 12px; }
     .desafio { flex: 0 0 calc(100% - 28px); scroll-snap-align: center; border-radius: 20px; overflow: hidden; background: var(--cartao); display: grid; }
     .desafio header { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: #fff; background: linear-gradient(120deg, #1A1F5C, #7B3FF2); }
@@ -497,9 +499,9 @@
         <div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
         <div id="lista"><p class="vazio">Carregando…</p></div>
       </div>
-      <div class="secao"><div class="secao-titulo"><h2>Novidades e destaques</h2></div><div class="rolar destaques" id="destaques"></div></div>
+      <div class="secao"><div class="secao-titulo"><h2>Em destaque na LeuApps</h2></div><div class="rolar destaques" id="destaques"></div></div>
       <div class="secao">
-        <div class="secao-titulo"><h2>Recomendado para você</h2><button class="seta" type="button" data-secao="Recomendado para você" aria-label="Ver todos os recomendados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        <div class="secao-titulo"><h2>Feito para você</h2><button class="seta" type="button" data-secao="Recomendado para você" aria-label="Ver todos os recomendados"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
         <ul class="lista" id="recomendados"></ul>
       </div>
       <div id="vitrines"></div>
@@ -548,9 +550,9 @@
       <div id="resultados" hidden><div class="secao"><div class="secao-titulo" id="titulo-secao" hidden><h2></h2></div><ul class="lista" id="lista-busca"></ul></div></div>
       <div id="explorar">
         <!-- Como a Pesquisa da Play: Explorar cursos (no lugar de jogos), Patrocinados · Sugestões, Explorar apps -->
-        <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Explorar cursos</h2></div><div class="categorias" id="categorias-cursos"></div></div>
+        <div class="secao" style="margin-top:10px"><div class="secao-titulo"><h2>Categorias de cursos</h2></div><div class="categorias" id="categorias-cursos"></div></div>
         <div class="secao sugestoes-patrocinadas"><div class="secao-titulo"><h2><small class="patrocinados">Destaques ·</small> Sugestões para você</h2><button class="tres-pontos" type="button" data-menu-sugestoes aria-label="Mais opções"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div><div class="rolar" id="fileira-busca"></div></div>
-        <div class="secao"><div class="secao-titulo"><h2>Explorar apps</h2></div><div class="categorias" id="categorias"></div></div>
+        <div class="secao"><div class="secao-titulo"><h2>Categorias de apps</h2></div><div class="categorias" id="categorias"></div></div>
       </div>
     </section>
 
@@ -682,8 +684,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       meus: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
     };
     const CHIPS = [
-      ['Em alta', 'alta', 'rolar', 'sugestoes'], ['Premium', 'premium'], ['Crianças', 'criancas'], ['Categorias', 'categorias', 'secao', 'Categorias de apps'],
-      ['Grátis para testar', 'gratis'], ['Negócios', 'negocios'], ['Finanças', 'financas'], ['Produtividade', 'produtividade'],
+      ['Mais procurados', 'alta', 'rolar', 'sugestoes'], ['Grátis para testar', 'gratis'], ['Categorias', 'categorias', 'secao', 'Categorias de apps'], ['Premium', 'premium'], ['Crianças', 'criancas'],
+      ['Negócios', 'negocios'], ['Finanças', 'financas'], ['Produtividade', 'produtividade'],
       ['Comer e beber', 'comida'], ['Ferramentas', 'ferramentas'], ['Educação', 'educacao'], ['Compras', 'compras'],
       ['Comunicação', 'comunicacao'], ['Saúde e fitness', 'saude'], ['Estilo de vida', 'estilo'], ['Fotografia', 'foto'],
       ['Entretenimento', 'diversao'], ['Música e áudio', 'musica'], ['Viagens', 'viagens'],
@@ -795,7 +797,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       ebook: '<path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6"/>', audio: '<path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
       novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>', coracao: I.saude, sol: I.estilo,
     };
-    const CHIPS_CURSOS = [['Em alta', I.alta], ['Grátis', I.gratis], ['Pagos', I.premium], ['Categorias', I.categorias], ['Vendas', I.compras], ['Culinária', I.comida],
+    const CHIPS_CURSOS = [['Mais procurados', I.alta], ['Grátis', I.gratis], ['Pagos', I.premium], ['Categorias', I.categorias], ['Vendas', I.compras], ['Culinária', I.comida],
       ['Finanças', I.financas], ['Marketing', '<path d="M3 10v4h4l6 4V6L7 10z"/><path d="M16 9a4 4 0 010 6M19 6a8 8 0 010 12"/>'], ['Atendimento', I.comunicacao], ['Gestão', I.produtividade],
       ['Empreender', I.negocios], ['Tecnologia', I.meus], ['Beleza', I.estilo], ['Idiomas', IG.palavras]];
     const CHIPS_LIVROS = [['E-books', IG.ebook], ['Audiolivros', IG.audio], ['Categorias', I.categorias], ['Mais vendidos', I.alta], ['Lançamentos', IG.novo], ['Gratuitos', I.gratis], ['Receitas', I.comida],
@@ -812,15 +814,21 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       const porEscolha = typeof s === 'function';
       const lista = porEscolha ? apps.filter(s) : daSecao(s);
-      if (!lista.length && modo !== 'mostrar-vazio') return '';
+      if (!lista.length && !souDono) return ''; // vazio: o cliente não vê; o dono vê o que falta colocar
       const alvo = porEscolha ? titulo : s;
       return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="${esc(alvo)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-        <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha">Em breve: novos apps da LeuName vão aparecer aqui.</li>'}</ul></div>`;
+        <ul class="lista">${lista.map(linhaVitrine).join('') || '<li class="vazio-linha falta"><b>Falta colocar</b>Só você vê este espaço. Quando um app entrar nesta seção, ele aparece aqui para os clientes.</li>'}</ul></div>`;
     }
     // ================= LIVROS (como a aba Livros da Play) — dados em livros.json =================
     // Cada livro: { id, titulo, autor, capa, preco ("Grátis" ou "R$ 4,90"), precoAntigo?, tipo: "ebook"|"audiolivro",
     //               generos: [...], vendidos (número, para o ranking), lancamento ("2026-10-06"), link? }
     let livros = [], abaLivros = 'E-books', abaAtual = 'apps';
+    // Dono logado: vê os espaços vazios marcados "Falta colocar" (o cliente só vê o que já tem conteúdo).
+    let souDono = false;
+    fetch('/loja-api/dono/estado', { credentials: 'same-origin', cache: 'no-store' }).then((r) => r.json()).then((d) => {
+      if (!d.logado) return; souDono = true; document.body.classList.add('modo-dono');
+      if (apps.length) mostrar(); mostrarLivros(); if (cursos.length) mostrarCursos();
+    }).catch(() => {});
     const ABAS_LIVROS = ['E-books', 'Audiolivros', 'Gêneros', 'Os mais vendidos', 'Lançamentos', 'Grátis para ler'];
     const GENEROS = [['Inspiradores', I.estilo], ['Cinema e TV', I.diversao], ['Vida saudável', I.saude], ['Negócios', I.negocios], ['Finanças', I.financas], ['Culinária', I.comida], ['Autoajuda', I.saude], ['Romance', '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>'],
       ['Infantil', I.criancas], ['Religião', I.estilo], ['Estudos', I.educacao], ['Biografias', I.meus], ['Ficção', IG.sandbox]];
@@ -841,9 +849,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         reserva: () => base.filter((l) => l.lancamento && l.lancamento > hoje()),
       }[filtro] || (() => base.filter((l) => (l.generos || []).includes(filtro))))();
     }
-    const fileiraLivros = (titulo, filtro, sub) => { const l = livrosDe(filtro);
+    const fileiraLivros = (titulo, filtro, sub) => { const l = livrosDe(filtro); if (!l.length && !souDono) return '';
       return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}${sub ? `<small class="sub-titulo">${esc(sub)}</small>` : ''}</h2><button class="seta" type="button" data-secao="livros:${esc(filtro)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-        <div class="rolar capas">${l.map(capaLivro).join('') || '<div class="vazio-linha capa-vazia">Em breve: os livros da LeuName vão aparecer aqui.</div>'}</div></div>`; };
+        <div class="rolar capas">${l.map(capaLivro).join('') || '<div class="vazio-linha capa-vazia falta"><b>Falta colocar</b>Só você vê este espaço.</div>'}</div></div>`; };
     function mostrarLivros() {
       $('abas-livros').innerHTML = ABAS_LIVROS.map((n) => `<button type="button" data-aba-livros="${esc(n)}" aria-selected="${n === abaLivros}">${esc(n)}</button>`).join('');
       const f = abaAtual === 'livros' ? $('busca').value.trim().toLowerCase() : '';
@@ -863,11 +871,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       } else {
         const nome = abaLivros === 'Audiolivros' ? 'Audiolivros' : 'E-books';
         // Mesma sequência da Play (aba E-books)
-        html = fileiraLivros(`${nome} até R$ 5`, 'barato') + fileiraLivros('Os mais vendidos', 'vendidos') + fileiraLivros('Preços reduzidos', 'reduzidos')
+        html = fileiraLivros(`${nome} até R$ 5`, 'barato') + fileiraLivros('Os mais vendidos', 'vendidos') + fileiraLivros('Baixou o preço', 'reduzidos')
           + fileiraLivros('Livros que inspiram', 'Inspiradores') + fileiraLivros('Viraram filme e série', 'Cinema e TV')
           + fileiraLivros('Saúde e bem-estar', 'Vida saudável') + fileiraLivros('Novos na LeuApps', 'lancamentos')
           + fileiraLivros('Descontos da semana', 'descontos', 'Preços que acabaram de baixar') + fileiraLivros('Chegando em breve', 'reserva', 'Garanta o seu antes de todo mundo');
       }
+      // Sem nenhum livro ainda: o cliente vê um aviso bonito em vez de uma página vazia.
+      if (!html.trim() || !livros.length && !souDono && !['Gêneros'].includes(abaLivros)) html = `<div class="breve-capa breve-livros" style="margin-top:14px"><div class="breve-icone"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg></div>
+        <h2>Livros chegando</h2><p>E-books de receitas, negócios e muito mais estão a caminho. Quer ser avisado quando chegarem?</p><button class="capa-botao" type="button" data-avisar="livros">Quero ser avisado</button></div>`;
       $('conteudo-livros').innerHTML = html;
     }
     fetch('/livros.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { livros = d; mostrarLivros(); }).catch(() => mostrarLivros());
@@ -912,9 +923,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const andamento = cursos.filter((c) => { const f = progressoDe(c.id).length; return f && f < c.aulas.length; });
       $('continuar-cursos').hidden = !andamento.length; $('lista-continuar').innerHTML = andamento.map(linhaCurso).join('');
       $('lista-cursos').innerHTML = cursos.map(linhaCurso).join('') || '<li class="vazio-linha">Em breve: novos cursos da LeuName.</li>';
-      $('vitrines-cursos').innerHTML = SECOES_CURSOS.map(([titulo, cat, modo]) => { const l = cursosDe(cat); if (!l.length && modo !== 'sempre') return '';
+      $('vitrines-cursos').innerHTML = SECOES_CURSOS.map(([titulo, cat, modo]) => { const l = cursosDe(cat); if (!l.length && !souDono) return '';
         return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="cursos:${esc(cat)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
-          <ul class="lista">${l.map(linhaCurso).join('') || `<li class="vazio-linha">Em breve: ${cat === 'Pagos' ? 'cursos completos com certificado' : 'novos cursos'} da LeuName.</li>`}</ul></div>`; }).join('');
+          <ul class="lista">${l.map(linhaCurso).join('') || `<li class="vazio-linha falta"><b>Falta colocar</b>Só você vê este espaço: ${cat === 'Pagos' ? 'cursos pagos' : 'cursos de ' + esc(cat)}.</li>`}</ul></div>`; }).join('');
     }
     // Página do curso (#curso/id) e da aula (#curso/id/n)
     const paginaCurso = $('pagina-curso');
@@ -966,7 +977,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const alvo = cursos.find((c) => gratis(c) && progressoDe(c.id).length < c.aulas.length);
       $('missao').innerHTML = alvo ? `<div class="missao"><span class="missao-prazo">◆ Comece até ${dataBR(fimDoMes())}</span>
           <div class="missao-arte"><img src="${esc(alvo.icone)}" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
-          <div class="missao-rodape"><b>Conclua o curso ${esc(alvo.nomeCurto || alvo.nome)} e ganhe o selo Aluno LeuName</b><button type="button" data-curso="${esc(alvo.id)}">Ver missão</button></div></div>`
+          <div class="missao-rodape"><b>Conclua o curso ${esc(alvo.nomeCurto || alvo.nome)} e ganhe o selo Aluno LeuName</b><button type="button" data-curso="${esc(alvo.id)}">Fazer agora</button></div></div>`
         : `<div class="missao"><span class="missao-prazo">◆ Missão cumprida</span><div class="missao-arte"><img src="/img/leuapps-192.webp" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
           <div class="missao-rodape"><b>Você ganhou o selo Aluno LeuName!</b><button type="button" data-ir-cursos>Mais cursos</button></div></div>`;
       $('desafios').innerHTML = cursos.map((c) => { const f = progressoDe(c.id).length, falta = c.aulas.length - f;
@@ -987,7 +998,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       [...$('pontos-desafios').children].forEach((p, k) => p.classList.toggle('ativo', k === i)); }, { passive: true });
 
     function vitrines() {
-      $('vitrines').innerHTML = VITRINES.map(vitrine).join('');
+      // Sem as seções vazias (cliente), dois blocos de Sugestões podiam ficar colados: fica só um.
+      const blocos = VITRINES.map((v) => [v[1], vitrine(v)]).filter(([, h]) => h);
+      $('vitrines').innerHTML = blocos.filter(([s], i) => !(s === 'patrocinados' && i > 0 && blocos[i - 1][0] === 'patrocinados')).map(([, h]) => h).join('');
       $('vitrines2').innerHTML = VITRINES_FIM.map(vitrine).join('');
     }
     function seloDestaque(a) {
@@ -1223,7 +1236,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const etiquetas = [...new Set([a.categoria, ...(a.tags || []), ...(a.secoes || [])])].slice(0, 8);
       detalhe.innerHTML = `
         <div class="det-barra det-barra-app"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><span class="espaco"></span>
-          <button type="button" class="det-voltar" data-desejo="${esc(a.id)}" aria-label="${salvo ? 'Tirar da lista de desejos' : 'Salvar na lista de desejos'}" aria-pressed="${salvo}">${ICO(salvo ? '<path d="M6 3h12v18l-6-4-6 4z" fill="currentColor"/>' : '<path d="M6 3h12v18l-6-4-6 4z"/><path d="M12 7v6M9 10h6"/>')}</button>
+          <button type="button" class="det-voltar" data-desejo="${esc(a.id)}" aria-label="${salvo ? 'Tirar dos favoritos' : 'Favoritar'}" aria-pressed="${salvo}">${ICO('<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"' + (salvo ? ' fill="currentColor"' : '') + '/>')}</button>
           <button type="button" class="det-voltar" data-mais-app="${esc(a.id)}" aria-label="Mais opções">${ICO('<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>')}</button></div>
         <div class="det-corpo">
           <div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">LeuName Softwares</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
@@ -1237,7 +1250,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           ${a.planos ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
           ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c) => `<img src="${esc(c)}" alt="Tela do ${esc(a.nome)}" loading="lazy" width="180" height="320">`).join('')}</div>` : ''}
 
-          <div class="det-secao"><h2>Sobre este app</h2><button class="seta" type="button" data-sobre="${esc(a.id)}" aria-label="Ler tudo sobre o app">${SETA_D}</button></div>
+          <div class="det-secao"><h2>Conheça o app</h2><button class="seta" type="button" data-sobre="${esc(a.id)}" aria-label="Ler tudo sobre o app">${SETA_D}</button></div>
           <p class="det-resumo">${esc(a.resumo)}</p>
           <div class="rolar det-etiquetas">${etiquetas.map((g) => `<button type="button" data-secao="${esc(g)}">${esc(g)}</button>`).join('')}</div>
 
@@ -1247,7 +1260,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <div class="materia-rodape"><div><b>${esc(novidade.titulo)}</b><small>${esc(novidade.texto)}</small></div><button type="button" data-novidades-app="${esc(a.id)}">Ver</button></div>
           </div>` : ''}
 
-          <div class="det-secao"><h2>Segurança dos dados</h2><button class="seta" type="button" data-dados="${esc(a.id)}" aria-label="Mais detalhes sobre os dados">${SETA_D}</button></div>
+          <div class="det-secao"><h2>Seus dados</h2><button class="seta" type="button" data-dados="${esc(a.id)}" aria-label="Mais detalhes sobre os dados">${SETA_D}</button></div>
           <p class="det-texto">Sua segurança começa quando você entende o que o app guarda e por quê. Estas são as informações da LeuName Softwares sobre este app.</p>
           <ul class="dados-quadro">
             <li>${ICO('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>')}<span><b>Não compartilhamos seus dados com terceiros</b>Não vendemos nem repassamos suas informações.</span></li>
@@ -1257,7 +1270,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <li><button type="button" class="link-simples" data-dados="${esc(a.id)}">Mais detalhes</button></li>
           </ul>
 
-          <div class="det-secao"><h2>Notas e avaliações</h2></div>
+          <div class="det-secao"><h2>O que os clientes dizem</h2></div>
           <div id="avaliacoes-app">${blocoAvaliacoes(a, av)}</div>
 
           ${a.recursos ? `<h2 class="det-h2">O que o app faz</h2><ul class="tags">${a.recursos.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
@@ -1296,8 +1309,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="comentario-nota"><span class="estrelas">${estrelas(r.nota, 13)}</span><small>${new Date(r.data).toLocaleDateString('pt-BR')}</small></div>
           <p>${esc(r.texto)}</p>
           ${r.resposta ? `<div class="resposta-dev"><b>LeuName Softwares</b><small>${new Date(r.respostaEm).toLocaleDateString('pt-BR')}</small><p>${esc(r.resposta)}</p></div>` : ''}
-          ${r.uteis ? `<small class="uteis">${r.uteis} ${r.uteis > 1 ? 'pessoas acharam' : 'pessoa achou'} esta avaliação útil</small>` : ''}
-          ${!r.minha && minhaConta ? `<div class="util"><span>Você achou este comentário útil?</span><button type="button" data-util="${esc(r.id)}" data-sim="1" aria-pressed="${r.voto === true}">Sim</button><button type="button" data-util="${esc(r.id)}" data-sim="0" aria-pressed="${r.voto === false}">Não</button></div>` : ''}
+          ${r.uteis ? `<small class="uteis">${r.uteis} ${r.uteis > 1 ? 'pessoas disseram' : 'pessoa disse'} que ajudou</small>` : ''}
+          ${!r.minha && minhaConta ? `<div class="util"><span>Este comentário ajudou?</span><button type="button" data-util="${esc(r.id)}" data-sim="1" aria-pressed="${r.voto === true}">Sim</button><button type="button" data-util="${esc(r.id)}" data-sim="0" aria-pressed="${r.voto === false}">Não</button></div>` : ''}
         </article>`).join('');
       return resumo + itens + form;
     }
@@ -1360,7 +1373,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const nv = t.closest('[data-novidades-app]'); if (nv) { const a = todos.find((x) => x.id === nv.dataset.novidadesApp);
         return folha(`<h2>Novidades do ${esc(a.nome)}</h2><div class="lista-notif">${(a.novidades || []).map((n) => `<div class="notif-item"><span><small>${esc(n.data)}</small><b>${esc(n.titulo)}</b>${esc(n.texto)}</span></div>`).join('')}</div>`, 'Fechar'); }
       const dd = t.closest('[data-dados]'); if (dd) { const a = todos.find((x) => x.id === dd.dataset.dados), d = a.dados || DADOS_PADRAO;
-        return folha(`<h2>Segurança dos dados</h2><p class="det-desc"><b>O que o ${esc(a.nome)} guarda:</b> ${esc(d.coleta)}.</p><p class="det-desc"><b>Para quê:</b> ${esc(d.uso)}.</p>
+        return folha(`<h2>Seus dados</h2><p class="det-desc"><b>O que o ${esc(a.nome)} guarda:</b> ${esc(d.coleta)}.</p><p class="det-desc"><b>Para quê:</b> ${esc(d.uso)}.</p>
           <p class="det-desc"><b>Compartilhamento:</b> não vendemos nem repassamos seus dados. Pagamentos são feitos pelo Mercado Pago, que recebe só o necessário para cobrar.</p>
           <p class="det-desc"><b>Segurança:</b> conexão criptografada (HTTPS) e senha guardada de forma protegida.</p>
           <p class="det-desc"><b>Excluir seus dados:</b> peça pelo WhatsApp e apagamos a sua conta.</p>`, 'Fechar'); }
