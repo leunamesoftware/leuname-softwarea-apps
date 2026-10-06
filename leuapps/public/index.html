@@ -222,6 +222,27 @@
     .aula-texto .dica { padding: 14px 16px; border-radius: 16px; background: var(--verde-claro); color: var(--verde-texto); font-weight: 600; }
     .aula-acoes { display: grid; gap: 10px; margin-top: 26px; } .aula-acoes .acao { min-height: 50px; font-size: 16px; }
     .link-simples { border: 0; background: none; color: var(--verde-texto); font: inherit; font-weight: 700; padding: 10px; }
+    .aula-texto ol { padding-left: 22px; margin: 0 0 14px; }
+    .aulas-parte { margin: 18px 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-texto); }
+    .aulas-parte small { display: block; margin-top: 2px; font-size: 15px; letter-spacing: 0; text-transform: none; color: var(--texto); font-weight: 700; }
+    .quiz { margin-top: 22px; padding: 16px; border-radius: 18px; background: var(--cartao); display: grid; gap: 10px; }
+    .quiz-tit { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-texto); }
+    .quiz > p { margin: 0; font-weight: 700; font-size: 16px; line-height: 1.4; }
+    .quiz-op { min-height: 48px; padding: 10px 14px; border: 2px solid transparent; border-radius: 14px; background: var(--fundo); color: var(--texto); font: inherit; font-size: 15.5px; text-align: left; cursor: pointer; }
+    .quiz-op:focus-visible { outline: 3px solid var(--verde); outline-offset: 2px; }
+    .quiz-op.certa { border-color: #1E8E4E; background: #E7F6EC; color: #145C33; font-weight: 700; }
+    .quiz-op.errada { border-color: var(--perigo); opacity: .75; }
+    .quiz-msg { margin: 0; font-size: 14.5px; color: var(--suave); } .quiz-msg:empty { display: none; }
+    .acao:disabled { opacity: .45; cursor: not-allowed; }
+    .cert-bloco { width: 100%; max-width: 520px; display: grid; gap: 10px; text-align: left; margin-top: 10px; padding: 18px; border-radius: 22px; background: var(--cartao); }
+    .cert-bloco h2 { margin: 0; font-size: 19px; } .cert-bloco p { margin: 0; color: var(--suave); font-size: 14.5px; max-width: none; }
+    .cert-bloco label { display: grid; gap: 6px; font-weight: 600; font-size: 14px; }
+    .cert-bloco input { min-height: 48px; border: 1px solid var(--linha, #C9C6D3); border-radius: 12px; padding: 0 12px; font: inherit; font-size: 16px; background: var(--fundo); color: var(--texto); }
+    .cert-img { width: 100%; border-radius: 10px; box-shadow: 0 6px 20px rgba(20,10,50,.18); display: block; }
+    .cert-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .cert-botoes .acao { text-decoration: none; display: flex; align-items: center; justify-content: center; }
+    .fim-app { width: 100%; max-width: 520px; display: flex; gap: 14px; align-items: center; text-align: left; padding: 16px; border-radius: 22px; border: 1px solid var(--linha, #DDD8EA); }
+    .fim-app img { width: 60px; height: 60px; border-radius: 16px; flex: none; } .fim-app b { display: block; font-size: 16px; } .fim-app small { color: var(--suave); font-size: 13.5px; }
+    .fim-app .acao { flex: none; width: auto; padding: 0 16px; min-height: 42px; }
     .curso-fim { text-align: center; padding: 40px 8px 20px; display: grid; gap: 12px; justify-items: center; }
     .curso-fim .ok { width: 88px; height: 88px; border-radius: 50%; background: var(--verde); color: var(--no-verde); display: grid; place-items: center; }
     .curso-fim h1 { margin: 6px 0 0; font-size: 26px; } .curso-fim p { margin: 0; color: var(--suave); max-width: 40ch; }
@@ -1063,7 +1084,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const salvarProgresso = (id, v) => { try { localStorage.setItem('leuapps.curso.' + id, JSON.stringify(v)); } catch {} };
     const gratis = (c) => /grátis/i.test(c.preco);
     const minutos = (c) => c.aulas.reduce((s, a) => s + (a.minutos || 0), 0);
-    const metaCurso = (c) => `${c.aulas.length} aulas · ${minutos(c)} min`;
+    const unidade = (c, n = 2) => (c.unidade === 'módulos' ? (n === 1 ? 'módulo' : 'módulos') : (n === 1 ? 'aula' : 'aulas'));
+    const duracao = (m) => (m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ''}` : `${m} min`);
+    const metaCurso = (c) => `${c.aulas.length} ${unidade(c)} · ${duracao(minutos(c))}`;
+    // "7 de 20 módulos"; quando a conta daria 13, mostra a porcentagem.
+    const feitasTxt = (c, f) => (f === 13 || c.aulas.length === 13 ? `${Math.round(f / c.aulas.length * 100)}% concluído` : `${f} de ${c.aulas.length} ${unidade(c)}`);
+    // Cursos com partes: a numeração recomeça em cada parte (Parte 2 · Módulo 3 de 5).
+    function lugarNaParte(c, i) {
+      const partes = [...new Set(c.aulas.map((a) => a.parte).filter(Boolean))];
+      if (!partes.length) return null;
+      const daParte = c.aulas.map((a, k) => [a, k]).filter(([a]) => a.parte === c.aulas[i].parte);
+      return { parte: partes.indexOf(c.aulas[i].parte) + 1, nome: c.aulas[i].parte, n: daParte.findIndex(([, k]) => k === i) + 1, de: daParte.length };
+    }
     function cursosDe(cat) {
       if (cat === 'Todos') return cursos;
       if (cat === 'Grátis') return cursos.filter(gratis);
@@ -1078,14 +1110,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const linhaCurso = (c) => { const f = progressoDe(c.id).length;
       return `<li><button class="linha linha-simples" type="button" data-curso="${esc(c.id)}">
         <img src="${esc(c.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(c.nome)}</span><span class="resumo-curto">${esc(c.resumo)}</span>
-        <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : `${f} de ${c.aulas.length} aulas`}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
+        <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : feitasTxt(c, f)}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
     const cartaoCurso = (c) => `
         <div class="dest-item">
           <button class="destaque" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.destaque.imagem)}" alt=""><span class="dest-selo">${gratis(c) ? 'Curso grátis' : 'Curso'}</span><span class="destaque-frase">${esc(c.destaque.frase)}</span></button>
           <div class="linha dest-app">
             <img src="${esc(c.icone)}" alt="" data-curso="${esc(c.id)}" style="cursor:pointer">
             <div data-curso="${esc(c.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(c.nomeCurto || c.nome)}</div><div class="info">LeuName Cursos</div><span class="pilula">${esc(c.preco)}</span></div>
-            <div class="dest-botao">${botaoCurso(c)}<small>${c.aulas.length} aulas</small></div>
+            <div class="dest-botao">${botaoCurso(c)}<small>${c.aulas.length} ${unidade(c)}</small></div>
           </div>
         </div>`;
     const SECOES_CURSOS = [['Cursos grátis', 'Grátis', 'sempre'], ['Cursos pagos', 'Pagos', 'sempre'], ['Vendas', 'Vendas'], ['Culinária', 'Culinária'], ['Finanças', 'Finanças'], ['Marketing', 'Marketing']];
@@ -1112,31 +1144,106 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       let corpo;
       if (fim === 'fim') {
         const app = c.app && todos.find((a) => a.id === c.app);
+        const terminou = feitas.length >= total;
         corpo = `<div class="curso-fim"><div class="ok"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <h1>Parabéns!</h1><p>Você concluiu o curso <b>${esc(c.nome)}</b>.</p>
-          <div class="aula-acoes" style="width:100%;max-width:420px">${app ? `<button class="acao" type="button" data-detalhe="${esc(app.id)}">Conhecer o ${esc(app.nome)}</button>` : ''}
-          <button class="acao contorno" type="button" data-ir-cursos>Ver outros cursos</button></div></div>`;
+          ${c.certificado && terminou ? `<div class="cert-bloco"><h2>Seu certificado</h2><p>Escreva o seu nome como quer que apareça. Você pode baixar ou mandar pelo WhatsApp.</p>
+            <label for="cert-nome">Nome completo<input id="cert-nome" maxlength="60" autocomplete="name" value="${esc(nomeCertificado())}"></label>
+            <button class="acao" type="button" data-gerar-cert="${esc(c.id)}">Gerar meu certificado</button><div id="cert-saida" class="cert-saida" aria-live="polite"></div></div>` : ''}
+          ${app ? `<div class="fim-app"><img src="${esc(app.icone)}" alt=""><div style="flex:1;min-width:0"><b>Coloque em prática</b><small>O ${esc(app.nome)} faz essas contas por você. ${esc(app.preco.split(' · ')[0])}.</small></div><button class="acao" type="button" data-detalhe="${esc(app.id)}">Conhecer</button></div>` : ''}
+          <div class="aula-acoes" style="width:100%;max-width:420px"><button class="acao contorno" type="button" data-ir-cursos>Ver outros cursos</button></div></div>`;
       } else if (n !== undefined && c.aulas[Number(n)]) {
-        const i = Number(n), a = c.aulas[i];
-        corpo = `<div class="aula-topo">Aula ${i + 1} de ${total} · ${a.minutos || 1} min</div><h1 class="aula-titulo">${esc(a.titulo)}</h1>
+        const i = Number(n), a = c.aulas[i], lugar = lugarNaParte(c, i), q = a.pergunta, travado = q && !feitas.includes(i);
+        const nomeAula = unidade(c, 1).replace(/^./, (x) => x.toUpperCase());
+        corpo = `<div class="aula-topo">${lugar ? `Parte ${lugar.parte} · ${esc(lugar.nome)} · ${nomeAula} ${lugar.n} de ${lugar.de}` : `${nomeAula} ${i + 1} de ${total}`} · ${a.minutos || 1} min</div><h1 class="aula-titulo">${esc(a.titulo)}</h1>
           <div class="aula-texto">${a.texto}</div>
-          <div class="aula-acoes"><button class="acao" type="button" data-concluir-aula="${esc(c.id)}/${i}">${i + 1 < total ? 'Concluir aula e continuar' : 'Concluir o curso'}</button>
-          ${i > 0 ? `<button class="link-simples" type="button" data-aula="${esc(c.id)}/${i - 1}">← Aula anterior</button>` : ''}</div>`;
+          ${q ? `<div class="quiz" data-quiz="${esc(c.id)}/${i}"><div class="quiz-tit">Teste rápido</div><p>${esc(q.texto)}</p>
+            ${q.opcoes.map((o, k) => `<button type="button" class="quiz-op${!travado && k === q.certa ? ' certa' : ''}" data-resposta="${k}"${travado ? '' : ' disabled'}>${esc(o)}</button>`).join('')}
+            <p class="quiz-msg" role="status">${travado ? '' : esc(q.explica)}</p></div>` : ''}
+          <div class="aula-acoes"><button class="acao" type="button" data-concluir-aula="${esc(c.id)}/${i}"${travado ? ' disabled' : ''}>${i + 1 < total ? `Concluir ${unidade(c, 1) === 'módulo' ? 'o módulo' : 'a aula'} e continuar` : 'Concluir o curso'}</button>
+          ${travado ? '<small class="curso-prog-txt" style="text-align:center">Responda o teste rápido para continuar.</small>' : ''}
+          ${i > 0 ? `<button class="link-simples" type="button" data-aula="${esc(c.id)}/${i - 1}">← ${unidade(c, 1) === 'módulo' ? 'Módulo' : 'Aula'} anterior</button>` : ''}</div>`;
       } else {
         const pct = Math.round(feitas.length / total * 100);
         corpo = `<img class="curso-capa" src="${esc(c.destaque ? c.destaque.imagem : c.icone)}" alt="">
           <div class="det-topo"><img src="${esc(c.icone)}" alt=""><div><h1>${esc(c.nome)}</h1><div class="det-dev">LeuName Cursos</div></div></div>
-          <ul class="det-fatos"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>aulas</li><li><b>${minutos(c)} min</b>no total</li><li><b>${esc(c.nivel || 'Todos')}</b>nível</li></ul>
+          <ul class="det-fatos"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>${unidade(c)}</li><li><b>${duracao(minutos(c))}</b>no total</li>${c.certificado ? '<li><b>Certificado</b>no final</li>' : `<li><b>${esc(c.nivel || 'Todos')}</b>nível</li>`}</ul>
           <div class="det-botoes">${botaoCurso(c)}</div>
-          ${feitas.length ? `<div class="curso-prog"><i style="width:${pct}%"></i></div><div class="curso-prog-txt">${feitas.length} de ${total} aulas concluídas</div>` : ''}
+          ${feitas.length ? `<div class="curso-prog"><i style="width:${pct}%"></i></div><div class="curso-prog-txt">${feitas.length >= total ? 'Curso concluído ✓' : feitasTxt(c, feitas.length)}</div>` : ''}
           <h2>Sobre este curso</h2><p class="det-desc">${esc(c.resumo)}</p>
-          <h2>Aulas</h2><ol class="aulas-lista">${c.aulas.map((a, i) => `<li><button type="button" data-aula="${esc(c.id)}/${i}"><span class="aula-num ${feitas.includes(i) ? 'feita' : ''}">${feitas.includes(i) ? '✓' : i + 1}</span><span class="txt">${esc(a.titulo)}<small>${a.minutos || 1} min</small></span></button></li>`).join('')}</ol>
-          <p class="det-info">Curso da LeuName Softwares · ${gratis(c) ? 'Grátis e online' : 'Online'}</p>`;
+          <h2>${unidade(c).replace(/^./, (x) => x.toUpperCase())}</h2><ol class="aulas-lista">${c.aulas.map((a, i) => { const l = lugarNaParte(c, i);
+            return `${l && l.n === 1 ? `<li class="aulas-parte">Parte ${l.parte}<small>${esc(l.nome)}</small></li>` : ''}<li><button type="button" data-aula="${esc(c.id)}/${i}"><span class="aula-num ${feitas.includes(i) ? 'feita' : ''}">${feitas.includes(i) ? '✓' : l ? l.n : i + 1}</span><span class="txt">${esc(a.titulo)}<small>${a.minutos || 1} min</small></span></button></li>`; }).join('')}</ol>
+          ${feitas.length >= total && c.certificado ? `<div class="det-botoes" style="margin-top:14px"><button class="acao contorno" type="button" data-aula="${esc(c.id)}/x/fim">Ver meu certificado</button></div>` : ''}
+          <p class="det-info">Curso livre da LeuName Softwares · ${gratis(c) ? 'Grátis e online' : 'Online'}${c.certificado ? ' · com certificado de conclusão' : ''}</p>`;
       }
       paginaCurso.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${VOLTAR}</button></div><div class="det-corpo">${corpo}</div>`;
       paginaCurso.querySelector('.det-voltar').onclick = () => (history.length > 1 ? history.back() : (location.hash = ''));
       paginaCurso.hidden = false; paginaCurso.scrollTop = 0; document.body.style.overflow = 'hidden';
     }
+    // ---- Certificado de conclusão (curso livre da LeuName Softwares), feito aqui no aparelho ----
+    const nomeCertificado = () => { try { return localStorage.getItem('leuapps.certificado.nome') || minhaConta?.nome || ''; } catch { return minhaConta?.nome || ''; } };
+    const carregarImg = (src) => new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; });
+    function dataConclusao(c) {
+      let d = null; try { d = localStorage.getItem('leuapps.curso.' + c.id + '.fim'); if (!d) { d = new Date().toISOString(); localStorage.setItem('leuapps.curso.' + c.id + '.fim', d); } } catch {}
+      return new Date(d || Date.now());
+    }
+    function linhas(ctx, texto, larg) {
+      const out = []; let l = '';
+      for (const p of texto.split(' ')) { const t = l ? l + ' ' + p : p; if (ctx.measureText(t).width > larg && l) { out.push(l); l = p; } else l = t; }
+      if (l) out.push(l); return out;
+    }
+    async function desenharCertificado(c, nome) {
+      const W = 1754, H = 1240, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const x = cv.getContext('2d');
+      const [logo, assinatura] = await Promise.all([carregarImg('/img/leuapps-512.png'), carregarImg('/img/cursos/assinatura.png')]);
+      const tinta = '#1A1630', suave = '#5D5A6B', grad = x.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, '#FF8A00'); grad.addColorStop(0.5, '#E5306E'); grad.addColorStop(1, '#6A35E8');
+      x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
+      x.fillStyle = grad; x.fillRect(0, 0, W, 28); x.fillRect(0, H - 28, W, 28);           // faixas de cima e de baixo
+      x.strokeStyle = grad; x.lineWidth = 6; x.strokeRect(60, 70, W - 120, H - 140);         // moldura
+      x.strokeStyle = '#E6E1F5'; x.lineWidth = 2; x.strokeRect(80, 90, W - 160, H - 180);
+      if (logo) x.drawImage(logo, W / 2 - 60, 130, 120, 120);
+      x.textAlign = 'center'; x.fillStyle = tinta;
+      x.font = '800 74px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '10px'; x.fillText('CERTIFICADO', W / 2, 340);
+      x.fillStyle = grad; x.font = '700 30px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '8px'; x.fillText('DE CONCLUSÃO', W / 2, 392);
+      x.letterSpacing = '0px'; x.fillStyle = suave; x.font = '400 32px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('Certificamos que', W / 2, 480);
+      let tam = 84; do { x.font = `italic 600 ${tam}px Georgia, "Noto Serif", "Times New Roman", serif`; tam -= 4; } while (x.measureText(nome).width > W - 360 && tam > 40);
+      x.fillStyle = tinta; x.fillText(nome, W / 2, 590);
+      x.fillStyle = grad; x.fillRect(W / 2 - 360, 618, 720, 4);
+      x.fillStyle = suave; x.font = '400 32px system-ui, "Segoe UI", Roboto, sans-serif';
+      const horas = duracao(minutos(c)).replace(' h', ' horas').replace(/^1 horas/, '1 hora');
+      const texto = `concluiu o curso livre e gratuito “${c.nome}”, com carga horária de ${horas}, oferecido pela LeuName Softwares na LeuApps.`;
+      linhas(x, texto, W - 420).forEach((l, k) => x.fillText(l, W / 2, 690 + k * 46));
+      const data = dataConclusao(c).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+      x.font = '600 30px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillStyle = tinta; x.fillText(`Concluído em ${data}`, W / 2, 860);
+      // assinatura (direita) e selo (esquerda)
+      const ax = W - 470;
+      if (assinatura) { const h = 110, w = Math.min(380, assinatura.width * h / assinatura.height); x.drawImage(assinatura, ax - w / 2, 920, w, h); }
+      x.fillStyle = tinta; x.fillRect(ax - 210, 1040, 420, 2);
+      x.font = '700 26px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('LeuName Softwares', ax, 1078);
+      x.fillStyle = suave; x.font = '400 22px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('www.leunamesoftware.com.br', ax, 1110);
+      const sx = 470, sy = 1000;
+      x.beginPath(); x.arc(sx, sy, 96, 0, Math.PI * 2); x.fillStyle = grad; x.fill();
+      x.beginPath(); x.arc(sx, sy, 80, 0, Math.PI * 2); x.strokeStyle = 'rgba(255,255,255,.7)'; x.lineWidth = 3; x.stroke();
+      x.fillStyle = '#FFFFFF'; x.font = '800 26px system-ui, "Segoe UI", Roboto, sans-serif'; x.fillText('LeuApps', sx, sy - 12);
+      x.font = '700 15px system-ui, "Segoe UI", Roboto, sans-serif'; x.letterSpacing = '1px'; x.fillText('CURSO', sx, sy + 20); x.fillText('CONCLUÍDO', sx, sy + 40); x.letterSpacing = '0px';
+      return cv;
+    }
+    async function gerarCertificado(id) {
+      const c = cursos.find((x) => x.id === id), campo = $('cert-nome'), saida = $('cert-saida'); if (!c || !campo) return;
+      const nome = campo.value.replace(/\s+/g, ' ').trim();
+      if (nome.length < 3) { saida.innerHTML = '<p>Escreva o seu nome completo.</p>'; campo.focus(); return; }
+      try { localStorage.setItem('leuapps.certificado.nome', nome); } catch {}
+      saida.innerHTML = '<p>Preparando…</p>';
+      const cv = await desenharCertificado(c, nome);
+      const blob = await new Promise((ok) => cv.toBlob(ok, 'image/png'));
+      const url = URL.createObjectURL(blob), arquivo = `certificado-${c.id}.png`;
+      const podeEnviar = navigator.canShare && navigator.canShare({ files: [new File([blob], arquivo, { type: 'image/png' })] });
+      saida.innerHTML = `<img class="cert-img" src="${url}" alt="Certificado de ${esc(nome)}"><div class="cert-botoes">
+        <a class="acao" href="${url}" download="${arquivo}">Baixar</a>${podeEnviar ? `<button class="acao contorno" type="button" data-enviar-cert="${esc(c.id)}">Compartilhar</button>` : ''}</div>`;
+      saida.dataset.arquivo = arquivo; certificadoBlob = blob;
+    }
+    let certificadoBlob = null;
     fetch('/cursos.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => { cursos = d; mostrarCursos(); mostrarCurso(); }).catch(() => {});
 
     // ================= VOCÊ: missão e desafios (de verdade, com os cursos) =================
@@ -1155,10 +1262,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         : `<div class="missao"><span class="missao-prazo">◆ Missão cumprida</span><div class="missao-arte"><img src="/img/leuapps-192.webp" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
           <div class="missao-rodape"><b>Você ganhou o selo Aluno LeuName!</b><button type="button" data-ir-cursos>Mais cursos</button></div></div>`;
       $('desafios').innerHTML = cursos.map((c) => { const f = progressoDe(c.id).length, falta = c.aulas.length - f;
-        return `<div class="desafio"><header><img src="${esc(c.icone)}" alt=""><b>${esc(c.nomeCurto || c.nome)}<small>Desafio da semana</small></b><span class="premio">◆ ${c.aulas.length} aulas</span></header>
-          <div class="desafio-corpo"><div class="desafio-info">${f} de ${c.aulas.length} aulas feitas · termina no domingo</div><div class="contagem" data-ate="${fimDaSemana().getTime()}"></div></div>
+        return `<div class="desafio"><header><img src="${esc(c.icone)}" alt=""><b>${esc(c.nomeCurto || c.nome)}<small>Desafio da semana</small></b><span class="premio">◆ ${c.aulas.length} ${unidade(c)}</span></header>
+          <div class="desafio-corpo"><div class="desafio-info">${feitasTxt(c, f)} · termina no domingo</div><div class="contagem" data-ate="${fimDaSemana().getTime()}"></div></div>
           <div class="desafio-acoes"><button class="contorno2" type="button" data-curso="${esc(c.id)}">Ver curso</button><button class="cheio" type="button" data-curso-abrir="${esc(c.id)}" ${falta ? '' : 'disabled'}>${falta ? (f ? 'Continuar' : 'Começar') : 'Concluído ✓'}</button></div>
-          <p class="desafio-nota">${falta ? `Faltam ${falta} ${falta > 1 ? 'aulas' : 'aula'} para completar o desafio.` : 'Desafio completo. Parabéns!'}</p></div>`; }).join('');
+          <p class="desafio-nota">${falta ? (falta === 13 ? 'Falta pouco para completar o desafio.' : `${falta > 1 ? 'Faltam' : 'Falta'} ${falta} ${unidade(c, falta)} para completar o desafio.`) : 'Desafio completo. Parabéns!'}</p></div>`; }).join('');
       $('pontos-desafios').innerHTML = cursos.length > 1 ? cursos.map((_, i) => `<i class="${i ? '' : 'ativo'}"></i>`).join('') : '';
       contar();
     }
@@ -1843,9 +1950,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     addEventListener('hashchange', () => { detalhe.scrollTop = 0; mostrarDetalhe(); mostrarPaginaSecao(); mostrarCurso(); mostrarJanelaApp(); });
 
     // ---- Abas (menu de baixo) ----
-    function aba(qual, historico = true) {
+    function aba(qual, historico = true, fecharPagina = true) {
       secaoAtual = null;
-      if (/^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
+      if (fecharPagina && /^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.body.classList.toggle('rolar-topo', ['apps', 'cursos'].includes(qual));
       document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
@@ -1966,8 +2073,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const ca = t.closest('[data-curso-abrir]'); if (ca) { const c = cursos.find((x) => x.id === ca.dataset.cursoAbrir), f = progressoDe(c.id);
         const prox = c.aulas.findIndex((_, i) => !f.includes(i)); location.hash = `curso/${c.id}/${prox < 0 ? 0 : prox}`; return; }
       const au = t.closest('[data-aula]'); if (au) { location.replace('#curso/' + au.dataset.aula); return; }
+      const rsp = t.closest('[data-resposta]'); if (rsp) { const qz = rsp.closest('[data-quiz]'), [qid, qn] = qz.dataset.quiz.split('/'), qc = cursos.find((x) => x.id === qid), q = qc?.aulas[Number(qn)]?.pergunta; if (!q) return;
+        const msg = qz.querySelector('.quiz-msg');
+        if (Number(rsp.dataset.resposta) === q.certa) {
+          rsp.classList.add('certa'); qz.querySelectorAll('.quiz-op').forEach((b) => { b.disabled = true; }); msg.textContent = q.explica;
+          const bt = paginaCurso.querySelector('[data-concluir-aula]'); if (bt) { bt.disabled = false; bt.nextElementSibling?.matches('small') && bt.nextElementSibling.remove(); }
+        } else { rsp.classList.add('errada'); rsp.disabled = true; msg.textContent = 'Quase! Leia de novo e tente outra resposta.'; }
+        return; }
+      const gc = t.closest('[data-gerar-cert]'); if (gc) { gerarCertificado(gc.dataset.gerarCert); return; }
+      if (t.closest('[data-enviar-cert]') && certificadoBlob) { const arq = $('cert-saida').dataset.arquivo;
+        navigator.share({ files: [new File([certificadoBlob], arq, { type: 'image/png' })], title: 'Meu certificado LeuName', text: 'Concluí um curso na LeuApps!' }).catch(() => {}); return; }
       const ct = t.closest('[data-concluir-aula]'); if (ct) { const [id, n] = ct.dataset.concluirAula.split('/'), i = Number(n), c = cursos.find((x) => x.id === id);
         salvarProgresso(id, [...new Set([...progressoDe(id), i])]); mostrarCursos();
+        if (progressoDe(id).length >= c.aulas.length) dataConclusao(c);
         location.replace(i + 1 < c.aulas.length ? `#curso/${id}/${i + 1}` : `#curso/${id}/x/fim`); return; }
       const cc = t.closest('[data-comprar-curso]'); if (cc) { const c = cursos.find((x) => x.id === cc.dataset.comprarCurso);
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero o curso ${c.nome} (${c.preco}).`)}`, '_blank'); return; }
@@ -2148,7 +2266,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
       if (a === 'jogos') a = 'cursos';
-      aba(['cursos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : 'apps');
+      // Abriu por um link de página (#curso/..., #lista/...): a aba de fundo abre sem fechar essa página.
+      const pagina = /^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash);
+      aba(['cursos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : (pagina && location.hash.startsWith('#curso/') ? 'cursos' : 'apps'), true, !pagina);
     }).catch(() => { $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
     conta();
 

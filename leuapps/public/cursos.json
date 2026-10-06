@@ -3,40 +3,347 @@
     "id": "preco-certo",
     "nome": "Preço certo: quanto cobrar pelo que você vende",
     "nomeCurto": "Preço certo",
-    "resumo": "Aprenda a calcular custo, preço de venda e lucro de doces, salgados e marmitas, sem chute.",
+    "resumo": "Aprenda, em 20 módulos curtos, a calcular custo, preço de venda e lucro de doces, salgados e marmitas, sem chute. No final, receba o seu certificado.",
     "icone": "/img/cursos/preco-certo.webp",
-    "destaque": { "imagem": "/img/cursos/preco-certo-capa.webp", "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo" },
-    "categorias": ["Grátis", "Em alta", "Vendas", "Culinária", "Finanças", "Empreender"],
+    "destaque": {
+      "imagem": "/img/cursos/preco-certo-capa.webp",
+      "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo"
+    },
+    "categorias": [
+      "Grátis",
+      "Em alta",
+      "Vendas",
+      "Culinária",
+      "Finanças",
+      "Empreender"
+    ],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "app": "quantocobrar",
     "aulas": [
       {
+        "parte": "Primeiros passos",
         "titulo": "Por que tanta gente vende muito e não lucra",
-        "minutos": 4,
-        "texto": "<p>Muita gente que vende doces, salgados ou marmitas trabalha a semana inteira, vende tudo e, no fim do mês, não sobra dinheiro. Quase sempre o motivo é o mesmo: <b>o preço foi definido no chute</b>.</p><p>Os erros mais comuns são:</p><ul><li><b>Copiar o preço do concorrente</b> sem saber se ele está lucrando.</li><li><b>Contar só os ingredientes principais</b> e esquecer embalagem, gás, energia e o próprio tempo.</li><li><b>Achar que o dinheiro que entrou é lucro</b>, quando boa parte dele só está pagando os custos.</li></ul><p>Neste curso você vai aprender um jeito simples de fazer a conta: primeiro o custo de cada receita, depois os custos escondidos e, por fim, a margem de lucro.</p><p class=\"dica\">Tarefa da aula: anote três produtos que você vende hoje e o preço que você cobra. Vamos usar essa lista nas próximas aulas.</p>"
-      },
-      {
-        "titulo": "Custo dos ingredientes: a conta por receita",
         "minutos": 6,
-        "texto": "<p>O primeiro passo é saber <b>quanto custa fazer uma receita inteira</b>. Para isso, calcule quanto custa cada ingrediente na quantidade que você usa.</p><p><b>A conta é:</b> preço do pacote ÷ quantidade do pacote × quantidade usada.</p><p><b>Exemplo (brigadeiro):</b></p><ul><li>Leite condensado: lata de 395 g por R$ 7,00 → usa 1 lata = <b>R$ 7,00</b></li><li>Chocolate em pó: 200 g por R$ 9,00 → usa 40 g = 9 ÷ 200 × 40 = <b>R$ 1,80</b></li><li>Manteiga: 200 g por R$ 10,00 → usa 20 g = <b>R$ 1,00</b></li><li>Granulado: 500 g por R$ 12,00 → usa 100 g = <b>R$ 2,40</b></li></ul><p>Total da receita: <b>R$ 12,20</b>. Se a receita rende 25 brigadeiros, cada um custa <b>R$ 0,49</b> só de ingredientes.</p><p class=\"dica\">Tarefa da aula: faça essa conta para um dos três produtos que você anotou.</p>"
+        "texto": "<p>Muita gente que vende doces, salgados ou marmitas trabalha a semana inteira, vende tudo e, no fim do mês, não sobra dinheiro. Quase sempre o motivo é o mesmo: <b>o preço foi definido no chute</b>.</p><p>Os erros mais comuns:</p><ul><li><b>Copiar o preço do concorrente</b> sem saber se ele está lucrando.</li><li><b>Contar só os ingredientes principais</b> e esquecer embalagem, gás, energia e o próprio tempo.</li><li><b>Achar que o dinheiro que entrou é lucro</b>, quando boa parte dele só está pagando os custos.</li></ul><p>Neste curso você vai seguir um caminho simples, em 4 partes:</p><ol><li><b>Primeiros passos:</b> as palavras do negócio e como medir as receitas.</li><li><b>Descobrindo o custo:</b> ingredientes, embalagem, gás e o seu tempo.</li><li><b>Chegando no preço:</b> margem de lucro, taxas e promoções.</li><li><b>Vendendo com lucro:</b> encomendas, reajustes e controle do mês.</li></ol><p>No final, você recebe o seu <b>certificado de conclusão</b> da LeuName Softwares.</p><p class=\"dica\">Tarefa: anote três produtos que você vende hoje e o preço que cobra. Vamos usar essa lista no curso inteiro.</p>",
+        "pergunta": {
+          "texto": "Qual é o erro que mais faz quem vende muito ficar sem lucro?",
+          "opcoes": [
+            "Vender pouco",
+            "Definir o preço no chute",
+            "Ter muitos clientes"
+          ],
+          "certa": 1,
+          "explica": "Isso! Sem saber o custo de verdade, dá para vender tudo e ainda assim perder dinheiro."
+        }
       },
       {
-        "titulo": "Custos escondidos: embalagem, gás, energia e o seu tempo",
+        "parte": "Primeiros passos",
+        "titulo": "Faturamento, custo e lucro: as três palavras do negócio",
+        "minutos": 6,
+        "texto": "<p>Antes de qualquer conta, vale separar três palavras que muita gente mistura:</p><ul><li><b>Faturamento:</b> todo o dinheiro que entrou com as vendas.</li><li><b>Custo:</b> tudo o que você gastou para produzir e vender.</li><li><b>Lucro:</b> o que sobra depois de pagar todos os custos.</li></ul><p><b>Exemplo:</b> no mês, você vendeu R$ 3.000 em marmitas. Gastou R$ 2.100 com ingredientes, embalagens, gás e entrega.</p><p>Faturamento: R$ 3.000. Custo: R$ 2.100. Lucro: 3.000 − 2.100 = <b>R$ 900</b>.</p><p>Repare: o dinheiro na mão parecia R$ 3.000, mas o que era seu de verdade eram R$ 900. Quem gasta os R$ 3.000 como se fossem lucro fica sem dinheiro para comprar os ingredientes do mês seguinte.</p><p class=\"dica\">Regra de ouro: dinheiro que entrou não é lucro. Primeiro paga os custos, depois vê o que sobra.</p>",
+        "pergunta": {
+          "texto": "Você vendeu R$ 2.000 e gastou R$ 1.400 para produzir. Qual foi o lucro?",
+          "opcoes": [
+            "R$ 2.000",
+            "R$ 1.400",
+            "R$ 600"
+          ],
+          "certa": 2,
+          "explica": "Certo! Lucro = faturamento − custo: 2.000 − 1.400 = R$ 600."
+        }
+      },
+      {
+        "parte": "Primeiros passos",
+        "titulo": "Organize as compras: notas, preços e um caderno",
+        "minutos": 6,
+        "texto": "<p>Para calcular o preço certo, você precisa saber <b>quanto pagou em cada coisa</b>. Por isso, o primeiro hábito é guardar os preços das compras.</p><ul><li><b>Guarde as notas</b> do mercado e do atacado (ou tire uma foto delas).</li><li><b>Anote o tamanho do pacote:</b> não basta saber que o chocolate custou R$ 9,00; é preciso saber que eram 200 g.</li><li><b>Use sempre o preço mais recente.</b> Se o leite condensado subiu, a conta muda.</li><li><b>Compre no atacado</b> o que você usa muito: o preço por quilo costuma ser bem menor.</li></ul><p><b>Modelo de anotação:</b> Chocolate em pó · pacote de 200 g · R$ 9,00 · comprado no dia 05/10.</p><p>Com essa lista em mãos, as próximas contas ficam fáceis.</p><p class=\"dica\">Tarefa: anote o preço e o tamanho do pacote de todos os ingredientes de um dos seus produtos.</p>",
+        "pergunta": {
+          "texto": "O que você precisa anotar além do preço do ingrediente?",
+          "opcoes": [
+            "O tamanho do pacote",
+            "A cor da embalagem",
+            "O nome do caixa"
+          ],
+          "certa": 0,
+          "explica": "Exato! Sem o tamanho do pacote (gramas ou ml) não dá para saber quanto custa a quantidade que você usa."
+        }
+      },
+      {
+        "parte": "Primeiros passos",
+        "titulo": "Medidas de cozinha: grama, mililitro, xícara e colher",
+        "minutos": 6,
+        "texto": "<p>Receita boa para vender é <b>receita medida</b>. Se cada dia você coloca uma quantidade diferente, o custo e o sabor mudam.</p><p>Medidas aproximadas que ajudam:</p><ul><li>1 xícara de farinha de trigo ≈ <b>120 g</b></li><li>1 xícara de açúcar ≈ <b>180 g</b></li><li>1 xícara de leite ou água ≈ <b>240 ml</b></li><li>1 colher de sopa ≈ <b>15 ml</b> · 1 colher de chá ≈ <b>5 ml</b></li></ul><p>Essas medidas variam um pouco de xícara para xícara. Por isso, o melhor investimento de quem vende comida é uma <b>balança de cozinha</b>: ela custa pouco e acaba com o chute.</p><p>Com tudo em gramas e mililitros, a conta do custo fica exata, e o seu produto sai sempre igual, que é o que faz o cliente voltar.</p><p class=\"dica\">Tarefa: pese uma vez os ingredientes da sua receita principal e anote tudo em gramas.</p>",
+        "pergunta": {
+          "texto": "Qual é o jeito mais seguro de medir os ingredientes para calcular o custo?",
+          "opcoes": [
+            "No olho",
+            "Com balança de cozinha",
+            "Com qualquer copo"
+          ],
+          "certa": 1,
+          "explica": "Isso! Com a balança, a receita sai sempre igual e o custo fica certo."
+        }
+      },
+      {
+        "parte": "Primeiros passos",
+        "titulo": "Rendimento: quantas unidades a receita faz de verdade",
+        "minutos": 6,
+        "texto": "<p>O <b>rendimento</b> é quantas unidades (ou porções) uma receita faz. Ele é tão importante quanto o preço dos ingredientes, porque o custo da receita é dividido por ele.</p><p><b>Exemplo (coxinha):</b> a massa e o recheio pesam juntos 1.500 g. Se cada coxinha leva 30 g, a receita rende 1.500 ÷ 30 = <b>50 coxinhas</b>.</p><p>Mas atenção às <b>perdas</b>: uma ou outra quebra na fritura, outras ficam feias para vender, e sempre tem a que você prova. Se de 50 sobram 46 boas, o rendimento real é <b>46</b>.</p><p>Por que isso importa? Se a receita custa R$ 46,00:</p><ul><li>Dividindo por 50 → R$ 0,92 cada (conta errada).</li><li>Dividindo por 46 → <b>R$ 1,00 cada</b> (conta certa).</li></ul><p class=\"dica\">Tarefa: na próxima vez que fizer a receita, conte quantas unidades boas para vender ela rendeu.</p>",
+        "pergunta": {
+          "texto": "Uma receita fez 40 unidades, mas 4 quebraram. Qual rendimento usar na conta?",
+          "opcoes": [
+            "40",
+            "36",
+            "44"
+          ],
+          "certa": 1,
+          "explica": "Certo! Só contam as unidades que você consegue vender: 40 − 4 = 36."
+        }
+      },
+      {
+        "parte": "Descobrindo o custo",
+        "titulo": "Custo dos ingredientes: a conta por receita",
+        "minutos": 7,
+        "texto": "<p>Agora sim: vamos descobrir <b>quanto custa fazer uma receita inteira</b>.</p><p><b>A conta de cada ingrediente é:</b> preço do pacote ÷ quantidade do pacote × quantidade usada.</p><p><b>Exemplo (brigadeiro):</b></p><ul><li>Leite condensado: lata de 395 g por R$ 7,00 → usa 1 lata = <b>R$ 7,00</b></li><li>Chocolate em pó: 200 g por R$ 9,00 → usa 40 g = 9 ÷ 200 × 40 = <b>R$ 1,80</b></li><li>Manteiga: 200 g por R$ 10,00 → usa 20 g = <b>R$ 1,00</b></li><li>Granulado: 500 g por R$ 12,00 → usa 100 g = <b>R$ 2,40</b></li></ul><p>Total da receita: 7,00 + 1,80 + 1,00 + 2,40 = <b>R$ 12,20</b>.</p><p>Vamos acompanhar esse brigadeiro até o fim do curso, somando cada custo, até chegar no preço certo.</p><p class=\"dica\">Tarefa: faça essa conta para um dos três produtos que você anotou no primeiro módulo.</p>",
+        "pergunta": {
+          "texto": "Um pacote de 1 kg (1.000 g) de farinha custa R$ 6,00. Quanto custam 250 g?",
+          "opcoes": [
+            "R$ 1,50",
+            "R$ 2,50",
+            "R$ 6,00"
+          ],
+          "certa": 0,
+          "explica": "Isso! 6 ÷ 1.000 × 250 = R$ 1,50."
+        }
+      },
+      {
+        "parte": "Descobrindo o custo",
+        "titulo": "Custo por unidade e por porção",
         "minutos": 5,
-        "texto": "<p>Os ingredientes não são o único custo. Os <b>custos escondidos</b> são os que mais derrubam o lucro:</p><ul><li><b>Embalagem:</b> forminha, caixinha, sacola, etiqueta, guardanapo.</li><li><b>Gás e energia:</b> uma forma simples é somar 10% em cima do custo dos ingredientes.</li><li><b>Entrega:</b> combustível ou taxa do motoboy, quando você não cobra à parte.</li><li><b>O seu tempo:</b> se você levou 2 horas e quer ganhar R$ 15 por hora, são R$ 30 que precisam estar no preço.</li></ul><p><b>Continuando o exemplo:</b> 25 forminhas (R$ 3,00) + gás e energia (10% de R$ 12,20 = R$ 1,22) + 1 hora do seu trabalho (R$ 15,00).</p><p>Custo total: 12,20 + 3,00 + 1,22 + 15,00 = <b>R$ 31,42</b> → cada brigadeiro custa <b>R$ 1,26</b>.</p><p class=\"dica\">Repare: o custo real é mais que o dobro do custo só de ingredientes.</p>"
+        "texto": "<p>Com o custo da receita e o rendimento, você descobre o <b>custo de cada unidade</b>:</p><p><b>custo por unidade = custo da receita ÷ rendimento</b></p><ul><li><b>Brigadeiro:</b> receita de R$ 12,20 que rende 25 → 12,20 ÷ 25 = <b>R$ 0,49</b> cada (só ingredientes).</li><li><b>Bolo em fatias:</b> bolo de R$ 24,00 cortado em 16 fatias → <b>R$ 1,50</b> por fatia.</li><li><b>Marmita:</b> panelas que custaram R$ 48,00 e servem 12 marmitas → <b>R$ 4,00</b> por marmita.</li></ul><p>Esse ainda não é o custo final: faltam a embalagem, o gás e o seu tempo. Mas já é a base de tudo.</p><p class=\"dica\">Dica: se você vende o mesmo produto em tamanhos diferentes (fatia, metade, bolo inteiro), calcule o custo de cada tamanho separado.</p>",
+        "pergunta": {
+          "texto": "Uma receita custa R$ 30,00 e rende 20 unidades. Qual o custo de cada uma?",
+          "opcoes": [
+            "R$ 1,50",
+            "R$ 3,00",
+            "R$ 0,60"
+          ],
+          "certa": 0,
+          "explica": "Certo! 30 ÷ 20 = R$ 1,50 por unidade."
+        }
       },
       {
-        "titulo": "Margem de lucro: chegando no preço de venda",
+        "parte": "Descobrindo o custo",
+        "titulo": "Embalagem e acabamento",
+        "minutos": 6,
+        "texto": "<p>A embalagem é um custo que quase todo mundo esquece, e ela pesa: às vezes custa mais que o recheio!</p><p>Conte tudo o que vai junto com o produto:</p><ul><li>Forminha, pote, marmitex, caixa, saquinho.</li><li>Fita, laço, etiqueta, adesivo com a sua marca.</li><li>Guardanapo, talher descartável, sacola.</li></ul><p><b>No nosso brigadeiro:</b> 25 forminhas a R$ 0,12 cada = <b>R$ 3,00</b> por receita.</p><p><b>Numa caixa de presente com 4 doces:</b> caixa R$ 1,50 + fita R$ 0,30 + etiqueta R$ 0,20 = <b>R$ 2,00</b> por caixa, que entram no preço da caixa.</p><p>Uma embalagem bonita ajuda a vender mais caro. Só não esqueça de colocá-la na conta.</p><p class=\"dica\">Tarefa: liste tudo o que vai na embalagem do seu produto e quanto custa cada item.</p>",
+        "pergunta": {
+          "texto": "A embalagem deve entrar no custo do produto?",
+          "opcoes": [
+            "Não, é um gasto à parte",
+            "Sim, sempre",
+            "Só em datas especiais"
+          ],
+          "certa": 1,
+          "explica": "Isso! Tudo o que vai junto com o produto faz parte do custo."
+        }
+      },
+      {
+        "parte": "Descobrindo o custo",
+        "titulo": "Gás e energia: um jeito simples de contar",
+        "minutos": 6,
+        "texto": "<p>Forno, fogão, batedeira e geladeira gastam gás e energia. Esse custo existe, mesmo que não apareça na nota do mercado.</p><p><b>Jeito simples:</b> some <b>10%</b> em cima do custo dos ingredientes. No brigadeiro: 10% de R$ 12,20 = <b>R$ 1,22</b>.</p><p><b>Jeito mais exato (para quem usa muito o forno):</b></p><ul><li>Um botijão de R$ 110 dura 25 dias de produção → 110 ÷ 25 = R$ 4,40 por dia.</li><li>Se você faz 4 receitas por dia → 4,40 ÷ 4 = <b>R$ 1,10</b> de gás por receita.</li></ul><p>Os dois jeitos funcionam. O importante é <b>não deixar de contar</b>.</p><p class=\"dica\">Tarefa: escolha um dos dois jeitos e calcule o gás e a energia da sua receita principal.</p>",
+        "pergunta": {
+          "texto": "A receita custa R$ 20,00 de ingredientes. Pela regra dos 10%, quanto somar de gás e energia?",
+          "opcoes": [
+            "R$ 0,20",
+            "R$ 2,00",
+            "R$ 10,00"
+          ],
+          "certa": 1,
+          "explica": "Certo! 10% de R$ 20,00 = R$ 2,00."
+        }
+      },
+      {
+        "parte": "Descobrindo o custo",
+        "titulo": "O valor do seu tempo",
+        "minutos": 6,
+        "texto": "<p>O seu trabalho também é um custo. Quem não coloca o próprio tempo no preço está trabalhando de graça.</p><p><b>Como calcular o valor da sua hora:</b></p><ul><li>Quanto você quer ganhar por mês? Exemplo: <b>R$ 2.400</b>.</li><li>Quantas horas trabalha no mês? Exemplo: 20 dias × 8 horas = <b>160 horas</b>.</li><li>Valor da hora: 2.400 ÷ 160 = <b>R$ 15 por hora</b>.</li></ul><p><b>No brigadeiro:</b> você leva 1 hora para fazer, enrolar e embalar a receita → <b>R$ 15,00</b>.</p><p><b>Somando tudo até aqui:</b> ingredientes R$ 12,20 + forminhas R$ 3,00 + gás R$ 1,22 + seu tempo R$ 15,00 = <b>R$ 31,42</b> por receita.</p><p>Dividindo por 25: cada brigadeiro custa <b>R$ 1,26</b>. Bem mais que os R$ 0,49 só de ingredientes!</p><p class=\"dica\">Tarefa: calcule o valor da sua hora e quanto tempo você leva em cada receita.</p>",
+        "pergunta": {
+          "texto": "Você quer ganhar R$ 1.800 por mês e trabalha 120 horas. Quanto vale a sua hora?",
+          "opcoes": [
+            "R$ 15",
+            "R$ 18",
+            "R$ 12"
+          ],
+          "certa": 0,
+          "explica": "Isso! 1.800 ÷ 120 = R$ 15 por hora."
+        }
+      },
+      {
+        "parte": "Chegando no preço",
+        "titulo": "Custos fixos do mês",
+        "minutos": 6,
+        "texto": "<p>Alguns custos chegam todo mês, vendendo muito ou pouco: são os <b>custos fixos</b>.</p><ul><li>Imposto do MEI (o DAS, cerca de R$ 80; confira o valor do ano).</li><li>Internet e telefone.</li><li>Uma parte do aluguel e da conta de água, se você produz em casa.</li><li>Manutenção de equipamentos.</li></ul><p><b>Exemplo:</b> MEI R$ 80 + internet R$ 100 + telefone R$ 50 + parte do aluguel R$ 300 = <b>R$ 530 por mês</b>.</p><p>Para colocar isso no preço, divida pelo que você vende no mês. Se vende uns 2.000 brigadeiros: 530 ÷ 2.000 = <b>R$ 0,27</b> por brigadeiro.</p><p><b>Custo completo do brigadeiro:</b> 1,26 + 0,27 = <b>R$ 1,53</b>.</p><p class=\"dica\">Tarefa: some os seus custos fixos do mês e divida pela quantidade que você vende.</p>",
+        "pergunta": {
+          "texto": "Por que se chamam custos fixos?",
+          "opcoes": [
+            "Porque nunca mudam de valor",
+            "Porque chegam todo mês, vendendo muito ou pouco",
+            "Porque só existem para empresas grandes"
+          ],
+          "certa": 1,
+          "explica": "Certo! Eles chegam todo mês, mesmo num mês fraco. Por isso precisam estar no preço."
+        }
+      },
+      {
+        "parte": "Chegando no preço",
+        "titulo": "Margem de lucro: o preço de venda",
+        "minutos": 7,
+        "texto": "<p>Agora que você sabe o custo completo, falta decidir <b>quanto quer ganhar</b> em cima dele. Isso é a margem de lucro.</p><p><b>A conta mais segura é:</b> preço de venda = custo ÷ (1 − margem).</p><p>Com margem de 40% (0,40): 1,53 ÷ 0,60 = <b>R$ 2,55</b> por brigadeiro.</p><p><b>Por que dividir e não só somar 40%?</b> Somando, ficaria 1,53 × 1,40 = R$ 2,14, e o lucro de verdade cairia para menos de 30% do preço. Dividindo, os 40% ficam calculados <b>sobre o preço de venda</b>, que é o que sobra de fato em cada venda.</p><ul><li><b>Margem baixa (até 20%):</b> qualquer imprevisto vira prejuízo.</li><li><b>Margem saudável (30% a 50%):</b> sobra para reinvestir e crescer.</li><li><b>Margem alta (acima de 60%):</b> funciona em produtos especiais, festas e encomendas.</li></ul><p class=\"dica\">Tarefa: calcule o preço de venda dos seus três produtos e compare com o que você cobra hoje.</p>",
+        "pergunta": {
+          "texto": "O custo é R$ 3,00 e você quer margem de 40%. Qual o preço de venda?",
+          "opcoes": [
+            "R$ 4,20",
+            "R$ 5,00",
+            "R$ 3,40"
+          ],
+          "certa": 1,
+          "explica": "Isso! 3,00 ÷ (1 − 0,40) = 3,00 ÷ 0,60 = R$ 5,00."
+        }
+      },
+      {
+        "parte": "Chegando no preço",
+        "titulo": "Taxas da maquininha, dos aplicativos e da entrega",
+        "minutos": 6,
+        "texto": "<p>Quando o cliente paga no cartão ou pede por aplicativo de entrega, uma parte do preço fica com eles. Essa <b>taxa</b> precisa entrar na conta.</p><ul><li><b>Maquininha:</b> débito costuma ficar entre 1% e 2%; crédito, entre 3% e 5%.</li><li><b>Aplicativos de entrega:</b> a comissão pode passar de 25%, dependendo do plano.</li></ul><p><b>A conta com taxa:</b> preço = custo ÷ (1 − margem − taxa).</p><ul><li>No crédito (5%): 1,53 ÷ (1 − 0,40 − 0,05) = 1,53 ÷ 0,55 = <b>R$ 2,78</b></li><li>No aplicativo (27%): 1,53 ÷ (1 − 0,40 − 0,27) = 1,53 ÷ 0,33 = <b>R$ 4,64</b></li></ul><p>É por isso que o mesmo produto costuma ser mais caro no aplicativo: se você cobrar lá o mesmo preço do balcão, a comissão come o seu lucro.</p><p class=\"dica\">Dica: muita gente cobra um preço no Pix ou dinheiro e outro no cartão ou no aplicativo. Deixe isso claro para o cliente.</p>",
+        "pergunta": {
+          "texto": "Se você vende no aplicativo pelo mesmo preço do balcão, o que acontece?",
+          "opcoes": [
+            "O lucro aumenta",
+            "A comissão sai do seu lucro",
+            "Nada muda"
+          ],
+          "certa": 1,
+          "explica": "Exato! A comissão sai do seu bolso. Por isso o preço no aplicativo precisa ser maior."
+        }
+      },
+      {
+        "parte": "Chegando no preço",
+        "titulo": "Olhando a concorrência sem copiar o preço",
         "minutos": 5,
-        "texto": "<p>Agora que você sabe o custo, falta decidir <b>quanto quer ganhar</b> em cima dele. Isso é a margem de lucro.</p><p><b>A conta mais segura é:</b> preço de venda = custo ÷ (1 − margem).</p><p>Com margem de 40% (0,40): 1,26 ÷ 0,60 = <b>R$ 2,10</b> por brigadeiro.</p><p>Por que dividir e não só somar 40%? Porque assim os 40% ficam calculados <b>sobre o preço de venda</b>, e é isso que sobra de verdade para você em cada venda.</p><ul><li><b>Margem baixa (até 20%):</b> qualquer imprevisto vira prejuízo.</li><li><b>Margem saudável (30% a 50%):</b> sobra para reinvestir e para você.</li><li><b>Margem alta (acima de 60%):</b> funciona em produtos especiais, festas e encomendas.</li></ul><p class=\"dica\">Tarefa da aula: calcule o preço de venda dos seus três produtos e compare com o que você cobra hoje.</p>"
+        "texto": "<p>Olhar a concorrência é importante, mas o preço do outro <b>não é a sua conta</b>. Ele pode estar com custo diferente, ou pode estar no prejuízo sem saber.</p><p><b>Como pesquisar do jeito certo:</b></p><ul><li>Veja o preço de uns 5 concorrentes parecidos com você.</li><li>Compare também tamanho, qualidade, embalagem e atendimento.</li><li>Compare com o <b>seu</b> preço calculado.</li></ul><p><b>Se o seu preço ficou acima:</b> mostre o porquê (ingrediente melhor, tamanho maior, embalagem caprichada, entrega rápida). Cliente paga mais quando enxerga valor.</p><p><b>Se ficou bem abaixo:</b> confira se não esqueceu algum custo. Se a conta estiver certa, talvez dê para cobrar um pouco mais.</p><p class=\"dica\">Tarefa: pesquise o preço de 5 concorrentes para o seu produto principal.</p>",
+        "pergunta": {
+          "texto": "O seu preço calculado ficou acima do concorrente. O que fazer?",
+          "opcoes": [
+            "Baixar até ficar igual, mesmo com prejuízo",
+            "Mostrar o valor do seu produto",
+            "Parar de vender"
+          ],
+          "certa": 1,
+          "explica": "Certo! Mostre o que o seu produto tem de melhor. Vender abaixo do custo nunca é solução."
+        }
       },
       {
-        "titulo": "Na prática: o app faz a conta por você",
-        "minutos": 3,
-        "texto": "<p>Fazer essas contas no papel funciona, mas dá trabalho, e os preços dos ingredientes mudam toda semana.</p><p>O <b>Quanto Cobrar</b>, da LeuName, faz tudo isso sozinho:</p><ul><li>Você cadastra os ingredientes com o preço que pagou.</li><li>Monta a receita e ele calcula o custo de cada unidade.</li><li>Soma embalagem, gás e o seu tempo.</li><li>Mostra o preço de venda com a margem que você escolher.</li><li>Quando um ingrediente sobe, todas as receitas são recalculadas.</li></ul><p>Ele também tem um livro de receitas com foto e preço sugerido para você começar.</p><p class=\"dica\">Parabéns, você terminou o curso! Agora você sabe calcular o preço certo de qualquer produto.</p>"
+        "parte": "Chegando no preço",
+        "titulo": "Promoção, desconto e combo sem prejuízo",
+        "minutos": 6,
+        "texto": "<p>Promoção atrai cliente, mas desconto sai direto do lucro. Antes de anunciar, faça a conta.</p><p><b>Exemplo:</b> brigadeiro a R$ 2,60 (os R$ 2,55 arredondados), custo R$ 1,53 → lucro de R$ 1,07 por unidade.</p><p>Com 10% de desconto, ele sai por R$ 2,34 → o lucro cai para R$ 0,81. Para ganhar o mesmo de antes, você precisaria vender uns <b>32% a mais</b>.</p><p><b>Jeitos melhores de fazer promoção:</b></p><ul><li><b>Combo:</b> 4 brigadeiros por R$ 9,50 (em vez de R$ 10,40). O cliente economiza e você vende mais de uma vez só.</li><li><b>Brinde pequeno:</b> um docinho de presente numa compra maior custa menos que um desconto.</li><li><b>Promoção com prazo:</b> “só nesta sexta” evita que o cliente se acostume com o preço baixo.</li></ul><p class=\"dica\">Regra: nunca faça promoção que deixe o preço abaixo do custo.</p>",
+        "pergunta": {
+          "texto": "Qual promoção costuma proteger mais o lucro?",
+          "opcoes": [
+            "Desconto grande em tudo, sem prazo",
+            "Combo ou brinde pequeno",
+            "Vender abaixo do custo para atrair"
+          ],
+          "certa": 1,
+          "explica": "Isso! Combo e brinde aumentam a venda sem derrubar o lucro de cada unidade."
+        }
+      },
+      {
+        "parte": "Vendendo com lucro",
+        "titulo": "Preço para encomendas e festas",
+        "minutos": 6,
+        "texto": "<p>Encomenda é ótima: você sabe quanto vai vender antes de produzir. Mas ela tem custos próprios.</p><p><b>Cento de brigadeiros:</b> 100 × R$ 1,53 = R$ 153,00 de custo. Com margem de 40%: 153 ÷ 0,60 = <b>R$ 255,00 o cento</b>.</p><p>Some o que é só da encomenda:</p><ul><li>Caixas, bandejas ou embalagens especiais.</li><li>Entrega no endereço da festa.</li><li>Tempo de conversa, ajustes e decoração.</li></ul><p><b>Boas práticas:</b></p><ul><li>Peça um <b>sinal de 50%</b> para confirmar a encomenda.</li><li>Combine data, horário e quantidade por escrito (no WhatsApp mesmo).</li><li>Monte <b>kits</b> (doces + salgados + bolo) com preço fechado: fica mais fácil para o cliente escolher.</li></ul><p class=\"dica\">Tarefa: calcule o preço do cento do seu produto mais pedido.</p>",
+        "pergunta": {
+          "texto": "Por que pedir sinal numa encomenda?",
+          "opcoes": [
+            "Para garantir que o cliente vai buscar",
+            "Porque é proibido não pedir",
+            "Para cobrar mais caro"
+          ],
+          "certa": 0,
+          "explica": "Certo! O sinal protege você: os ingredientes já foram comprados quando o cliente confirma."
+        }
+      },
+      {
+        "parte": "Vendendo com lucro",
+        "titulo": "Quando o ingrediente sobe: reajuste sem perder cliente",
+        "minutos": 6,
+        "texto": "<p>Os preços dos ingredientes mudam o tempo todo. Se você não reajusta, o lucro vai sumindo devagar, sem você perceber.</p><p><b>Exemplo:</b> o leite condensado subiu de R$ 7,00 para R$ 9,00. A receita de brigadeiro passa de R$ 12,20 para R$ 14,20, ou seja, <b>R$ 0,08 a mais</b> por brigadeiro.</p><p>O custo completo vai de R$ 1,53 para R$ 1,61, e o preço com margem de 40% vai de R$ 2,55 para <b>R$ 2,68</b>.</p><p><b>Como reajustar sem perder cliente:</b></p><ul><li>Prefira <b>reajustes pequenos e frequentes</b> a um aumento grande de uma vez.</li><li>Avise antes: “a partir do dia 1º, o cento passa a ser…”.</li><li>Revise todos os preços pelo menos a cada 3 meses.</li></ul><p class=\"dica\">Tarefa: confira hoje o preço dos três ingredientes mais caros que você usa.</p>",
+        "pergunta": {
+          "texto": "Qual o jeito mais tranquilo de reajustar preços?",
+          "opcoes": [
+            "Aumentos pequenos e avisados",
+            "Nunca reajustar",
+            "Um aumento grande sem avisar"
+          ],
+          "certa": 0,
+          "explica": "Isso! Reajuste pequeno, com aviso, o cliente entende e continua comprando."
+        }
+      },
+      {
+        "parte": "Vendendo com lucro",
+        "titulo": "Separe o dinheiro da casa do dinheiro do negócio",
+        "minutos": 6,
+        "texto": "<p>Um dos maiores motivos de quem vende comida “não ver o dinheiro” é misturar o dinheiro da casa com o do negócio.</p><p><b>Como separar:</b></p><ul><li>Tenha uma <b>conta só para o negócio</b> (muitos bancos digitais abrem de graça).</li><li>Todo dinheiro das vendas entra nela; as compras de ingredientes saem dela.</li><li>Pague a você mesmo um <b>salário fixo</b> (o pró-labore), aquele valor da sua hora que já está no preço.</li><li>Guarde uma parte do lucro (por exemplo, 10%) como <b>reserva</b> para emergências e equipamentos.</li></ul><p>Assim, quando a batedeira quebrar ou vier um mês fraco, o negócio continua de pé.</p><p class=\"dica\">Tarefa: decida qual será o seu salário fixo do mês e quanto vai guardar de reserva.</p>",
+        "pergunta": {
+          "texto": "O que é o pró-labore?",
+          "opcoes": [
+            "Um imposto",
+            "O salário fixo que você paga a si mesmo",
+            "Um tipo de empréstimo"
+          ],
+          "certa": 1,
+          "explica": "Certo! É o seu salário, separado do lucro do negócio."
+        }
+      },
+      {
+        "parte": "Vendendo com lucro",
+        "titulo": "Controle de vendas e o lucro do mês",
+        "minutos": 6,
+        "texto": "<p>Fechou o mês? Hora de ver se o preço está funcionando. Para isso, anote as vendas todo dia: um caderno ou o celular resolvem.</p><p><b>Conta do fim do mês:</b> vendas − compras − custos fixos = o que sobrou.</p><p><b>Exemplo:</b> vendas R$ 4.200 − compras de ingredientes e embalagens R$ 2.100 − custos fixos R$ 530 = <b>R$ 1.570</b>.</p><p>Esse valor é o seu salário mais o lucro do negócio. Se ficou abaixo do salário que você planejou, algo precisa mudar: preço, custo ou quantidade vendida.</p><p><b>Olhe também:</b></p><ul><li>Quais produtos vendem mais e quais dão mais lucro (nem sempre são os mesmos).</li><li>Quais dias da semana vendem mais.</li></ul><p class=\"dica\">Tarefa: comece hoje a anotar todas as vendas do dia.</p>",
+        "pergunta": {
+          "texto": "Vendas R$ 3.000, compras R$ 1.500 e custos fixos R$ 500. Quanto sobrou?",
+          "opcoes": [
+            "R$ 1.500",
+            "R$ 1.000",
+            "R$ 2.500"
+          ],
+          "certa": 1,
+          "explica": "Isso! 3.000 − 1.500 − 500 = R$ 1.000."
+        }
+      },
+      {
+        "parte": "Vendendo com lucro",
+        "titulo": "Na prática: o Quanto Cobrar faz a conta por você",
+        "minutos": 6,
+        "texto": "<p>Você aprendeu todas as contas: ingredientes, rendimento, embalagem, gás, tempo, custos fixos, margem e taxas. Fazer isso no papel funciona, mas dá trabalho, e os preços mudam toda semana.</p><p>O <b>Quanto Cobrar</b>, da LeuName, faz essas contas sozinho:</p><ul><li>Você cadastra os ingredientes com o preço que pagou.</li><li>Monta a receita e ele calcula o custo de cada unidade.</li><li>Soma embalagem, gás e o seu tempo.</li><li>Mostra o preço de venda com a margem que você escolher.</li><li>Quando um ingrediente sobe, ele recalcula as receitas.</li></ul><p>Ele também tem um livro de receitas com foto e preço sugerido para você começar. Dá para testar <b>2 dias grátis</b>.</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado.</p>",
+        "pergunta": {
+          "texto": "O que muda quando o preço de um ingrediente sobe?",
+          "opcoes": [
+            "Nada",
+            "O custo e o preço de venda",
+            "Só a embalagem"
+          ],
+          "certa": 1,
+          "explica": "Certo! Por isso vale ter as receitas num app que recalcula tudo na hora."
+        }
       }
-    ]
+    ],
+    "unidade": "módulos",
+    "certificado": true
   },
   {
     "id": "whatsapp-vendas",
@@ -44,8 +351,18 @@
     "nomeCurto": "Vendas no WhatsApp",
     "resumo": "Perfil que passa confiança, status que vende, mensagens que fecham pedido e clientes que voltam.",
     "icone": "/img/cursos/whatsapp-vendas.webp",
-    "destaque": { "imagem": "/img/cursos/whatsapp-vendas-capa.webp", "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia" },
-    "categorias": ["Grátis", "Em alta", "Vendas", "Marketing", "Atendimento", "Empreender"],
+    "destaque": {
+      "imagem": "/img/cursos/whatsapp-vendas-capa.webp",
+      "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia"
+    },
+    "categorias": [
+      "Grátis",
+      "Em alta",
+      "Vendas",
+      "Marketing",
+      "Atendimento",
+      "Empreender"
+    ],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "aulas": [
