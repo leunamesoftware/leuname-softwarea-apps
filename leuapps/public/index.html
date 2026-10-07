@@ -505,12 +505,12 @@
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
     .det-telas { margin-top: 22px; }
-    /* Telas do app: uma de cada vez (arrastou, passa para a próxima), com bolinhas embaixo */
-    .rolar.det-telas { gap: 0; padding: 6px 0 16px; margin: 0 -16px; scroll-snap-type: x mandatory; }
-    .det-telas .tela { flex: 0 0 100%; display: grid; place-items: center; scroll-snap-align: center; scroll-snap-stop: always; }
-    .det-telas img { height: 440px; max-height: 62vh; width: auto; max-width: 82%; object-fit: contain; border-radius: 18px; background: var(--cartao);
-      border: 1px solid rgba(20,10,50,.12); box-shadow: 0 8px 20px rgba(20,10,50,.16); }
-    .pontos-telas { display: flex; justify-content: center; gap: 7px; margin-top: -4px; }
+    /* Telas do app como na Play: duas e um pedaço da próxima, lado a lado */
+    .rolar.det-telas { gap: 10px; padding: 6px 16px 14px; margin: 0 -16px; scroll-snap-type: x mandatory; }
+    .det-telas .tela { flex: 0 0 auto; scroll-snap-align: start; }
+    .det-telas img { display: block; height: min(330px, 50vh); width: auto; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 16px; background: var(--cartao);
+      box-shadow: 0 4px 12px rgba(20,10,50,.14); }
+    .pontos-telas { display: none; }
     .pontos-telas i { width: 7px; height: 7px; border-radius: 50%; background: rgba(20,10,50,.18); transition: width .2s, background .2s; }
     .pontos-telas i.ativo { width: 20px; border-radius: 999px; background: var(--verde); }
     .detalhe h2 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; }
@@ -1838,7 +1838,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           ${a.planos && situacao(a) === 'nao' && !(a.id in baixando) ? `<button class="acao contorno det-planos-btn" data-comprar="${esc(a.id)}">Ver planos e preços</button>` : ''}
 `,
         telas: `
-          ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c, i) => `<div class="tela"><img src="${esc(c)}" alt="Tela ${i + 1} do ${esc(a.nome)}" loading="lazy" width="248" height="440"></div>`).join('')}</div>
+          ${a.capturas ? `<div class="rolar det-telas">${a.capturas.map((c, i) => `<div class="tela"><img src="${esc(c)}" alt="Tela ${i + 1} do ${esc(a.nome)}" loading="lazy" width="186" height="330"></div>`).join('')}</div>
           <div class="pontos-telas" aria-hidden="true">${a.capturas.map((c, i) => `<i${i ? '' : ' class="ativo"'}></i>`).join('')}</div>` : ''}
 `,
         sobre: `
