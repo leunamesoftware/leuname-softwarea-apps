@@ -1133,7 +1133,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const andamento = cursos.filter((c) => { const f = progressoDe(c.id).length; return f && f < c.aulas.length; });
       $('continuar-cursos').hidden = !andamento.length; $('lista-continuar').innerHTML = andamento.map(linhaCurso).join('');
       $('lista-cursos').innerHTML = cursos.map(linhaCurso).join('') || '<li class="vazio-linha">Em breve: novos cursos da LeuName.</li>';
-      $('vitrines-cursos').innerHTML = SECOES_CURSOS.map(([titulo, cat, modo]) => { const l = cursosDe(cat); if (!l.length && !souDono) return '';
+      // Cada curso aparece uma vez só: as seções de baixo mostram só os que ainda não apareceram em cima.
+      const mostrados = new Set(cursos.map((c) => c.id));
+      $('vitrines-cursos').innerHTML = SECOES_CURSOS.map(([titulo, cat, modo]) => { const todosDaSecao = cursosDe(cat), l = todosDaSecao.filter((c) => !mostrados.has(c.id));
+        l.forEach((c) => mostrados.add(c.id)); if (!l.length && (!souDono || todosDaSecao.length)) return '';
         return `<div class="secao"><div class="secao-titulo"><h2>${esc(titulo)}</h2><button class="seta" type="button" data-secao="cursos:${esc(cat)}" aria-label="Ver ${esc(titulo)}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
           <ul class="lista">${l.map(linhaCurso).join('') || `<li class="vazio-linha falta"><b>Falta colocar</b>Só você vê este espaço: ${cat === 'Pagos' ? 'cursos pagos' : 'cursos de ' + esc(cat)}.</li>`}</ul></div>`; }).join('');
     }
