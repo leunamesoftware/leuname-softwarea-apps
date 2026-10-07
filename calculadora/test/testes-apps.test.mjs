@@ -45,3 +45,14 @@ test('mensal vencido some; pagamento único vale para sempre e ganha do teste', 
   assert.equal(apps.radar, undefined);
   assert.deepEqual(apps.gestacell, { chave: 'LEU-GGGG-HHHH-JJJJ', plano: 'gestacell', expiraEm: null });
 });
+
+test('ConstruGestão: teste grátis de 7 dias e planos mensal, anual e para sempre', async () => {
+  const { env } = banco();
+  const t = await comecarTeste(env, 'c3', 'construgestao');
+  assert.equal(t.acabou, false);
+  assert.equal(Math.round((new Date(t.expiraEm) - new Date(t.inicio)) / 864e5), 7);
+  assert.deepEqual((await appsDaConta(env, 'c3', 'c@x.com')).construgestao, { teste: true, expiraEm: t.expiraEm });
+  const { PLANOS } = await import('../src/planos.js');
+  assert.deepEqual([PLANOS.construgestao_mensal.preco, PLANOS.construgestao_anual.preco, PLANOS.construgestao.preco], [19.9, 39.9, 49.9]);
+  assert.equal(PLANOS.construgestao.licenca, 'construgestao');
+});

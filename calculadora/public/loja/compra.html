@@ -22,7 +22,7 @@
     <p class="rodape"><a href="/">← Voltar à loja</a><br>Dúvidas: <a href="mailto:suporte@leunamesoftware.com.br">suporte@leunamesoftware.com.br</a></p>
   </main>
   <script>
-    const APPS = { gestacell: { nome: 'Gestacell', url: '/gestacell/' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br' } };
+    const APPS = { gestacell: { nome: 'Gestacell', url: '/gestacell/' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br' }, construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br' } };
     const q = new URLSearchParams(location.search);
     let guardado = ''; try { guardado = JSON.parse(localStorage.getItem('loja.pedido') || '""'); } catch {}
     const pedido = q.get('p') || guardado || '';

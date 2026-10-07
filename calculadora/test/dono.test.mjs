@@ -35,9 +35,9 @@ test('cliente sem compra continua bloqueado depois do teste grátis', async () =
 test('dono: licença de cada app criada uma vez e reaproveitada', async () => {
   const env = bancos({ email: 'leunamesoftware@gmail.com' });
   const a1 = await appsDaConta(env, 'c1', 'LeunameSoftware@gmail.com');
-  assert.deepEqual(Object.keys(a1).sort(), ['gestacell', 'radar']);
+  assert.deepEqual(Object.keys(a1).sort(), ['construgestao', 'gestacell', 'radar']);
   assert.match(a1.gestacell.chave, /^LEU-/);
   const a2 = await appsDaConta(env, 'c1', 'leunamesoftware@gmail.com');
   assert.equal(a2.gestacell.chave, a1.gestacell.chave);
-  assert.equal(env.inseridas.length, 2);
+  assert.equal(env.inseridas.length, 3);
 });
