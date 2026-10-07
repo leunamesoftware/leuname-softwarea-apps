@@ -2220,18 +2220,45 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     addEventListener('scroll', naCapa, { passive: true });
 
-    // ---- Destaques: bolinhas e passam sozinhos (param quando a pessoa mexe) ----
-    let mexeu = false;
-    const caixa = $('destaques');
+    // ---- Banners e telas passam sozinhos, devagar, um por um ----
+    // Param enquanto a pessoa mexe e voltam a passar uns segundos depois. Só passam quando estão na tela.
     function bolinhas() {}
-    caixa.addEventListener('touchstart', () => { mexeu = true; }, { passive: true });
+    const PASSAM = [['#destaques', 5000], ['#dest-cursos', 5000], ['.det-telas', 4000], ['.telas-fileira', 3500]];
+    const mexidoEm = new WeakMap(), passouEm = new WeakMap();
+    for (const ev of ['touchstart', 'pointerdown', 'wheel']) addEventListener(ev, (e) => {
+      const c = e.target.closest && e.target.closest('.rolar'); if (c) mexidoEm.set(c, Date.now());
+    }, { passive: true, capture: true });
+    function deslizar(c, x) {
+      const de = c.scrollLeft, dist = x - de; if (Math.abs(dist) < 2) return;
+      c.style.scrollSnapType = 'none'; const t0 = performance.now(), dur = 1200;
+      const passo = (t) => {
+        const k = Math.min(1, (t - t0) / dur), e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+        c.scrollLeft = de + dist * e;
+        if (k < 1) requestAnimationFrame(passo); else c.style.scrollSnapType = '';
+      };
+      requestAnimationFrame(passo);
+    }
+    function proximo(c) {
+      const itens = [...c.children].filter((el) => el.offsetWidth), max = c.scrollWidth - c.clientWidth;
+      if (itens.length < 2 || max < 4) return;
+      const cr = c.getBoundingClientRect(), pad = parseFloat(getComputedStyle(c).scrollPaddingLeft) || 0;
+      const alvo = (el) => { const r = el.getBoundingClientRect(), x = r.left - cr.left + c.scrollLeft;
+        return Math.max(0, Math.min(max, getComputedStyle(el).scrollSnapAlign.includes('center') ? x + r.width / 2 - c.clientWidth / 2 : x - pad)); };
+      const xs = itens.map(alvo), agora = xs.reduce((m, x, i) => (Math.abs(x - c.scrollLeft) < Math.abs(xs[m] - c.scrollLeft) ? i : m), 0);
+      let i = agora + 1; while (i < xs.length && xs[i] <= xs[agora] + 2) i++;
+      deslizar(c, i < xs.length ? xs[i] : 0);
+    }
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => {
-      if (mexeu || $('aba-apps').hidden || !detalhe.hidden || !caixa.children.length) return;
-      const itens = [...caixa.children], meio = caixa.scrollLeft + caixa.clientWidth / 2;
-      const agora = itens.reduce((m, el, i) => Math.abs(el.offsetLeft + el.offsetWidth / 2 - meio) < Math.abs(itens[m].offsetLeft + itens[m].offsetWidth / 2 - meio) ? i : m, 0);
-      const el = itens[(agora + 1) % itens.length];
-      caixa.scrollTo({ left: el.offsetLeft - (caixa.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
-    }, 5000);
+      if (document.visibilityState !== 'visible') return;
+      const agora = Date.now();
+      for (const [sel, cada] of PASSAM) for (const c of document.querySelectorAll(sel)) {
+        const r = c.getBoundingClientRect();
+        if (!r.width || r.bottom < 40 || r.top > innerHeight - 40) { passouEm.delete(c); continue; } // fora da tela: começa do zero quando aparecer
+        if (!passouEm.has(c)) { passouEm.set(c, agora); continue; }
+        if (agora - (mexidoEm.get(c) || 0) < 8000) { passouEm.set(c, agora); continue; }
+        if (agora - passouEm.get(c) >= cada) { passouEm.set(c, agora); proximo(c); }
+      }
+    }, 500);
 
     // ---- Você: nome e conta ----
     async function conta() {
