@@ -43,7 +43,7 @@
     {
       "name": "Gestacell",
       "short_name": "Gestacell",
-      "url": "/?origem=app&abrir=gestacell",
+      "url": "/gestacell/?leuapps=1",
       "icons": [
         {
           "src": "/img/atalhos/gestacell-192.png",

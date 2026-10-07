@@ -640,6 +640,11 @@
     .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
     .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
   </style>
+  <style>
+    html.pelo-atalho body > :not(#janela-app) { visibility: hidden; }
+    html.pelo-atalho, html.pelo-atalho body { background: #fff; }
+  </style>
+  <script>if (/[?&]abrir=/.test(location.search)) document.documentElement.classList.add('pelo-atalho');</script>
 </head>
 <body>
   <header class="topo">
@@ -2433,7 +2438,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const peloAtalho = new URLSearchParams(location.search).get('abrir');
       if (peloAtalho && todos.some((x) => x.id === peloAtalho)) {
         history.replaceState(null, '', location.pathname + '?origem=app');
-        if (meus.includes(peloAtalho)) abrirApp(peloAtalho); else location.hash = peloAtalho;
+        const x = todos.find((y) => y.id === peloAtalho);
+        // App de outro endereço (ConstruGestão, Radar): ele mesmo pede a conta, então abre direto, sem passar pela loja.
+        // Quem arrastou o atalho para a tela quer o app: abre direto e já conta como instalado na loja.
+        if (x.abrirFrame) { if (!meus.includes(peloAtalho)) { meus = [...meus, peloAtalho]; gravar(meus); } location.hash = 'abrir/' + peloAtalho; }
+        else if (x.abrirWww) abrirApp(peloAtalho);
+        else { document.documentElement.classList.remove('pelo-atalho'); location.hash = peloAtalho; }
+        // Se o app não abriu (sem internet, plano), a loja volta a aparecer.
+        setTimeout(() => { if (!$('janela-app') && document.visibilityState === 'visible') document.documentElement.classList.remove('pelo-atalho'); }, 4000);
       }
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
@@ -2442,12 +2454,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // Abriu por um link de página (#curso/..., #lista/...): a aba de fundo abre sem fechar essa página.
       const pagina = /^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash);
       aba(['cursos', 'pesquisa', 'livros', 'servicos', 'voce'].includes(a) ? a : (pagina && location.hash.startsWith('#curso/') ? 'cursos' : 'apps'), true, !pagina);
-    }).catch(() => { $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
+    }).catch(() => { document.documentElement.classList.remove('pelo-atalho'); $('lista').innerHTML = '<p class="vazio">Sem internet. Conecte-se para ver os aplicativos.</p>'; });
     conta();
 
     // Abertura com o logo, só quando a LeuApps abre pelo ícone (uma vez por abertura).
     try {
-      if ((instalada || N) && !sessionStorage.getItem('leuapps.abriu')) {
+      if ((instalada || N) && !sessionStorage.getItem('leuapps.abriu') && !/[?&]abrir=/.test(location.search)) {
         sessionStorage.setItem('leuapps.abriu', '1');
         const ab = document.createElement('div'); ab.className = 'abertura';
         ab.innerHTML = '<img src="/img/leuapps-192.png" alt=""><b>LeuApps</b>';
