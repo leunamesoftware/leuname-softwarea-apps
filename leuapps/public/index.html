@@ -514,6 +514,8 @@
     .det-fatos.cabe li { flex: 1 1 0; min-width: 0; padding: 0 4px; } /* página do curso: os 4 cabem sem rolar */
     .det-fatos b { display: block; color: var(--texto); font-size: 14px; font-weight: 600; }
     .det-botoes { display: flex; gap: 10px; }
+    .dica-atalho { font-size: 14px; background: var(--cartao); border-radius: 12px; padding: 10px 12px; }
+    .grade-meus img, .det-topo-app img { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
     .det-botoes > * { flex: 1; min-height: 42px; font-size: 15px; }
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
@@ -1765,7 +1767,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const meusApps = apps.filter(tem), outros = apps.filter((a) => !tem(a));
       paginaSecao.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${ICO('<path d="M19 12H5M11 6l-6 6 6 6"/>')}</button><h1>Meus apps</h1></div>
         <div class="det-corpo pagina-meus">
-          ${meusApps.length ? `<p class="det-texto">Toque no app para abrir. Ele abre aqui, em tela cheia.</p>
+          ${meusApps.length ? `<p class="det-texto">Toque no app para abrir. Ele abre aqui, em tela cheia.</p>${android && !N ? `<p class="det-texto dica-atalho"><b>Quer o app na tela do celular?</b> Saia da LeuApps, segure o dedo no ícone da <b>LeuApps</b> e arraste o app da lista para a tela.</p>` : ''}
             <div class="grade-meus">${meusApps.map((a) => `<button type="button" data-abrir="${esc(a.id)}"><img src="${esc(a.icone)}" alt=""><span>${esc(a.nome)}</span></button>`).join('')}</div>`
           : `<div class="sem-avaliacoes">${ICO('<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>', 34)}<b>Você ainda não tem apps aqui</b>Toque em Instalar em qualquer app da loja e ele aparece aqui.</div>`}
           ${outros.length ? `<h2 class="det-h2">Instale também</h2><ul class="lista">${outros.map(linhaSugestao).join('')}</ul>` : ''}
@@ -2454,6 +2456,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
     } catch {}
 
+    addEventListener('contextmenu', (e) => {
+      if (!e.target.closest('.grade-meus, .det-topo-app img, .item img')) return;
+      e.preventDefault();
+      if (android && !N) avisar('Para ter o app na tela do celular: saia da LeuApps, segure o dedo no ícone da LeuApps e arraste o app da lista.');
+    });
     if ('serviceWorker' in navigator && !N) navigator.serviceWorker.register('/sw.js').catch(() => {});
   </script>
 </body>
