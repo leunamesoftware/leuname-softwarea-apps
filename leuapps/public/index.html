@@ -516,7 +516,8 @@
     .det-botoes { display: flex; gap: 10px; }
     .pelo-chrome { display: grid; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha, rgba(127,127,127,.25)); }
     .pelo-chrome p { margin: 0; font-size: 14px; opacity: .85; }
-    .pelo-chrome .acao { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
+    .pelo-chrome .acao { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 16px; }
+    .pelo-chrome .acao.chrome { background: #FBBC04; color: #1F1A00; border: 0; box-shadow: 0 2px 8px rgba(251,188,4,.35); }
     .det-botoes > * { flex: 1; min-height: 42px; font-size: 15px; }
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
@@ -1950,7 +1951,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function botaoChrome(a) {
       if (N || !a.instalar || a.emBreve) return '';
       return `<div class="pelo-chrome"><p><b>Quer o ${esc(a.nome)} fora da loja?</b> Com ícone próprio ${celular ? 'na tela do celular' : 'na área de trabalho'}:</p>
-        <button class="acao contorno" type="button" data-chrome="${esc(a.id)}">${ICO('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.97 13.75L4.86 6.64M15.03 13.75l-4.1 7.1"/>', 20)} Instalar pelo Chrome</button></div>`;
+        <button class="acao chrome" type="button" data-chrome="${esc(a.id)}">${ICO('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.97 13.75L4.86 6.64M15.03 13.75l-4.1 7.1"/>', 20)} Instalar pelo Chrome ${celular ? 'no celular' : 'no computador'}</button></div>`;
     }
     function instalarPeloChrome(a) {
       const url = a.instalar.includes('instalar=1') ? a.instalar : a.instalar + (a.instalar.includes('?') ? '&' : '?') + 'instalar=1';
