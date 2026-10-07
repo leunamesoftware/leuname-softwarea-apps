@@ -2376,33 +2376,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
     });
     if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
-    // Android no Chrome: abre a página da LeuApps com o botão Instalar (o Chrome põe a LeuApps na tela do celular).
-    if (android && !N && !instalada) {
-      document.body.classList.add('so-app');
-      const pag = document.createElement('section'); pag.className = 'pagina-app';
-      pag.innerHTML = `
-        <div class="det-topo"><img src="/img/leuapps-192.png" alt=""><div><h1>LeuApps</h1><div class="det-dev">LeuName Softwares</div><div class="det-compra">Loja de aplicativos</div></div></div>
-        <ul class="det-fatos"><li><b>Grátis</b>para baixar</li><li><b>Android</b>funciona em</li><li><b id="qtd-apps">3 apps</b>na loja</li></ul>
-        <div class="instalar-app"><button class="acao" type="button" id="instalar-leuapps">Instalar</button></div>
-        <h2>Sobre este app</h2>
-        <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele fica pronto em Meus apps, abrindo em tela cheia como no celular. Atualizações chegam sozinhas.</p>
-        <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
-        <p class="nota" id="nota-app">Depois de instalar, abra a LeuApps pelo ícone na tela do celular.</p>
-`;
-      document.body.prepend(pag);
-      $('instalar-leuapps').addEventListener('click', async () => {
-        if (pedidoChrome) {
-          const q = pedidoChrome; pedidoChrome = null;
-          q.prompt();
-          const r = await q.userChoice;
-          if (r.outcome === 'accepted') $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
-          return;
-        }
-        // O Chrome ainda não ofereceu (ou a LeuApps já está instalada): mostra o caminho pelo menu.
-        folha(`<h3>Instalar a LeuApps</h3><p class="sub">Se a LeuApps já está na tela do celular, é só abrir por lá. Se não:</p>
-          <ol><li>Toque nos <b>⋮</b> do Chrome (canto de baixo ou de cima).</li><li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>`, 'Entendi');
-      });
-    }
+    // Android no Chrome: mostra a loja completa. É no Chrome normal que o Instalar de cada app funciona
+    // (na janelinha de um app instalado o Android não deixa instalar outro app).
 
     // ---- Serviços sob encomenda (abas + exemplos com marca d'água + orçamento pelo WhatsApp) ----
     function mostrarServicos(qual) {

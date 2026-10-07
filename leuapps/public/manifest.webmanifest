@@ -3,7 +3,7 @@
   "short_name": "LeuApps",
   "start_url": "/?origem=app",
   "scope": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#0E0C10",
   "theme_color": "#071A5C",
   "icons": [
