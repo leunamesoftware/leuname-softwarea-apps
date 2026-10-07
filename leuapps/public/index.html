@@ -2303,7 +2303,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <h3>${esc(c.nome || 'Sua conta')}</h3><p class="sub">${esc(c.email || '')}</p></div>
         <h4 class="mc-titulo">Seus apps</h4>${linhas ? `<ul class="mc-lista">${linhas}</ul>` : '<p class="sub">Esta conta ainda não tem nenhum app. Teste grátis na página de cada app.</p>'}
         <h4 class="mc-titulo">Cursos concluídos</h4>${feitos.length ? `<ul class="mc-lista">${feitos.map((x) => `<li><img src="${esc(x.icone)}" alt=""><span><b>${esc(x.nomeCurto || x.nome)}</b><small>Certificado disponível</small></span><button class="mc-ver" type="button" data-fecha data-curso="${esc(x.id)}">Ver</button></li>`).join('')}</ul>` : '<p class="sub">Nenhum curso concluído ainda neste aparelho.</p>'}
-        <div class="mc-acoes"><a class="contorno2" href="https://quantocobrar.leunamesoftware.com.br/recuperar">Trocar a senha</a><button class="contorno2" type="button" data-sair-conta>Sair da conta</button></div>
+        ${souDono ? '<a class="acao" href="/dono/" style="display:flex;justify-content:center;align-items:center;margin-bottom:10px">🔑 Área do Dono</a>' : ''}<div class="mc-acoes"><a class="contorno2" href="https://quantocobrar.leunamesoftware.com.br/recuperar">Trocar a senha</a><button class="contorno2" type="button" data-sair-conta>Sair da conta</button></div>
         <p class="sub" style="text-align:center;margin-top:10px">A mesma conta vale em todos os apps da LeuApps.</p>`, 'Fechar');
       f.querySelector('[data-sair-conta]').onclick = async () => {
         try { await postar('/loja-api/conta/sair', {}); } catch {}
