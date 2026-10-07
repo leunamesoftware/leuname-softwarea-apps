@@ -26,5 +26,55 @@
       "purpose": "maskable"
     }
   ],
-  "id": "/"
+  "id": "/",
+  "shortcuts": [
+    {
+      "name": "ConstruGestão",
+      "short_name": "ConstruGestão",
+      "url": "/?origem=app&abrir=construgestao",
+      "icons": [
+        {
+          "src": "/img/atalhos/construgestao-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Gestacell",
+      "short_name": "Gestacell",
+      "url": "/?origem=app&abrir=gestacell",
+      "icons": [
+        {
+          "src": "/img/atalhos/gestacell-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Radar Preventivo",
+      "short_name": "Radar Preventivo",
+      "url": "/?origem=app&abrir=radar",
+      "icons": [
+        {
+          "src": "/img/atalhos/radar-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Quanto Cobrar",
+      "short_name": "Quanto Cobrar",
+      "url": "/?origem=app&abrir=quantocobrar",
+      "icons": [
+        {
+          "src": "/img/atalhos/quantocobrar-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

@@ -2426,6 +2426,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // Apps marcados como instalados que não instalam dentro da LeuApps (sem o app Android): não dá para saber se estão no celular.
       if (!N) { const antes = meus.length; meus = meus.filter((id) => { const x = todos.find((y) => y.id === id) || {}; return x.abrirWww || x.abrirFrame; }); if (meus.length !== antes) gravar(meus); }
       lerInstalados(); lojasExtras(); categorias(); mostrar(); mostrarDetalhe(); mostrarPaginaSecao(); mostrarJanelaApp(); atualizarSozinho();
+      // Atalho do ícone (segurar o dedo na LeuApps → arrastar o app para a tela): /?origem=app&abrir=<app>.
+      // Instalado na loja: abre direto; ainda não: mostra a página dele com o Instalar.
+      const peloAtalho = new URLSearchParams(location.search).get('abrir');
+      if (peloAtalho && todos.some((x) => x.id === peloAtalho)) {
+        history.replaceState(null, '', location.pathname + '?origem=app');
+        if (meus.includes(peloAtalho)) abrirApp(peloAtalho); else location.hash = peloAtalho;
+      }
       if ($('qtd-apps')) $('qtd-apps').textContent = `${d.length} apps`;
       let a = new URLSearchParams(location.search).get('aba');
       try { a = a || localStorage.getItem('leuapps.aba'); } catch {}
