@@ -1518,10 +1518,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // De dentro da LeuApps instalada, o Android abre outros endereços numa janelinha onde o Chrome não deixa instalar.
     // Por isso a instalação abre no Chrome de verdade: lá o botão Instalar coloca o app na tela, sem pedir permissões.
+    // Link direto do app. Dentro da LeuApps instalada leva ?de=leuapps: o app mostra "Abrir" e como instalar pelo Chrome.
     function abrirNoChrome(url) {
-      if (!android || !janelaApp()) { location.href = url; return; }
-      const u = new URL(url);
-      location.href = `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+      location.href = android && janelaApp() ? url + (url.includes('?') ? '&' : '?') + 'de=leuapps' : url;
     }
     function mostrarJanelaApp() {
       const h = decodeURIComponent(location.hash.slice(1)); let j = $('janela-app');
@@ -1550,8 +1549,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // Apps do www abrem aqui dentro da LeuApps (tela cheia, sem navegador).
       if (!N && a.abrirWww) { location.href = a.abrirWww + (a.abrirWww.includes('?') ? '&' : '?') + 'leuapps=1'; return; }
       const destino = !N && a.instalar ? a.instalar : link(a);
-      if (a.exigeCompra) return conferirCompra(a, destino);
       if (!N && a.instalar) return abrirNoChrome(destino);
+      if (a.exigeCompra) return conferirCompra(a, destino);
       location.href = destino;
     }
     // ---- Apps instalados dentro da LeuApps ----
