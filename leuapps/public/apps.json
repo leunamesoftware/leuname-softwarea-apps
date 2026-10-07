@@ -337,6 +337,7 @@
     "url": "https://construgestao.leunamesoftware.com.br",
     "preco": "Em breve",
     "emBreve": true,
+    "capturas": ["/img/telas/construgestao-promo-1.webp", "/img/telas/construgestao-promo-2.webp", "/img/telas/construgestao-promo-3.webp", "/img/telas/construgestao-promo-4.webp", "/img/telas/construgestao-promo-5.webp"],
     "descricao": "Sistema de gestão para loja de material de construção: vendas, estoque com aviso de reposição, clientes, fornecedores e financeiro. Funciona no celular e no computador. Chega em breve na LeuApps.",
     "recursos": [
       "🧾 Vendas e orçamentos",
