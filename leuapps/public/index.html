@@ -850,8 +850,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <div class="barra ${p >= 0 && p < 100 ? '' : 'indo'}"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div></div>`;
     };
     const botaoEmBreve = '<button class="acao contorno" type="button" disabled>Em breve</button>';
+    // ConstruGestão (app de outro endereço): o botão é o próprio link do app (construgestao.leunamesoftware.com.br).
+    const linkDireto = (a) => !N && a.instalar && !a.abrirWww && !a.abrirFrame
+      ? `<a class="acao" href="${esc(a.instalar + (android && janelaApp() ? '?de=leuapps' : ''))}">Instalar</a>` : '';
     function botaoLinha(a) {
       if (a.emBreve) return botaoEmBreve;
+      if (linkDireto(a)) return linkDireto(a);
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'atualizar') return `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>`;
@@ -860,6 +864,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function botoesDetalhe(a) {
       if (a.emBreve) return botaoEmBreve;
+      if (linkDireto(a)) return linkDireto(a);
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'nao') return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
