@@ -692,5 +692,350 @@
     "unidade": "módulos",
     "certificado": true,
     "app": "quantocobrar"
+  },
+  {
+    "id": "gestao-loja-celular",
+    "nome": "Gestão de loja de celular",
+    "nomeCurto": "Loja de celular",
+    "resumo": "Em 20 módulos curtos: caixa, estoque, ordens de serviço, preço do conserto, garantia, vendas no cartão, seminovos e os números da loja. No final, receba o seu certificado.",
+    "icone": "/img/cursos/gestao-loja-celular.webp",
+    "destaque": {
+      "imagem": "/img/cursos/gestao-loja-celular-capa.webp",
+      "frase": "Sua loja de celular organizada",
+      "textoNaImagem": true
+    },
+    "categorias": [
+      "Grátis",
+      "Finanças",
+      "Vendas",
+      "Empreender"
+    ],
+    "preco": "Grátis",
+    "nivel": "Iniciante",
+    "app": "gestacell",
+    "unidade": "módulos",
+    "certificado": true,
+    "aulas": [
+      {
+        "parte": "Loja organizada",
+        "titulo": "Por que tanta loja de celular vende muito e não sobra dinheiro",
+        "minutos": 6,
+        "texto": "<p>Loja de celular tem movimento: gente entrando para comprar capinha, trocar tela, comprar aparelho. Mesmo assim, muita loja fecha as portas. Quase sempre o problema não é falta de cliente, é <b>falta de controle</b>.</p><p>Os sinais mais comuns:</p><ul><li>Ninguém sabe ao certo quanto tem de produto na prateleira.</li><li>Aparelho de conserto fica parado na bancada sem ninguém saber de quem é.</li><li>O dinheiro do caixa se mistura com o dinheiro de casa.</li><li>O preço do conserto é “no olho”.</li></ul><p>Neste curso você vai organizar a loja em 4 partes:</p><ol><li><b>Loja organizada:</b> caixa, cadastro e estoque.</li><li><b>Ordens de serviço:</b> OS, orçamento, preço do conserto e garantia.</li><li><b>Vendas que dão lucro:</b> acessórios, cartão, seminovos e atendimento.</li><li><b>Os números da loja:</b> fluxo de caixa, contas e lucro real.</li></ol><p>No final, você recebe o seu <b>certificado de conclusão</b> da LeuName Softwares.</p><p class=\"dica\">Tarefa: anote os 3 maiores problemas da sua loja hoje. Vamos resolver um a um.</p>",
+        "pergunta": {
+          "texto": "Qual é o motivo mais comum de uma loja de celular com movimento ficar sem dinheiro?",
+          "opcoes": [
+            "Falta de cliente",
+            "Falta de controle",
+            "Excesso de vendas"
+          ],
+          "certa": 1,
+          "explica": "Isso! Com controle de caixa, estoque e serviços, o mesmo movimento passa a dar lucro."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Caixa da loja separado do dinheiro de casa",
+        "minutos": 6,
+        "texto": "<p>O primeiro passo da organização é simples: <b>o dinheiro da loja é da loja</b>.</p><ul><li>Tenha uma conta bancária só para a loja (Pix, maquininha e boletos caem nela).</li><li>Abra e feche o caixa todo dia: quanto tinha, quanto entrou, quanto saiu.</li><li>Defina um <b>salário fixo</b> para você (pró-labore) e tire só ele.</li><li>Toda retirada para casa é anotada, mesmo que seja pequena.</li></ul><p><b>Exemplo:</b> o caixa abriu com R$ 200 de troco. Entraram R$ 1.450 em vendas e saíram R$ 120 de motoboy. No fim do dia, tem que ter R$ 1.530. Se tiver menos, algo não foi anotado.</p><p class=\"dica\">Tarefa: amanhã, abra e feche o caixa anotando cada entrada e saída.</p>",
+        "pergunta": {
+          "texto": "O caixa abriu com R$ 100, entraram R$ 900 e saíram R$ 200. Quanto deve ter no fim do dia?",
+          "opcoes": [
+            "R$ 800",
+            "R$ 1.000",
+            "R$ 1.200"
+          ],
+          "certa": 0,
+          "explica": "Certo! 100 + 900 − 200 = R$ 800."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Cadastro de produtos e fornecedores",
+        "minutos": 6,
+        "texto": "<p>Sem cadastro, não tem controle. Cada produto da loja precisa ter:</p><ul><li><b>Nome claro:</b> “Película 3D iPhone 15”, não só “película”.</li><li><b>Custo:</b> quanto você pagou, incluindo o frete dividido.</li><li><b>Preço de venda</b> e a <b>quantidade</b> em estoque.</li><li><b>Fornecedor:</b> de quem comprou e o contato.</li><li><b>Código de barras</b>, quando tiver: agiliza a venda e evita erro.</li></ul><p>Com os fornecedores cadastrados, fica fácil comparar preço e prazo antes de comprar de novo.</p><p class=\"dica\">Tarefa: cadastre os 20 produtos que você mais vende, com custo e preço.</p>",
+        "pergunta": {
+          "texto": "O que deve entrar no custo de um produto?",
+          "opcoes": [
+            "Só o preço da nota",
+            "O preço pago mais o frete dividido",
+            "O preço de venda"
+          ],
+          "certa": 1,
+          "explica": "Isso! O frete faz parte do custo. Esquecer dele diminui o seu lucro sem você perceber."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Controle de estoque: entrada, saída e contagem",
+        "minutos": 6,
+        "texto": "<p>Estoque controlado é estoque que <b>bate</b>: o que o sistema diz é o que está na prateleira.</p><ul><li><b>Entrada:</b> toda compra é lançada quando chega, conferindo com a nota.</li><li><b>Saída:</b> toda venda, troca ou peça usada em conserto dá baixa.</li><li><b>Contagem:</b> uma vez por mês, conte tudo (o inventário) e compare.</li><li><b>Estoque mínimo:</b> para os itens que mais saem, defina uma quantidade que dispara a compra.</li></ul><p>Se a contagem não bate, investigue: venda sem baixa, peça usada sem registro ou perda.</p><p class=\"dica\">Tarefa: escolha 10 itens e conte hoje. Compare com o que você acha que tinha.</p>",
+        "pergunta": {
+          "texto": "Para que serve o estoque mínimo?",
+          "opcoes": [
+            "Para nunca comprar nada",
+            "Para avisar a hora de comprar de novo",
+            "Para dar desconto"
+          ],
+          "certa": 1,
+          "explica": "Certo! Assim o produto que mais vende nunca falta na hora do cliente."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Estoque parado: dinheiro preso na prateleira",
+        "minutos": 6,
+        "texto": "<p>Produto parado não é patrimônio: é <b>dinheiro preso</b>. Capinha de modelo antigo, película que ninguém procura, carregador encalhado.</p><p><b>Como identificar:</b> veja o que não vendeu nada nos últimos 90 dias.</p><p><b>O que fazer:</b></p><ul><li>Monte combos: capinha + película com preço fechado.</li><li>Faça uma promoção com prazo (“só esta semana”).</li><li>Coloque perto do caixa, onde o cliente vê.</li><li>Na próxima compra, compre menos desse tipo de item.</li></ul><p>É melhor vender pelo custo e recuperar o dinheiro do que deixar o item parado por um ano.</p><p class=\"dica\">Tarefa: liste 5 itens parados e monte um combo com eles.</p>",
+        "pergunta": {
+          "texto": "O que fazer com produto parado há meses?",
+          "opcoes": [
+            "Deixar na prateleira para sempre",
+            "Montar combo ou promoção para girar",
+            "Comprar mais dele"
+          ],
+          "certa": 1,
+          "explica": "Isso! Girar o estoque devolve o dinheiro para o caixa."
+        }
+      },
+      {
+        "parte": "Ordens de serviço",
+        "titulo": "A ordem de serviço (OS) bem feita",
+        "minutos": 6,
+        "texto": "<p>A OS é o documento que protege você e o cliente. Toda entrada de aparelho para conserto precisa de uma.</p><p><b>O que não pode faltar:</b></p><ul><li>Nome, telefone e documento do cliente.</li><li>Marca, modelo e <b>IMEI</b> do aparelho.</li><li>O defeito que o cliente relatou, com as palavras dele.</li><li>O <b>estado do aparelho</b>: riscos, tela trincada, se liga ou não. Tire fotos.</li><li>Acessórios que ficaram (capinha, chip, cartão de memória).</li><li>Prazo previsto e valor do orçamento, quando já souber.</li></ul><p>Entregue uma via (ou mande pelo WhatsApp) para o cliente. Assim ninguém discute depois.</p><p class=\"dica\">Tarefa: revise o seu modelo de OS e inclua o que estiver faltando.</p>",
+        "pergunta": {
+          "texto": "Por que tirar fotos do aparelho na entrada?",
+          "opcoes": [
+            "Para postar nas redes",
+            "Para registrar o estado e evitar discussão depois",
+            "Não precisa"
+          ],
+          "certa": 1,
+          "explica": "Certo! A foto mostra como o aparelho chegou e protege a loja."
+        }
+      },
+      {
+        "parte": "Ordens de serviço",
+        "titulo": "Orçamento e aprovação do cliente",
+        "minutos": 6,
+        "texto": "<p>Nunca comece o conserto sem o cliente aprovar o valor. Conserto feito sem aprovação vira briga.</p><ul><li>Faça o diagnóstico e passe o orçamento <b>por escrito</b> (WhatsApp vale).</li><li>Explique o que vai ser trocado e o prazo.</li><li>Peça a aprovação por escrito: “Pode fazer”.</li><li>Se aparecer outro defeito no meio, pare e peça nova aprovação.</li></ul><p>Se você cobra pelo diagnóstico, avise <b>antes</b>, na entrada do aparelho.</p><p class=\"dica\">Tarefa: crie uma mensagem pronta de orçamento para mandar no WhatsApp.</p>",
+        "pergunta": {
+          "texto": "Apareceu um segundo defeito durante o conserto. O que fazer?",
+          "opcoes": [
+            "Consertar e cobrar depois",
+            "Parar e pedir nova aprovação",
+            "Ignorar"
+          ],
+          "certa": 1,
+          "explica": "Isso! Todo valor novo precisa da aprovação do cliente."
+        }
+      },
+      {
+        "parte": "Ordens de serviço",
+        "titulo": "Quanto cobrar no conserto",
+        "minutos": 7,
+        "texto": "<p>O preço do conserto tem três partes: <b>peça</b>, <b>mão de obra</b> e <b>margem</b>.</p><p><b>Exemplo (troca de tela):</b></p><ul><li>Tela: R$ 180 (com o frete).</li><li>Mão de obra: 1 hora do técnico. Se a hora vale R$ 60, são R$ 60.</li><li>Custos da loja (aluguel, energia, ferramentas) por serviço: R$ 20.</li></ul><p>Custo total: 180 + 60 + 20 = <b>R$ 260</b>.</p><p>Com margem de 30%: preço = custo ÷ (1 − 0,30) = 260 ÷ 0,70 ≈ <b>R$ 372</b>. Pode arredondar para R$ 370 ou R$ 380.</p><p>Se o cliente pagar no cartão parcelado, lembre da taxa (vamos ver na parte de vendas).</p><p class=\"dica\">Tarefa: calcule o preço dos 3 consertos que você mais faz com essa conta.</p>",
+        "pergunta": {
+          "texto": "Peça R$ 100, mão de obra R$ 50 e custos da loja R$ 10. Qual o custo total?",
+          "opcoes": [
+            "R$ 150",
+            "R$ 160",
+            "R$ 110"
+          ],
+          "certa": 1,
+          "explica": "Certo! 100 + 50 + 10 = R$ 160. Depois aplica a margem em cima disso."
+        }
+      },
+      {
+        "parte": "Ordens de serviço",
+        "titulo": "Garantia do serviço",
+        "minutos": 6,
+        "texto": "<p>Pelo Código de Defesa do Consumidor, em serviço feito em produto durável (como celular), o cliente tem <b>90 dias</b> para reclamar de defeito no serviço.</p><p><b>Como fazer certo:</b></p><ul><li>Escreva na OS a garantia e o que ela cobre (a peça trocada e o serviço feito).</li><li>Deixe claro o que <b>não</b> cobre: queda, molhado, aparelho aberto por outra pessoa.</li><li>Use selo ou marcação na peça, para saber que foi a sua loja que trocou.</li><li>Compre peças de boa procedência: peça ruim volta na garantia e custa duas vezes.</li></ul><p>Garantia bem explicada passa confiança e traz o cliente de volta.</p><p class=\"dica\">Tarefa: escreva o texto de garantia que vai na sua OS.</p>",
+        "pergunta": {
+          "texto": "Quanto tempo o cliente tem para reclamar de defeito no serviço feito no celular?",
+          "opcoes": [
+            "7 dias",
+            "30 dias",
+            "90 dias"
+          ],
+          "certa": 2,
+          "explica": "Isso! São 90 dias pelo Código de Defesa do Consumidor."
+        }
+      },
+      {
+        "parte": "Ordens de serviço",
+        "titulo": "Aparelho pronto que o cliente não busca",
+        "minutos": 6,
+        "texto": "<p>Toda loja tem gaveta com celular esquecido. Isso ocupa espaço, prende dinheiro de peça e dá dor de cabeça.</p><ul><li>Avise quando ficar pronto, por mensagem (fica registrado).</li><li>Escreva na OS o prazo para retirada, combinado na entrada.</li><li>Mande lembretes: no dia, depois de uma semana, depois de um mês.</li><li>Guarde os aparelhos identificados com o número da OS.</li></ul><p>Antes de tomar qualquer decisão sobre aparelho que não foi retirado, siga o que foi combinado por escrito e, em caso de dúvida, procure orientação de um advogado ou contador.</p><p class=\"dica\">Tarefa: faça uma lista dos aparelhos prontos que ainda não foram retirados e avise os clientes hoje.</p>",
+        "pergunta": {
+          "texto": "Qual é a melhor forma de avisar que o aparelho está pronto?",
+          "opcoes": [
+            "Só ligar uma vez",
+            "Por mensagem, que fica registrada",
+            "Esperar o cliente aparecer"
+          ],
+          "certa": 1,
+          "explica": "Certo! A mensagem fica guardada e comprova que o cliente foi avisado."
+        }
+      },
+      {
+        "parte": "Vendas que dão lucro",
+        "titulo": "Acessórios: o lucro que está no balcão",
+        "minutos": 6,
+        "texto": "<p>Capinha, película, carregador e fone costumam ter margem maior que a venda do aparelho. E quase todo cliente precisa de algum.</p><ul><li><b>Ofereça na hora certa:</b> vendeu um aparelho ou trocou uma tela? Ofereça película e capinha.</li><li><b>Exponha bem:</b> os acessórios mais vendidos perto do caixa.</li><li><b>Combos:</b> película + capinha com um pequeno desconto.</li></ul><p><b>Atenção:</b> oferecer é ótimo, mas <b>condicionar</b> não pode. Dizer “só faço o conserto se comprar a película” é venda casada, proibida pelo Código de Defesa do Consumidor.</p><p class=\"dica\">Tarefa: monte 2 combos de acessórios e coloque perto do caixa.</p>",
+        "pergunta": {
+          "texto": "O que é venda casada?",
+          "opcoes": [
+            "Oferecer um combo com desconto",
+            "Obrigar o cliente a comprar um item para levar outro",
+            "Vender para um casal"
+          ],
+          "certa": 1,
+          "explica": "Isso! Oferecer pode; obrigar é proibido."
+        }
+      },
+      {
+        "parte": "Vendas que dão lucro",
+        "titulo": "Cartão, parcelamento e as taxas",
+        "minutos": 6,
+        "texto": "<p>Toda venda no cartão tem taxa. No parcelado, a taxa é maior, porque você recebe antes (ou recebe aos poucos).</p><ul><li>Débito costuma ficar entre 1% e 2%.</li><li>Crédito à vista, entre 3% e 5%.</li><li>Parcelado, a taxa sobe conforme o número de parcelas.</li></ul><p><b>Exemplo:</b> conserto de R$ 380 em 6x com taxa de 10% → a maquininha fica com R$ 38. Você recebe R$ 342.</p><p><b>O que fazer:</b> tenha uma tabela com o preço à vista (Pix ou dinheiro) e o preço parcelado, já com a taxa embutida. Deixe isso claro para o cliente antes de passar o cartão.</p><p class=\"dica\">Tarefa: confira as taxas da sua maquininha e monte a sua tabela de parcelamento.</p>",
+        "pergunta": {
+          "texto": "Conserto de R$ 200 com taxa de 10% no parcelado. Quanto você recebe?",
+          "opcoes": [
+            "R$ 200",
+            "R$ 180",
+            "R$ 190"
+          ],
+          "certa": 1,
+          "explica": "Certo! 10% de 200 são R$ 20. Você recebe R$ 180."
+        }
+      },
+      {
+        "parte": "Vendas que dão lucro",
+        "titulo": "Celular usado e seminovo: compra com segurança",
+        "minutos": 6,
+        "texto": "<p>Comprar aparelho usado para revender pode dar bom lucro, mas também pode dar muito problema se o aparelho for roubado.</p><p><b>Antes de comprar:</b></p><ul><li>Peça documento com foto e nota fiscal (ou comprovante de compra).</li><li>Confira se o <b>IMEI</b> do aparelho é o mesmo da caixa e da nota.</li><li>Consulte se o IMEI tem restrição (roubo ou bloqueio) nos serviços oficiais de consulta.</li><li>Faça um termo de compra assinado, com os dados da pessoa e do aparelho.</li><li>Teste tudo: tela, câmera, bateria, carregamento, biometria.</li></ul><p>Na dúvida, não compre. Um aparelho com problema pode trazer prejuízo e complicação para a loja.</p><p class=\"dica\">Tarefa: crie o seu termo de compra de aparelho usado.</p>",
+        "pergunta": {
+          "texto": "Antes de comprar um celular usado, o que conferir?",
+          "opcoes": [
+            "Só a cor",
+            "Documento, nota e se o IMEI tem restrição",
+            "Nada, é só pagar"
+          ],
+          "certa": 1,
+          "explica": "Isso! Procedência é o que protege a sua loja."
+        }
+      },
+      {
+        "parte": "Vendas que dão lucro",
+        "titulo": "Atendimento e WhatsApp da loja",
+        "minutos": 6,
+        "texto": "<p>Hoje muito cliente pergunta preço pelo WhatsApp antes de ir à loja. Quem responde rápido e bem, vende.</p><ul><li>Use o WhatsApp Business com o nome da loja, horário e endereço.</li><li>Deixe respostas rápidas prontas: tabela de troca de tela, formas de pagamento, prazo.</li><li>Mande foto e vídeo do aparelho pronto: o cliente adora e confia.</li><li>Organize as conversas com etiquetas: Orçamento, Aprovado, Pronto, Entregue.</li></ul><p>Para aprender mais, faça também o curso grátis <b>Venda mais pelo WhatsApp</b>, aqui na LeuApps.</p><p class=\"dica\">Tarefa: crie 3 respostas rápidas para as perguntas que você mais recebe.</p>",
+        "pergunta": {
+          "texto": "O que ajuda a fechar mais vendas pelo WhatsApp?",
+          "opcoes": [
+            "Responder só no dia seguinte",
+            "Responder rápido, com respostas prontas",
+            "Não responder preço"
+          ],
+          "certa": 1,
+          "explica": "Certo! Rapidez e clareza vendem mais."
+        }
+      },
+      {
+        "parte": "Vendas que dão lucro",
+        "titulo": "Pós-venda e avaliações",
+        "minutos": 6,
+        "texto": "<p>O cliente da loja de celular volta: para trocar a película, a bateria, comprar outro aparelho. O pós-venda garante que ele volte para <b>você</b>.</p><ul><li>Uns dias depois do conserto, pergunte se está tudo certo.</li><li>Peça uma avaliação no Google ou um depoimento (com permissão).</li><li>Guarde o histórico do cliente: o que ele já consertou e comprou.</li><li>Avise de novidades e promoções só para quem aceitou receber.</li></ul><p>Cliente bem atendido indica a loja para amigos e família, e indicação é o anúncio mais barato que existe.</p><p class=\"dica\">Tarefa: mande mensagem de pós-venda para os clientes atendidos nesta semana.</p>",
+        "pergunta": {
+          "texto": "Por que guardar o histórico do cliente?",
+          "opcoes": [
+            "Para nada",
+            "Para atender melhor quando ele voltar",
+            "Para vender os dados"
+          ],
+          "certa": 1,
+          "explica": "Isso! Com o histórico você sabe o que ele já fez e oferece o que faz sentido."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Fluxo de caixa: o dinheiro do dia a dia",
+        "minutos": 6,
+        "texto": "<p>Fluxo de caixa é saber <b>quando o dinheiro entra e quando sai</b>. Loja com lucro pode quebrar se o dinheiro acabar antes de pagar as contas.</p><ul><li>Anote tudo que entra (vendas, consertos) e tudo que sai (peças, aluguel, salários).</li><li>Lembre que o cartão parcelado cai aos poucos: a venda é hoje, o dinheiro chega depois.</li><li>Olhe a semana que vem: quais contas vencem e quanto deve entrar.</li></ul><p><b>Exemplo:</b> a loja vende bem no fim do mês, mas o aluguel vence dia 5. Guardar um pouco das vendas evita aperto.</p><p class=\"dica\">Tarefa: liste as contas que vencem nos próximos 15 dias e quanto você tem para pagar.</p>",
+        "pergunta": {
+          "texto": "Por que uma loja com lucro pode ficar sem dinheiro?",
+          "opcoes": [
+            "Porque o dinheiro entra depois das contas vencerem",
+            "Porque vende demais",
+            "Isso nunca acontece"
+          ],
+          "certa": 0,
+          "explica": "Certo! Por isso o fluxo de caixa olha as datas de entrada e de saída."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Contas a pagar e a receber",
+        "minutos": 6,
+        "texto": "<p>Duas listas que toda loja precisa ter atualizadas:</p><ul><li><b>A pagar:</b> fornecedores, aluguel, energia, internet, impostos, salários. Com valor e vencimento.</li><li><b>A receber:</b> vendas no cartão que ainda vão cair, clientes que pagaram parte (sinal) e vão pagar o resto.</li></ul><p><b>Dicas:</b></p><ul><li>Pague em dia: multa e juros comem o lucro.</li><li>Negocie prazo com fornecedor para comprar e pagar depois de vender.</li><li>Evite vender “fiado”. Se vender, anote e combine data.</li></ul><p class=\"dica\">Tarefa: monte as suas duas listas, a pagar e a receber, deste mês.</p>",
+        "pergunta": {
+          "texto": "O que entra em “contas a receber”?",
+          "opcoes": [
+            "O aluguel",
+            "Vendas no cartão que ainda vão cair",
+            "A conta de energia"
+          ],
+          "certa": 1,
+          "explica": "Isso! É o dinheiro que já é seu, mas ainda não chegou."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Lucro real: custos fixos e variáveis",
+        "minutos": 6,
+        "texto": "<p>Para saber se a loja dá lucro de verdade, separe os custos:</p><ul><li><b>Fixos:</b> chegam todo mês, vendendo ou não. Aluguel, energia, internet, salário fixo, sistema, contador.</li><li><b>Variáveis:</b> mudam com as vendas. Custo dos produtos vendidos, peças, taxa do cartão, comissão.</li></ul><p><b>Conta do mês:</b> vendas − custos variáveis − custos fixos = lucro.</p><p><b>Exemplo:</b> vendas R$ 30.000 − variáveis R$ 18.000 − fixos R$ 8.000 = <b>R$ 4.000 de lucro</b>.</p><p>Se o lucro está baixo, os caminhos são: vender mais, aumentar a margem ou cortar custos.</p><p class=\"dica\">Tarefa: faça essa conta com os números do último mês.</p>",
+        "pergunta": {
+          "texto": "Vendas R$ 20.000, variáveis R$ 12.000 e fixos R$ 5.000. Qual o lucro?",
+          "opcoes": [
+            "R$ 3.000",
+            "R$ 8.000",
+            "R$ 15.000"
+          ],
+          "certa": 0,
+          "explica": "Certo! 20.000 − 12.000 − 5.000 = R$ 3.000."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Relatórios: o que olhar todo mês",
+        "minutos": 5,
+        "texto": "<p>Uma vez por mês, separe uma hora para olhar os números da loja:</p><ul><li><b>Faturamento</b> e <b>lucro</b> do mês, comparados com o mês anterior.</li><li><b>Produtos mais vendidos</b> e os que deram mais lucro.</li><li><b>Serviços mais feitos</b> e o tempo médio de conserto.</li><li><b>Ticket médio:</b> quanto cada cliente gasta em média.</li><li><b>Estoque parado</b> e o que precisa comprar.</li></ul><p>Com esses números, você decide com base em fatos, não no achismo: o que comprar, o que promover e onde melhorar.</p><p class=\"dica\">Tarefa: marque na agenda uma hora por mês para olhar os relatórios da loja.</p>",
+        "pergunta": {
+          "texto": "O que é ticket médio?",
+          "opcoes": [
+            "O preço do produto mais caro",
+            "Quanto cada cliente gasta, em média",
+            "A taxa do cartão"
+          ],
+          "certa": 1,
+          "explica": "Isso! Aumentar o ticket médio (com acessórios, por exemplo) aumenta o faturamento."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Na prática: o Gestacell organiza tudo para você",
+        "minutos": 6,
+        "texto": "<p>Você aprendeu a organizar caixa, estoque, ordens de serviço, vendas e os números da loja. Fazer tudo no caderno funciona, mas toma tempo e é fácil perder informação.</p><p>O <b>Gestacell</b>, da LeuName, foi feito para loja de celular e assistência técnica:</p><ul><li>Vendas e caixa do dia.</li><li>Ordens de serviço com dados do aparelho, defeito e status.</li><li>Estoque de produtos e peças.</li><li>Clientes e fornecedores.</li><li>Calculadoras: quanto cobrar no conserto, parcelas no cartão e lucro real.</li><li>Financeiro e relatórios.</li></ul><p>Funciona no celular e no computador, e dá para testar <b>7 dias grátis</b>.</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado.</p>",
+        "pergunta": {
+          "texto": "Qual é a vantagem de usar um sistema em vez do caderno?",
+          "opcoes": [
+            "Nenhuma",
+            "Menos tempo e menos informação perdida",
+            "Fica mais difícil"
+          ],
+          "certa": 1,
+          "explica": "Certo! O sistema faz as contas e guarda tudo organizado."
+        }
+      }
+    ]
   }
 ]
