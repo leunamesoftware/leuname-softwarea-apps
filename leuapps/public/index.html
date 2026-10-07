@@ -1956,17 +1956,24 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function instalarPeloChrome(a) {
       const url = a.instalar.includes('instalar=1') ? a.instalar : a.instalar + (a.instalar.includes('?') ? '&' : '?') + 'instalar=1';
       if (!android || !janelaApp()) { location.href = url; return; }
-      // Dentro da LeuApps instalada: pede ao Android para abrir o link no Chrome. Se não abrir, mostra o jeito pelo link copiado.
-      let saiu = false; const marca = () => { saiu = true; };
-      document.addEventListener('visibilitychange', marca, { once: true }); addEventListener('pagehide', marca, { once: true });
+      // Dentro da LeuApps instalada o Android abre links numa janelinha. Tenta abrir o Chrome de verdade, um jeito de cada vez;
+      // se nenhum abrir, mostra o jeito pelo link copiado.
       const u = new URL(url);
-      location.href = `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(url)};end`;
-      setTimeout(() => {
-        if (saiu || document.hidden) return;
-        folha(`<h3>Instalar o ${esc(a.nome)} pelo Chrome</h3><p class="sub">O Chrome não abriu sozinho. Faça assim:</p>
+      const jeitos = [
+        `googlechrome://navigate?url=${encodeURIComponent(url)}`,
+        `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;component=com.android.chrome/com.google.android.apps.chrome.Main;end`,
+      ];
+      let saiu = false; const marca = () => { if (document.hidden) saiu = true; };
+      document.addEventListener('visibilitychange', marca); addEventListener('pagehide', () => { saiu = true; }, { once: true });
+      const tentar = (n) => {
+        if (saiu) return;
+        if (n < jeitos.length) { location.href = jeitos[n]; setTimeout(() => tentar(n + 1), 1500); return; }
+        document.removeEventListener('visibilitychange', marca);
+        folha(`<h3>Instalar o ${esc(a.nome)} pelo Chrome</h3><p class="sub">Este celular não deixou a LeuApps abrir o Chrome sozinha. Faça assim:</p>
           <ol><li>Toque em <b>Copiar o link</b>.</li><li>Abra o <b>Chrome</b> e cole na barra de endereço.</li><li>Toque em <b>Instalar</b>.</li></ol>
           <button class="acao" type="button" data-copiar-link="${esc(a.instalar)}">Copiar o link</button>`, 'Fechar');
-      }, 2000);
+      };
+      tentar(0);
     }
     // Logo depois de instalar (ou instalando): sugestões embaixo, como na Play.
     function sugestoesNoApp(a) {
