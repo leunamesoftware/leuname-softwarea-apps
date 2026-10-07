@@ -20,7 +20,6 @@ export const PLANOS = {
   radar_anual: { app: 'radar', licenca: 'radar-preventivo', preco: 29.9, dias: 366, parcelas: 3, titulo: 'Radar Preventivo — plano anual' },
   radar_mensal: { app: 'radar', licenca: 'radar-preventivo', preco: 9.9, dias: 33, assinatura: true, titulo: 'Radar Preventivo — plano mensal' },
   construgestao: { app: 'construgestao', licenca: 'construgestao', preco: 49.9, parcelas: 3, titulo: 'ConstruGestão — pagamento único (para sempre)' },
-  construgestao_anual: { app: 'construgestao', licenca: 'construgestao', preco: 39.9, dias: 366, parcelas: 3, titulo: 'ConstruGestão — plano anual' },
   construgestao_mensal: { app: 'construgestao', licenca: 'construgestao', preco: 19.9, dias: 33, assinatura: true, titulo: 'ConstruGestão — plano mensal' },
 };
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';

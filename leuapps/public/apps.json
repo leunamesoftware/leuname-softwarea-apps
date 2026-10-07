@@ -334,15 +334,7 @@
         "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
       },
       {
-        "nome": "Anual",
-        "tipo": "unico",
-        "preco": "R$ 39,90/ano",
-        "detalhe": "Paga uma vez, vale 1 ano · vendas, estoque, orçamentos, entregas e calculadoras · Pix ou cartão em até 3x",
-        "url": "/loja/comprar?app=construgestao&plano=anual",
-        "nota": "🔄 Atualizações incluídas durante 1 ano."
-      },
-      {
-        "nome": "Para sempre",
+        "nome": "Vitalício",
         "tipo": "unico",
         "preco": "R$ 49,90",
         "detalhe": "Paga uma vez, é seu para sempre · vendas, estoque, orçamentos, entregas e calculadoras · Pix ou cartão em até 3x",
@@ -350,7 +342,7 @@
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ],
-    "opcoes": [["Mensal", "R$ 19,90/mês", "no cartão, cancele quando quiser"], ["Anual", "R$ 39,90/ano", "Pix ou cartão em até 3x"], ["Para sempre", "R$ 49,90", "paga uma vez só"]],
+    "opcoes": [["Assinatura mensal", "R$ 19,90/mês", "no cartão, cancele quando quiser"], ["Vitalício", "R$ 49,90", "paga uma vez só, é seu para sempre"]],
     "instalar": "https://construgestao.leunamesoftware.com.br/",
     "abrirFrame": "https://construgestao.leunamesoftware.com.br/",
     "instalarDireto": {"url": "https://construgestao.leunamesoftware.com.br/", "id": "https://construgestao.leunamesoftware.com.br/"},

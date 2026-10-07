@@ -91,23 +91,24 @@
         planos: { mensal: 9.9, anual: 29.9, unico: 39.9 } },
       construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br',
         itens: ['🧾 Vendas, orçamentos e entregas da loja de material de construção', '📦 Estoque com aviso do que precisa comprar', '🧮 Calculadora de material da obra e do preço de venda'],
-        planos: { mensal: 19.9, anual: 39.9, unico: 49.9 } },
+        planos: { mensal: 19.9, unico: 49.9 } }, // só assinatura mensal ou pagamento vitalício
     };
     const busca = new URLSearchParams(location.search);
     const app = busca.get('app');
     const P = PRODUTOS[app];
     if (!P) location.replace('/');
-    const reais = (v) => 'R$ ' + v.toFixed(2).replace('.', ',');
+    const reais = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
     // id do plano no servidor: gestacell_mensal, gestacell_anual e gestacell (pagamento único).
     const TIPOS = {
       mensal: { id: `${app}_mensal`, nome: 'Mensal', valor: `${reais(P.planos.mensal)}/mês`, como: 'Cartão de crédito. Renova sozinho todo mês; cancele quando quiser.',
         nota: '💳 <b>Mensal:</b> cobrado no cartão todo mês. Se cancelar, o app continua até o fim do mês já pago.' },
       anual: { id: `${app}_anual`, nome: 'Anual', valor: `${reais(P.planos.anual)}/ano`, como: `Dá ${reais(P.planos.anual / 12)} por mês. Pix ou cartão em até 3x.`, selo: 'Mais em conta',
         nota: '📅 <b>Anual:</b> paga uma vez e usa por 1 ano. Não renova sozinho: perto de vencer, você escolhe se quer continuar.' },
-      unico: { id: app, nome: 'Pagamento único', valor: reais(P.planos.unico), como: 'Paga uma vez e é seu para sempre. Pix ou cartão em até 3x.',
-        nota: '✅ <b>Pagamento único:</b> paga uma vez, o app é seu para sempre.<br>🔄 <b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.' },
+      unico: { id: app, nome: 'Vitalício', valor: reais(P.planos.unico), como: 'Paga uma vez e é seu para sempre. Pix ou cartão em até 3x.',
+        nota: '✅ <b>Vitalício:</b> paga uma vez, o app é seu para sempre.<br>🔄 <b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.' },
     };
-    const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : 'anual';
+    for (const k of Object.keys(TIPOS)) if (!P.planos[k]) delete TIPOS[k]; // o app pode não ter todos os tipos
+    const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : ('anual' in TIPOS ? 'anual' : 'mensal');
     document.title = `Comprar ${P.nome} — LeuApps`;
     document.getElementById('icone').src = `/img/${app}-192.png`;
     document.getElementById('titulo').textContent = P.nome;
