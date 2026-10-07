@@ -320,20 +320,47 @@
     "resumo": "Vendas, estoque, clientes e financeiro da loja de material de construção.",
     "icone": "/img/construgestao-192.webp",
     "url": "https://construgestao.leunamesoftware.com.br",
-    "preco": "Em breve",
-    "emBreve": true,
-    "capturas": ["/img/telas/construgestao-play-1.webp", "/img/telas/construgestao-play-2.webp", "/img/telas/construgestao-play-3.webp", "/img/telas/construgestao-play-4.webp", "/img/telas/construgestao-play-5.webp"],
-    "descricao": "Sistema de gestão para loja de material de construção: vendas, estoque com aviso de reposição, clientes, fornecedores e financeiro. Funciona no celular e no computador. Chega em breve na LeuApps.",
-    "recursos": [
-      "🧾 Vendas e orçamentos",
-      "📦 Estoque com aviso de reposição",
-      "👥 Clientes e fornecedores",
-      "💰 Financeiro e relatórios"
+    "preco": "7 dias grátis · planos a partir de R$ 19,90/mês",
+    "exigeCompra": true,
+    "teste": 7,
+    "versao": "1.0",
+    "planos": [
+      {
+        "nome": "Mensal",
+        "tipo": "assinatura",
+        "preco": "R$ 19,90/mês",
+        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · vendas, estoque, orçamentos, entregas e calculadoras",
+        "url": "/loja/comprar?app=construgestao&plano=mensal",
+        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
+      },
+      {
+        "nome": "Anual",
+        "tipo": "unico",
+        "preco": "R$ 39,90/ano",
+        "detalhe": "Paga uma vez, vale 1 ano · vendas, estoque, orçamentos, entregas e calculadoras · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=construgestao&plano=anual",
+        "nota": "🔄 Atualizações incluídas durante 1 ano."
+      },
+      {
+        "nome": "Para sempre",
+        "tipo": "unico",
+        "preco": "R$ 49,90",
+        "detalhe": "Paga uma vez, é seu para sempre · vendas, estoque, orçamentos, entregas e calculadoras · Pix ou cartão em até 3x",
+        "url": "/loja/comprar?app=construgestao&plano=unico",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
+      }
     ],
+    "opcoes": [["Mensal", "R$ 19,90/mês", "no cartão, cancele quando quiser"], ["Anual", "R$ 39,90/ano", "Pix ou cartão em até 3x"], ["Para sempre", "R$ 49,90", "paga uma vez só"]],
+    "instalar": "https://construgestao.leunamesoftware.com.br/",
+    "abrirFrame": "https://construgestao.leunamesoftware.com.br/",
+    "instalarDireto": {"url": "https://construgestao.leunamesoftware.com.br/", "id": "https://construgestao.leunamesoftware.com.br/"},
+    "capturas": ["/img/telas/construgestao-play-1b.webp", "/img/telas/construgestao-play-2.webp", "/img/telas/construgestao-play-3.webp", "/img/telas/construgestao-play-4.webp", "/img/telas/construgestao-play-5.webp"],
+    "descricao": "Sistema de gestão para loja de material de construção: vendas, orçamentos, entregas, estoque com aviso do que precisa comprar, clientes, fornecedores e calculadoras de material da obra e de preço. Funciona no celular e no computador.",
+    "recursos": ["🧾 Vendas, orçamentos e entregas", "📦 Estoque com aviso do que precisa comprar", "🧮 Calculadora de material da obra e do preço de venda", "👥 Clientes, fornecedores e pedidos que faltaram", "📊 Relatórios da loja"],
     "tags": ["Empresa", "Material de construção"],
     "secoes": ["Negócios", "Finanças", "Produtividade", "Ferramentas", "Ferramentas de negócios"],
     "destaque": {
-      "imagem": "/img/destaques/construgestao.webp",
+      "imagem": "/img/destaques/construgestao-v2.webp",
       "titulo": "ConstruGestão",
       "frase": "Sua loja de construção no controle",
       "textoNaImagem": true

@@ -1518,7 +1518,6 @@
     "app": "construgestao",
     "unidade": "módulos",
     "certificado": true,
-    "emBreve": true,
     "aulas": [
       {
         "parte": "Loja organizada",
@@ -1828,7 +1827,7 @@
         "parte": "Os números da loja",
         "titulo": "Na prática: o ConstruGestão organiza a sua loja",
         "minutos": 6,
-        "texto": "<p>Você viu caixa, fiado, unidades de medida, estoque, preço, compras, orçamento, entrega e os números da loja. No caderno dá trabalho e é fácil perder informação.</p><p>O <b>ConstruGestão</b>, da LeuName, está sendo preparado para a loja de material de construção:</p><ul><li>Vendas e orçamentos.</li><li>Estoque com aviso de reposição.</li><li>Clientes, fornecedores e contas a receber.</li><li>Financeiro e relatórios.</li></ul><p>Ele chega em breve na LeuApps. Fique de olho!</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado.</p>",
+        "texto": "<p>Você viu caixa, fiado, unidades de medida, estoque, preço, compras, orçamento, entrega e os números da loja. No caderno dá trabalho e é fácil perder informação.</p><p>O <b>ConstruGestão</b>, da LeuName, foi feito para a loja de material de construção:</p><ul><li>Vendas, orçamentos e entregas.</li><li>Estoque com aviso do que precisa comprar.</li><li>Calculadora de material da obra: diz quantos blocos, sacos de cimento e latas de tinta o cliente precisa e já monta o orçamento.</li><li>Calculadora de preço de venda, com frete, perdas e taxa do cartão.</li><li>Clientes, fornecedores e relatórios.</li></ul><p>Funciona no celular e no computador, e dá para testar <b>7 dias grátis</b> na LeuApps.</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado.</p>",
         "pergunta": {
           "texto": "O que mais ajuda a loja a ter lucro de verdade?",
           "opcoes": [
@@ -1842,7 +1841,7 @@
       }
     ],
     "destaque": {
-      "imagem": "/img/cursos/construcao-capa.webp",
+      "imagem": "/img/cursos/construcao-capa-v2.webp",
       "frase": "Sua loja de construção lucrando mais",
       "textoNaImagem": true
     }
