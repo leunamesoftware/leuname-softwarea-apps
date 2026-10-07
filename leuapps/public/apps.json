@@ -364,6 +364,12 @@
     "secoes": [
       "Negócios",
       "Ferramentas de negócios"
-    ]
+    ],
+    "destaque": {
+      "imagem": "/img/destaques/construgestao.webp",
+      "titulo": "ConstruGestão",
+      "frase": "Sua loja de construção no controle",
+      "textoNaImagem": true
+    }
   }
 ]
