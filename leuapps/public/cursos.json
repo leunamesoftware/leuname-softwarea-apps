@@ -7,7 +7,8 @@
     "icone": "/img/cursos/preco-certo.webp",
     "destaque": {
       "imagem": "/img/cursos/preco-certo-capa.webp",
-      "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo"
+      "frase": "Pare de vender no prejuízo: aprenda a calcular o preço certo",
+      "textoNaImagem": true
     },
     "categorias": [
       "Grátis",

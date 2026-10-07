@@ -58,6 +58,7 @@
     .destaque { position: relative; flex: 0 0 calc(100% - 28px); scroll-snap-align: start; border-radius: 26px; overflow: hidden; aspect-ratio: 27 / 16; max-height: 360px; border: 0; padding: 0; text-align: left; background: var(--cartao); }
     .destaque > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .destaque::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,.78)); }
+    .destaque.banner-pronto::after { display: none; } /* banner que já vem com o texto: sem escurecer e sem frase por cima */
     .destaque-texto { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; color: #fff; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 10px; }
     .destaque-texto b { display: block; font-size: 25px; font-weight: 800; line-height: 1.12; letter-spacing: -.3px; }
     .destaque-texto span { display: block; font-size: 14.5px; opacity: .92; }
@@ -494,6 +495,7 @@
     .det-fatos { display: flex; margin: 20px 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
     .det-fatos li { flex: 1 0 auto; min-width: 96px; padding: 0 12px; text-align: center; border-left: 1px solid var(--linha); font-size: 12.5px; color: var(--suave); }
     .det-fatos li:first-child { border-left: 0; }
+    .det-fatos.cabe li { flex: 1 1 0; min-width: 0; padding: 0 4px; } /* página do curso: os 4 cabem sem rolar */
     .det-fatos b { display: block; color: var(--texto); font-size: 14px; font-weight: 600; }
     .det-botoes { display: flex; gap: 10px; }
     .det-botoes > * { flex: 1; min-height: 42px; font-size: 15px; }
@@ -1113,7 +1115,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : feitasTxt(c, f)}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
     const cartaoCurso = (c) => `
         <div class="dest-item">
-          <button class="destaque" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.destaque.imagem)}" alt=""><span class="dest-selo">${gratis(c) ? 'Curso grátis' : 'Curso'}</span><span class="destaque-frase">${esc(c.destaque.frase)}</span></button>
+          ${c.destaque.textoNaImagem
+            ? `<button class="destaque banner-pronto" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.destaque.imagem)}" alt="${esc(c.destaque.frase)}"></button>`
+            : `<button class="destaque" type="button" data-curso="${esc(c.id)}"><img src="${esc(c.destaque.imagem)}" alt=""><span class="dest-selo">${gratis(c) ? 'Curso grátis' : 'Curso'}</span><span class="destaque-frase">${esc(c.destaque.frase)}</span></button>`}
           <div class="linha dest-app">
             <img src="${esc(c.icone)}" alt="" data-curso="${esc(c.id)}" style="cursor:pointer">
             <div data-curso="${esc(c.id)}" style="cursor:pointer;min-width:0"><div class="nome">${esc(c.nomeCurto || c.nome)}</div><div class="info">LeuName Cursos</div><span class="pilula">${esc(c.preco)}</span></div>
@@ -1167,7 +1171,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         const pct = Math.round(feitas.length / total * 100);
         corpo = `<img class="curso-capa" src="${esc(c.destaque ? c.destaque.imagem : c.icone)}" alt="">
           <div class="det-topo"><img src="${esc(c.icone)}" alt=""><div><h1>${esc(c.nome)}</h1><div class="det-dev">LeuName Cursos</div></div></div>
-          <ul class="det-fatos"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>${unidade(c)}</li><li><b>${duracao(minutos(c))}</b>no total</li>${c.certificado ? '<li><b>Certificado</b>no final</li>' : `<li><b>${esc(c.nivel || 'Todos')}</b>nível</li>`}</ul>
+          <ul class="det-fatos cabe"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>${unidade(c)}</li><li><b>${duracao(minutos(c))}</b>no total</li>${c.certificado ? '<li><b>Certificado</b>no final</li>' : `<li><b>${esc(c.nivel || 'Todos')}</b>nível</li>`}</ul>
           <div class="det-botoes">${botaoCurso(c)}</div>
           ${feitas.length ? `<div class="curso-prog"><i style="width:${pct}%"></i></div><div class="curso-prog-txt">${feitas.length >= total ? 'Curso concluído ✓' : feitasTxt(c, feitas.length)}</div>` : ''}
           <h2>Sobre este curso</h2><p class="det-desc">${esc(c.resumo)}</p>
