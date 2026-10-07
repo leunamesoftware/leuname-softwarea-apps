@@ -13,8 +13,9 @@
         "/img/servicos/logo3.jpg"
       ],
       "destaque": {
-        "imagem": "/img/destaques/servico-logomarcas.webp",
-        "frase": "Sua marca com uma logo só sua"
+        "imagem": "/img/destaques/servico-logomarcas-v2.webp",
+        "frase": "Sua marca com uma logo só sua",
+        "textoNaImagem": true
       }
     },
     {

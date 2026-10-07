@@ -87,7 +87,7 @@
       "titulo": "Quanto Cobrar",
       "frase": "Receitas que vendem e o preço certo de cada uma",
       "textoNaImagem": true,
-      "fundo": "/img/destaques/quantocobrar.webp"
+      "fundo": "/img/destaques/quantocobrar-novidades.webp"
     },
     "tags": [
       "Receitas",
@@ -186,9 +186,11 @@
       "versao": 101
     },
     "destaque": {
-      "imagem": "/img/destaques/gestacell.webp",
+      "imagem": "/img/destaques/gestacell-v2.webp",
       "titulo": "Gestacell",
-      "frase": "Vendas, OS, estoque e calculadoras da loja de celular"
+      "frase": "Vendas, OS, estoque e calculadoras da loja de celular",
+      "fundo": "/img/destaques/gestacell.webp",
+      "textoNaImagem": true
     },
     "tags": [
       "Empresa",

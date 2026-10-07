@@ -1330,9 +1330,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const doApp = cartaoApp;
       const doServico = (s) => `
         <div class="dest-item">
-          <button class="destaque" type="button" data-pedir="${esc(s.id)}">
-            <img src="${esc(s.destaque.imagem)}" alt=""><span class="dest-selo">Orçamento grátis</span>
-            <span class="destaque-frase">${esc(s.destaque.frase)}</span>
+          <button class="destaque${s.destaque.textoNaImagem ? ' banner-pronto' : ''}" type="button" data-pedir="${esc(s.id)}">
+            ${s.destaque.textoNaImagem ? `<img src="${esc(s.destaque.imagem)}" alt="${esc(s.destaque.frase)}">` : `<img src="${esc(s.destaque.imagem)}" alt=""><span class="dest-selo">Orçamento grátis</span>
+            <span class="destaque-frase">${esc(s.destaque.frase)}</span>`}
           </button>
           <div class="linha dest-app">
             <img src="${esc(s.imagens[0])}" alt="" data-pedir="${esc(s.id)}" style="cursor:pointer;object-fit:cover">
