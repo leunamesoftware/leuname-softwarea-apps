@@ -46,3 +46,16 @@ export async function avisarCompraPorEmail(env, pedido) {
     return false;
   }
 }
+
+/** Vendas pagas cujo e-mail com o link ainda não saiu (o dono manda à mão pela Área do Dono). */
+export async function emailsPendentes(env) {
+  const { results = [] } = await env.DB.prepare("SELECT id, nome, email, plano, atualizado_em FROM pedidos WHERE status = 'pago' AND email_enviado IS NULL ORDER BY atualizado_em DESC LIMIT 200").all();
+  return results.map((p) => {
+    const m = montarEmailCompra(p), app = LINKS[(PLANOS[p.plano] || {}).app] || LINKS.quantocobrar;
+    return { id: p.id, nome: p.nome, email: p.email, app: app.nome, link: app.url, quando: p.atualizado_em, assunto: m.assunto, texto: m.texto };
+  });
+}
+
+export async function marcarEmailEnviado(env, id, como) {
+  await env.DB.prepare('UPDATE pedidos SET email_enviado = ? WHERE id = ?').bind(`${como}:${new Date().toISOString()}`, String(id || '')).run();
+}
