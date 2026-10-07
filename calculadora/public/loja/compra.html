@@ -22,7 +22,8 @@
     <p class="rodape"><a href="/">← Voltar à loja</a><br>Dúvidas: <a href="mailto:suporte@leunamesoftware.com.br">suporte@leunamesoftware.com.br</a></p>
   </main>
   <script>
-    const APPS = { gestacell: { nome: 'Gestacell', url: '/gestacell/' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br' }, construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br' } };
+    // url: o link de instalar (celular e computador). É o mesmo que vai no e-mail da compra.
+    const APPS = { gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1' }, construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1' } };
     const q = new URLSearchParams(location.search);
     let guardado = ''; try { guardado = JSON.parse(localStorage.getItem('loja.pedido') || '""'); } catch {}
     const pedido = q.get('p') || guardado || '';
@@ -37,11 +38,12 @@
       if (APPS[d.app]) document.getElementById('icone').src = `/img/${d.app}-192.png`;
       el.innerHTML = `
         <h1>Pagamento aprovado, ${esc(d.nome)}! 🎉</h1>
-        <p class="sub"><b>${esc(a.nome)}</b> liberado na sua conta, <b>para sempre</b>.</p>
+        <p class="sub"><b>${esc(a.nome)}</b> liberado na sua conta${d.expiraEm ? ` até <b>${new Date(d.expiraEm).toLocaleDateString('pt-BR')}</b>` : ', <b>para sempre</b>'}.</p>
         <ol class="passos-compra">
-          <li><b>1. Abra o app</b>
-            <a class="botao" href="${a.url}">Abrir o ${esc(a.nome)}</a>
-            <p class="dica">Em outro aparelho, toque em <b>Entrar com minha conta</b> e use o <b>e-mail e a senha</b> que você criou.</p></li>
+          <li><b>1. Instale o app</b>
+            <a class="botao" href="${a.url}">Instalar o ${esc(a.nome)}</a>
+            <p class="dica">Abre a tela com o botão <b>Instalar</b>: toque nele e o ícone vai para a tela do celular ou do computador. Também mandamos este link para o seu e-mail.</p>
+            <p class="dica">Para entrar, use o <b>e-mail e a senha</b> da sua compra.</p></li>
           <li><b>2. Tenha sempre à mão</b>
             <a class="botao sec" href="/">📲 Ir para o LeuApps</a>
             <p class="dica">No LeuApps ficam todos os nossos aplicativos.</p></li>

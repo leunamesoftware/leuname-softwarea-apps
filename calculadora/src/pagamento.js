@@ -3,6 +3,7 @@
 // (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
+import { avisarCompraPorEmail } from './email.js';
 import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
@@ -86,13 +87,16 @@ async function aplicarPagamento(env, pedido, pagamentoId, valor) {
     .bind(String(pagamentoId), pedido.id, agora).run();
   if (!r.meta.changes) return;
   try {
-    let chave = pedido.chave;
+    let chave = pedido.chave, primeiraVez = false;
     if (!chave) {
       chave = await emitirLicenca(env, pedido.nome, pedido.email, P.licenca);
       await env.DB.prepare("UPDATE pedidos SET status = 'pago', chave = ?, pagamento_id = ?, atualizado_em = ? WHERE id = ?")
         .bind(chave, String(pagamentoId), agora, pedido.id).run();
+      primeiraVez = true;
     }
     await aplicarPlano(env, chave, pedido.plano);
+    // Primeiro pagamento: manda por e-mail o link para instalar (não manda de novo nas mensalidades).
+    if (primeiraVez) await avisarCompraPorEmail(env, pedido);
   } catch (e) {
     // Deixa o pagamento livre para o próximo aviso tentar de novo.
     await env.DB.prepare('DELETE FROM pagamentos_aplicados WHERE pagamento_id = ?').bind(String(pagamentoId)).run();
