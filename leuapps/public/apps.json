@@ -295,9 +295,11 @@
       "apk": "https://radar.leunamesoftware.com.br/baixar/RadarPreventivo.apk"
     },
     "destaque": {
-      "imagem": "/img/destaques/radar.webp",
+      "imagem": "/img/destaques/radar-v2.webp",
       "titulo": "Radar Preventivo",
-      "frase": "Avisa antes de vencer: documentos, contas e prazos"
+      "frase": "Avisa antes de vencer: contas e prazos",
+      "fundo": "/img/destaques/radar.webp",
+      "textoNaImagem": true
     },
     "tags": [
       "Empresa",
