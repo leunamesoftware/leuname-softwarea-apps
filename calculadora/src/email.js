@@ -1,7 +1,10 @@
 // E-mail depois da compra: link para instalar o app no celular e no computador, com o passo a passo.
-// Só manda se o servidor tiver RESEND_API_KEY e EMAIL_FROM (segredos na Cloudflare). Sem eles, não faz nada.
+// Sai pelo Gmail da empresa (segredo GMAIL_SENHA_APP) ou, se um dia trocar, pelo Resend (RESEND_API_KEY + EMAIL_FROM).
+// Sem nenhum dos dois, não manda: a venda fica na Área do Dono para mandar à mão.
 // Nunca atrapalha a compra: qualquer erro aqui é só registrado.
+// App novo à venda: acrescente o link dele em LINKS (o mesmo link de instalar usado na página de compra aprovada).
 import { PLANOS } from './planos.js';
+import { enviarPeloGmail } from './smtp.js';
 
 export const LINKS = {
   gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1' },
@@ -30,21 +33,33 @@ export function montarEmailCompra(pedido) {
   return { assunto: `Seu ${app.nome} está liberado: veja como instalar`, html, texto };
 }
 
-export async function avisarCompraPorEmail(env, pedido) {
-  if (!env.RESEND_API_KEY || !env.EMAIL_FROM || !pedido?.email) return false;
+/** Manda o e-mail da compra. Devolve { ok, como: 'gmail' | 'resend' | 'nenhum', erro }. */
+export async function enviarEmailDaCompra(env, pedido, { teste = false, conectar } = {}) {
+  if (!pedido?.email) return { ok: false, como: 'nenhum', erro: 'sem_email' };
+  const m = montarEmailCompra(pedido);
+  const titulo = (teste ? 'TESTE · ' : '') + m.assunto;
   try {
-    const m = montarEmailCompra(pedido);
-    const r = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: env.EMAIL_FROM, to: [pedido.email], reply_to: env.DONO_EMAIL || undefined, subject: m.assunto, html: m.html, text: m.texto }),
-    });
-    if (!r.ok) console.log('email da compra não saiu', r.status);
-    return r.ok;
+    if (env.GMAIL_SENHA_APP) {
+      await enviarPeloGmail(env, { para: pedido.email, titulo, texto: m.texto, html: m.html }, conectar);
+      return { ok: true, como: 'gmail' };
+    }
+    if (env.RESEND_API_KEY && env.EMAIL_FROM) {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: env.EMAIL_FROM, to: [pedido.email], reply_to: env.DONO_EMAIL || undefined, subject: titulo, html: m.html, text: m.texto }),
+      });
+      return r.ok ? { ok: true, como: 'resend' } : { ok: false, como: 'resend', erro: `resend_${r.status}` };
+    }
+    return { ok: false, como: 'nenhum', erro: 'sem_servico' };
   } catch (e) {
-    console.log('email da compra não saiu', String(e));
-    return false;
+    console.log('email da compra não saiu', String(e?.message || e));
+    return { ok: false, como: env.GMAIL_SENHA_APP ? 'gmail' : 'resend', erro: String(e?.message || e) };
   }
+}
+
+export async function avisarCompraPorEmail(env, pedido) {
+  return (await enviarEmailDaCompra(env, pedido)).ok;
 }
 
 /** Vendas pagas cujo e-mail com o link ainda não saiu (o dono manda à mão pela Área do Dono). */

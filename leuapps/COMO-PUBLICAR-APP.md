@@ -3,6 +3,8 @@
 A LeuApps (www.leunamesoftware.com.br) é a loja própria da LeuName Softwares. Não usamos a Play Store.
 Todo app novo segue o mesmo caminho abaixo.
 
+> **Leia também `COMO-FUNCIONA-A-VENDA.md`** (na raiz deste repositório): link de instalar, tela Instalar, compra e e-mail automático com o link.
+
 ## 1. Onde o app mora
 - **App de uma página só (HTML/JS):** coloque em `leuapps/public/<id>/index.html`.
   Ele abre em `www.leunamesoftware.com.br/<id>/`.

@@ -88,7 +88,14 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
   <section class="verde">
     <h2>Vendas · mandar o link de instalar</h2>
     <div class="brinde">
-      <p class="nota" style="border:0;padding:0;">Toda venda aparece aqui até o cliente receber o link do app. Toque em <b>Enviar pelo meu e-mail</b>: abre o seu e-mail com a mensagem pronta, é só enviar. Depois toque em <b>Já enviei</b>.</p>
+      <p id="v-robo" class="nota" style="border:0;padding:0;">Conferindo o robô de e-mail…</p>
+      <form id="form-teste">
+        <select id="t-app" aria-label="App da compra de teste"><option value="construgestao">ConstruGestão</option><option value="gestacell">Gestacell</option><option value="radar">Radar Preventivo</option><option value="">Quanto Cobrar</option></select>
+        <input id="t-email" type="email" placeholder="seu@email.com" autocomplete="email" required aria-label="E-mail para receber o teste">
+        <button type="submit" style="grid-column:1/-1">🧪 Compra de teste: mandar o e-mail</button>
+      </form>
+      <p id="t-msg" hidden></p>
+      <p class="nota" style="border:0;padding:0;">Venda que o robô não conseguiu mandar aparece aqui. Toque em <b>Enviar pelo meu e-mail</b> (abre o seu e-mail com a mensagem pronta) e depois em <b>Já enviei</b>.</p>
       <ul id="v-lista"></ul>
     </div>
   </section>
@@ -198,7 +205,10 @@ async function carregarVendas() {
   const lista = document.getElementById('v-lista');
   try {
     const r = await fetch('/loja-api/dono/emails', { credentials: 'same-origin', cache: 'no-store' });
-    const { pendentes = [] } = await r.json();
+    const { pendentes = [], servico = 'nenhum' } = await r.json();
+    document.getElementById('v-robo').innerHTML = servico === 'nenhum'
+      ? '⚠️ <b>Robô de e-mail desligado.</b> Falta colar a senha de app do Gmail na Cloudflare (passo a passo no GitHub: <b>COMO-FUNCIONA-A-VENDA.md</b>). Enquanto isso, mande pelo botão abaixo.'
+      : `✅ <b>Robô de e-mail ligado</b> (${servico === 'gmail' ? 'Gmail da empresa' : 'Resend'}): toda compra recebe o link de instalar sozinha.`;
     lista.innerHTML = pendentes.length ? pendentes.map((v) => `<li><span><b>${esc(v.nome)}</b> · ${esc(v.app)}<small>${esc(v.email)} · ${dataBR(v.quando)}</small></span>
         <a class="botao-mini" href="mailto:${encodeURIComponent(v.email)}?subject=${encodeURIComponent(v.assunto)}&body=${encodeURIComponent(v.texto)}">✉️ Enviar pelo meu e-mail</a>
         <button type="button" data-enviado="${esc(v.id)}">✓ Já enviei</button></li>`).join('')
@@ -212,6 +222,23 @@ document.getElementById('v-lista').addEventListener('click', async (e) => {
   carregarVendas();
 });
 carregarVendas();
+// Compra de teste: o mesmo e-mail que o cliente recebe, mandado para o e-mail escolhido (sem pagar nada).
+document.getElementById('form-teste').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const m = document.getElementById('t-msg'), b = e.target.querySelector('button');
+  const dizer = (t, ok) => { m.textContent = t; m.style.color = ok ? '#15803D' : '#B91C1C'; m.hidden = false; };
+  b.disabled = true; dizer('Mandando…', true);
+  const r = await fetch('/loja-api/dono/emails/teste', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: document.getElementById('t-email').value.trim(), app: document.getElementById('t-app').value }) }).catch(() => null);
+  b.disabled = false;
+  if (!r) return dizer('Sem internet. Tente de novo.');
+  const d = await r.json().catch(() => ({}));
+  if (r.ok) return dizer('✓ Mandado! Abra o seu e-mail (olhe também no Spam) e toque em Instalar.', true);
+  dizer(d.erro === 'sem_servico' ? 'O robô ainda está desligado: falta colar a senha de app do Gmail na Cloudflare.'
+    : /535|235/.test(d.erro || '') ? 'O Gmail recusou a senha. Confira a senha de app colada na Cloudflare.'
+    : d.erro === 'email' ? 'Confira o e-mail.' : d.erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não saiu: ' + (d.erro || 'erro') + '. Tente de novo.');
+});
+try { fetch('/loja-api/conta', { credentials: 'same-origin' }).then((r) => r.json()).then((d) => { const i = document.getElementById('t-email'); if (!i.value && d?.conta?.email) i.value = d.conta.email; }).catch(() => {}); } catch {}
 
 // Avaliações: responder e esconder.
 async function carregarAvaliacoes() {

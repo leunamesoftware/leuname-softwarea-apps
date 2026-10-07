@@ -6,8 +6,8 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { emailsPendentes, marcarEmailEnviado } from './email.js';
-import { acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
+import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra } from './email.js';
+import { PLANOS, acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
 import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
@@ -257,14 +257,22 @@ export default {
         return new Response(m === 'HEAD' ? null : bytes, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' } });
       }
       // Vendas cujo e-mail com o link de instalar não saiu: o dono manda pelo e-mail dele e marca como enviado.
-      if (pathname === '/api/dono/emails' || pathname === '/api/dono/emails/enviado') {
+      if (pathname === '/api/dono/emails' || pathname === '/api/dono/emails/enviado' || pathname === '/api/dono/emails/teste') {
         const conta = await contaDaSessao(env, req);
         if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
-        if (m === 'GET' && pathname === '/api/dono/emails') return json({ pendentes: await emailsPendentes(env) });
-        if (m !== 'POST' || pathname !== '/api/dono/emails/enviado') return json({ erro: 'nao_encontrado' }, 404);
+        const servico = env.GMAIL_SENHA_APP ? 'gmail' : env.RESEND_API_KEY && env.EMAIL_FROM ? 'resend' : 'nenhum';
+        if (m === 'GET' && pathname === '/api/dono/emails') return json({ pendentes: await emailsPendentes(env), servico });
+        if (m !== 'POST' || pathname === '/api/dono/emails') return json({ erro: 'nao_encontrado' }, 404);
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
-        await marcarEmailEnviado(env, (await corpo(req))?.id, 'manual');
-        return json({ ok: true });
+        const d = await corpo(req);
+        if (pathname === '/api/dono/emails/enviado') { await marcarEmailEnviado(env, d?.id, 'manual'); return json({ ok: true }); }
+        // Compra de teste: manda o mesmo e-mail que o cliente recebe, sem pagamento e sem pedido.
+        const email = String(d?.email || '').trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return json({ erro: 'email' }, 400);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const plano = Object.keys(PLANOS).find((k) => PLANOS[k].app === d?.app) || 'basico';
+        const r = await enviarEmailDaCompra(env, { email, nome: 'Emanuel', plano }, { teste: true });
+        return json(r, r.ok ? 200 : 502);
       }
       // Brindes (só o dono): dar o Quanto Cobrar Pro de graça para um e-mail.
       if (pathname === '/api/dono/brindes' || pathname === '/api/dono/brindes/remover') {
