@@ -58,13 +58,7 @@
       "📦 Calcula para 10, 50 ou 200 unidades",
       "📊 Controle das suas vendas"
     ],
-    "capturas": [
-      "/img/telas/quantocobrar-1.webp",
-      "/img/telas/quantocobrar-2.webp",
-      "/img/telas/quantocobrar-3.webp",
-      "/img/telas/quantocobrar-4.webp",
-      "/img/telas/quantocobrar-5.webp"
-    ],
+    "capturas": ["/img/telas/quantocobrar-promo-1.webp", "/img/telas/quantocobrar-promo-2.webp", "/img/telas/quantocobrar-promo-3.webp", "/img/telas/quantocobrar-promo-4.webp", "/img/telas/quantocobrar-promo-5.webp"],
     "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1",
     "manifestWww": "/quantocobrar/manifest.webmanifest?v=5",
     "abrirWww": "/quantocobrar/app/",
@@ -162,12 +156,7 @@
       "👥 Clientes e fornecedores",
       "💰 Financeiro e relatórios"
     ],
-    "capturas": [
-      "/img/telas/gestacell-2.webp",
-      "/img/telas/gestacell-3.webp",
-      "/img/telas/gestacell-4.webp",
-      "/img/telas/gestacell-1.webp"
-    ],
+    "capturas": ["/img/telas/gestacell-promo-1.webp", "/img/telas/gestacell-promo-2.webp", "/img/telas/gestacell-promo-3.webp", "/img/telas/gestacell-promo-4.webp", "/img/telas/gestacell-promo-5.webp"],
     "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
     "manifestWww": "/gestacell/www.webmanifest",
     "abrirWww": "/gestacell/",
@@ -278,13 +267,7 @@
       "📄 Documentos organizados",
       "➕ Cadastro rápido"
     ],
-    "capturas": [
-      "/img/telas/radar-1.webp",
-      "/img/telas/radar-2.webp",
-      "/img/telas/radar-3.webp",
-      "/img/telas/radar-4.webp",
-      "/img/telas/radar-5.webp"
-    ],
+    "capturas": ["/img/telas/radar-promo-1.webp", "/img/telas/radar-promo-2.webp", "/img/telas/radar-promo-3.webp", "/img/telas/radar-promo-4.webp", "/img/telas/radar-promo-5.webp"],
     "instalar": "https://radar.leunamesoftware.com.br/?instalar=1",
     "abrirFrame": "https://radar.leunamesoftware.com.br/?leuapps=1",
     "instalarDireto": {
