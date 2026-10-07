@@ -343,8 +343,7 @@
       }
     ],
     "opcoes": [["Assinatura mensal", "R$ 19,90/mês", "no cartão, cancele quando quiser"], ["Vitalício", "R$ 49,90", "paga uma vez só, é seu para sempre"]],
-    "instalar": "https://construgestao.leunamesoftware.com.br/",
-    "abrirFrame": "https://construgestao.leunamesoftware.com.br/",
+    "instalar": "https://construgestao.leunamesoftware.com.br/?instalar=1",
     "instalarDireto": {"url": "https://construgestao.leunamesoftware.com.br/", "id": "https://construgestao.leunamesoftware.com.br/"},
     "capturas": ["/img/telas/construgestao-play-1b.webp", "/img/telas/construgestao-play-2.webp", "/img/telas/construgestao-play-3.webp", "/img/telas/construgestao-play-4.webp", "/img/telas/construgestao-play-5.webp"],
     "descricao": "Sistema de gestão para loja de material de construção: vendas, orçamentos, entregas, estoque com aviso do que precisa comprar, clientes, fornecedores e calculadoras de material da obra e de preço. Funciona no celular e no computador.",
