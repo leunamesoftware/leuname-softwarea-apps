@@ -893,7 +893,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     $('chips').innerHTML = CHIPS.map(([nome, ic, tipo = 'secao', alvo = nome]) => `<button class="chip" type="button" data-${tipo}="${esc(alvo)}">${svg(ic)}${esc(nome)}</button>`).join('');
     let secaoAtual = null;
     const daSecao = (s) => { const v = VITRINES.find((x) => x[0] === s && typeof x[1] === 'function'); return v ? apps.filter(v[1]) : daSecao0(s); };
-    const daSecao0 = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x)) : todos.filter((a) => (a.secoes || []).includes(s));
+    const daSecao0 = (s) => s === 'Sugestões para você' || s === 'Recomendado para você' ? [...apps].sort((x, y) => pontos(y) - pontos(x))
+      : s === 'Grátis para testar' ? todos.filter((a) => /grátis/i.test(a.preco || '') || (a.secoes || []).includes(s)) // todo app com teste grátis entra sozinho
+      : todos.filter((a) => (a.secoes || []).includes(s));
 
     // Selos das linhas (tudo verdadeiro: vem do apps.json).
     const SELO = { instalado: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', escolha: '<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>', gratis: I.gratis, unico: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>', novo: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="2.5"/>' };
