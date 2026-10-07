@@ -43,8 +43,9 @@
         "/img/servicos/banner2.jpg"
       ],
       "destaque": {
-        "imagem": "/img/destaques/servico-banners.webp",
-        "frase": "Banners que chamam o cliente"
+        "imagem": "/img/destaques/servico-banners-v2.webp",
+        "frase": "Banners que chamam o cliente",
+        "textoNaImagem": true
       }
     }
   ]
