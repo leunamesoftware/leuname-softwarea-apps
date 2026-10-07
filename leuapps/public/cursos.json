@@ -350,11 +350,12 @@
     "id": "whatsapp-vendas",
     "nome": "Venda mais pelo WhatsApp",
     "nomeCurto": "Vendas no WhatsApp",
-    "resumo": "Perfil que passa confiança, status que vende, mensagens que fecham pedido e clientes que voltam.",
-    "icone": "/img/cursos/whatsapp-vendas.webp",
+    "resumo": "Em 20 módulos curtos: WhatsApp Business, perfil e catálogo que passam confiança, status que vende, mensagens que fecham pedido e clientes que voltam. No final, receba o seu certificado.",
+    "icone": "/img/cursos/whatsapp-vendas-v2.webp",
     "destaque": {
-      "imagem": "/img/cursos/whatsapp-vendas-capa.webp",
-      "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia"
+      "imagem": "/img/cursos/whatsapp-vendas-capa-v2.webp",
+      "frase": "Transforme o seu WhatsApp numa vitrine que vende todo dia",
+      "textoNaImagem": true
     },
     "categorias": [
       "Grátis",
@@ -368,25 +369,328 @@
     "nivel": "Iniciante",
     "aulas": [
       {
+        "parte": "Seu WhatsApp profissional",
+        "titulo": "Por que o WhatsApp é a sua melhor vitrine",
+        "minutos": 6,
+        "texto": "<p>Quase todo cliente seu já usa o WhatsApp todos os dias. Ele é uma vitrine que fica aberta o dia inteiro, no bolso de cada pessoa que salvou o seu número.</p><p>O problema é que muita gente usa o WhatsApp do negócio de qualquer jeito: foto escura, resposta demorada, sem preço, sem rotina. E aí o cliente compra do concorrente.</p><p>Neste curso você vai seguir um caminho em 4 partes:</p><ol><li><b>Seu WhatsApp profissional:</b> app certo, perfil, catálogo e fotos.</li><li><b>Atraindo clientes:</b> status, listas, grupos e novos contatos.</li><li><b>Conversas que viram pedidos:</b> respostas rápidas, roteiro de venda e pagamento.</li><li><b>Clientes que voltam:</b> pós-venda, depoimentos, promoções e cuidados.</li></ol><p>No final, você recebe o seu <b>certificado de conclusão</b> da LeuName Softwares.</p><p class=\"dica\">Tarefa: anote quantos pedidos você recebeu pelo WhatsApp na última semana. Vamos comparar no fim do curso.</p>",
+        "pergunta": {
+          "texto": "Por que o WhatsApp é uma ótima vitrine?",
+          "opcoes": [
+            "Porque é pago",
+            "Porque o cliente já usa todo dia",
+            "Porque só serve para empresas grandes"
+          ],
+          "certa": 1,
+          "explica": "Isso! O cliente já está lá todos os dias. É só você aparecer do jeito certo."
+        }
+      },
+      {
+        "parte": "Seu WhatsApp profissional",
+        "titulo": "WhatsApp Business: o app certo para vender",
+        "minutos": 6,
+        "texto": "<p>O <b>WhatsApp Business</b> é um app gratuito, feito para quem vende. Ele tem tudo do WhatsApp comum e mais:</p><ul><li><b>Perfil comercial:</b> descrição, horário, endereço e site.</li><li><b>Catálogo:</b> seus produtos com foto e preço.</li><li><b>Mensagens automáticas:</b> de boas-vindas e de ausência.</li><li><b>Respostas rápidas:</b> textos prontos que você chama com uma barra (/).</li><li><b>Etiquetas:</b> para organizar pedidos e clientes.</li></ul><p><b>Dá para usar o mesmo número?</b> Sim. Ao instalar o WhatsApp Business, ele oferece trazer o número e as conversas do WhatsApp comum. Faça um backup antes, por segurança.</p><p>Se puder, tenha um número só para o negócio. Fica mais fácil separar a vida pessoal das vendas.</p><p class=\"dica\">Tarefa: instale o WhatsApp Business (se ainda não usa) e confira se as suas conversas vieram junto.</p>",
+        "pergunta": {
+          "texto": "O que o WhatsApp Business tem que o comum não tem?",
+          "opcoes": [
+            "Catálogo e mensagens automáticas",
+            "Jogos",
+            "Chamadas mais caras"
+          ],
+          "certa": 0,
+          "explica": "Certo! Catálogo, mensagens automáticas, respostas rápidas e etiquetas."
+        }
+      },
+      {
+        "parte": "Seu WhatsApp profissional",
         "titulo": "Perfil comercial que passa confiança",
-        "minutos": 4,
-        "texto": "<p>O cliente decide em segundos se confia em você. O seu perfil é a primeira vitrine.</p><ul><li><b>Use o WhatsApp Business</b> (grátis): ele tem catálogo, mensagens automáticas e etiquetas.</li><li><b>Foto de perfil:</b> a sua logo ou uma foto do seu melhor produto, bem iluminada.</li><li><b>Nome:</b> o nome do negócio, não o seu apelido.</li><li><b>Descrição:</b> o que você vende, região de entrega e horário. Ex.: \"Doces para festa · Entrega no centro · Seg a sáb, 9h às 19h\".</li><li><b>Catálogo:</b> cadastre os produtos com foto, preço e descrição curta.</li></ul><p class=\"dica\">Tarefa da aula: arrume a foto, o nome e a descrição do seu perfil hoje.</p>"
+        "minutos": 6,
+        "texto": "<p>O cliente decide em segundos se confia em você. O seu perfil é a primeira impressão.</p><ul><li><b>Foto:</b> a sua logo ou o seu melhor produto, bem iluminado. Nada de foto pessoal.</li><li><b>Nome:</b> o nome do negócio, não o seu apelido.</li><li><b>Descrição:</b> o que você vende, onde entrega e o horário. Ex.: “Doces para festa · Entrega no centro · Seg a sáb, 9h às 19h”.</li><li><b>Horário de atendimento:</b> preencha no perfil; assim o cliente sabe quando você responde.</li><li><b>Endereço ou região:</b> evita perguntas repetidas.</li></ul><p>Um perfil completo mostra que existe um negócio de verdade por trás do número.</p><p class=\"dica\">Tarefa: arrume hoje a foto, o nome, a descrição e o horário do seu perfil.</p>",
+        "pergunta": {
+          "texto": "Qual é a melhor foto de perfil para o negócio?",
+          "opcoes": [
+            "Uma selfie na praia",
+            "A logo ou o melhor produto, bem iluminado",
+            "Nenhuma foto"
+          ],
+          "certa": 1,
+          "explica": "Isso! A foto precisa mostrar o seu negócio, não a sua vida pessoal."
+        }
       },
       {
-        "titulo": "Status que vende: o que postar e quando",
-        "minutos": 5,
-        "texto": "<p>O status é visto justamente por quem já tem o seu número, ou seja, pessoas que já conhecem você. É a forma mais barata de vender.</p><p><b>Uma rotina simples por dia:</b></p><ul><li><b>Manhã:</b> o produto do dia, com foto bonita e preço.</li><li><b>Tarde:</b> bastidores, como a massa sendo feita ou a embalagem sendo montada. Isso gera confiança.</li><li><b>Noite:</b> prova social, com um print (com permissão) de cliente elogiando.</li></ul><p><b>Dicas:</b> poste de 3 a 5 status por dia, sempre com uma chamada clara (\"Peça até as 17h\", \"Restam 6 unidades\") e evite textos longos.</p><p class=\"dica\">Tarefa da aula: poste amanhã a sequência manhã, tarde e noite.</p>"
+        "parte": "Seu WhatsApp profissional",
+        "titulo": "Catálogo: seus produtos com foto e preço",
+        "minutos": 7,
+        "texto": "<p>O catálogo é a sua <b>prateleira dentro do WhatsApp</b>. O cliente vê os produtos sem precisar perguntar um por um.</p><p><b>Como montar um bom catálogo:</b></p><ul><li><b>Uma foto boa por produto</b> (no próximo módulo você aprende a tirar).</li><li><b>Nome claro:</b> “Brigadeiro gourmet (unidade)”, não só “Doce”.</li><li><b>Preço sempre visível:</b> preço escondido faz o cliente desistir.</li><li><b>Descrição curta:</b> tamanho, sabor, quantas pessoas serve, prazo de encomenda.</li><li><b>Organize em coleções:</b> Doces, Salgados, Kits de festa.</li></ul><p>Quando alguém perguntar “o que você tem?”, é só mandar o link do catálogo.</p><p class=\"dica\">Tarefa: cadastre pelo menos 5 produtos no catálogo, com foto, nome e preço.</p>",
+        "pergunta": {
+          "texto": "O que mais faz o cliente desistir no catálogo?",
+          "opcoes": [
+            "Preço escondido",
+            "Foto bonita",
+            "Nome claro"
+          ],
+          "certa": 0,
+          "explica": "Certo! Sem preço, muita gente nem pergunta: vai embora."
+        }
       },
       {
+        "parte": "Seu WhatsApp profissional",
+        "titulo": "Fotos que vendem, feitas com o celular",
+        "minutos": 6,
+        "texto": "<p>Comida entra pelos olhos. Não precisa de câmera cara: o seu celular basta, se você cuidar de três coisas.</p><ul><li><b>Luz natural:</b> fotografe perto de uma janela, de dia. Evite o flash.</li><li><b>Fundo limpo:</b> uma tábua, um pano liso ou uma folha branca. Tire a bagunça de trás.</li><li><b>Ângulo:</b> de cima para pratos e bandejas; de lado para bolos e coisas altas.</li></ul><p><b>Outras dicas:</b></p><ul><li>Limpe a lente do celular antes (parece bobagem, mas muda tudo).</li><li>Mostre o recheio: corte um pedaço do bolo, abra uma coxinha.</li><li>Tire várias fotos e escolha a melhor.</li></ul><p class=\"dica\">Tarefa: fotografe o seu produto mais vendido seguindo as três regras e troque a foto do catálogo.</p>",
+        "pergunta": {
+          "texto": "Qual luz deixa a foto de comida mais bonita?",
+          "opcoes": [
+            "Flash do celular",
+            "Luz natural da janela",
+            "Lâmpada amarela fraca"
+          ],
+          "certa": 1,
+          "explica": "Isso! Luz natural mostra as cores de verdade e deixa a comida apetitosa."
+        }
+      },
+      {
+        "parte": "Atraindo clientes",
+        "titulo": "Status que vende: o que postar",
+        "minutos": 6,
+        "texto": "<p>O status é visto por quem já tem o seu número, ou seja, pessoas que já conhecem você. É a forma mais barata de vender.</p><p><b>O que postar:</b></p><ul><li><b>Produto com preço:</b> foto bonita + preço + como pedir.</li><li><b>Bastidores:</b> a massa sendo feita, a embalagem sendo montada. Isso gera confiança.</li><li><b>Prova social:</b> elogio de cliente (com permissão).</li><li><b>Urgência verdadeira:</b> “Restam 6 unidades”, “Encomendas até sexta”.</li></ul><p>Sempre termine com uma <b>chamada clara</b>: “Peça aqui pelo WhatsApp”, “Responda este status para reservar”.</p><p>O status some em 24 horas, então a constância conta mais do que a perfeição.</p><p class=\"dica\">Tarefa: poste hoje um status de produto com preço e chamada para pedir.</p>",
+        "pergunta": {
+          "texto": "Quanto tempo o status fica no ar?",
+          "opcoes": [
+            "Para sempre",
+            "24 horas",
+            "Uma semana"
+          ],
+          "certa": 1,
+          "explica": "Certo! Por isso é bom postar todos os dias."
+        }
+      },
+      {
+        "parte": "Atraindo clientes",
+        "titulo": "Uma rotina de postagens para a semana",
+        "minutos": 6,
+        "texto": "<p>Quem posta só quando lembra, vende só de vez em quando. Uma rotina simples resolve.</p><p><b>Rotina do dia (3 a 5 status):</b></p><ul><li><b>Manhã:</b> o produto do dia, com foto e preço.</li><li><b>Tarde:</b> bastidores ou uma dica.</li><li><b>Noite:</b> elogio de cliente ou lembrete das encomendas.</li></ul><p><b>Ideia de semana:</b></p><ul><li>Segunda: cardápio da semana.</li><li>Quarta: novidade ou sabor do mês.</li><li>Sexta: encomendas para o fim de semana.</li><li>Sábado: kits para festas e aniversários.</li></ul><p>Deixe as fotos da semana prontas no domingo. Assim, postar vira um minuto por vez.</p><p class=\"dica\">Tarefa: escreva a sua rotina da semana num papel e cole perto de onde você trabalha.</p>",
+        "pergunta": {
+          "texto": "O que mais ajuda a vender pelo status?",
+          "opcoes": [
+            "Postar só quando lembrar",
+            "Ter uma rotina todos os dias",
+            "Postar 50 vezes num dia só"
+          ],
+          "certa": 1,
+          "explica": "Isso! A constância faz o cliente lembrar de você."
+        }
+      },
+      {
+        "parte": "Atraindo clientes",
+        "titulo": "Lista de transmissão: como funciona",
+        "minutos": 6,
+        "texto": "<p>A <b>lista de transmissão</b> manda a mesma mensagem para vários contatos de uma vez, mas cada um recebe no privado, como se fosse só para ele.</p><p><b>Regra importante:</b> só recebe a mensagem quem <b>salvou o seu número</b> na agenda. Por isso, peça sempre: “Salva o meu número para receber as novidades”.</p><p><b>Como usar bem:</b></p><ul><li>Separe listas por interesse: Doces, Salgados, Encomendas de festa.</li><li>Mande no máximo 1 ou 2 vezes por semana.</li><li>Mensagem curta, com foto, preço e como pedir.</li><li>Se alguém pedir para sair, tire da lista na hora.</li></ul><p>Mensagem demais faz a pessoa bloquear ou denunciar o seu número, e isso pode limitar a sua conta.</p><p class=\"dica\">Tarefa: crie uma lista de transmissão com os clientes que já compraram de você.</p>",
+        "pergunta": {
+          "texto": "Quem recebe as mensagens da lista de transmissão?",
+          "opcoes": [
+            "Qualquer pessoa",
+            "Só quem salvou o seu número",
+            "Só quem está em grupo"
+          ],
+          "certa": 1,
+          "explica": "Certo! Por isso vale pedir para o cliente salvar o seu número."
+        }
+      },
+      {
+        "parte": "Atraindo clientes",
+        "titulo": "Grupos e canal: quando usar cada um",
+        "minutos": 6,
+        "texto": "<p>Além do status e das listas, o WhatsApp tem <b>grupos</b> e <b>canais</b>.</p><ul><li><b>Grupo:</b> todos conversam com todos. Bom para clientes fiéis, encomendas coletivas ou um bairro. Precisa de regras e de alguém cuidando.</li><li><b>Canal:</b> só você publica, e as pessoas seguem. Bom para avisos, cardápio e promoções, sem bagunça. Os seguidores não veem o número uns dos outros.</li></ul><p><b>Cuidados com grupos:</b></p><ul><li>Nunca adicione alguém sem pedir.</li><li>Deixe as regras na descrição (horário, assunto, sem correntes).</li><li>Se o grupo virar bagunça, as pessoas saem.</li></ul><p class=\"dica\">Tarefa: decida se o seu negócio precisa de grupo, de canal ou dos dois, e por quê.</p>",
+        "pergunta": {
+          "texto": "Qual é a regra de ouro para grupos?",
+          "opcoes": [
+            "Adicionar todo mundo da agenda",
+            "Só adicionar quem pediu ou aceitou",
+            "Mandar correntes"
+          ],
+          "certa": 1,
+          "explica": "Isso! Adicionar sem pedir irrita e pode fazer as pessoas denunciarem o seu número."
+        }
+      },
+      {
+        "parte": "Atraindo clientes",
+        "titulo": "Como conseguir mais contatos sem spam",
+        "minutos": 6,
+        "texto": "<p>Quanto mais gente salva o seu número, mais gente vê o seu status e recebe as suas novidades. Mas contato bom é contato que <b>quer</b> falar com você.</p><p><b>Jeitos certos de conseguir contatos:</b></p><ul><li><b>Etiqueta na embalagem:</b> “Peça de novo pelo WhatsApp” com o número ou um QR code.</li><li><b>Link direto:</b> o WhatsApp Business gera um link e um QR code do seu perfil. Use no Instagram e em cartões.</li><li><b>Indicação:</b> “Indique uma amiga e ganhe um docinho na próxima compra”.</li><li><b>Feiras e eventos:</b> uma plaquinha com o QR code na mesa.</li></ul><p><b>Nunca:</b> comprar listas de números ou mandar mensagem para quem não conhece você. Isso é spam e leva a denúncias.</p><p class=\"dica\">Tarefa: coloque o seu número ou QR code em todas as embalagens desta semana.</p>",
+        "pergunta": {
+          "texto": "Qual destes é um jeito certo de conseguir contatos?",
+          "opcoes": [
+            "Comprar lista de números",
+            "QR code na embalagem",
+            "Mandar mensagem para números aleatórios"
+          ],
+          "certa": 1,
+          "explica": "Certo! Quem escaneia o QR code quer falar com você."
+        }
+      },
+      {
+        "parte": "Conversas que viram pedidos",
+        "titulo": "Responder rápido: mensagens automáticas e respostas rápidas",
+        "minutos": 6,
+        "texto": "<p>Quem demora para responder perde a venda: o cliente com fome pede de outro lugar.</p><p>O WhatsApp Business ajuda com três ferramentas:</p><ul><li><b>Mensagem de saudação:</b> chega sozinha para quem fala com você pela primeira vez. Ex.: “Oi! Que bom ter você aqui 😊 Veja o nosso catálogo e me diga o que deseja.”</li><li><b>Mensagem de ausência:</b> fora do horário. Ex.: “Estamos fechados agora. Respondemos amanhã a partir das 9h. Já pode deixar o seu pedido!”</li><li><b>Respostas rápidas:</b> textos prontos. Digite / e escolha: cardápio, formas de pagamento, taxa de entrega.</li></ul><p>Assim você responde em segundos, mesmo com as mãos na massa.</p><p class=\"dica\">Tarefa: ative a mensagem de saudação, a de ausência e crie 3 respostas rápidas.</p>",
+        "pergunta": {
+          "texto": "Para que serve a mensagem de ausência?",
+          "opcoes": [
+            "Para bloquear clientes",
+            "Para avisar quando você está fora do horário",
+            "Para apagar conversas"
+          ],
+          "certa": 1,
+          "explica": "Isso! O cliente sabe quando você volta e já pode deixar o pedido."
+        }
+      },
+      {
+        "parte": "Conversas que viram pedidos",
         "titulo": "Mensagens que fecham o pedido",
-        "minutos": 5,
-        "texto": "<p>Muita venda se perde na conversa. Responda <b>rápido</b>, de forma <b>clara</b> e sempre <b>conduzindo para o pedido</b>.</p><ul><li><b>Mensagem de saudação automática:</b> \"Oi! Que bom ter você aqui 😊 Veja nosso catálogo e me diga o que deseja.\"</li><li><b>Respostas rápidas:</b> deixe prontos o cardápio, a forma de pagamento e o prazo de entrega.</li><li><b>Pergunte para fechar:</b> em vez de \"qualquer coisa me avisa\", diga \"Posso separar 2 para você entregar amanhã às 15h?\"</li><li><b>Confirme tudo por escrito:</b> produto, quantidade, valor, endereço e horário.</li></ul><p class=\"dica\">Tarefa da aula: crie 3 respostas rápidas no WhatsApp Business.</p>"
+        "minutos": 6,
+        "texto": "<p>Muita venda se perde no meio da conversa. O segredo é <b>conduzir para o pedido</b>.</p><p><b>Roteiro simples:</b></p><ol><li><b>Cumprimente pelo nome:</b> “Oi, Ana! Tudo bem?”</li><li><b>Entenda o que a pessoa quer:</b> “É para hoje ou para alguma festa?”</li><li><b>Sugira:</b> “Para 10 pessoas, o kit com 50 docinhos é o ideal.”</li><li><b>Pergunte para fechar:</b> em vez de “qualquer coisa me avisa”, diga “Posso separar para você buscar amanhã às 15h?”</li><li><b>Confirme por escrito:</b> produto, quantidade, valor, endereço e horário.</li></ol><p>Pergunta fechada (com dia e hora) ajuda o cliente a decidir.</p><p class=\"dica\">Tarefa: salve esse roteiro como resposta rápida e use na próxima conversa.</p>",
+        "pergunta": {
+          "texto": "Qual frase ajuda mais a fechar o pedido?",
+          "opcoes": [
+            "“Qualquer coisa me avisa”",
+            "“Posso separar para você buscar amanhã às 15h?”",
+            "“Depois você vê”"
+          ],
+          "certa": 1,
+          "explica": "Certo! Uma pergunta com dia e hora ajuda o cliente a decidir na hora."
+        }
       },
       {
-        "titulo": "Clientes que voltam: pós-venda e lista de transmissão",
-        "minutos": 4,
-        "texto": "<p>Vender de novo para quem já comprou é muito mais fácil do que conquistar um cliente novo.</p><ul><li><b>Pós-venda:</b> no dia seguinte, pergunte se a pessoa gostou. Isso gera elogios que viram prova social.</li><li><b>Etiquetas:</b> marque os clientes (Comprou, Festa, Encomenda) para saber com quem falar.</li><li><b>Lista de transmissão:</b> uma vez por semana, mande uma novidade ou promoção para quem salvou o seu número.</li><li><b>Datas especiais:</b> Dia das Mães, Páscoa e aniversários são ótimos para encomendas.</li></ul><p class=\"dica\">Parabéns, você terminou o curso! Use estes passos por um mês e compare as vendas.</p>"
+        "parte": "Conversas que viram pedidos",
+        "titulo": "Quando o cliente diz “tá caro”",
+        "minutos": 6,
+        "texto": "<p>Todo mundo que vende já ouviu “tá caro”. A pior resposta é baixar o preço na hora: você perde lucro e ensina o cliente a sempre pedir desconto.</p><p><b>O que fazer:</b></p><ul><li><b>Mostre o valor:</b> “Uso chocolate nobre e faço tudo no dia, por isso o sabor é diferente.”</li><li><b>Ofereça opções:</b> “Se preferir, tenho o kit menor, que sai por R$ 40.”</li><li><b>Mostre o custo-benefício:</b> “Dá R$ 2,60 por docinho, já com a caixinha.”</li><li><b>Mantenha a educação:</b> nem todo cliente é o seu cliente, e tudo bem.</li></ul><p>Lembre do curso Preço certo: o seu preço tem motivo. Se você calculou direitinho, defenda o seu valor.</p><p class=\"dica\">Tarefa: escreva a sua resposta para “tá caro” e salve como resposta rápida.</p>",
+        "pergunta": {
+          "texto": "O cliente disse “tá caro”. O que é melhor fazer?",
+          "opcoes": [
+            "Baixar o preço na hora",
+            "Mostrar o valor e oferecer uma opção menor",
+            "Parar de responder"
+          ],
+          "certa": 1,
+          "explica": "Isso! Mostre o porquê do preço e ofereça alternativas, sem dar desconto de cara."
+        }
+      },
+      {
+        "parte": "Conversas que viram pedidos",
+        "titulo": "Pagamento e entrega combinados sem confusão",
+        "minutos": 6,
+        "texto": "<p>Muito problema nasce de combinado mal feito. Deixe tudo claro <b>antes</b> de produzir.</p><p><b>Pagamento:</b></p><ul><li>Pix é o mais prático: tenha a chave numa resposta rápida.</li><li>Em encomendas, peça <b>sinal de 50%</b> para confirmar.</li><li>Confira se o Pix caiu no banco antes de entregar. Comprovante pode ser falso.</li></ul><p><b>Entrega:</b></p><ul><li>Taxa por bairro ou distância, já definida.</li><li>Horário combinado com uma janela (“entre 14h e 15h”).</li><li>Endereço completo, com ponto de referência.</li></ul><p><b>Mensagem de confirmação:</b> “Pedido confirmado: 40 brigadeiros, R$ 104,00, entrega sábado entre 14h e 15h na Rua das Flores, 25. Sinal de R$ 52,00 recebido ✅”.</p><p class=\"dica\">Tarefa: crie a sua mensagem de confirmação de pedido como resposta rápida.</p>",
+        "pergunta": {
+          "texto": "Antes de entregar, o que você deve conferir no Pix?",
+          "opcoes": [
+            "Só o print do comprovante",
+            "Se o dinheiro caiu de verdade no banco",
+            "Nada"
+          ],
+          "certa": 1,
+          "explica": "Certo! Comprovante pode ser falso. Confira sempre no seu banco."
+        }
+      },
+      {
+        "parte": "Conversas que viram pedidos",
+        "titulo": "Etiquetas: organizando pedidos e clientes",
+        "minutos": 5,
+        "texto": "<p>Com muitas conversas, é fácil esquecer um pedido. As <b>etiquetas</b> do WhatsApp Business organizam tudo por cores.</p><p><b>Etiquetas que funcionam bem:</b></p><ul><li><b>Novo pedido</b></li><li><b>Aguardando pagamento</b></li><li><b>Pago</b></li><li><b>Entregue</b></li><li><b>Cliente fiel</b> e <b>Festa/encomenda</b></li></ul><p>No fim do dia, filtre por “Aguardando pagamento” e cobre com educação. Filtre por “Cliente fiel” quando tiver novidade.</p><p class=\"dica\">Tarefa: crie as etiquetas e marque as conversas desta semana.</p>",
+        "pergunta": {
+          "texto": "Para que servem as etiquetas?",
+          "opcoes": [
+            "Para organizar pedidos e clientes",
+            "Para mudar a cor do app",
+            "Para bloquear contatos"
+          ],
+          "certa": 0,
+          "explica": "Isso! Com etiquetas você não esquece nenhum pedido."
+        }
+      },
+      {
+        "parte": "Clientes que voltam",
+        "titulo": "Pós-venda: o recado que faz o cliente voltar",
+        "minutos": 6,
+        "texto": "<p>Vender de novo para quem já comprou é muito mais fácil do que conquistar um cliente novo. O pós-venda é o que faz isso acontecer.</p><p><b>No dia seguinte à entrega, mande:</b></p><p>“Oi, Ana! E aí, o pessoal gostou dos docinhos? 😊 Qualquer coisa que eu possa melhorar, me conta!”</p><p><b>Por que funciona:</b></p><ul><li>O cliente se sente cuidado.</li><li>Você descobre o que melhorar.</li><li>Muitas vezes vem um elogio, que pode virar depoimento (com permissão).</li><li>A conversa sobe na lista do cliente, e ele lembra de você.</li></ul><p class=\"dica\">Tarefa: mande o recado de pós-venda para os clientes desta semana.</p>",
+        "pergunta": {
+          "texto": "Quando mandar o recado de pós-venda?",
+          "opcoes": [
+            "Um ano depois",
+            "No dia seguinte à entrega",
+            "Nunca"
+          ],
+          "certa": 1,
+          "explica": "Certo! Logo depois, enquanto a experiência ainda está fresca."
+        }
+      },
+      {
+        "parte": "Clientes que voltam",
+        "titulo": "Depoimentos e avaliações",
+        "minutos": 6,
+        "texto": "<p>O que um cliente fala de você vale mais do que qualquer propaganda sua. Isso é a <b>prova social</b>.</p><p><b>Como juntar depoimentos:</b></p><ul><li>Peça no pós-venda: “Posso postar o seu elogio no meu status?”</li><li>Só poste <b>com permissão</b>, e esconda o número e a foto da pessoa se ela preferir.</li><li>Peça uma foto do produto na festa: vale ouro.</li></ul><p><b>Onde usar:</b> no status (uma vez por dia), num destaque do catálogo ou do Instagram, e na conversa com quem está em dúvida.</p><p>Nunca invente depoimento: além de errado, o cliente percebe.</p><p class=\"dica\">Tarefa: peça permissão e poste um depoimento de cliente no status.</p>",
+        "pergunta": {
+          "texto": "Pode postar o elogio de um cliente no status?",
+          "opcoes": [
+            "Sim, sempre, sem perguntar",
+            "Sim, com a permissão dele",
+            "Só inventando um"
+          ],
+          "certa": 1,
+          "explica": "Isso! Com permissão, e escondendo os dados pessoais se a pessoa preferir."
+        }
+      },
+      {
+        "parte": "Clientes que voltam",
+        "titulo": "Promoções e datas especiais",
+        "minutos": 6,
+        "texto": "<p>Datas especiais trazem muitas encomendas: Páscoa, Dia das Mães, Dia dos Namorados, festas juninas, Dia das Crianças, Natal e aniversários.</p><p><b>Planeje com antecedência:</b></p><ul><li>Anuncie as encomendas pelo menos 2 semanas antes.</li><li>Monte <b>kits</b> com preço fechado (ex.: caixa com 12 doces para o Dia das Mães).</li><li>Coloque um <b>prazo</b>: “Encomendas até quarta”.</li><li>Calcule o preço antes, como no curso Preço certo: promoção não pode dar prejuízo.</li></ul><p><b>Promoção boa</b> é combo, brinde pequeno ou prazo curto. Desconto grande e sem fim faz o cliente só comprar em promoção.</p><p class=\"dica\">Tarefa: escolha a próxima data especial e monte um kit com preço e prazo.</p>",
+        "pergunta": {
+          "texto": "Quando começar a divulgar as encomendas de uma data especial?",
+          "opcoes": [
+            "No próprio dia",
+            "Pelo menos 2 semanas antes",
+            "Depois da data"
+          ],
+          "certa": 1,
+          "explica": "Certo! Assim os clientes têm tempo de encomendar e você de se organizar."
+        }
+      },
+      {
+        "parte": "Clientes que voltam",
+        "titulo": "Cuidados: respeito, privacidade e não virar spam",
+        "minutos": 6,
+        "texto": "<p>O WhatsApp pode limitar ou banir números que recebem muitas denúncias. E o cliente que se sente incomodado não volta.</p><p><b>Para não ter problema:</b></p><ul><li>Só mande mensagem para quem falou com você ou pediu para receber.</li><li>Não use programas “piratas” de disparo em massa nem versões modificadas do WhatsApp.</li><li>Respeite quem pede para sair das listas.</li><li>Não compartilhe dados de clientes (número, endereço, prints) sem permissão. A LGPD protege esses dados.</li><li>Evite mandar mensagem tarde da noite ou muito cedo.</li></ul><p>Vender bem pelo WhatsApp é como numa loja física: educação e respeito trazem o cliente de volta.</p><p class=\"dica\">Tarefa: revise as suas listas e tire quem não quer mais receber.</p>",
+        "pergunta": {
+          "texto": "O que pode fazer o seu número ser limitado pelo WhatsApp?",
+          "opcoes": [
+            "Responder rápido",
+            "Muitas denúncias de spam",
+            "Ter catálogo"
+          ],
+          "certa": 1,
+          "explica": "Isso! Mensagem para quem não pediu gera denúncias. Respeito protege o seu número."
+        }
+      },
+      {
+        "parte": "Clientes que voltam",
+        "titulo": "Seu plano de 7 dias para vender mais",
+        "minutos": 6,
+        "texto": "<p>Você aprendeu muita coisa. Agora é colocar em prática com um plano simples de 7 dias:</p><ul><li><b>Dia 1:</b> perfil completo e mensagens automáticas ligadas.</li><li><b>Dia 2:</b> catálogo com 5 produtos, boas fotos e preços.</li><li><b>Dia 3:</b> respostas rápidas: cardápio, pagamento, confirmação, “tá caro”.</li><li><b>Dia 4:</b> etiquetas e lista de transmissão dos clientes.</li><li><b>Dia 5:</b> rotina de status começando (manhã, tarde e noite).</li><li><b>Dia 6:</b> QR code ou número em todas as embalagens.</li><li><b>Dia 7:</b> pós-venda para todos os clientes da semana.</li></ul><p>Antes de divulgar, confira se o preço está certo: o <b>Quanto Cobrar</b>, da LeuName, calcula o custo e o preço de cada receita para você (2 dias grátis para testar).</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado. Daqui a um mês, compare os pedidos com a anotação do primeiro módulo.</p>",
+        "pergunta": {
+          "texto": "Qual é a melhor forma de usar tudo o que aprendeu?",
+          "opcoes": [
+            "Fazer tudo de uma vez num dia",
+            "Seguir um plano, um passo por dia",
+            "Deixar para depois"
+          ],
+          "certa": 1,
+          "explica": "Certo! Um passo por dia, e em uma semana o seu WhatsApp vira uma vitrine que vende."
+        }
       }
-    ]
+    ],
+    "unidade": "módulos",
+    "certificado": true,
+    "app": "quantocobrar"
   }
 ]
