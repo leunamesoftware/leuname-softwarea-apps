@@ -514,6 +514,9 @@
     .det-fatos.cabe li { flex: 1 1 0; min-width: 0; padding: 0 4px; } /* página do curso: os 4 cabem sem rolar */
     .det-fatos b { display: block; color: var(--texto); font-size: 14px; font-weight: 600; }
     .det-botoes { display: flex; gap: 10px; }
+    .pelo-chrome { display: grid; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha, rgba(127,127,127,.25)); }
+    .pelo-chrome p { margin: 0; font-size: 14px; opacity: .85; }
+    .pelo-chrome .acao { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
     .det-botoes > * { flex: 1; min-height: 42px; font-size: 15px; }
     .det-botoes .progresso { align-content: center; }
     .det-planos-btn { width: 100%; margin-top: 10px; }
@@ -850,12 +853,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         <div class="barra ${p >= 0 && p < 100 ? '' : 'indo'}"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div></div>`;
     };
     const botaoEmBreve = '<button class="acao contorno" type="button" disabled>Em breve</button>';
-    // ConstruGestão (app de outro endereço): o botão é o próprio link do app (construgestao.leunamesoftware.com.br).
-    const linkDireto = (a) => !N && a.instalar && !a.abrirWww && !a.abrirFrame
-      ? `<a class="acao" href="${esc(a.instalar + (android && janelaApp() ? '?de=leuapps' : ''))}">Instalar</a>` : '';
     function botaoLinha(a) {
       if (a.emBreve) return botaoEmBreve;
-      if (linkDireto(a)) return linkDireto(a);
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'atualizar') return `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>`;
@@ -864,7 +863,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     function botoesDetalhe(a) {
       if (a.emBreve) return botaoEmBreve;
-      if (linkDireto(a)) return linkDireto(a);
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'nao') return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
@@ -1937,7 +1935,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       }
       if (s !== 'nao') {
         return `<div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1>${recemInstalados.has(a.id) ? `<span class="pilula">${ICO('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 14)} Instalado</span>` : `<div class="det-dev">${esc(dev(a).nome)}</div>`}</div></div>
-          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>`;
+          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>${botaoChrome(a)}`;
       }
       return `<div class="det-topo det-topo-app"><img src="${esc(a.icone)}" alt=""><div><h1>${esc(a.nome)}</h1><div class="det-dev">${esc(dev(a).nome)}</div>${a.planos ? '<div class="det-compra">Contém compras no app</div>' : ''}</div></div>
           <ul class="det-fatos">
@@ -1946,7 +1944,28 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
             <li><b>${N && a.android ? 'Android' : 'Celular e PC'}</b>funciona em</li>
             <li><b>${esc(a.preco.split(' · ')[0])}</b>${esc(a.preco.split(' · ')[1] || 'para começar')}</li>
           </ul>
-          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>`;
+          <div class="det-botoes det-botoes-grandes">${botoesDetalhe(a)}</div>${botaoChrome(a)}`;
+    }
+    // Embaixo do Instalar/Abrir: o mesmo app com ícone próprio, fora da loja, pelo link dele aberto no Chrome.
+    function botaoChrome(a) {
+      if (N || !a.instalar || a.emBreve) return '';
+      return `<div class="pelo-chrome"><p><b>Quer o ${esc(a.nome)} fora da loja?</b> Com ícone próprio ${celular ? 'na tela do celular' : 'na área de trabalho'}:</p>
+        <button class="acao contorno" type="button" data-chrome="${esc(a.id)}">${ICO('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.97 13.75L4.86 6.64M15.03 13.75l-4.1 7.1"/>', 20)} Instalar pelo Chrome</button></div>`;
+    }
+    function instalarPeloChrome(a) {
+      const url = a.instalar.includes('instalar=1') ? a.instalar : a.instalar + (a.instalar.includes('?') ? '&' : '?') + 'instalar=1';
+      if (!android || !janelaApp()) { location.href = url; return; }
+      // Dentro da LeuApps instalada: pede ao Android para abrir o link no Chrome. Se não abrir, mostra o jeito pelo link copiado.
+      let saiu = false; const marca = () => { saiu = true; };
+      document.addEventListener('visibilitychange', marca, { once: true }); addEventListener('pagehide', marca, { once: true });
+      const u = new URL(url);
+      location.href = `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+      setTimeout(() => {
+        if (saiu || document.hidden) return;
+        folha(`<h3>Instalar o ${esc(a.nome)} pelo Chrome</h3><p class="sub">O Chrome não abriu sozinho. Faça assim:</p>
+          <ol><li>Toque em <b>Copiar o link</b>.</li><li>Abra o <b>Chrome</b> e cole na barra de endereço.</li><li>Toque em <b>Instalar</b>.</li></ol>
+          <button class="acao" type="button" data-copiar-link="${esc(a.instalar)}">Copiar o link</button>`, 'Fechar');
+      }, 2000);
     }
     // Logo depois de instalar (ou instalando): sugestões embaixo, como na Play.
     function sugestoesNoApp(a) {
@@ -2061,6 +2080,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       const ins = t.closest('[data-instalar]'); if (ins) return instalar(ins.dataset.instalar);
       const abr = t.closest('[data-abrir]'); if (abr) return abrirApp(abr.dataset.abrir);
       const tir = t.closest('[data-tirar]'); if (tir) return desinstalar(tir.dataset.tirar);
+      const chr = t.closest('[data-chrome]'); if (chr) return instalarPeloChrome(todos.find((x) => x.id === chr.dataset.chrome));
+      const cl = t.closest('[data-copiar-link]'); if (cl) {
+        const ok = () => { cl.textContent = '✓ Link copiado: cole no Chrome'; };
+        if (navigator.clipboard) navigator.clipboard.writeText(cl.dataset.copiarLink).then(ok, () => { cl.textContent = cl.dataset.copiarLink; }); else cl.textContent = cl.dataset.copiarLink;
+        return;
+      }
       const cmp = t.closest('[data-comprar]'); if (cmp) return planos(cmp.dataset.comprar);
       const tst = t.closest('[data-testar]'); if (tst) return testar(tst.dataset.testar);
       const det = t.closest('[data-detalhe]'); if (det) { location.hash = det.dataset.detalhe; return; }
