@@ -225,6 +225,8 @@
     .aula-acoes { display: grid; gap: 10px; margin-top: 26px; } .aula-acoes .acao { min-height: 50px; font-size: 16px; }
     .link-simples { border: 0; background: none; color: var(--verde-texto); font: inherit; font-weight: 700; padding: 10px; }
     .aula-texto ol { padding-left: 22px; margin: 0 0 14px; }
+    .aviso-curso { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--verde-claro); color: var(--verde-texto); font-size: 14.5px; line-height: 1.45; }
+    .aulas-lista button:disabled { opacity: .6; cursor: default; }
     .aulas-parte { margin: 18px 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-texto); }
     .aulas-parte small { display: block; margin-top: 2px; font-size: 15px; letter-spacing: 0; text-transform: none; color: var(--texto); font-weight: 700; }
     .quiz { margin-top: 22px; padding: 16px; border-radius: 18px; background: var(--cartao); display: grid; gap: 10px; }
@@ -783,7 +785,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const DIA = 24 * 3600 * 1000;
     const recentes = () => Object.entries(instaladosEm).filter(([id, t]) => Date.now() - t < 7 * DIA && apps.some((a) => a.id === id && situacao(a) !== 'nao')).sort((x, y) => y[1] - x[1]);
     const recentesNaoVistos = () => recentes().filter(([, t]) => t > recentesVistos);
-    function marcarInstalado(id) { instaladosEm[id] = Date.now(); try { localStorage.setItem('leuapps.instalados-em', JSON.stringify(instaladosEm)); } catch {} }
+    function marcarInstalado(id) { instaladosEm[id] = Date.now(); try { localStorage.setItem('leuapps.instalados-em', JSON.stringify(instaladosEm)); } catch {} verVersao(todos.find((x) => x.id === id)); }
+    // Apps da web atualizam sozinhos; a loja mostra "Atualização disponível" quando o apps.json traz uma "versao" nova.
+    const versoesVistas = (() => { try { return JSON.parse(localStorage.getItem('leuapps.versoes-vistas') || '{}'); } catch { return {}; } })();
+    function verVersao(a) { if (!a || !a.versao) return; versoesVistas[a.id] = a.versao; try { localStorage.setItem('leuapps.versoes-vistas', JSON.stringify(versoesVistas)); } catch {} }
     function haQuanto(t) {
       const m = Math.round((Date.now() - t) / 60000);
       return m < 1 ? 'agora há pouco' : m < 60 ? `há ${m} minuto${m > 1 ? 's' : ''}` : m < 1440 ? `há ${Math.round(m / 60)} hora${m >= 90 ? 's' : ''}` : `há ${Math.round(m / 1440)} dia${m >= 2160 ? 's' : ''}`;
@@ -821,15 +826,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (!v) return 'nao';
         return a.android.versao && v < a.android.versao ? 'atualizar' : 'instalado';
       }
-      if (a.abrirWww && !janelaApp()) return icones.includes(a.id) ? 'instalado' : 'nao'; // no Chrome: só conta o ícone na tela
-      return meus.includes(a.id) ? 'instalado' : 'nao';
+      const tem = a.abrirWww && !janelaApp() ? icones.includes(a.id) : meus.includes(a.id); // no Chrome: só conta o ícone na tela
+      if (!tem) return 'nao';
+      if (a.versao && !versoesVistas[a.id]) verVersao(a); // instalado antes de existir versão: conta como em dia
+      return a.versao && versoesVistas[a.id] !== a.versao ? 'atualizar' : 'instalado';
     }
     const barra = (id) => {
       const p = baixando[id];
       return `<div class="progresso" role="status"><span>${p >= 100 ? 'Instalando…' : p >= 0 ? `Baixando… ${p}%` : 'Baixando…'}</span>
         <div class="barra ${p >= 0 && p < 100 ? '' : 'indo'}"><i style="width:${Math.max(0, Math.min(100, p))}%"></i></div></div>`;
     };
+    const botaoEmBreve = '<button class="acao contorno" type="button" disabled>Em breve</button>';
     function botaoLinha(a) {
+      if (a.emBreve) return botaoEmBreve;
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'atualizar') return `<button class="acao" data-instalar="${esc(a.id)}">Atualizar</button>`;
@@ -837,6 +846,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
     }
     function botoesDetalhe(a) {
+      if (a.emBreve) return botaoEmBreve;
       if (a.id in baixando) return barra(a.id);
       const s = situacao(a);
       if (s === 'nao') return `<button class="acao" data-instalar="${esc(a.id)}">Instalar</button>`;
@@ -1107,7 +1117,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (cat === 'Pagos') return cursos.filter((c) => !gratis(c));
       return cursos.filter((c) => (c.categorias || []).includes(cat));
     }
+    const cursoFechado = (c) => c.emBreve && !souDono; // o dono vê o curso antes de abrir
+    const fimDe = (c) => { try { return localStorage.getItem('leuapps.curso.' + c.id + '.fim'); } catch { return null; } };
+    const continuacao = (c) => Boolean(fimDe(c)) && progressoDe(c.id).length < c.aulas.length; // terminou e vieram módulos novos
     function botaoCurso(c) {
+      if (cursoFechado(c)) return '<button class="acao contorno" type="button" disabled>Em breve</button>';
       if (!gratis(c)) return `<button class="acao" type="button" data-comprar-curso="${esc(c.id)}">${esc(c.preco)}</button>`;
       const f = progressoDe(c.id).length;
       return `<button class="acao" type="button" data-curso-abrir="${esc(c.id)}">${f >= c.aulas.length ? 'Rever' : f ? 'Continuar' : 'Começar'}</button>`;
@@ -1115,7 +1129,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     const linhaCurso = (c) => { const f = progressoDe(c.id).length;
       return `<li><button class="linha linha-simples" type="button" data-curso="${esc(c.id)}">
         <img src="${esc(c.icone)}" alt="" loading="lazy"><span><span class="nome">${esc(c.nome)}</span><span class="resumo-curto">${esc(c.resumo)}</span>
-        <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : feitasTxt(c, f)}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
+        <span class="selos"><span class="selo-app">${esc(c.preco)}</span><span class="selo-app">${metaCurso(c)}</span>${c.emBreve ? '<span class="selo-app">Em breve</span>' : continuacao(c) ? '<span class="selo-app">🆕 Módulos novos</span>' : f ? `<span class="selo-app">${f >= c.aulas.length ? '✓ Concluído' : feitasTxt(c, f)}</span>` : `<span class="selo-app">${esc(c.nivel || '')}</span>`}</span></span></button></li>`; };
     const cartaoCurso = (c) => `
         <div class="dest-item">
           ${c.destaque.textoNaImagem
@@ -1149,12 +1163,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function mostrarCurso() {
       const h = decodeURIComponent(location.hash.slice(1));
       if (!h.startsWith('curso/')) { paginaCurso.hidden = true; paginaCurso.innerHTML = ''; if (detalhe.hidden && paginaSecao.hidden) document.body.style.overflow = ''; return; }
-      const [, id, n, fim] = h.split('/'); const c = cursos.find((x) => x.id === id); if (!c) return;
+      const [, id, n, fimUrl] = h.split('/'); const c = cursos.find((x) => x.id === id); if (!c) return;
+      if (cursoFechado(c) && n !== undefined) { location.replace('#curso/' + c.id); return; }
+      const fim = fimUrl;
       const feitas = progressoDe(c.id), total = c.aulas.length;
       let corpo;
       if (fim === 'fim') {
         const app = c.app && todos.find((a) => a.id === c.app);
-        const terminou = feitas.length >= total;
+        const terminou = feitas.length >= total || Boolean(fimDe(c));
         corpo = `<div class="curso-fim"><div class="ok"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <h1>Parabéns!</h1><p>Você concluiu o curso <b>${esc(c.nome)}</b>.</p>
           ${c.certificado && terminou ? `<div class="cert-bloco"><h2>Seu certificado</h2><p>Escreva o seu nome como quer que apareça. Você pode baixar ou mandar pelo WhatsApp.</p>
@@ -1179,11 +1195,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <div class="det-topo"><img src="${esc(c.icone)}" alt=""><div><h1>${esc(c.nome)}</h1><div class="det-dev">LeuName Cursos</div></div></div>
           <ul class="det-fatos cabe"><li><b>${esc(c.preco)}</b>${gratis(c) ? 'para sempre' : 'pagamento único'}</li><li><b>${total}</b>${unidade(c)}</li><li><b>${duracao(minutos(c))}</b>no total</li>${c.certificado ? '<li><b>Certificado</b>no final</li>' : `<li><b>${esc(c.nivel || 'Todos')}</b>nível</li>`}</ul>
           <div class="det-botoes">${botaoCurso(c)}</div>
+          ${cursoFechado(c) ? '<div class="aviso-curso">Este curso abre em breve. Você já pode ver o que vai aprender.</div>' : ''}
+          ${continuacao(c) ? `<div class="aviso-curso">🆕 <b>Continuação do curso:</b> chegaram ${c.aulas.length - feitas.length} ${unidade(c, c.aulas.length - feitas.length)} novos. O seu certificado continua valendo. Continue quando quiser.</div>` : ''}
           ${feitas.length ? `<div class="curso-prog"><i style="width:${pct}%"></i></div><div class="curso-prog-txt">${feitas.length >= total ? 'Curso concluído ✓' : feitasTxt(c, feitas.length)}</div>` : ''}
           <h2>Sobre este curso</h2><p class="det-desc">${esc(c.resumo)}</p>
           <h2>${unidade(c).replace(/^./, (x) => x.toUpperCase())}</h2><ol class="aulas-lista">${c.aulas.map((a, i) => { const l = lugarNaParte(c, i);
-            return `${l && l.n === 1 ? `<li class="aulas-parte">Parte ${l.parte}<small>${esc(l.nome)}</small></li>` : ''}<li><button type="button" data-aula="${esc(c.id)}/${i}"><span class="aula-num ${feitas.includes(i) ? 'feita' : ''}">${feitas.includes(i) ? '✓' : l ? l.n : i + 1}</span><span class="txt">${esc(a.titulo)}<small>${a.minutos || 1} min</small></span></button></li>`; }).join('')}</ol>
-          ${feitas.length >= total && c.certificado ? `<div class="det-botoes" style="margin-top:14px"><button class="acao contorno" type="button" data-aula="${esc(c.id)}/x/fim">Ver meu certificado</button></div>` : ''}
+            return `${l && l.n === 1 ? `<li class="aulas-parte">Parte ${l.parte}<small>${esc(l.nome)}</small></li>` : ''}<li><button type="button" data-aula="${esc(c.id)}/${i}"${cursoFechado(c) ? ' disabled' : ''}><span class="aula-num ${feitas.includes(i) ? 'feita' : ''}">${feitas.includes(i) ? '✓' : l ? l.n : i + 1}</span><span class="txt">${esc(a.titulo)}<small>${a.minutos || 1} min</small></span></button></li>`; }).join('')}</ol>
+          ${(feitas.length >= total || fimDe(c)) && c.certificado ? `<div class="det-botoes" style="margin-top:14px"><button class="acao contorno" type="button" data-aula="${esc(c.id)}/x/fim">Ver meu certificado</button></div>` : ''}
           <p class="det-info">Curso livre da LeuName Softwares · ${gratis(c) ? 'Grátis e online' : 'Online'}${c.certificado ? ' · com certificado de conclusão' : ''}</p>`;
       }
       paginaCurso.innerHTML = `<div class="det-barra"><button type="button" class="det-voltar" aria-label="Voltar">${VOLTAR}</button></div><div class="det-corpo">${corpo}</div>`;
@@ -1226,7 +1244,8 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       x.fillStyle = tinta; x.fillText(nome, W / 2, 590);
       x.fillStyle = grad; x.fillRect(W / 2 - 360, 618, 720, 4);
       x.fillStyle = suave; x.font = '400 32px system-ui, "Segoe UI", Roboto, sans-serif';
-      const horas = duracao(minutos(c)).replace(' h', ' horas').replace(/^1 horas/, '1 hora');
+      let minCert = 0; try { minCert = Number(localStorage.getItem('leuapps.curso.' + c.id + '.min')) || 0; } catch {}
+      const horas = duracao(minCert || minutos(c)).replace(' h', ' horas').replace(/^1 horas/, '1 hora'); // carga do que a pessoa concluiu
       const texto = `concluiu o curso livre e gratuito “${c.nome}”, com carga horária de ${horas}, oferecido pela LeuName Softwares.`;
       linhas(x, texto, W - 420).forEach((l, k) => x.fillText(l, W / 2, 690 + k * 46));
       const data = dataConclusao(c).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -1282,18 +1301,19 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     function mostrarVoce() {
       if (!cursos.length) { $('bloco-missao').hidden = $('bloco-desafios').hidden = true; return; }
       $('bloco-missao').hidden = $('bloco-desafios').hidden = false;
-      const alvo = cursos.find((c) => gratis(c) && progressoDe(c.id).length < c.aulas.length);
+      const alvo = cursos.find((c) => !c.emBreve && gratis(c) && progressoDe(c.id).length < c.aulas.length);
       $('missao').innerHTML = alvo ? `<div class="missao"><span class="missao-prazo">◆ Comece até ${dataBR(fimDoMes())}</span>
           <div class="missao-arte"><img src="${esc(alvo.icone)}" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
           <div class="missao-rodape"><b>Conclua o curso ${esc(alvo.nomeCurto || alvo.nome)} e ganhe o selo Aluno LeuName</b><button type="button" data-curso="${esc(alvo.id)}">Fazer agora</button></div></div>`
         : `<div class="missao"><span class="missao-prazo">◆ Missão cumprida</span><div class="missao-arte"><img src="/img/leuapps-192.webp" alt=""><img src="/img/cursos/trofeu.webp" alt=""></div>
           <div class="missao-rodape"><b>Você ganhou o selo Aluno LeuName!</b><button type="button" data-ir-cursos>Mais cursos</button></div></div>`;
-      $('desafios').innerHTML = cursos.map((c) => { const f = progressoDe(c.id).length, falta = c.aulas.length - f;
+      $('desafios').innerHTML = cursos.filter((c) => !c.emBreve).map((c) => { const f = progressoDe(c.id).length, falta = c.aulas.length - f;
         return `<div class="desafio"><header><img src="${esc(c.icone)}" alt=""><b>${esc(c.nomeCurto || c.nome)}<small>Desafio da semana</small></b><span class="premio">◆ ${c.aulas.length} ${unidade(c)}</span></header>
           <div class="desafio-corpo"><div class="desafio-info">${feitasTxt(c, f)} · termina no domingo</div><div class="contagem" data-ate="${fimDaSemana().getTime()}"></div></div>
           <div class="desafio-acoes"><button class="contorno2" type="button" data-curso="${esc(c.id)}">Ver curso</button><button class="cheio" type="button" data-curso-abrir="${esc(c.id)}" ${falta ? '' : 'disabled'}>${falta ? (f ? 'Continuar' : 'Começar') : 'Concluído ✓'}</button></div>
           <p class="desafio-nota">${falta ? (falta === 13 ? 'Falta pouco para completar o desafio.' : `${falta > 1 ? 'Faltam' : 'Falta'} ${falta} ${unidade(c, falta)} para completar o desafio.`) : 'Desafio completo. Parabéns!'}</p></div>`; }).join('');
-      $('pontos-desafios').innerHTML = cursos.length > 1 ? cursos.map((_, i) => `<i class="${i ? '' : 'ativo'}"></i>`).join('') : '';
+      const abertos = cursos.filter((c) => !c.emBreve);
+      $('pontos-desafios').innerHTML = abertos.length > 1 ? abertos.map((_, i) => `<i class="${i ? '' : 'ativo'}"></i>`).join('') : '';
       contar();
     }
     function contar() {
@@ -1421,6 +1441,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     // ---- Instalar, abrir, desinstalar ----
     async function instalar(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
+      if (a.emBreve) return avisar(`O ${a.nome} chega em breve na LeuApps.`);
+      // Atualização de app da web: baixa de novo os arquivos (com a voltinha) e marca a versão nova.
+      if (!N && situacao(a) === 'atualizar') {
+        if (meus.includes(id) && (a.abrirWww || a.abrirFrame)) return instalarDentro(a, true);
+        verVersao(a); mostrar(); mostrarDetalhe(); return avisar(`✓ ${a.nome} atualizado!`);
+      }
       // 1) App LeuApps para Android: baixa e instala de verdade (o Android confirma e põe o ícone na tela).
       if (N && a.android) {
         if (!N.podeInstalar()) {
@@ -1494,6 +1520,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     async function abrirApp(id) {
       const a = todos.find((x) => x.id === id); if (!a) return;
+      if (a.emBreve) return avisar(`O ${a.nome} chega em breve na LeuApps.`);
       if (N && a.android) { if (!N.abrir(a.android.pacote)) instalar(id); return; } // no app LeuApps nunca abre como site
       // No navegador: abre pela tela de instalação. Se o app ainda não foi para a tela do celular, ela pede para instalar;
       // se já foi, o próprio navegador costuma abrir o app instalado.
@@ -1514,7 +1541,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       location.href = destino;
     }
     // ---- Apps instalados dentro da LeuApps ----
-    async function instalarDentro(a) {
+    async function instalarDentro(a, atualizando = false) {
       const id = a.id, arquivos = [a.abrirWww || a.abrirFrame, a.icone, ...(a.arquivosWww || [])];
       baixando[id] = 0; mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
       const inicio = Date.now();
@@ -1533,12 +1560,15 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           baixando[id] = Math.min(pct, 99); const y = detalhe.scrollTop; mostrar(); if (location.hash.slice(1) === id) { mostrarDetalhe(); detalhe.scrollTop = y; }
         }
       } catch {
-        delete baixando[id]; mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+        delete baixando[id];
+        if (atualizando) { verVersao(a); mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe(); return avisar(`✓ ${a.nome} atualizado! A versão nova abre na próxima vez.`); } // o app se atualiza sozinho ao abrir
+        mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
         return avisar(`Não deu para instalar o ${a.nome} agora. Confira a internet e tente de novo.`);
       }
       delete baixando[id];
       meus = [...new Set([...meus, id])]; gravar(meus); recemInstalados.add(id); marcarInstalado(id);
       mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+      if (atualizando) return avisar(`✓ ${a.nome} atualizado!`);
       let jaViu = false; try { jaViu = localStorage.getItem('leuapps.viu-dentro') === '1'; localStorage.setItem('leuapps.viu-dentro', '1'); } catch {}
       if (jaViu) return avisar(`✓ ${a.nome} instalado! Ele fica em Meus apps.`);
       folha(`<div class="loja-app"><img src="${esc(a.icone)}" alt=""><div><b>${esc(a.nome)} instalado!</b><small>Ele fica em Meus apps, aqui na LeuApps</small></div></div>
@@ -2112,7 +2142,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         navigator.share({ files: [new File([certificadoBlob], arq, { type: 'image/png' })], title: 'Meu certificado LeuName', text: 'Concluí um curso na LeuApps!' }).catch(() => {}); return; }
       const ct = t.closest('[data-concluir-aula]'); if (ct) { const [id, n] = ct.dataset.concluirAula.split('/'), i = Number(n), c = cursos.find((x) => x.id === id);
         salvarProgresso(id, [...new Set([...progressoDe(id), i])]); mostrarCursos();
-        if (progressoDe(id).length >= c.aulas.length) dataConclusao(c);
+        if (progressoDe(id).length >= c.aulas.length) { // concluiu (ou concluiu a continuação): data e carga horária do certificado
+          try { localStorage.setItem('leuapps.curso.' + id + '.fim', new Date().toISOString()); localStorage.setItem('leuapps.curso.' + id + '.min', String(minutos(c))); } catch {}
+        }
         location.replace(i + 1 < c.aulas.length ? `#curso/${id}/${i + 1}` : `#curso/${id}/x/fim`); return; }
       const cc = t.closest('[data-comprar-curso]'); if (cc) { const c = cursos.find((x) => x.id === cc.dataset.comprarCurso);
         open(`https://wa.me/${(servicos && servicos.whatsapp) || '5524998721557'}?text=${encodeURIComponent(`Olá, LeuName Softwares! Quero o curso ${c.nome} (${c.preco}).`)}`, '_blank'); return; }

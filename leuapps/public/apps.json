@@ -233,7 +233,8 @@
         "R$ 49,90",
         "paga uma vez só"
       ]
-    ]
+    ],
+    "versao": "1.0"
   },
   {
     "id": "radar",
@@ -341,6 +342,28 @@
         "R$ 39,90",
         "paga uma vez só"
       ]
+    ],
+    "versao": "1.0"
+  },
+  {
+    "id": "construgestao",
+    "nome": "ConstruGestão",
+    "categoria": "Material de construção",
+    "resumo": "Vendas, estoque, clientes e financeiro da loja de material de construção.",
+    "icone": "/img/construgestao-192.webp",
+    "url": "https://construgestao.leunamesoftware.com.br",
+    "preco": "Em breve",
+    "emBreve": true,
+    "descricao": "Sistema de gestão para loja de material de construção: vendas, estoque com aviso de reposição, clientes, fornecedores e financeiro. Funciona no celular e no computador. Chega em breve na LeuApps.",
+    "recursos": [
+      "🧾 Vendas e orçamentos",
+      "📦 Estoque com aviso de reposição",
+      "👥 Clientes e fornecedores",
+      "💰 Financeiro e relatórios"
+    ],
+    "secoes": [
+      "Negócios",
+      "Ferramentas de negócios"
     ]
   }
 ]

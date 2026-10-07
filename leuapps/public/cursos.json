@@ -1517,5 +1517,346 @@
         }
       }
     ]
+  },
+  {
+    "id": "loja-construcao",
+    "nome": "Gestão de loja de material de construção",
+    "nomeCurto": "Material de construção",
+    "resumo": "Em 20 módulos: fiado com controle, unidades de medida, estoque pesado, custo com frete, margem por produto, orçamento de obra, cálculo de quantidade, entrega e os números da loja. No final, certificado.",
+    "icone": "/img/cursos/construcao.webp",
+    "categorias": [
+      "Grátis",
+      "Finanças",
+      "Vendas",
+      "Empreender"
+    ],
+    "preco": "Grátis",
+    "nivel": "Iniciante",
+    "app": "construgestao",
+    "unidade": "módulos",
+    "certificado": true,
+    "emBreve": true,
+    "aulas": [
+      {
+        "parte": "Loja organizada",
+        "titulo": "Por que loja de material de construção aperta o caixa",
+        "minutos": 6,
+        "texto": "<p>Loja de material de construção tem um desafio próprio: <b>muito dinheiro parado em estoque pesado</b>, muita venda a prazo e muita perda escondida (saco rasgado, piso quebrado, areia que “some”).</p><p>Os sinais de alerta:</p><ul><li>Galpão cheio e caixa vazio.</li><li>Fiado sem controle: ninguém sabe quanto está para receber.</li><li>Preço igual ao do concorrente, sem saber o custo real com frete.</li><li>Entrega cobrada “no olho”.</li></ul><p>Neste curso você vai organizar a loja em 4 partes: <b>loja organizada</b>, <b>preço e compras</b>, <b>vendas, orçamento e entrega</b> e <b>os números da loja</b>.</p><p>No final, você recebe o seu <b>certificado de conclusão</b> da LeuName Softwares.</p><p class=\"dica\">Tarefa: anote os 3 maiores problemas da sua loja hoje.</p>",
+        "pergunta": {
+          "texto": "Qual é um desafio típico da loja de material de construção?",
+          "opcoes": [
+            "Pouco estoque",
+            "Muito dinheiro parado em estoque pesado",
+            "Não ter clientes"
+          ],
+          "certa": 1,
+          "explica": "Isso! Estoque pesado prende dinheiro. Controle é o que libera o caixa."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Caixa, crediário e fiado com controle",
+        "minutos": 6,
+        "texto": "<p>Na construção, muito cliente compra aos poucos e paga depois. Isso pode ajudar a vender, mas sem controle vira prejuízo.</p><ul><li>Caixa da loja separado do dinheiro de casa, com abertura e fechamento todo dia.</li><li>Venda a prazo só com <b>cadastro completo</b> (nome, CPF, endereço, telefone) e com o limite definido para cada cliente.</li><li>Toda venda a prazo com <b>data de vencimento</b> e assinatura (ou confirmação por mensagem).</li><li>Cliente atrasado não compra mais a prazo até acertar.</li></ul><p>Uma regra simples: o total vendido a prazo nunca pode passar do que a loja aguenta ficar sem receber.</p><p class=\"dica\">Tarefa: liste quem deve para a loja hoje, quanto e desde quando.</p>",
+        "pergunta": {
+          "texto": "O que é essencial antes de vender a prazo?",
+          "opcoes": [
+            "Nada",
+            "Cadastro completo e limite definido",
+            "Dar desconto"
+          ],
+          "certa": 1,
+          "explica": "Certo! Cadastro e limite protegem a loja do calote."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Cadastro de produtos e unidades de medida",
+        "minutos": 6,
+        "texto": "<p>Material de construção é vendido em muitas unidades diferentes: <b>saco, m², m³, metro, barra, unidade, caixa, lata</b>. Cadastro errado bagunça estoque e preço.</p><ul><li>Defina a unidade de venda de cada produto. Piso: m² (e quantos m² tem a caixa). Ferro: barra. Areia: m³.</li><li>Se compra em uma unidade e vende em outra (compra caixa, vende m²), anote a conversão.</li><li>Nome padronizado: “Cimento CP II 50 kg”, “Piso cerâmico 60x60 caixa 2,5 m²”.</li><li>Custo real (com frete e descarga), preço de venda, estoque mínimo e fornecedor.</li></ul><p class=\"dica\">Tarefa: confira as unidades de venda dos 20 produtos que você mais vende.</p>",
+        "pergunta": {
+          "texto": "Um piso vem em caixa com 2,5 m². O cliente precisa de 25 m². Quantas caixas?",
+          "opcoes": [
+            "5",
+            "10",
+            "25"
+          ],
+          "certa": 1,
+          "explica": "Isso! 25 ÷ 2,5 = 10 caixas (sem contar a perda, que vamos ver depois)."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Estoque: armazenagem, validade e conservação",
+        "minutos": 6,
+        "texto": "<p>Produto mal guardado é prejuízo certo.</p><ul><li><b>Cimento e argamassa:</b> guardados sobre paletes, longe do chão e da parede, em local seco e coberto. A umidade empedra o produto. Confira a validade na embalagem e venda primeiro o que chegou antes.</li><li><b>Pisos e revestimentos:</b> em pé ou empilhados conforme o fabricante indica, sem peso em cima.</li><li><b>Tintas:</b> longe do sol e do calor.</li><li><b>Areia, pedra e brita:</b> em baias, com controle de quanto entrou e quanto saiu.</li></ul><p>Regra de ouro: <b>o primeiro que entra é o primeiro que sai</b>.</p><p class=\"dica\">Tarefa: confira hoje a validade dos sacos de cimento e argamassa e reorganize para vender os mais antigos primeiro.</p>",
+        "pergunta": {
+          "texto": "Como guardar sacos de cimento?",
+          "opcoes": [
+            "No chão, encostados na parede",
+            "Sobre paletes, longe do chão e da parede, em local seco",
+            "Ao ar livre"
+          ],
+          "certa": 1,
+          "explica": "Certo! A umidade empedra o cimento."
+        }
+      },
+      {
+        "parte": "Loja organizada",
+        "titulo": "Curva ABC e giro de estoque",
+        "minutos": 6,
+        "texto": "<p>Nem todo produto merece a mesma atenção. A <b>curva ABC</b> ajuda:</p><ul><li><b>A:</b> poucos itens que trazem a maior parte do faturamento (cimento, areia, tijolo, ferro). Nunca podem faltar.</li><li><b>B:</b> itens de venda média (hidráulica, elétrica básica).</li><li><b>C:</b> muitos itens que vendem pouco (acabamentos específicos). Compre pouco e com cuidado.</li></ul><p><b>Giro:</b> quanto mais rápido o estoque vira venda, menos dinheiro fica parado. Produto parado há mais de 90 dias merece promoção ou combo.</p><p class=\"dica\">Tarefa: separe os produtos em A, B e C pelas vendas dos últimos 3 meses.</p>",
+        "pergunta": {
+          "texto": "Os itens da curva A:",
+          "opcoes": [
+            "Podem faltar",
+            "Nunca podem faltar",
+            "Não vendem"
+          ],
+          "certa": 1,
+          "explica": "Isso! São eles que trazem a maior parte do faturamento."
+        }
+      },
+      {
+        "parte": "Preço e compras",
+        "titulo": "Custo real: frete, descarga e perdas",
+        "minutos": 6,
+        "texto": "<p>O custo de um produto não é só o preço da nota.</p><ul><li><b>Frete</b> do fornecedor até a loja.</li><li><b>Descarga</b> (chapa, ajudante).</li><li><b>Perdas</b> normais daquele produto (sacos que rasgam, peças que quebram).</li></ul><p><b>Exemplo:</b> 200 sacos de cimento por R$ 6.800, frete de R$ 400 e descarga de R$ 100. Custo: (6.800 + 400 + 100) ÷ 200 = <b>R$ 36,50</b> por saco. Se 2 sacos costumam rasgar, divida por 198: R$ 36,87.</p><p>Quem esquece frete e descarga acha que lucra e, na verdade, empata.</p><p class=\"dica\">Tarefa: recalcule o custo dos seus 5 produtos mais vendidos com frete e descarga.</p>",
+        "pergunta": {
+          "texto": "100 sacos por R$ 3.000, frete R$ 200 e descarga R$ 100. Qual o custo de cada saco?",
+          "opcoes": [
+            "R$ 30",
+            "R$ 33",
+            "R$ 32"
+          ],
+          "certa": 1,
+          "explica": "Certo! (3.000 + 200 + 100) ÷ 100 = R$ 33."
+        }
+      },
+      {
+        "parte": "Preço e compras",
+        "titulo": "Margem por tipo de produto",
+        "minutos": 6,
+        "texto": "<p>Usar a mesma margem para tudo é um erro comum.</p><ul><li><b>Básicos</b> (cimento, areia, tijolo): o cliente compara preço, a margem costuma ser menor. Eles trazem o cliente para a loja.</li><li><b>Hidráulica e elétrica:</b> margem média.</li><li><b>Acabamento, ferramentas e itens pequenos:</b> margem maior.</li></ul><p><b>Conta do preço:</b> preço = custo ÷ (1 − margem). Custo de R$ 36,50 com margem de 15%: 36,50 ÷ 0,85 ≈ <b>R$ 42,95</b>.</p><p>O lucro da loja vem do <b>conjunto</b>: o básico atrai e o resto da lista dá a margem.</p><p class=\"dica\">Tarefa: defina a margem de cada grupo de produtos da sua loja.</p>",
+        "pergunta": {
+          "texto": "Custo R$ 17 e margem de 15%. Qual o preço?",
+          "opcoes": [
+            "R$ 19,55",
+            "R$ 20",
+            "R$ 17,15"
+          ],
+          "certa": 1,
+          "explica": "Isso! 17 ÷ 0,85 = R$ 20."
+        }
+      },
+      {
+        "parte": "Preço e compras",
+        "titulo": "Preço por quantidade e venda em carga",
+        "minutos": 6,
+        "texto": "<p>Na construção, o cliente compra em quantidade. Ter uma tabela de preço por volume ajuda a fechar negócio sem perder dinheiro.</p><ul><li>Preço unitário (1 saco) e preço por quantidade (a partir de 50 sacos, por exemplo).</li><li>O desconto por volume tem que caber na margem: calcule antes.</li><li>Venda em carga fechada (caminhão de areia, milheiro de tijolo) com preço próprio.</li><li>Deixe a tabela escrita: o vendedor não precisa “inventar” desconto.</li></ul><p class=\"dica\">Tarefa: monte a tabela de preço por quantidade dos 5 itens mais vendidos em volume.</p>",
+        "pergunta": {
+          "texto": "Por que ter tabela de preço por quantidade?",
+          "opcoes": [
+            "Para dar qualquer desconto",
+            "Para dar desconto sem perder dinheiro",
+            "Não serve"
+          ],
+          "certa": 1,
+          "explica": "Certo! O desconto já vem calculado dentro da margem."
+        }
+      },
+      {
+        "parte": "Preço e compras",
+        "titulo": "Compras e negociação com fornecedores",
+        "minutos": 6,
+        "texto": "<p>Comprar bem é metade do lucro.</p><ul><li>Tenha pelo menos 2 fornecedores para os itens A.</li><li>Compare preço <b>com frete</b>, prazo de entrega e prazo de pagamento.</li><li>Negocie prazo: o ideal é vender antes de pagar.</li><li>Compre com programação: estoque mínimo e quantidade de reposição para cada item.</li><li>Cuidado com “promoção de carga fechada”: comprar demais prende dinheiro.</li><li>Sempre com nota fiscal.</li></ul><p class=\"dica\">Tarefa: peça cotação a 2 fornecedores para o seu item mais vendido e compare com frete.</p>",
+        "pergunta": {
+          "texto": "O que comparar entre fornecedores?",
+          "opcoes": [
+            "Só o preço",
+            "Preço com frete, prazo de entrega e de pagamento",
+            "Só a cor do caminhão"
+          ],
+          "certa": 1,
+          "explica": "Isso! O mais barato na nota pode sair mais caro com frete."
+        }
+      },
+      {
+        "parte": "Preço e compras",
+        "titulo": "Perdas e quebras",
+        "minutos": 6,
+        "texto": "<p>Perda pequena e todo dia vira prejuízo grande no ano.</p><ul><li><b>Sacos rasgados:</b> manuseio e empilhamento corretos.</li><li><b>Pisos e louças quebrados:</b> cuidado na descarga e na entrega; confira na chegada.</li><li><b>Areia e pedra:</b> controle de entrada e saída por volume.</li><li><b>Furto:</b> produtos pequenos e caros (ferramentas, metais) perto do balcão ou com vigilância.</li></ul><p><b>Meça:</b> perda do mês ÷ compras do mês. Se comprou R$ 50.000 e perdeu R$ 1.500, a perda é de 3%. Acompanhe esse número.</p><p class=\"dica\">Tarefa: comece a anotar toda perda com o motivo.</p>",
+        "pergunta": {
+          "texto": "Comprou R$ 40.000 e perdeu R$ 800. Qual a perda em porcentagem?",
+          "opcoes": [
+            "2%",
+            "8%",
+            "0,8%"
+          ],
+          "certa": 0,
+          "explica": "Certo! 800 ÷ 40.000 = 2%."
+        }
+      },
+      {
+        "parte": "Vendas, orçamento e entrega",
+        "titulo": "Orçamento de obra: a lista do pedreiro",
+        "minutos": 6,
+        "texto": "<p>Muitas vendas começam com a lista do pedreiro. Orçamento bem feito vende mais.</p><ul><li>Responda rápido, de preferência no mesmo dia.</li><li>Item por item: produto, quantidade, unidade e preço.</li><li>Deixe claro o que está incluso: entrega, descarga, prazo.</li><li>Coloque <b>validade</b> no orçamento (os preços mudam).</li><li>Sugira o que costuma faltar na lista (argamassa para o piso, rejunte, espaçador).</li></ul><p>Guarde o orçamento: quando o cliente voltar, você já tem tudo pronto.</p><p class=\"dica\">Tarefa: crie um modelo de orçamento com validade e condições de entrega.</p>",
+        "pergunta": {
+          "texto": "Por que colocar validade no orçamento?",
+          "opcoes": [
+            "Para enfeitar",
+            "Porque os preços mudam",
+            "Não precisa"
+          ],
+          "certa": 1,
+          "explica": "Isso! Validade protege a loja de vender com preço antigo."
+        }
+      },
+      {
+        "parte": "Vendas, orçamento e entrega",
+        "titulo": "Calculando a quantidade certa para o cliente",
+        "minutos": 6,
+        "texto": "<p>Ajudar o cliente a calcular a quantidade passa confiança e evita volta (ou sobra).</p><ul><li><b>Piso e revestimento:</b> área em m² + <b>10% de perda</b> (assentamento reto). Em diagonal, a perda é maior, uns 15%. Depois divida pelos m² da caixa.</li><li><b>Tinta:</b> área × número de demãos ÷ rendimento informado na lata.</li><li><b>Tijolos e blocos:</b> use a quantidade por m² da tabela do fabricante × área da parede, mais uma margem de perda.</li><li><b>Argamassa e rejunte:</b> siga o consumo por m² informado na embalagem.</li></ul><p><b>Exemplo:</b> sala de 20 m², piso em caixa de 2,5 m²: 20 × 1,10 = 22 m² ÷ 2,5 = 8,8 → <b>9 caixas</b>.</p><p class=\"dica\">Tarefa: faça uma folha com essas contas e deixe no balcão.</p>",
+        "pergunta": {
+          "texto": "Cozinha de 10 m², piso reto, caixa de 2,2 m². Quantas caixas?",
+          "opcoes": [
+            "5",
+            "4",
+            "6"
+          ],
+          "certa": 0,
+          "explica": "Certo! 10 × 1,10 = 11 m² ÷ 2,2 = 5 caixas."
+        }
+      },
+      {
+        "parte": "Vendas, orçamento e entrega",
+        "titulo": "Entrega: frete, agenda e conferência",
+        "minutos": 6,
+        "texto": "<p>A entrega é parte da venda e tem custo: caminhão, combustível, motorista, ajudante.</p><ul><li>Calcule o <b>custo por entrega</b> e cobre frete por região ou distância.</li><li>Agende com horário e confirme o endereço e o acesso (rua estreita, ladeira).</li><li>Monte as rotas para fazer várias entregas na mesma viagem.</li><li><b>Canhoto assinado</b> ou foto da entrega: comprova que o cliente recebeu e conferiu.</li><li>Avise o cliente para conferir na hora (quantidade e quebras).</li></ul><p class=\"dica\">Tarefa: calcule quanto custa, em média, cada entrega da sua loja.</p>",
+        "pergunta": {
+          "texto": "Para que serve o canhoto assinado?",
+          "opcoes": [
+            "Para nada",
+            "Para comprovar que o cliente recebeu e conferiu",
+            "Para enfeitar o caminhão"
+          ],
+          "certa": 1,
+          "explica": "Isso! Ele evita discussão sobre falta ou quebra depois."
+        }
+      },
+      {
+        "parte": "Vendas, orçamento e entrega",
+        "titulo": "Cartão, parcelamento e Pix",
+        "minutos": 6,
+        "texto": "<p>Obra é cara e muito cliente parcela. Toda parcela tem taxa.</p><ul><li>Conheça as taxas da maquininha: débito, crédito à vista e parcelado.</li><li>Preço parcelado para não perder: preço à vista ÷ (1 − taxa).</li><li>Ofereça vantagem no Pix ou dinheiro: entra na hora e sem taxa.</li><li>Confira o Pix no aplicativo do banco antes de liberar a mercadoria. Print de comprovante pode ser falso.</li></ul><p><b>Exemplo:</b> compra de R$ 2.700 à vista; no 10x com taxa de 10%: 2.700 ÷ 0,90 = <b>R$ 3.000</b>.</p><p class=\"dica\">Tarefa: monte uma tabela de parcelamento e deixe no balcão.</p>",
+        "pergunta": {
+          "texto": "Venda de R$ 900 à vista e taxa de 10% no parcelado. Qual o preço parcelado?",
+          "opcoes": [
+            "R$ 990",
+            "R$ 1.000",
+            "R$ 910"
+          ],
+          "certa": 1,
+          "explica": "Certo! 900 ÷ 0,90 = R$ 1.000."
+        }
+      },
+      {
+        "parte": "Vendas, orçamento e entrega",
+        "titulo": "Atendimento ao profissional da obra",
+        "minutos": 6,
+        "texto": "<p>Pedreiros, mestres de obra, eletricistas e encanadores indicam onde o cliente vai comprar. Eles são parceiros importantes.</p><ul><li>Cadastre os profissionais que compram ou indicam.</li><li>Atendimento rápido para quem está com a obra parada.</li><li>Programa de fidelidade claro (pontos, brindes, condições).</li><li>Seja transparente com o cliente final: preço justo para quem paga a obra.</li><li>Ofereça conhecimento: dicas de produto, novidades, lançamentos.</li></ul><p>Profissional bem atendido traz cliente toda semana.</p><p class=\"dica\">Tarefa: liste os 10 profissionais que mais trazem clientes e pense em como atendê-los melhor.</p>",
+        "pergunta": {
+          "texto": "Por que o profissional da obra é importante para a loja?",
+          "opcoes": [
+            "Não é",
+            "Porque ele indica onde o cliente compra",
+            "Porque compra pouco"
+          ],
+          "certa": 1,
+          "explica": "Isso! Profissional satisfeito traz clientes."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Fluxo de caixa com estoque pesado",
+        "minutos": 6,
+        "texto": "<p>Na loja de construção, o dinheiro sai antes (compra de estoque) e volta depois (vendas, prazo, cartão).</p><ul><li>Anote entradas e saídas com data.</li><li>Olhe as próximas 4 semanas: contas a vencer e o que deve entrar.</li><li>Cuidado com compras grandes de oportunidade: elas apertam o caixa.</li><li>Venda a prazo e cartão parcelado só viram dinheiro nas datas certas.</li></ul><p class=\"dica\">Tarefa: monte o fluxo de caixa das próximas 4 semanas.</p>",
+        "pergunta": {
+          "texto": "Por que a loja pode ficar sem dinheiro mesmo vendendo bem?",
+          "opcoes": [
+            "Porque o dinheiro entra depois das contas vencerem",
+            "Porque vende demais",
+            "Nunca acontece"
+          ],
+          "certa": 0,
+          "explica": "Certo! O fluxo de caixa mostra isso antes de virar problema."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Contas a receber e inadimplência",
+        "minutos": 6,
+        "texto": "<p>O fiado é um dos maiores riscos da loja de construção.</p><ul><li>Lista de contas a receber sempre atualizada: cliente, valor, vencimento.</li><li>Cobre com educação no dia do vencimento (lembrete por mensagem antes ajuda muito).</li><li>Calcule a <b>inadimplência</b>: valor atrasado ÷ total a receber.</li><li>Negocie com quem atrasou, mas pare de vender a prazo até acertar.</li></ul><p><b>Exemplo:</b> R$ 4.000 atrasados de R$ 40.000 a receber = 10% de inadimplência. Esse número precisa cair.</p><p class=\"dica\">Tarefa: calcule a sua inadimplência hoje.</p>",
+        "pergunta": {
+          "texto": "R$ 3.000 atrasados de R$ 30.000 a receber. Qual a inadimplência?",
+          "opcoes": [
+            "10%",
+            "3%",
+            "30%"
+          ],
+          "certa": 0,
+          "explica": "Isso! 3.000 ÷ 30.000 = 10%."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Lucro real: custos fixos e variáveis",
+        "minutos": 6,
+        "texto": "<p>Separe os custos para saber o lucro de verdade:</p><ul><li><b>Fixos:</b> aluguel do galpão, energia, salários, contador, sistema, pró-labore, manutenção do caminhão.</li><li><b>Variáveis:</b> custo da mercadoria vendida, frete de entrega, taxas do cartão, comissões.</li></ul><p><b>Lucro = vendas − variáveis − fixos.</b></p><p><b>Exemplo:</b> vendas R$ 120.000 − variáveis R$ 96.000 − fixos R$ 18.000 = <b>R$ 6.000</b>.</p><p>Na construção, a margem dos básicos é baixa, então o volume e o controle de custos fazem toda a diferença.</p><p class=\"dica\">Tarefa: faça essa conta com os números do último mês.</p>",
+        "pergunta": {
+          "texto": "Vendas R$ 80.000, variáveis R$ 64.000 e fixos R$ 12.000. Qual o lucro?",
+          "opcoes": [
+            "R$ 4.000",
+            "R$ 16.000",
+            "R$ 12.000"
+          ],
+          "certa": 0,
+          "explica": "Certo! 80.000 − 64.000 − 12.000 = R$ 4.000."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Ponto de equilíbrio e relatórios do mês",
+        "minutos": 6,
+        "texto": "<p><b>Ponto de equilíbrio</b> é quanto vender para empatar: custos fixos ÷ margem de contribuição.</p><p>Se de cada R$ 100 vendidos sobram R$ 20 depois dos custos variáveis (20%), com fixos de R$ 18.000: 18.000 ÷ 0,20 = <b>R$ 90.000</b> de vendas para empatar.</p><p><b>Todo mês, olhe:</b></p><ul><li>Faturamento, lucro e ponto de equilíbrio.</li><li>Itens mais vendidos e os que mais dão lucro.</li><li>Estoque parado e perdas.</li><li>Contas a receber e inadimplência.</li><li>Custo médio das entregas.</li></ul><p class=\"dica\">Tarefa: calcule o ponto de equilíbrio da sua loja.</p>",
+        "pergunta": {
+          "texto": "Fixos de R$ 10.000 e margem de contribuição de 20%. Qual o ponto de equilíbrio?",
+          "opcoes": [
+            "R$ 50.000",
+            "R$ 2.000",
+            "R$ 12.000"
+          ],
+          "certa": 0,
+          "explica": "Isso! 10.000 ÷ 0,20 = R$ 50.000."
+        }
+      },
+      {
+        "parte": "Os números da loja",
+        "titulo": "Na prática: o ConstruGestão organiza a sua loja",
+        "minutos": 6,
+        "texto": "<p>Você viu caixa, fiado, unidades de medida, estoque, preço, compras, orçamento, entrega e os números da loja. No caderno dá trabalho e é fácil perder informação.</p><p>O <b>ConstruGestão</b>, da LeuName, está sendo preparado para a loja de material de construção:</p><ul><li>Vendas e orçamentos.</li><li>Estoque com aviso de reposição.</li><li>Clientes, fornecedores e contas a receber.</li><li>Financeiro e relatórios.</li></ul><p>Ele chega em breve na LeuApps. Fique de olho!</p><p class=\"dica\">Parabéns, você chegou ao último módulo! Conclua para receber o seu certificado.</p>",
+        "pergunta": {
+          "texto": "O que mais ajuda a loja a ter lucro de verdade?",
+          "opcoes": [
+            "Trabalhar no achismo",
+            "Ter controle de estoque, preço e números",
+            "Vender sem olhar o custo"
+          ],
+          "certa": 1,
+          "explica": "Certo! Controle transforma movimento em lucro."
+        }
+      }
+    ]
   }
 ]
