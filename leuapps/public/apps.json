@@ -83,9 +83,9 @@
       "apk": "https://quantocobrar.leunamesoftware.com.br/baixar"
     },
     "destaque": {
-      "imagem": "/img/destaques/quantocobrar-v2.webp",
+      "imagem": "/img/destaques/quantocobrar-v3.webp",
       "titulo": "Quanto Cobrar",
-      "frase": "Receitas que vendem e o preço certo de cada uma",
+      "frase": "Receitas que vendem, com o preço certo",
       "textoNaImagem": true,
       "fundo": "/img/destaques/quantocobrar-novidades.webp"
     },
@@ -186,9 +186,9 @@
       "versao": 101
     },
     "destaque": {
-      "imagem": "/img/destaques/gestacell-v3.webp",
+      "imagem": "/img/destaques/gestacell-v4.webp",
       "titulo": "Gestacell",
-      "frase": "Vendas, OS, estoque e calculadoras da loja de celular",
+      "frase": "Vendas, OS e estoque da loja de celular",
       "fundo": "/img/destaques/gestacell.webp",
       "textoNaImagem": true
     },

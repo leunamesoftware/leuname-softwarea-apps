@@ -13,7 +13,7 @@
         "/img/servicos/logo3.jpg"
       ],
       "destaque": {
-        "imagem": "/img/destaques/servico-logomarcas-v2.webp",
+        "imagem": "/img/destaques/servico-logomarcas-v3.webp",
         "frase": "Sua marca com uma logo só sua",
         "textoNaImagem": true
       }
@@ -28,7 +28,7 @@
         "/img/servicos/template2.jpg"
       ],
       "destaque": {
-        "imagem": "/img/destaques/servico-templates-v2.webp",
+        "imagem": "/img/destaques/servico-templates-v3.webp",
         "frase": "Um site com a cara da sua loja",
         "textoNaImagem": true
       }
