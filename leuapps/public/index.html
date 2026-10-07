@@ -476,6 +476,19 @@
 
     /* Você */
     .ola { text-align: center; font-size: 34px; font-weight: 800; letter-spacing: -.5px; margin: 18px 0 14px; }
+    .minha-conta { text-align: center; display: grid; justify-items: center; gap: 2px; margin-bottom: 6px; }
+    .minha-conta .avatar.grande { width: 64px; height: 64px; font-size: 28px; display: grid; place-items: center; }
+    .minha-conta h3 { margin: 8px 0 0; }
+    .mc-titulo { margin: 16px 0 8px; font-size: 15px; }
+    .mc-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .mc-lista li { display: flex; align-items: center; gap: 12px; }
+    .mc-lista img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
+    .mc-lista span { display: grid; flex: 1; min-width: 0; }
+    .mc-lista small { color: var(--suave); }
+    .mc-ver { border: 1px solid var(--linha, #ddd); background: none; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; color: inherit; }
+    .mc-acoes { display: flex; gap: 10px; margin-top: 18px; }
+    .mc-acoes > * { flex: 1; text-align: center; text-decoration: none; }
+    .mc-acoes .contorno2 { border: 1.5px solid var(--linha); background: none; color: var(--verde-texto); border-radius: 999px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; }
     .cartao-conta { display: flex; align-items: center; gap: 14px; margin: 0 auto; max-width: 420px; padding: 12px 18px 12px 12px; border-radius: 999px; background: var(--cartao); text-decoration: none; }
     .cartao-conta .avatar { flex: none; width: 46px; height: 46px; }
     .cartao-conta small { display: block; color: var(--suave); font-size: 13.5px; }
@@ -724,7 +737,7 @@
     <!-- Você -->
     <section id="aba-voce" hidden>
       <div class="ola" id="ola">Olá!</div>
-      <a class="cartao-conta" id="cartao-conta" href="/loja/comprar?app=quantocobrar&entrar=1"><span class="avatar" id="avatar3">L</span><span><small>Sua conta LeuName</small><b id="conta-texto">Entrar na sua conta</b></span></a>
+      <a class="cartao-conta" id="cartao-conta" href="#minha-conta" role="button"><span class="avatar" id="avatar3">L</span><span><small>Sua conta LeuName</small><b id="conta-texto">Entrar na sua conta</b></span></a>
       <!-- Como o "Você" da Play: missões com prêmio e desafios com contagem (feitos com os nossos cursos) -->
       <div class="secao" id="bloco-missao"><div class="secao-titulo"><h2>Missões e prêmios</h2></div><div id="missao"></div></div>
       <div class="secao" id="bloco-desafios"><div class="secao-titulo"><h2>Desafios</h2></div><div class="rolar desafios" id="desafios"></div><div class="pontinhos" id="pontos-desafios"></div></div>
@@ -2262,9 +2275,75 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }, 500);
 
     // ---- Você: nome e conta ----
+    // ---- Minha conta (aba Perfil): dados, apps e planos da conta, cursos, trocar a senha e sair ----
+    const nomePlano = (p) => !p ? '' : /(^|_)mensal$/.test(p) ? 'Assinatura mensal' : /(^|_)anual$/.test(p) ? 'Plano anual' : p === 'basico' ? 'Pacote de receitas'
+      : p === 'dono' ? 'Dono: tudo liberado' : p === 'brinde' ? 'Presente da LeuName' : p === 'gratis' ? 'Teste grátis' : p === 'teste' ? 'Teste de compra' : 'Vitalício';
+    const ate = (d) => d ? ' · até ' + new Date(d).toLocaleDateString('pt-BR') : '';
+    async function folhaConta() {
+      let c = null, acesso = null, apps = {}, testes = {}, rede = false;
+      try { const d = await (await fetch('/loja-api/conta', { cache: 'no-store', credentials: 'same-origin' })).json(); c = d.conta; acesso = d.acesso; rede = true; } catch {}
+      try { const d = await (await fetch('/loja-api/conta/apps', { cache: 'no-store', credentials: 'same-origin' })).json(); c = c || d.conta; apps = d.apps || {}; testes = d.testes || {}; rede = true; } catch {}
+      if (!rede) return avisar('Sem internet. Conecte-se e tente de novo.');
+      if (!c) return entrarNaLoja();
+      const linhas = apps && todos.filter((a) => !a.tipo || a.tipo === 'app').map((a) => {
+        let txt = '';
+        if (a.id === 'quantocobrar' && acesso) txt = acesso.bloqueado ? (acesso.plano === 'gratis' ? 'Teste grátis terminou' : 'Plano vencido') : nomePlano(acesso.plano) + ate(acesso.expiraEm || acesso.testeAte);
+        else if (apps[a.id]) txt = apps[a.id].teste ? 'Teste grátis' + ate(apps[a.id].expiraEm) : nomePlano(apps[a.id].plano || (c.email && !apps[a.id].plano ? 'dono' : '')) + ate(apps[a.id].expiraEm);
+        else if (testes[a.id]?.acabou) txt = 'Teste grátis terminou';
+        return txt ? `<li><img src="${esc(a.icone)}" alt=""><span><b>${esc(a.nome)}</b><small>${esc(txt)}</small></span></li>` : '';
+      }).join('');
+      const feitos = cursos.filter((x) => progressoDe(x.id).length >= x.aulas.length && x.aulas.length);
+      const f = folha(`<div class="minha-conta"><span class="avatar grande">${esc((String(c.nome || c.email || '?').trim()[0] || '?').toUpperCase())}</span>
+          <h3>${esc(c.nome || 'Sua conta')}</h3><p class="sub">${esc(c.email || '')}</p></div>
+        <h4 class="mc-titulo">Seus apps</h4>${linhas ? `<ul class="mc-lista">${linhas}</ul>` : '<p class="sub">Esta conta ainda não tem nenhum app. Teste grátis na página de cada app.</p>'}
+        <h4 class="mc-titulo">Cursos concluídos</h4>${feitos.length ? `<ul class="mc-lista">${feitos.map((x) => `<li><img src="${esc(x.icone)}" alt=""><span><b>${esc(x.nomeCurto || x.nome)}</b><small>Certificado disponível</small></span><button class="mc-ver" type="button" data-fecha data-curso="${esc(x.id)}">Ver</button></li>`).join('')}</ul>` : '<p class="sub">Nenhum curso concluído ainda neste aparelho.</p>'}
+        <div class="mc-acoes"><a class="contorno2" href="https://quantocobrar.leunamesoftware.com.br/recuperar">Trocar a senha</a><button class="contorno2" type="button" data-sair-conta>Sair da conta</button></div>
+        <p class="sub" style="text-align:center;margin-top:10px">A mesma conta vale em todos os apps da LeuApps.</p>`, 'Fechar');
+      f.querySelector('[data-sair-conta]').onclick = async () => {
+        try { await postar('/loja-api/conta/sair', {}); } catch {}
+        try { localStorage.removeItem('leuapps.conta'); } catch {}
+        location.reload();
+      };
+    }
+    // Sem conta: entra ou cria a conta aqui mesmo (a mesma de todos os apps).
+    function entrarNaLoja(criar = false) {
+      const f = folha(`<h3>${criar ? 'Criar a sua conta' : 'Entrar na sua conta'}</h3>
+        <p class="sub">A mesma conta serve em todos os apps da LeuApps.</p>
+        <form novalidate>
+          ${criar ? '<label class="campo">Seu nome<input id="mc-nome" autocomplete="name" maxlength="80"></label>' : ''}
+          <label class="campo">E-mail<input id="mc-email" type="email" inputmode="email" autocomplete="email" maxlength="120"></label>
+          <label class="campo">${criar ? 'Crie uma senha' : 'Senha'}<input id="mc-senha" type="password" autocomplete="${criar ? 'new-password' : 'current-password'}" maxlength="100"${criar ? ' placeholder="Mínimo 6 caracteres"' : ''}></label>
+          <p class="erro-conta" role="alert" hidden></p>
+          <button class="acao" type="submit">${criar ? 'Criar conta' : 'Entrar'}</button>
+          <button class="trocar-conta" type="button">${criar ? 'Já tenho conta: entrar' : 'Ainda não tenho conta'}</button>
+          ${criar ? '' : '<a class="trocar-conta" href="https://quantocobrar.leunamesoftware.com.br/recuperar" style="display:block;text-align:center">Esqueci a senha</a>'}
+        </form>`, 'Agora não');
+      const form = f.querySelector('form'), erro = f.querySelector('.erro-conta');
+      const falha = (t) => { erro.textContent = t; erro.hidden = false; };
+      f.querySelector('button.trocar-conta').onclick = () => { f.remove(); entrarNaLoja(!criar); };
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nome = criar ? f.querySelector('#mc-nome').value.trim() : '', email = f.querySelector('#mc-email').value.trim(), senha = f.querySelector('#mc-senha').value;
+        if (criar && nome.length < 2) return falha('Digite o seu nome.');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return falha('Confira o seu e-mail.');
+        if (senha.length < 6) return falha(criar ? 'Crie uma senha com pelo menos 6 caracteres.' : 'Digite a sua senha.');
+        const b = form.querySelector('.acao'); b.disabled = true; erro.hidden = true;
+        try {
+          let r = await postar(criar ? '/loja-api/conta/criar' : '/loja-api/conta/entrar', criar ? { nome, email, senha } : { email, senha });
+          if (!r.ok && !criar && r.status !== 429) r = await postar('/loja-api/dono/entrar', { email, senha }); // dono pode entrar com a senha da Área do Dono
+          if (!r.ok) {
+            const c = (await r.json().catch(() => ({}))).erro; b.disabled = false;
+            return falha(r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : c === 'senha_incorreta' ? 'Este e-mail já tem conta. Toque em "Já tenho conta: entrar".' : criar ? 'Não deu para criar a conta. Confira os dados.' : 'E-mail ou senha não conferem.');
+          }
+          f.remove(); await conta(); folhaConta();
+        } catch { b.disabled = false; falha('Sem internet. Conecte-se e tente de novo.'); }
+      });
+    }
+    $('cartao-conta').addEventListener('click', (e) => { e.preventDefault(); folhaConta(); });
     async function conta() {
       try {
-        const d = await (await fetch('/loja-api/conta', { cache: 'no-store', credentials: 'same-origin' })).json();
+        let d = await (await fetch('/loja-api/conta', { cache: 'no-store', credentials: 'same-origin' })).json();
+        if (!d.conta) d = await (await fetch('/loja-api/conta/apps', { cache: 'no-store', credentials: 'same-origin' })).json();
         if (!d.conta) return;
         minhaConta = d.conta; if (!detalhe.hidden) mostrarDetalhe();
         const nome = String(d.conta.nome || '').trim().split(/\s+/)[0] || 'você';
@@ -2274,7 +2353,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         $('saudacao').textContent = `${bom}, ${Nome}`;
         $('conta-texto').textContent = d.conta.email;
         for (const id of ['avatar', 'avatar2', 'avatar3']) $(id).textContent = inicial;
-        $('cartao-conta').removeAttribute('href');
       } catch {}
     }
 
