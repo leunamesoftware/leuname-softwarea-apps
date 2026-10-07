@@ -4,7 +4,7 @@
   "start_url": "/?origem=app",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#071A5C",
+  "background_color": "#0E0C10",
   "theme_color": "#071A5C",
   "icons": [
     {
@@ -17,7 +17,13 @@
       "src": "/img/leuapps-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/img/leuapps-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "id": "/"

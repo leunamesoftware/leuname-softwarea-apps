@@ -83,9 +83,11 @@
       "apk": "https://quantocobrar.leunamesoftware.com.br/baixar"
     },
     "destaque": {
-      "imagem": "/img/destaques/quantocobrar.webp",
+      "imagem": "/img/destaques/quantocobrar-v2.webp",
       "titulo": "Quanto Cobrar",
-      "frase": "Receitas que vendem e o preço certo de cada uma"
+      "frase": "Receitas que vendem e o preço certo de cada uma",
+      "textoNaImagem": true,
+      "fundo": "/img/destaques/quantocobrar.webp"
     },
     "tags": [
       "Receitas",
