@@ -99,15 +99,7 @@
         "data": "out 2026"
       }
     ],
-    "secoes": [
-      "Comer e beber",
-      "Negócios",
-      "Finanças",
-      "Ferramentas",
-      "Grátis para testar",
-      "Apps favoritos",
-      "Ferramentas de negócios"
-    ],
+    "secoes": ["Comer e beber", "Negócios", "Finanças", "Ferramentas", "Premium", "Grátis para testar", "Apps favoritos", "Ferramentas de negócios", "Ferramentas e utilitários"],
     "escolha": true,
     "dados": {
       "coleta": "Nome e e-mail da conta, e as receitas, ingredientes e preços que você cadastra",
@@ -296,14 +288,7 @@
         "data": "2026"
       }
     ],
-    "secoes": [
-      "Negócios",
-      "Produtividade",
-      "Ferramentas",
-      "Premium",
-      "Ferramentas de negócios",
-      "Ferramentas e utilitários"
-    ],
+    "secoes": ["Negócios", "Finanças", "Produtividade", "Ferramentas", "Premium", "Ferramentas de negócios", "Ferramentas e utilitários"],
     "dados": {
       "coleta": "Nome e e-mail da conta, e os documentos, contas e prazos que você cadastra",
       "uso": "Para avisar você antes de cada vencimento"
@@ -345,10 +330,8 @@
       "👥 Clientes e fornecedores",
       "💰 Financeiro e relatórios"
     ],
-    "secoes": [
-      "Negócios",
-      "Ferramentas de negócios"
-    ],
+    "tags": ["Empresa", "Material de construção"],
+    "secoes": ["Negócios", "Finanças", "Produtividade", "Ferramentas", "Ferramentas de negócios"],
     "destaque": {
       "imagem": "/img/destaques/construgestao.webp",
       "titulo": "ConstruGestão",

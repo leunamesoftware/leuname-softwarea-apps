@@ -10,14 +10,7 @@
       "frase": "Pare de vender no prejuízo",
       "textoNaImagem": true
     },
-    "categorias": [
-      "Grátis",
-      "Em alta",
-      "Vendas",
-      "Culinária",
-      "Finanças",
-      "Empreender"
-    ],
+    "categorias": ["Grátis", "Em alta", "Vendas", "Culinária", "Finanças", "Gestão", "Empreender"],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "app": "quantocobrar",
@@ -704,12 +697,7 @@
       "frase": "Sua loja de celular organizada",
       "textoNaImagem": true
     },
-    "categorias": [
-      "Grátis",
-      "Finanças",
-      "Vendas",
-      "Empreender"
-    ],
+    "categorias": ["Grátis", "Gestão", "Vendas", "Finanças", "Atendimento", "Marketing", "Empreender"],
     "preco": "Grátis",
     "nivel": "Completo",
     "app": "gestacell",
@@ -1524,12 +1512,7 @@
     "nomeCurto": "Material de construção",
     "resumo": "Em 20 módulos: fiado com controle, unidades de medida, estoque pesado, custo com frete, margem por produto, orçamento de obra, cálculo de quantidade, entrega e os números da loja. No final, certificado.",
     "icone": "/img/cursos/construcao.webp",
-    "categorias": [
-      "Grátis",
-      "Finanças",
-      "Vendas",
-      "Empreender"
-    ],
+    "categorias": ["Grátis", "Gestão", "Vendas", "Finanças", "Atendimento", "Empreender"],
     "preco": "Grátis",
     "nivel": "Iniciante",
     "app": "construgestao",

@@ -1115,6 +1115,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (cat === 'Todos') return cursos;
       if (cat === 'Grátis') return cursos.filter(gratis);
       if (cat === 'Pagos') return cursos.filter((c) => !gratis(c));
+      if (cat === 'Mais procurados') return [...cursos.filter((c) => (c.categorias || []).includes('Em alta')), ...cursos.filter((c) => !(c.categorias || []).includes('Em alta'))];
       return cursos.filter((c) => (c.categorias || []).includes(cat));
     }
     const cursoFechado = (c) => c.emBreve && !souDono; // o dono vê o curso antes de abrir
