@@ -641,7 +641,7 @@
     .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
     .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
     /* ===== Computador: menu na lateral, conteúdo largo (o celular continua igual) ===== */
-    @media (min-width: 1024px) {
+    @media (min-width: 900px) {
       body { padding-left: 232px; }
       .menu { top: 0; right: auto; width: 232px; flex-direction: column; justify-content: flex-start; padding: 20px 12px 16px; border-right: 1px solid var(--linha, #DDD8EA); }
       .menu div { display: flex; flex-direction: column; gap: 4px; max-width: none; align-items: stretch; }
@@ -2059,7 +2059,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (fecharPagina && /^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.body.classList.toggle('rolar-topo', ['apps', 'cursos'].includes(qual));
-      document.documentElement.style.setProperty('--altura-menu', (matchMedia('(min-width: 1024px)').matches ? 0 : (document.querySelector('.menu')?.offsetHeight || 80)) + 'px');
+      document.documentElement.style.setProperty('--altura-menu', (matchMedia('(min-width: 900px)').matches ? 0 : (document.querySelector('.menu')?.offsetHeight || 80)) + 'px');
       for (const n of ['cursos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
       const comBusca = qual === 'pesquisa' || qual === 'livros'; abaAtual = qual;
       $('topo-inicio').hidden = comBusca; $('topo-busca').hidden = !comBusca;

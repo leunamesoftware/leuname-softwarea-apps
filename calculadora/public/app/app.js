@@ -466,7 +466,7 @@ function ajustarFolha() {
   const pg = document.getElementById('pagina'), nav = tela.querySelector('.livro-nav');
   if (!pg || !nav) return;
   // No computador o menu fica na lateral (não come altura embaixo).
-  const livre = innerHeight - pg.getBoundingClientRect().top - nav.offsetHeight - (matchMedia('(min-width: 1024px)').matches ? 0 : abas.offsetHeight) - 14;
+  const livre = innerHeight - pg.getBoundingClientRect().top - nav.offsetHeight - (matchMedia('(min-width: 900px)').matches ? 0 : abas.offsetHeight) - 14;
   pg.style.height = Math.max(300, livre) + 'px';
 }
 addEventListener('resize', () => { if (estado.aba === 'receitas' && livro.aberto) ajustarFolha(); });
