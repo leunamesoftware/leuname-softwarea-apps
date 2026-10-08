@@ -1234,13 +1234,13 @@
     "id": "coxinha-frango",
     "nome": "Coxinha de Frango",
     "categoria": "Salgados",
-    "foto": "/img/receitas/coxinha-frango.webp?v=2b07e4e1",
+    "foto": "/img/receitas/coxinha-frango.webp?v=0926d9ba",
     "rendimento": {
-      "unidades": 60,
-      "pesoUnidadeG": 35,
+      "unidades": 30,
+      "pesoUnidadeG": 70,
       "faixa": [
-        55,
-        70
+        27,
+        33
       ]
     },
     "gas": {
@@ -1264,7 +1264,7 @@
         "nome": "Caldo de galinha",
         "qtd": 1,
         "unidade": "un",
-        "caseira": "1 tablete",
+        "caseira": "1 tablete (para 1 litro de caldo)",
         "emb": {
           "qtd": 6,
           "unidade": "un",
@@ -1273,9 +1273,9 @@
       },
       {
         "nome": "Cebola",
-        "qtd": 120,
+        "qtd": 80,
         "unidade": "g",
-        "caseira": "1 cebola média",
+        "caseira": "1 cebola pequena",
         "emb": {
           "qtd": 1,
           "unidade": "kg",
@@ -1295,9 +1295,9 @@
       },
       {
         "nome": "Óleo",
-        "qtd": 15,
+        "qtd": 30,
         "unidade": "ml",
-        "caseira": "1 colher de sopa",
+        "caseira": "2 colheres de sopa",
         "emb": {
           "qtd": 900,
           "unidade": "ml",
@@ -1316,21 +1316,10 @@
         }
       },
       {
-        "nome": "Leite (massa)",
-        "qtd": 500,
-        "unidade": "ml",
-        "caseira": "2 xícaras",
-        "emb": {
-          "qtd": 1,
-          "unidade": "L",
-          "preco": 5.49
-        }
-      },
-      {
         "nome": "Manteiga (massa)",
-        "qtd": 30,
+        "qtd": 50,
         "unidade": "g",
-        "caseira": "2 colheres de sopa",
+        "caseira": "50 g (¼ de tablete de 200 g)",
         "emb": {
           "qtd": 200,
           "unidade": "g",
@@ -1394,14 +1383,14 @@
       }
     ],
     "preparo": [
-      "Cozinhe o frango em 1 litro de água com o caldo de galinha por 25 minutos. Reserve 500 ml desse caldo e desfie o frango.",
-      "Refogue a cebola e o alho no óleo, junte o frango desfiado e o cheiro-verde. Acerte o sal e deixe esfriar. Se quiser, misture requeijão cremoso ao recheio (opcional, fora do custo).",
-      "Massa: ferva os 500 ml de caldo reservado com o leite, a manteiga e o sal.",
-      "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela (cerca de 5 minutos).",
-      "Passe a massa para uma superfície untada e sove ainda morna até ficar lisa.",
-      "Pegue porções de massa, abra na mão, recheie e modele em formato de gota.",
-      "Passe no ovo batido e depois na farinha de rosca.",
-      "Frite em óleo quente (cerca de 170 °C), poucas de cada vez, até dourar. Escorra em papel-toalha."
+      "Cozinhe o frango em 1 litro de água com o caldo de galinha. Reserve esse caldo (1 litro) e desfie o frango.",
+      "Refogue a cebola e o alho no óleo. Acrescente o frango desfiado, tempere com sal e finalize com cheiro-verde. Reserve.",
+      "Massa: ferva o caldo de frango com a manteiga e o sal.",
+      "Abaixe o fogo e coloque a farinha de uma vez. Mexa vigorosamente até formar uma massa lisa que solte do fundo da panela.",
+      "Transfira para uma superfície untada e deixe amornar.",
+      "Pegue uma porção de massa, abra na mão, coloque o recheio e modele em formato de coxinha.",
+      "Passe nos ovos batidos e depois na farinha de rosca.",
+      "Frite em óleo quente até dourar. Escorra em papel-toalha."
     ],
     "dicas": [
       "Deixe o recheio esfriar bem antes de modelar. Recheio quente rasga a massa.",
@@ -1410,24 +1399,23 @@
       "Para congelar, congele a coxinha já empanada e crua, em assadeira, e depois passe para saco. Frite ainda congelada, sem descongelar.",
       "Validade: 2 dias na geladeira depois de frita ou 90 dias congelada crua."
     ],
-    "dicaVenda": "Coxinha é o salgado que mais sai no cento para festa. No tamanho de lanchonete (cerca de 100 g) a mesma receita rende uns 20: mude o peso no app e veja o novo preço.",
+    "dicaVenda": "Coxinha é o salgado que mais sai. Média (cerca de 70 g) para lanchonete; para festa, faça mini (cerca de 25 g) e venda no cento: mude o peso no app e veja o novo preço.",
     "canal": {
-      "emoji": "🍗",
+      "emoji": "🥟",
       "ingredientes": [
-        "Massa: caldo do cozimento do frango, leite, manteiga, sal e farinha de trigo.",
-        "Recheio: peito de frango, caldo de galinha, cebola, alho, óleo e cheiro-verde.",
+        "Massa: caldo de frango, farinha de trigo, manteiga e sal.",
+        "Recheio: peito de frango cozido e desfiado, cebola, alho, óleo, sal e cheiro-verde.",
         "Para empanar: ovos e farinha de rosca.",
         "Óleo para fritar."
       ],
       "preparo": [
-        "Cozinhe o frango com o caldo de galinha. Reserve parte do caldo e desfie o frango.",
-        "Refogue a cebola e o alho no óleo, junte o frango e o cheiro-verde. Deixe esfriar.",
-        "Ferva o caldo reservado com o leite, a manteiga e o sal.",
-        "Abaixe o fogo, despeje a farinha de uma vez e mexa sem parar até desgrudar da panela.",
-        "Sove a massa ainda morna até ficar lisa.",
-        "Abra porções de massa na mão, recheie e modele em formato de gota.",
-        "Passe no ovo batido e depois na farinha de rosca.",
-        "Frite em óleo quente, poucas de cada vez, até dourar."
+        "Refogue a cebola e o alho no óleo. Acrescente o frango desfiado, tempere e finalize com cheiro-verde. Reserve.",
+        "Ferva o caldo de frango com a manteiga e o sal.",
+        "Abaixe o fogo e coloque a farinha de uma vez. Mexa até formar uma massa lisa que solte do fundo da panela.",
+        "Transfira para uma superfície untada e deixe amornar.",
+        "Abra uma porção de massa na mão, coloque o recheio e modele a coxinha.",
+        "Passe nos ovos batidos e depois na farinha de rosca.",
+        "Frite em óleo quente até dourar."
       ]
     }
   },
