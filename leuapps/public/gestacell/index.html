@@ -283,7 +283,7 @@ tbody tr:hover{background:var(--gray-25);}
 .hidden{display:none !important;}
 
 /* mobile */
-@media (max-width: 880px){
+@media (max-width: 880px), (orientation: portrait) and (max-width: 1100px){
   .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);width:250px;box-shadow:var(--shadow-pop);}
   .sidebar.open{transform:translateX(0);}
   .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:39;}
@@ -292,6 +292,7 @@ tbody tr:hover{background:var(--gray-25);}
   .topbar{display:none;}
   .mobile-topbar{display:flex;align-items:center;gap:10px;height:56px;padding:0 14px;background:var(--navy);color:#fff;position:sticky;top:0;z-index:25;}
   .mobile-topbar .brand-word{font-size:14px;}
+  .mobile-topbar{padding-right:112px;} /* espaço do botão "Voltar à loja" no canto */
   .mobile-topbar .brand-word span{color:#9FC0F0;}
   .content{padding:14px 14px 90px;}
   .grid-cards{grid-template-columns:repeat(2,1fr);gap:10px;}
@@ -308,10 +309,12 @@ tbody tr:hover{background:var(--gray-25);}
   table{font-size:12.5px;}
   .page-head h2{font-size:18px;}
 }
-@media (min-width:881px){
+@media (min-width:881px) and (orientation: landscape), (min-width:1101px){
   .desktop-only{display:block;}
+  /* "Voltar à loja" no pé do menu lateral: no topo ele cobria o nome do usuário. */
+  a[aria-label^="Voltar para Meus apps"]{top:auto !important;right:auto !important;left:14px !important;bottom:96px !important;}
 }
-@media (max-width:880px){
+@media (max-width:880px), (orientation: portrait) and (max-width: 1100px){
   .desktop-only{display:none !important;}
 }
 </style>
@@ -1619,10 +1622,11 @@ function sparklineSVG(points,w,h){
   w=w||620; h=h||200;
   const max=Math.max(1,...points.map(p=>p.v));
   const min=0;
-  const stepX=w/Math.max(1,points.length-1);
-  const coords=points.map((p,i)=>{ const x=i*stepX; const y=h-18-((p.v-min)/(max-min||1))*(h-46); return [x,y]; });
+  const pad=34; // margem nas pontas: a data e o valor do primeiro e do último dia não ficam cortados
+  const stepX=(w-2*pad)/Math.max(1,points.length-1);
+  const coords=points.map((p,i)=>{ const x=pad+i*stepX; const y=h-18-((p.v-min)/(max-min||1))*(h-46); return [x,y]; });
   const path='M'+coords.map(c=>c[0].toFixed(1)+','+c[1].toFixed(1)).join(' L');
-  const area=path+` L${(coords.length-1)*stepX},${h-18} L0,${h-18} Z`;
+  const area=path+` L${pad+(coords.length-1)*stepX},${h-18} L${pad},${h-18} Z`;
   const dots=coords.map((c,i)=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="3.4" fill="#1E6FD9"/>`).join('');
   const labels=points.map((p,i)=>`<text x="${coords[i][0].toFixed(1)}" y="${h-2}" font-size="10.5" fill="#9AA7B8" text-anchor="middle" font-family="Inter,sans-serif">${p.label}</text>`).join('');
   const lastV=points[points.length-1]?points[points.length-1].v:0;
