@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1B3FD6">
+  <meta name="robots" content="noindex">
+  <title>Senha nova — LeuApps</title>
+  <link rel="icon" href="/img/leuapps-192.png">
+  <link rel="stylesheet" href="/loja/compra.css">
+  <style>
+    body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
+    .logo { border-radius: 26px; background: #fff; }
+    .botao:not(.sec) { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; }
+    .sub, .rodape { color: #E6EDFF; } .rodape a { color: #fff; }
+    input { border-color: #C9D6FF; background: #F5F8FF; } input:focus { outline-color: #1B3FD6; }
+  </style>
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" src="/img/leuapps-192.png" alt="">
+    <h1>Crie a sua senha nova</h1>
+    <p class="sub">Ela vale para a loja e para todos os apps da LeuApps.</p>
+    <form class="cartao" id="form">
+      <label for="senha">Senha nova</label>
+      <input id="senha" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo 6 caracteres">
+      <label for="senha2">Repita a senha nova</label>
+      <input id="senha2" type="password" autocomplete="new-password" minlength="6" required>
+      <button class="botao" type="submit">Salvar a senha nova</button>
+      <p class="erro" id="erro" role="alert"></p>
+    </form>
+    <p class="rodape"><a href="/">← Voltar à loja</a></p>
+  </main>
+  <script>
+    const t = new URLSearchParams(location.search).get('t') || '';
+    history.replaceState(null, '', location.pathname); // o código não fica no histórico
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const b = e.target.querySelector('button'), erro = document.getElementById('erro');
+      const senha = document.getElementById('senha').value, senha2 = document.getElementById('senha2').value;
+      if (senha.length < 6) return (erro.textContent = 'A senha precisa ter pelo menos 6 caracteres.');
+      if (senha !== senha2) return (erro.textContent = 'As duas senhas não são iguais.');
+      b.disabled = true; erro.textContent = '';
+      try {
+        const r = await fetch('/loja-api/conta/nova-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ t, senha }) });
+        if (r.ok) {
+          document.querySelector('main').innerHTML = `<img class="logo" src="/img/leuapps-192.png" alt=""><h1>Senha nova salva!</h1>
+            <p class="sub">Use a senha nova para entrar na loja e nos apps. Por segurança, os outros aparelhos foram desconectados.</p>
+            <a class="botao" href="/">Ir para a loja</a>`;
+          return;
+        }
+        const d = await r.json().catch(() => ({}));
+        erro.innerHTML = d.erro === 'link_vencido' ? 'Este link venceu ou já foi usado. <a href="/loja/esqueci">Pedir outro link</a>.' : r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : 'Não deu para salvar agora. Tente de novo.';
+      } catch { erro.textContent = 'Sem internet. Conecte-se e tente de novo.'; }
+      b.disabled = false;
+    });
+  </script>
+</body>
+</html>

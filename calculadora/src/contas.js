@@ -1,4 +1,6 @@
 // Conta do cliente: e-mail + senha. A sessão vale para todos os apps em *.leunamesoftware.com.br.
+// Trava de aparelhos: 1 celular + 1 computador por conta. Entrar num aparelho novo do mesmo tipo
+// desconecta o anterior e avisa o cliente por e-mail (a conta do dono não tem limite).
 const ITERACOES = 100000; // limite do PBKDF2 nos Workers
 const DIAS_SESSAO = 180;
 const COOKIE = 'ln_sessao';
@@ -50,13 +52,41 @@ export async function trocarSenha(env, contaId, senha) {
   await env.DB.prepare('DELETE FROM sessoes WHERE conta_id = ?').bind(contaId).run();
 }
 
-/** Abre a sessão e devolve o cabeçalho Set-Cookie (vale para *.leunamesoftware.com.br). */
-export async function abrirSessao(env, contaId, req) {
-  const token = aleatorio(32);
+export const tipoDeAparelho = (req) => (/Android|iPhone|iPad|iPod|Mobile/i.test(req.headers.get('User-Agent') || '') ? 'celular' : 'computador');
+
+/**
+ * Abre a sessão e devolve os cabeçalhos Set-Cookie (valem para *.leunamesoftware.com.br).
+ * Desconecta a sessão anterior da conta no mesmo tipo de aparelho e, se era outro aparelho, avisa por e-mail.
+ */
+export async function abrirSessao(env, contaId, req, { avisar, aparelho } = {}) {
+  const token = aleatorio(32), tokenHash = await sha256(token);
   const agora = new Date();
-  await env.DB.prepare('INSERT INTO sessoes (token_hash, conta_id, criado_em, expira_em) VALUES (?, ?, ?, ?)')
-    .bind(await sha256(token), contaId, agora.toISOString(), new Date(agora.getTime() + DIAS_SESSAO * 864e5).toISOString()).run();
-  return cookie(req, token, DIAS_SESSAO * 86400);
+  const tipo = tipoDeAparelho(req);
+  const ap = aparelho || aparelhoDoPedido(req);
+  await env.DB.prepare('INSERT INTO sessoes (token_hash, conta_id, criado_em, expira_em, tipo, aparelho) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(tokenHash, contaId, agora.toISOString(), new Date(agora.getTime() + DIAS_SESSAO * 864e5).toISOString(), tipo, ap.valor).run();
+  const conta = await env.DB.prepare('SELECT email, nome FROM contas WHERE id = ?').bind(contaId).first();
+  const dono = conta && env.DONO_EMAIL && conta.email.toLowerCase() === String(env.DONO_EMAIL).toLowerCase();
+  if (!dono) {
+    // Sessões antigas sem tipo (de antes da trava) contam como do mesmo tipo só se o navegador for igual: ficam em paz.
+    const { results: antigas = [] } = await env.DB.prepare('SELECT token_hash, aparelho FROM sessoes WHERE conta_id = ? AND tipo = ? AND substituida_em IS NULL AND token_hash != ? AND expira_em > ?')
+      .bind(contaId, tipo, tokenHash, agora.toISOString()).all();
+    if (antigas.length) {
+      await env.DB.prepare('UPDATE sessoes SET substituida_em = ? WHERE conta_id = ? AND tipo = ? AND substituida_em IS NULL AND token_hash != ?')
+        .bind(agora.toISOString(), contaId, tipo, tokenHash).run();
+      // Mesmo aparelho entrando de novo: não precisa avisar.
+      if (antigas.some((a) => a.aparelho !== ap.valor) && avisar) await avisar(conta, tipo).catch(() => {});
+    }
+  }
+  return [cookie(req, token, DIAS_SESSAO * 86400), ...(ap.cookie ? [] : [cookieAparelho(req, ap.valor)])];
+}
+
+/** O cookie desta sessão era de um aparelho que foi desconectado porque a conta entrou em outro do mesmo tipo? */
+export async function sessaoSubstituida(env, req) {
+  const t = tokenDoPedido(req);
+  if (!t) return false;
+  const s = await env.DB.prepare('SELECT substituida_em FROM sessoes WHERE token_hash = ?').bind(await sha256(t)).first();
+  return Boolean(s?.substituida_em);
 }
 
 function cookie(req, valor, maxAge) {
@@ -75,7 +105,7 @@ function tokenDoPedido(req) {
 export async function contaDaSessao(env, req) {
   const t = tokenDoPedido(req);
   if (!t) return null;
-  const s = await env.DB.prepare('SELECT c.id, c.email, c.nome FROM sessoes s JOIN contas c ON c.id = s.conta_id WHERE s.token_hash = ? AND s.expira_em > ?')
+  const s = await env.DB.prepare('SELECT c.id, c.email, c.nome FROM sessoes s JOIN contas c ON c.id = s.conta_id WHERE s.token_hash = ? AND s.expira_em > ? AND s.substituida_em IS NULL')
     .bind(await sha256(t), new Date().toISOString()).first();
   return s || null;
 }
@@ -121,4 +151,41 @@ export async function marcarTeste(env, contaId, req, ap) {
   const semTeste = r.mesmo_aparelho > 0 || r.mesma_rede >= MAX_TESTES_POR_REDE ? 1 : 0;
   await env.DB.prepare('UPDATE contas SET teste_aparelho = ?, teste_rede = ?, sem_teste = ? WHERE id = ?').bind(ap.valor, rede, semTeste, contaId).run();
   return semTeste;
+}
+
+// ---- esqueci a senha: link por e-mail ----
+const MINUTOS_NOVA_SENHA = 60;
+
+/** Cria o código do link "criar senha nova" (só se a conta existe). Devolve { conta, token } ou null. */
+export async function pedirNovaSenha(env, email) {
+  const conta = await buscarConta(env, email);
+  if (!conta) return null;
+  const token = aleatorio(32);
+  await env.DB.prepare('INSERT INTO novas_senhas (token_hash, conta_id, expira_em) VALUES (?, ?, ?)')
+    .bind(await sha256(token), conta.id, new Date(Date.now() + MINUTOS_NOVA_SENHA * 6e4).toISOString()).run();
+  return { conta, token };
+}
+
+/** Usa o código do link: troca a senha (as outras sessões caem). Devolve o id da conta ou null. */
+export async function usarNovaSenha(env, token, senha) {
+  if (!/^[0-9a-f]{64}$/.test(String(token || '')) || !senhaValida(senha)) return null;
+  const agora = new Date().toISOString();
+  const r = await env.DB.prepare('UPDATE novas_senhas SET usado_em = ? WHERE token_hash = ? AND usado_em IS NULL AND expira_em > ?')
+    .bind(agora, await sha256(token), agora).run();
+  if (!r.meta.changes) return null;
+  const n = await env.DB.prepare('SELECT conta_id FROM novas_senhas WHERE token_hash = ?').bind(await sha256(token)).first();
+  await trocarSenha(env, n.conta_id, senha);
+  return n.conta_id;
+}
+
+/** Dono: troca o e-mail da conta de um cliente que perdeu o e-mail antigo (as sessões caem). */
+export async function trocarEmailDaConta(env, de, para) {
+  const conta = await buscarConta(env, de), novo = normalizarEmail(para);
+  if (!conta) return { erro: 'conta_nao_encontrada', status: 404 };
+  if (!EMAIL.test(novo)) return { erro: 'email', status: 400 };
+  if (await buscarConta(env, novo)) return { erro: 'email_em_uso', status: 409 };
+  await env.DB.prepare('UPDATE contas SET email = ? WHERE id = ?').bind(novo, conta.id).run();
+  await env.DB.prepare('UPDATE pedidos SET email = ? WHERE conta_id = ?').bind(novo, conta.id).run();
+  await env.DB.prepare('DELETE FROM sessoes WHERE conta_id = ?').bind(conta.id).run();
+  return { ok: true, nome: conta.nome };
 }

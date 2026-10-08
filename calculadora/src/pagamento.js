@@ -3,7 +3,7 @@
 // (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
-import { avisarCompraPorEmail, marcarEmailEnviado } from './email.js';
+import { avisarCompraPorEmail, marcarEmailEnviado, avisarAparelhoNovo } from './email.js';
 import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
@@ -33,7 +33,7 @@ export async function criarPedido(env, origem, d, req) {
   if (c.erro) return { erro: c.erro, status: 409 };
   // Conta criada na compra (ainda sem pagar) também conta para o teste grátis único.
   if (nova) await marcarTeste(env, c.conta.id, req, aparelhoDoPedido(req, d?.aparelho));
-  const sessao = await abrirSessao(env, c.conta.id, req);
+  const sessao = await abrirSessao(env, c.conta.id, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t) });
 
   const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
   const agora = new Date().toISOString();
@@ -181,7 +181,7 @@ export async function recuperarConta(env, d, req) {
   else conta = (await contaParaCompra(env, email, p.nome, d.senha)).conta;
   // Compras antigas do mesmo e-mail passam a ser desta conta.
   await env.DB.prepare('UPDATE pedidos SET conta_id = ? WHERE email = ? AND conta_id IS NULL').bind(conta.id, email).run();
-  return abrirSessao(env, conta.id, req);
+  return abrirSessao(env, conta.id, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t) });
 }
 
 export async function situacaoPedido(env, id, pagamentoId) {

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1B3FD6">
+  <meta name="robots" content="noindex">
+  <title>Esqueci a senha — LeuApps</title>
+  <link rel="icon" href="/img/leuapps-192.png">
+  <link rel="stylesheet" href="/loja/compra.css">
+  <style>
+    body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
+    .logo { border-radius: 26px; background: #fff; }
+    .botao:not(.sec) { background: linear-gradient(135deg, #2F6BFF, #1B3FD6) !important; }
+    .sub, .rodape { color: #E6EDFF; } .rodape a { color: #fff; }
+    input { border-color: #C9D6FF; background: #F5F8FF; } input:focus { outline-color: #1B3FD6; }
+  </style>
+</head>
+<body>
+  <main class="caixa">
+    <img class="logo" src="/img/leuapps-192.png" alt="">
+    <h1>Esqueci a senha</h1>
+    <p class="sub">Coloque o e-mail da sua conta. Mandamos um link para você criar uma senha nova.</p>
+    <form class="cartao" id="form">
+      <label for="email">E-mail da conta</label>
+      <input id="email" type="email" autocomplete="email" required placeholder="voce@email.com">
+      <button class="botao" type="submit">Mandar o link</button>
+      <p class="erro" id="erro" role="alert"></p>
+    </form>
+    <p class="rodape"><a href="/">← Voltar à loja</a><br>Não tem mais acesso ao e-mail? Fale com a gente: <a href="mailto:leunamesoftware@gmail.com">leunamesoftware@gmail.com</a></p>
+  </main>
+  <script>
+    const q = new URLSearchParams(location.search);
+    if (q.get('email')) document.getElementById('email').value = q.get('email');
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const b = e.target.querySelector('button'), erro = document.getElementById('erro'), email = document.getElementById('email').value.trim();
+      b.disabled = true; erro.textContent = '';
+      try {
+        const r = await fetch('/loja-api/conta/esqueci', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+        if (r.ok) {
+          document.querySelector('main').innerHTML = `<img class="logo" src="/img/leuapps-192.png" alt=""><h1>Pronto! Olhe o seu e-mail</h1>
+            <p class="sub">Se existe uma conta com <b>${email.replace(/[<>&"]/g, '')}</b>, o link para criar a senha nova chegou agora (olhe também no Spam). Ele vale por 1 hora.</p>
+            <a class="botao sec" href="/">Voltar à loja</a>`;
+          return;
+        }
+        const d = await r.json().catch(() => ({}));
+        erro.textContent = r.status === 429 ? 'Muitas tentativas. Espere um minuto.' : d.erro === 'email' ? 'Confira o e-mail.' : 'Não deu para mandar agora. Tente de novo daqui a pouco.';
+      } catch { erro.textContent = 'Sem internet. Conecte-se e tente de novo.'; }
+      b.disabled = false;
+    });
+  </script>
+</body>
+</html>

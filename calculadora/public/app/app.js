@@ -92,7 +92,7 @@ function telaAtivacao(erro = '') {
         <input id="senha" type="password" autocomplete="current-password" placeholder="Sua senha" required style="margin-top:8px">
         <p class="erro" id="erro-ativar">${esc(erro)}</p>
         <button class="botao" type="submit">Entrar</button>
-        <a class="capa-esqueci" href="${PAGINAS}/recuperar">Esqueci a senha</a>
+        <a class="capa-esqueci" href="https://www.leunamesoftware.com.br/loja/esqueci">Esqueci a senha</a>
       </form>
       <button class="capa-teste" id="gratis">🎁 Testar grátis por 2 dias</button>
       ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
@@ -144,9 +144,13 @@ function telaChaveAntiga() {
   };
 }
 
+// Trava de aparelhos: cada conta usa 1 celular + 1 computador. Entrou em outro, este é desconectado.
+const MSG_OUTRO_APARELHO = 'Sua conta entrou em outro aparelho e este foi desconectado (cada conta usa 1 celular e 1 computador). Entre de novo para usar aqui: o outro será desconectado.';
+let motivoConta = null;
 async function conferirConta() {
   try {
     const d = await (await fetch(RAIZ + '/api/conta', { cache: 'no-store' })).json();
+    motivoConta = d.motivo || null;
     estado.conta = d.conta ? { ...d.conta, acesso: d.acesso } : null;
     gravar('conta', estado.conta);
   } catch { /* sem internet: fica com o que estava guardado */ }
@@ -1068,7 +1072,7 @@ if ('serviceWorker' in navigator) {
 }
 (async () => {
   const conta = navigator.onLine ? await conferirConta() : estado.conta;
-  if (!conta && !estado.chave) return telaAtivacao();
+  if (!conta && !estado.chave) return telaAtivacao(motivoConta === 'outro_aparelho' ? MSG_OUTRO_APARELHO : '');
   abrir('receitas');
   carregarReceitas().then(() => { if (estado.acesso?.bloqueado) telaBloqueio(); else if (estado.aba === 'receitas') telaReceitas(); });
 })();
@@ -1080,7 +1084,9 @@ async function atualizarSozinho() {
   ultimaAtualizacao = Date.now();
   const marca = () => estado.receitas.map((r) => r.id + (r.bloqueada ? '#' : '')).join();
   const antes = marca(), qtdAntes = estado.receitas.filter((r) => !r.bloqueada).length;
-  await conferirConta(); await carregarReceitas();
+  await conferirConta();
+  if (!estado.conta && !estado.chave) return telaAtivacao(motivoConta === 'outro_aparelho' ? MSG_OUTRO_APARELHO : '');
+  await carregarReceitas();
   if (marca() === antes) return;
   if (estado.acesso?.bloqueado) return telaBloqueio();
   if (estado.aba === 'receitas') telaReceitas();

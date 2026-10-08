@@ -105,6 +105,19 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
     <div class="cards" id="apps"><p class="nota">Carregando…</p></div>
   </section>
 
+  <section class="verde">
+    <h2>Clientes · trocar o e-mail da conta</h2>
+    <div class="brinde">
+      <p class="nota" style="border:0;padding:0;">Para o cliente que <b>perdeu o acesso ao e-mail</b>. Antes, confira se é ele mesmo (nome e comprovante do Mercado Pago). Depois da troca, ele abre a loja, toca em <b>Esqueci a senha</b> e cria a senha nova pelo e-mail novo. Cada conta usa 1 celular e 1 computador.</p>
+      <form id="form-email">
+        <input id="e-de" type="email" placeholder="e-mail antigo" autocomplete="off" required aria-label="E-mail antigo da conta">
+        <input id="e-para" type="email" placeholder="e-mail novo" autocomplete="off" required aria-label="E-mail novo">
+        <button type="submit" style="grid-column:1/-1">✉️ Trocar o e-mail</button>
+      </form>
+      <p id="e-msg" hidden></p>
+    </div>
+  </section>
+
   <section class="laranja">
     <h2>Brindes · Quanto Cobrar de graça</h2>
     <div class="brinde">
@@ -239,6 +252,19 @@ document.getElementById('form-teste').addEventListener('submit', async (e) => {
     : d.erro === 'email' ? 'Confira o e-mail.' : d.erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não saiu: ' + (d.erro || 'erro') + '. Tente de novo.');
 });
 try { fetch('/loja-api/conta', { credentials: 'same-origin' }).then((r) => r.json()).then((d) => { const i = document.getElementById('t-email'); if (!i.value && d?.conta?.email) i.value = d.conta.email; }).catch(() => {}); } catch {}
+
+// Clientes: trocar o e-mail da conta (perdeu o e-mail antigo).
+document.getElementById('form-email').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const m = document.getElementById('e-msg'), dizer = (t, ok) => { m.textContent = t; m.style.color = ok ? '#15803D' : '#B91C1C'; m.hidden = false; };
+  const de = document.getElementById('e-de').value.trim(), para = document.getElementById('e-para').value.trim();
+  if (!confirm(`Trocar o e-mail da conta ${de} para ${para}?`)) return;
+  const r = await fetch('/loja-api/dono/conta-email', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ de, para }) }).catch(() => null);
+  if (!r) return dizer('Sem internet. Tente de novo.');
+  const d = await r.json().catch(() => ({}));
+  if (r.ok) { e.target.reset(); return dizer(`Pronto! A conta${d.nome ? ' de ' + d.nome : ''} agora é ${para}. Peça para o cliente tocar em "Esqueci a senha" na loja.`, true); }
+  dizer(d.erro === 'conta_nao_encontrada' ? 'Não existe conta com o e-mail antigo.' : d.erro === 'email_em_uso' ? 'O e-mail novo já tem outra conta.' : d.erro === 'email' ? 'Confira o e-mail novo.' : 'Não deu para trocar agora.');
+});
 
 // Avaliações: responder e esconder.
 async function carregarAvaliacoes() {

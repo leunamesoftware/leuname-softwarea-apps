@@ -6,17 +6,18 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
-import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra } from './email.js';
+import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra, avisarAparelhoNovo, enviarEmail, montarEmailNovaSenha } from './email.js';
 import { PLANOS, acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
-import { buscarConta, senhaConfere, abrirSessao, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
+import { pedirNovaSenha, usarNovaSenha, trocarEmailDaConta } from './contas.js';
+import { buscarConta, senhaConfere, abrirSessao, sessaoSubstituida, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
 function json(dados, status = 200, cookie = null) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
   const h = new Headers(headers);
-  for (const c of [].concat(cookie || [])) h.append('Set-Cookie', c);
+  for (const c of [].concat(cookie || []).flat()) h.append('Set-Cookie', c);
   return new Response(JSON.stringify(dados), { status, headers: h });
 }
 
@@ -135,12 +136,12 @@ export default {
         if (!conta && EMAIL.test(String(d?.email || '').trim().toLowerCase()) && senhaValida(d?.senha) && (await brindeDoEmail(env, d.email))) {
           const email = String(d.email).trim().toLowerCase();
           conta = (await contaParaCompra(env, email, email.split('@')[0], d.senha)).conta;
-          return json({ ok: true, nome: conta.nome, novaConta: true }, 200, await abrirSessao(env, conta.id, req));
+          return json({ ok: true, nome: conta.nome, novaConta: true }, 200, await abrirSessao(env, conta.id, req, { avisar: (c, t) => avisarAparelhoNovo(env, c, t) }));
         }
         // Dono: a senha de dono também entra na conta dele (uma senha só para a loja e todos os apps).
         const ok = conta && ((await senhaConfere(conta, d?.senha)) || (eDono(env, conta.email) && (await senhaDonoConfere(env, d))));
         if (!ok) return json({ erro: 'login_invalido' }, 401);
-        return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req));
+        return json({ ok: true, nome: conta.nome }, 200, await abrirSessao(env, conta.id, req, { avisar: (c, t) => avisarAparelhoNovo(env, c, t) }));
       }
       // Conta grátis (sem compra): começa o teste de 2 dias (um por conta).
       if (pathname === '/api/conta/criar' && m === 'POST') {
@@ -155,7 +156,7 @@ export default {
         if (c.erro) return json({ erro: c.erro }, 409);
         const ap = aparelhoDoPedido(req, d?.aparelho);
         const semTeste = nova ? await marcarTeste(env, c.conta.id, req, ap) : 0;
-        return json({ ok: true, nome: c.conta.nome, semTeste: Boolean(semTeste) }, 200, [await abrirSessao(env, c.conta.id, req), cookieAparelho(req, ap.valor)]);
+        return json({ ok: true, nome: c.conta.nome, semTeste: Boolean(semTeste) }, 200, await abrirSessao(env, c.conta.id, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t), aparelho: ap }));
       }
       // Trocar a senha (precisa estar logado e saber a senha atual). As outras sessões caem; esta continua.
       if (pathname === '/api/conta/senha' && m === 'POST') {
@@ -168,7 +169,30 @@ export default {
         if (!conta || !(await senhaConfere(conta, d?.atual))) return json({ erro: 'senha_atual' }, 401);
         if (!senhaValida(d?.nova)) return json({ erro: 'senha_curta' }, 400);
         await trocarSenha(env, conta.id, d.nova);
-        return json({ ok: true }, 200, await abrirSessao(env, conta.id, req));
+        return json({ ok: true }, 200, await abrirSessao(env, conta.id, req, { avisar: (c, t) => avisarAparelhoNovo(env, c, t) }));
+      }
+      // Esqueci a senha: manda o link "criar senha nova" para o e-mail (responde igual exista ou não a conta).
+      if (pathname === '/api/conta/esqueci' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const email = String((await corpo(req))?.email || '').trim().toLowerCase();
+        if (!EMAIL.test(email)) return json({ erro: 'email' }, 400);
+        const p = await pedirNovaSenha(env, email);
+        if (p) {
+          const link = `https://www.leunamesoftware.com.br/loja/nova-senha?t=${p.token}`;
+          const r = await enviarEmail(env, { para: p.conta.email, ...montarEmailNovaSenha(p.conta, link) });
+          if (!r.ok) return json({ erro: 'email_nao_saiu' }, 502);
+        }
+        return json({ ok: true });
+      }
+      if (pathname === '/api/conta/nova-senha' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const d = await corpo(req);
+        if (!senhaValida(d?.senha)) return json({ erro: 'senha_curta' }, 400);
+        const contaId = await usarNovaSenha(env, d?.t, d.senha);
+        if (!contaId) return json({ erro: 'link_vencido' }, 400);
+        return json({ ok: true }, 200, await abrirSessao(env, contaId, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t) }));
       }
       if (pathname === '/api/conta/sair' && m === 'POST') return json({ ok: true }, 200, await fecharSessao(env, req));
       if (pathname === '/api/conta' && m === 'GET') {
@@ -177,7 +201,7 @@ export default {
           // Entrou pela Área do Dono (senha de dono): já entra na conta do dono em todos os apps, sem digitar de novo.
           const doDono = (await donoLogado(env, req)) && (await buscarConta(env, env.DONO_EMAIL));
           if (doDono) return json({ conta: { nome: doDono.nome, email: doDono.email }, acesso: await acessoDaConta(env, doDono.id) }, 200, await abrirSessao(env, doDono.id, req));
-          return json({ conta: null });
+          return json({ conta: null, motivo: (await sessaoSubstituida(env, req)) ? 'outro_aparelho' : null });
         }
         return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
       }
@@ -192,13 +216,29 @@ export default {
         if (t.acabou) return json({ erro: 'teste_acabou', ...t }, 409);
         return json({ ok: true, ...t });
       }
+      // Minha conta → "Mandar o link para o meu e-mail": o mesmo e-mail da compra, de novo (só para app que a conta tem).
+      if (pathname === '/api/conta/reenviar' && m === 'POST') {
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const conta = await contaDaSessao(env, req);
+        if (!conta) return json({ erro: 'sem_sessao' }, 401);
+        const app = String((await corpo(req))?.app || '');
+        const apps = await appsDaConta(env, conta.id, conta.email);
+        const qc = app === 'quantocobrar' ? await acessoDaConta(env, conta.id) : null;
+        const temQc = Boolean(qc && qc.plano !== 'gratis');
+        if (!apps[app] && !temQc) return json({ erro: 'sem_app' }, 404);
+        const plano = Object.keys(PLANOS).find((k) => PLANOS[k].app === app) || 'basico';
+        const r = await enviarEmailDaCompra(env, { email: conta.email, nome: conta.nome, plano });
+        return json(r, r.ok ? 200 : 502);
+      }
       // Apps comprados pela conta (Gestacell, Radar...): a chave vai só para o dono logado.
       if (pathname === '/api/conta/apps' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
         if (conta) return json({ conta: { nome: conta.nome, email: conta.email }, apps: await appsDaConta(env, conta.id, conta.email), testes: await testesDaConta(env, conta.id) });
         // Entrou com a senha da Área do Dono: tem todos os apps, sem precisar de conta da loja.
         if (await donoLogado(env, req)) return json({ conta: { nome: 'Dono', email: env.DONO_EMAIL }, apps: await appsDaConta(env, null, env.DONO_EMAIL) });
-        return json({ conta: null, apps: {} });
+        // motivo 'outro_aparelho': esta conta entrou em outro aparelho do mesmo tipo e este foi desconectado.
+        return json({ conta: null, apps: {}, motivo: (await sessaoSubstituida(env, req)) ? 'outro_aparelho' : null });
       }
 
       // ---- Notas e avaliações da LeuApps (ver: qualquer um; avaliar: só com conta) ----
@@ -255,6 +295,15 @@ export default {
         if (!r) return new Response('Sem assinatura.', { status: 404 });
         const bytes = Uint8Array.from(atob(r.valor.split(',')[1]), (c) => c.charCodeAt(0));
         return new Response(m === 'HEAD' ? null : bytes, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' } });
+      }
+      // Dono: trocar o e-mail da conta de um cliente que perdeu o e-mail antigo. Depois o cliente usa "Esqueci a senha".
+      if (pathname === '/api/dono/conta-email' && m === 'POST') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const d = await corpo(req);
+        const r = await trocarEmailDaConta(env, d?.de, d?.para);
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
       }
       // Vendas cujo e-mail com o link de instalar não saiu: o dono manda pelo e-mail dele e marca como enviado.
       if (pathname === '/api/dono/emails' || pathname === '/api/dono/emails/enviado' || pathname === '/api/dono/emails/teste') {

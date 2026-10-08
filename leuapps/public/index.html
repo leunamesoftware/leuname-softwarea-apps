@@ -481,11 +481,12 @@
     .minha-conta h3 { margin: 8px 0 0; }
     .mc-titulo { margin: 16px 0 8px; font-size: 15px; }
     .mc-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-    .mc-lista li { display: flex; align-items: center; gap: 12px; }
+    .mc-lista li { display: flex; align-items: center; gap: 8px; }
+    .mc-lista li > span { flex: 1; min-width: 0; }
     .mc-lista img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
     .mc-lista span { display: grid; flex: 1; min-width: 0; }
     .mc-lista small { color: var(--suave); }
-    .mc-ver { border: 1px solid var(--linha, #ddd); background: none; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; color: inherit; }
+    .mc-ver { border: 1px solid var(--linha, #ddd); background: none; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; color: inherit; text-decoration: none; white-space: nowrap; }
     .mc-acoes { display: flex; gap: 10px; margin-top: 18px; }
     .mc-acoes > * { flex: 1; text-align: center; text-decoration: none; }
     .mc-acoes .contorno2 { border: 1.5px solid var(--linha); background: none; color: var(--verde-texto); border-radius: 999px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; }
@@ -2296,15 +2297,24 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (a.id === 'quantocobrar' && acesso) txt = acesso.bloqueado ? (acesso.plano === 'gratis' ? 'Teste grátis terminou' : 'Plano vencido') : nomePlano(acesso.plano) + ate(acesso.expiraEm || acesso.testeAte);
         else if (apps[a.id]) txt = apps[a.id].teste ? 'Teste grátis' + ate(apps[a.id].expiraEm) : nomePlano(apps[a.id].plano || (c.email && !apps[a.id].plano ? 'dono' : '')) + ate(apps[a.id].expiraEm);
         else if (testes[a.id]?.acabou) txt = 'Teste grátis terminou';
-        return txt ? `<li><img src="${esc(a.icone)}" alt=""><span><b>${esc(a.nome)}</b><small>${esc(txt)}</small></span></li>` : '';
+        // App comprado ou em teste: botão Instalar (o link do app) e mandar o link de novo para o e-mail.
+        const pago = txt && !/terminou|vencido|Teste grátis/.test(txt);
+        const link = !a.instalar ? '' : a.instalar.includes('instalar=1') ? a.instalar : a.instalar + (a.instalar.includes('?') ? '&' : '?') + 'instalar=1';
+        return txt ? `<li><img src="${esc(a.icone)}" alt=""><span><b>${esc(a.nome)}</b><small>${esc(txt)}</small></span>${link ? `<a class="mc-ver" href="${esc(link)}">Instalar</a>` : ''}${pago && link ? `<button class="mc-ver" type="button" data-reenviar="${esc(a.id)}" title="Mandar o link para o meu e-mail" aria-label="Mandar o link de ${esc(a.nome)} para o meu e-mail">✉️</button>` : ''}</li>` : '';
       }).join('');
       const feitos = cursos.filter((x) => progressoDe(x.id).length >= x.aulas.length && x.aulas.length);
       const f = folha(`<div class="minha-conta"><span class="avatar grande">${esc((String(c.nome || c.email || '?').trim()[0] || '?').toUpperCase())}</span>
           <h3>${esc(c.nome || 'Sua conta')}</h3><p class="sub">${esc(c.email || '')}</p></div>
         <h4 class="mc-titulo">Seus apps</h4>${linhas ? `<ul class="mc-lista">${linhas}</ul>` : '<p class="sub">Esta conta ainda não tem nenhum app. Teste grátis na página de cada app.</p>'}
         <h4 class="mc-titulo">Cursos concluídos</h4>${feitos.length ? `<ul class="mc-lista">${feitos.map((x) => `<li><img src="${esc(x.icone)}" alt=""><span><b>${esc(x.nomeCurto || x.nome)}</b><small>Certificado disponível</small></span><button class="mc-ver" type="button" data-fecha data-curso="${esc(x.id)}">Ver</button></li>`).join('')}</ul>` : '<p class="sub">Nenhum curso concluído ainda neste aparelho.</p>'}
-        ${souDono ? '<a class="acao" href="/dono/" style="display:flex;justify-content:center;align-items:center;margin-bottom:10px">🔑 Área do Dono</a>' : ''}<div class="mc-acoes"><a class="contorno2" href="https://quantocobrar.leunamesoftware.com.br/recuperar">Trocar a senha</a><button class="contorno2" type="button" data-sair-conta>Sair da conta</button></div>
-        <p class="sub" style="text-align:center;margin-top:10px">A mesma conta vale em todos os apps da LeuApps.</p>`, 'Fechar');
+        ${souDono ? '<a class="acao" href="/dono/" style="display:flex;justify-content:center;align-items:center;margin-bottom:10px">🔑 Área do Dono</a>' : ''}<div class="mc-acoes"><a class="contorno2" href="/loja/esqueci?email=${encodeURIComponent(c.email || '')}">Trocar a senha</a><button class="contorno2" type="button" data-sair-conta>Sair da conta</button></div>
+        <p class="sub" style="text-align:center;margin-top:10px">A mesma conta vale em todos os apps da LeuApps, em <b>1 celular e 1 computador</b>. Entrou em outro, o anterior é desconectado.</p>`, 'Fechar');
+      f.querySelectorAll('[data-reenviar]').forEach((b) => { b.onclick = async () => {
+        b.disabled = true;
+        const r = await postar('/loja-api/conta/reenviar', { app: b.dataset.reenviar }).catch(() => null);
+        avisar(r && r.ok ? `✓ Link mandado para ${c.email}. Olhe também no Spam.` : 'Não deu para mandar agora. Tente de novo daqui a pouco.');
+        b.disabled = false;
+      }; });
       f.querySelector('[data-sair-conta]').onclick = async () => {
         try { await postar('/loja-api/conta/sair', {}); } catch {}
         try { localStorage.removeItem('leuapps.conta'); } catch {}
@@ -2322,7 +2332,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           <p class="erro-conta" role="alert" hidden></p>
           <button class="acao" type="submit">${criar ? 'Criar conta' : 'Entrar'}</button>
           <button class="trocar-conta" type="button">${criar ? 'Já tenho conta: entrar' : 'Ainda não tenho conta'}</button>
-          ${criar ? '' : '<a class="trocar-conta" href="https://quantocobrar.leunamesoftware.com.br/recuperar" style="display:block;text-align:center">Esqueci a senha</a>'}
+          ${criar ? '' : '<a class="trocar-conta" href="https://www.leunamesoftware.com.br/loja/esqueci" style="display:block;text-align:center">Esqueci a senha</a>'}
         </form>`, 'Agora não');
       const form = f.querySelector('form'), erro = f.querySelector('.erro-conta');
       const falha = (t) => { erro.textContent = t; erro.hidden = false; };

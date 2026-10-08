@@ -73,6 +73,26 @@ de verificação da Google. O caminho é sempre o app pelo navegador.
 
 Marque como **Segredo**. O `calculadora/wrangler.toml` tem `keep_vars = true`, para a publicação não apagar o que o dono colocou no painel. **Nunca tire essa linha:** sem ela, uma variável de texto some a cada publicação (já aconteceu).
 
+## Conta do cliente: trava de aparelhos e senha
+- **1 celular + 1 computador por conta.** Cada sessão guarda o tipo de aparelho (pelo navegador) e um
+  identificador (cookie `ln_aparelho`). Entrar num aparelho novo do mesmo tipo desconecta o anterior
+  (`sessoes.substituida_em`) e manda um e-mail de aviso. O mesmo aparelho entrando de novo não manda e-mail.
+  A conta do dono (`DONO_EMAIL`) não tem limite. Código: `abrirSessao` em `calculadora/src/contas.js`.
+- **Aparelho desconectado:** `/api/conta` e `/api/conta/apps` respondem `motivo: 'outro_aparelho'`.
+  - ConstruGestão, Gestacell e Quanto Cobrar conferem a conta ao abrir (com internet) e ao voltar para o app.
+    Se o aparelho foi desconectado, mostram o login com a mensagem.
+  - Sem internet, o app continua até conectar.
+  - **App novo precisa fazer o mesmo:** guardar `<app>_da_conta = '1'` quando o acesso vem da conta e
+    conferir `/loja-api/conta/apps` ao abrir.
+- **Radar:** tem login próprio depois de entrar pela conta da loja. A trava ainda **não** vale dentro dele.
+- **Esqueci a senha:** `/loja/esqueci` manda por e-mail um link `/loja/nova-senha?t=...`, que vale 1 hora e
+  é usado uma vez só. Ao trocar a senha, os outros aparelhos caem. Rotas: `POST /api/conta/esqueci` e
+  `POST /api/conta/nova-senha`.
+- **Minha conta (loja):** lista os apps da conta com **Instalar** (o link do app) e ✉️ (manda o link de novo
+  para o e-mail, `POST /api/conta/reenviar`).
+- **Cliente perdeu o e-mail:** na Área do Dono, "Clientes · trocar o e-mail da conta". Depois ele usa
+  "Esqueci a senha" com o e-mail novo.
+
 ## Publicar
 - **Apps (loja, servidor, Gestacell, Quanto Cobrar):** commit e push neste repositório, no branch
   `ccr-f58cd13b-ml0bzs`. Depois rode, no repositório `leunamesoftware/Leunamesite`:
