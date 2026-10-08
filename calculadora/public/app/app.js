@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.7';
+const VERSAO_APP = '6.8';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
