@@ -71,7 +71,7 @@ de verificação da Google. O caminho é sempre o app pelo navegador.
    Adicionar → tipo Segredo**. Nome `GMAIL_SENHA_APP`, valor: as 16 letras. Salvar.
 4. Na Área do Dono deve aparecer "✅ Robô de e-mail ligado". Faça a compra de teste para o seu e-mail.
 
-O segredo continua lá depois de cada publicação: não precisa colar de novo.
+Marque como **Segredo**. O `calculadora/wrangler.toml` tem `keep_vars = true`, para a publicação não apagar o que o dono colocou no painel. **Nunca tire essa linha:** sem ela, uma variável de texto some a cada publicação (já aconteceu).
 
 ## Publicar
 - **Apps (loja, servidor, Gestacell, Quanto Cobrar):** commit e push neste repositório, no branch
