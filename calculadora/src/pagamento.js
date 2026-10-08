@@ -3,7 +3,7 @@
 // (webhook) serve só de gatilho.
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
-import { avisarCompraPorEmail, marcarEmailEnviado, avisarAparelhoNovo } from './email.js';
+import { avisarCompraPorEmail, marcarEmailEnviado, avisarAparelhoNovo, enviarEmailDaCompra } from './email.js';
 import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
@@ -190,4 +190,28 @@ export async function situacaoPedido(env, id, pagamentoId) {
   if (pagamentoId && env.MP_ACCESS_TOKEN) await processarPagamento(env, pagamentoId).catch(() => {});
   const p = await env.DB.prepare('SELECT p.status, p.nome, p.plano, a.expira_em FROM pedidos p LEFT JOIN acessos a ON a.chave = p.chave WHERE p.id = ?').bind(id).first();
   return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, app: PLANOS[p.plano]?.app, expiraEm: p.expira_em || null } : null;
+}
+
+/**
+ * Venda direta (o cliente pagou o dono por fora, ex.: Pix pessoal): libera o plano para o e-mail e manda o e-mail
+ * com o botão Instalar. Se o e-mail ainda não tem conta, a compra fica guardada e entra na conta quando o cliente
+ * criar a conta com este e-mail (contaParaCompra liga os pedidos pelo e-mail).
+ */
+export async function liberarVendaDireta(env, d) {
+  const email = String(d?.email || '').trim().toLowerCase().slice(0, 120);
+  const nome = String(d?.nome || '').trim().slice(0, 80) || email.split('@')[0];
+  const plano = String(d?.plano || '');
+  if (!EMAIL.test(email)) return { erro: 'email', status: 400 };
+  if (!PLANOS[plano] || plano === 'teste') return { erro: 'plano', status: 400 };
+  const P = PLANOS[plano];
+  const conta = await buscarConta(env, email);
+  const chave = await emitirLicenca(env, nome, email, P.licenca, 'venda-direta');
+  const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const agora = new Date().toISOString();
+  await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, conta_id, chave, pagamento_id, criado_em, atualizado_em) VALUES (?, ?, ?, 'pago', ?, ?, ?, ?, ?, ?)")
+    .bind(id, nome, email, plano, conta?.id || null, chave, 'venda-direta:' + id.slice(0, 8), agora, agora).run();
+  await aplicarPlano(env, chave, plano);
+  const r = await enviarEmailDaCompra(env, { email, nome, plano }, { contaNova: !conta });
+  if (r.ok) await marcarEmailEnviado(env, id, 'auto');
+  return { ok: true, contaExiste: Boolean(conta), emailEnviado: r.ok };
 }

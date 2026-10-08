@@ -16,7 +16,7 @@ export const LINKS = {
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // Curto de propósito (pedido do dono): o nome do app e um botão só, Instalar, na cor do app.
-export function montarEmailCompra(pedido) {
+export function montarEmailCompra(pedido, { contaNova = false } = {}) {
   const P = PLANOS[pedido.plano] || {};
   const app = LINKS[P.app] || LINKS.quantocobrar;
   const nome = String(pedido.nome || '').split(' ')[0];
@@ -24,8 +24,8 @@ export function montarEmailCompra(pedido) {
   <p style="margin:0 0 4px;color:#5D5A6B;font-size:14px">LeuName Softwares</p>
   <h2 style="margin:0 0 18px">${esc(nome ? nome + ', seu ' : 'Seu ')}${esc(app.nome)} está liberado</h2>
   <a href="${app.url}" style="background:${app.cor};color:#fff;text-decoration:none;font-weight:bold;font-size:18px;padding:16px 40px;border-radius:999px;display:inline-block">Instalar</a>
-  <p style="margin:18px 0 0;color:#5D5A6B;font-size:14px">Entre com o mesmo e-mail e senha da compra.</p></div>`;
-  const texto = `${nome ? nome + ', seu ' : 'Seu '}${app.nome} está liberado.\n\nInstalar: ${app.url}\n\nEntre com o mesmo e-mail e senha da compra.\n\nLeuName Softwares`;
+  <p style="margin:18px 0 0;color:#5D5A6B;font-size:14px">${contaNova ? `Na primeira vez, toque em <b>Criar conta</b> e use este e-mail (${esc(pedido.email)}).` : 'Entre com o mesmo e-mail e senha da compra.'}</p></div>`;
+  const texto = `${nome ? nome + ', seu ' : 'Seu '}${app.nome} está liberado.\n\nInstalar: ${app.url}\n\n${contaNova ? `Na primeira vez, toque em Criar conta e use este e-mail (${pedido.email}).` : 'Entre com o mesmo e-mail e senha da compra.'}\n\nLeuName Softwares`;
   return { assunto: `Seu ${app.nome} está liberado`, html, texto };
 }
 
@@ -53,9 +53,9 @@ export async function enviarEmail(env, { para, titulo, texto, html }, conectar) 
 }
 
 /** Manda o e-mail da compra. Devolve { ok, como: 'gmail' | 'resend' | 'nenhum', erro }. */
-export async function enviarEmailDaCompra(env, pedido, { teste = false, conectar } = {}) {
+export async function enviarEmailDaCompra(env, pedido, { teste = false, conectar, contaNova = false } = {}) {
   if (!pedido?.email) return { ok: false, como: 'nenhum', erro: 'sem_email' };
-  const m = montarEmailCompra(pedido);
+  const m = montarEmailCompra(pedido, { contaNova });
   return enviarEmail(env, { para: pedido.email, titulo: (teste ? 'TESTE · ' : '') + m.assunto, texto: m.texto, html: m.html }, conectar);
 }
 

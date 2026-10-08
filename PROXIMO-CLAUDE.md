@@ -24,6 +24,10 @@ Situação de 8 de outubro de 2026, escrita pelo Claude que montou a venda sem a
 - **Conta do cliente:** e-mail + senha, a mesma para a loja e todos os apps.
   - Trava de **1 celular + 1 computador**: entrar num aparelho novo desconecta o anterior e manda e-mail de aviso.
   - **Esqueci a senha** manda um link por e-mail.
+- **Venda direta (Pix pessoal):** Área do Dono → "Venda direta". O dono coloca o e-mail e escolhe app e plano.
+  - O servidor (`liberarVendaDireta` em `calculadora/src/pagamento.js`) grava um pedido pago, libera o plano e manda o e-mail com Instalar.
+  - Se o e-mail ainda não tem conta, a compra entra quando o cliente tocar em "Criar conta" com esse e-mail.
+  - App novo: acrescente os planos dele no `<select id="vd-plano">` de `leuapps/public/dono/index.html`.
 - **Teste grátis:** 7 dias (Gestacell, Radar, ConstruGestão). Depois, o app mostra os planos.
 - **Atalhos:** segurar o dedo no ícone da LeuApps mostra 3 apps para arrastar para a tela do celular
   (`shortcuts` no `leuapps/public/manifest.webmanifest`; o Android mostra só 3).

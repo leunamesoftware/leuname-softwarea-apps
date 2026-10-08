@@ -8,7 +8,7 @@ import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra, avisarAparelhoNovo, enviarEmail, montarEmailNovaSenha } from './email.js';
 import { PLANOS, acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
-import { criarPedido, receberAviso, recuperarConta, situacaoPedido } from './pagamento.js';
+import { criarPedido, receberAviso, recuperarConta, situacaoPedido, liberarVendaDireta } from './pagamento.js';
 import { pedirNovaSenha, usarNovaSenha, trocarEmailDaConta } from './contas.js';
 import { buscarConta, senhaConfere, abrirSessao, sessaoSubstituida, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
 
@@ -295,6 +295,14 @@ export default {
         if (!r) return new Response('Sem assinatura.', { status: 404 });
         const bytes = Uint8Array.from(atob(r.valor.split(',')[1]), (c) => c.charCodeAt(0));
         return new Response(m === 'HEAD' ? null : bytes, { headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-cache' } });
+      }
+      // Dono: venda direta (Pix pessoal) — libera o plano para o e-mail e manda o e-mail com o botão Instalar.
+      if (pathname === '/api/dono/liberar' && m === 'POST') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const r = await liberarVendaDireta(env, await corpo(req));
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
       }
       // Dono: trocar o e-mail da conta de um cliente que perdeu o e-mail antigo. Depois o cliente usa "Esqueci a senha".
       if (pathname === '/api/dono/conta-email' && m === 'POST') {

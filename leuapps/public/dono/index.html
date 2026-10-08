@@ -106,6 +106,32 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
   </section>
 
   <section class="verde">
+    <h2>Venda direta · Pix pessoal</h2>
+    <div class="brinde">
+      <p class="nota" style="border:0;padding:0;">O cliente te pagou por fora (Pix, dinheiro)? Coloque o e-mail dele e escolha o app: o app fica <b>liberado</b> na conta dele e ele recebe o e-mail com o botão <b>Instalar</b>. Se ele ainda não tem conta, é só tocar em <b>Criar conta</b> no app com esse e-mail.</p>
+      <form id="form-venda">
+        <input id="vd-email" type="email" placeholder="e-mail do cliente" autocomplete="off" required aria-label="E-mail do cliente">
+        <input id="vd-nome" type="text" placeholder="nome do cliente" autocomplete="off" aria-label="Nome do cliente">
+        <select id="vd-plano" aria-label="App e plano" style="grid-column:1/-1">
+          <option value="construgestao">ConstruGestão · vitalício</option>
+          <option value="construgestao_mensal">ConstruGestão · 1 mês</option>
+          <option value="gestacell">Gestacell · vitalício</option>
+          <option value="gestacell_anual">Gestacell · 1 ano</option>
+          <option value="gestacell_mensal">Gestacell · 1 mês</option>
+          <option value="radar">Radar Preventivo · vitalício</option>
+          <option value="radar_anual">Radar Preventivo · 1 ano</option>
+          <option value="radar_mensal">Radar Preventivo · 1 mês</option>
+          <option value="anual">Quanto Cobrar Pro · 1 ano</option>
+          <option value="mensal">Quanto Cobrar Pro · 1 mês</option>
+          <option value="basico">Quanto Cobrar Básico · vitalício</option>
+        </select>
+        <button type="submit" style="grid-column:1/-1">✅ Liberar e mandar o e-mail</button>
+      </form>
+      <p id="vd-msg" hidden></p>
+    </div>
+  </section>
+
+  <section class="verde">
     <h2>Clientes · trocar o e-mail da conta</h2>
     <div class="brinde">
       <p class="nota" style="border:0;padding:0;">Para o cliente que <b>perdeu o acesso ao e-mail</b>. Antes, confira se é ele mesmo (nome e comprovante do Mercado Pago). Depois da troca, ele abre a loja, toca em <b>Esqueci a senha</b> e cria a senha nova pelo e-mail novo. Cada conta usa 1 celular e 1 computador.</p>
@@ -252,6 +278,25 @@ document.getElementById('form-teste').addEventListener('submit', async (e) => {
     : d.erro === 'email' ? 'Confira o e-mail.' : d.erro === 'muitas_tentativas' ? 'Muitas tentativas. Espere um minuto.' : 'Não saiu: ' + (d.erro || 'erro') + '. Tente de novo.');
 });
 try { fetch('/loja-api/conta', { credentials: 'same-origin' }).then((r) => r.json()).then((d) => { const i = document.getElementById('t-email'); if (!i.value && d?.conta?.email) i.value = d.conta.email; }).catch(() => {}); } catch {}
+
+// Venda direta: libera o app para o e-mail do cliente (pagou por fora) e manda o e-mail com o botão Instalar.
+document.getElementById('form-venda').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const m = document.getElementById('vd-msg'), dizer = (t, ok) => { m.textContent = t; m.style.color = ok ? '#15803D' : '#B91C1C'; m.hidden = false; };
+  const email = document.getElementById('vd-email').value.trim(), sel = document.getElementById('vd-plano');
+  const plano = sel.value, rotulo = sel.options[sel.selectedIndex].text;
+  if (!confirm(`Liberar ${rotulo} para ${email}?`)) return;
+  const b = e.target.querySelector('button'); b.disabled = true;
+  const r = await fetch('/loja-api/dono/liberar', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, nome: document.getElementById('vd-nome').value.trim(), plano }) }).catch(() => null);
+  b.disabled = false;
+  if (!r) return dizer('Sem internet. Tente de novo.');
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) return dizer(d.erro === 'email' ? 'Confira o e-mail.' : 'Não deu para liberar agora.');
+  e.target.reset();
+  dizer(`✓ ${rotulo} liberado para ${email}. ${d.emailEnviado ? 'O e-mail com o botão Instalar já foi.' : 'O e-mail não saiu: mande pela lista de Vendas acima.'} ${d.contaExiste ? '' : 'Ele ainda não tem conta: no app, é só tocar em Criar conta com esse e-mail.'}`, true);
+  carregarVendas();
+});
 
 // Clientes: trocar o e-mail da conta (perdeu o e-mail antigo).
 document.getElementById('form-email').addEventListener('submit', async (e) => {
