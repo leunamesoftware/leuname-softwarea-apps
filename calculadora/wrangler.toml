@@ -2,6 +2,8 @@ name = "calculadora-receitas"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 workers_dev = true
+# Não apaga as variáveis colocadas pelo dono no painel da Cloudflare (ex.: GMAIL_SENHA_APP) a cada publicação.
+keep_vars = true
 
 routes = [
   { pattern = "quantocobrar.leunamesoftware.com.br", custom_domain = true },
