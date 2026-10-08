@@ -49,10 +49,12 @@ async function buscarCosmos(ean, env) {
   if (!r.ok) return null;
   const d = await r.json();
   if (!d?.description) return null;
-  return { nome: textoLimpo(d.description), marca: textoLimpo(d.brand?.name, 60), ncm: String(d.ncm?.code || '').replace(/\D/g, '').slice(0, 8), foto: d.thumbnail || '', fonte: 'Cosmos' };
+  return { nome: textoLimpo(d.description), marca: textoLimpo(d.brand?.name, 60), ncm: String(d.ncm?.code || '').replace(/\D/g, '').slice(0, 8), foto: d.thumbnail || '',
+    categorias: textoLimpo([d.gpc?.description, d.ncm?.full_description || d.ncm?.description].filter(Boolean).join(' | '), 400),
+    precoMedio: Number(d.avg_price) > 0 ? Number(d.avg_price) : null, fonte: 'Cosmos' };
 }
 async function buscarOpenFacts(ean) {
-  const campos = 'product_name_pt,product_name,generic_name_pt,brands,quantity,image_front_url,image_url';
+  const campos = 'product_name_pt,product_name,generic_name_pt,brands,quantity,image_front_url,image_url,categories_tags';
   const bases = ['world.openfoodfacts.org', 'world.openproductsfacts.org', 'world.openbeautyfacts.org'];
   const achados = await Promise.all(bases.map(async (b) => {
     try {
@@ -60,7 +62,8 @@ async function buscarOpenFacts(ean) {
       const d = r.ok ? await r.json() : null;
       const p = d?.status === 1 ? d.product : null;
       const nome = p && textoLimpo(p.product_name_pt || p.product_name || p.generic_name_pt);
-      return nome ? { nome, marca: textoLimpo(String(p.brands || '').split(',')[0], 60), quantidade: textoLimpo(p.quantity, 30), foto: p.image_front_url || p.image_url || '', fonte: 'Open Facts' } : null;
+      return nome ? { nome, marca: textoLimpo(String(p.brands || '').split(',')[0], 60), quantidade: textoLimpo(p.quantity, 30), foto: p.image_front_url || p.image_url || '',
+        categorias: textoLimpo((p.categories_tags || []).join(' '), 400) || (b.includes('beauty') ? 'hygiene' : ''), fonte: 'Open Facts' } : null;
     } catch { return null; }
   }));
   return achados.find(Boolean) || null;
@@ -77,7 +80,7 @@ async function produtoPorCodigo(url, env, ctx) {
   }
   const ean = (url.pathname.match(/^\/produto\/(\d{8,14})$/) || [])[1];
   if (!ean) return json({ erro: 'codigo' }, 400);
-  const chave = new Request(`https://${MERCA_HOST}/produto/${ean}`);
+  const chave = new Request(`https://${MERCA_HOST}/produto/v2/${ean}`);
   const guardado = await caches.default.match(chave);
   if (guardado) return guardado;
   let p = null;

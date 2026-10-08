@@ -294,7 +294,7 @@ function lerCamera() {
     $$('[data-fechar]', j.el).forEach((b) => b.addEventListener('click', () => fim(null)));
     try {
       if ('BarcodeDetector' in window) {
-        const formatos = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf'];
+        const formatos = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'data_matrix'];
         const det = new BarcodeDetector({ formats: (await BarcodeDetector.getSupportedFormats()).filter((f) => formatos.includes(f)) });
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         video.srcObject = stream; await video.play();
@@ -328,7 +328,9 @@ function ligarCameras(el, depois) {
 // 5) CAIXA (PDV)
 // =====================================================================
 function buscarProduto(texto) {
-  const t = String(texto || '').trim();
+  let t = String(texto || '').trim();
+  // Código 2D (DataMatrix/GS1): o produto é o GTIN de dentro dele.
+  const gs1 = N.lerGS1(t); if (gs1) t = gs1.gtin;
   if (!t) return { lista: [] };
   // Etiqueta da balança (começa com 2): produto pelo PLU, preço ou peso na etiqueta.
   const et = N.lerEtiquetaBalanca(t, S.balanca);
@@ -891,7 +893,13 @@ function formProduto(p, op = {}) {
   const achou = (t) => { const a = $('#pf-achou', j.el); if (a) a.textContent = t; };
   const mostrarFoto = () => { $('#pf-foto-ver', j.el).outerHTML = `<img id="pf-foto-ver" src="${foto}" style="width:48px;height:48px;border-radius:8px;object-fit:contain;background:#F1F5F9">`; };
   const completar = async () => {
-    const c = $('#pf-codigo', j.el).value.trim();
+    let c = $('#pf-codigo', j.el).value.trim();
+    // Código 2D: separa o produto da validade e do lote.
+    const gs1 = N.lerGS1(c);
+    if (gs1) {
+      c = gs1.gtin; $('#pf-codigo', j.el).value = c;
+      if (gs1.validade) $('#pf-val', j.el).value = gs1.validade;
+    }
     if (!novo || c === ultimo || !N.eanValido(c)) return;
     ultimo = c;
     const ja = S.porCodigo.get(c);
@@ -904,7 +912,14 @@ function formProduto(p, op = {}) {
       const x = d.produto, nome = $('#pf-nome', j.el), tem = (a, b) => a.toLowerCase().includes(b.toLowerCase());
       if (!nome.value.trim()) nome.value = [x.nome, x.marca && !tem(x.nome, x.marca) ? x.marca : '', x.quantidade && !tem(x.nome, x.quantidade) ? x.quantidade : ''].filter(Boolean).join(' ');
       if (x.ncm && !$('#pf-ncm', j.el).value) $('#pf-ncm', j.el).value = x.ncm;
-      achou('✅ Produto encontrado: confira o nome e ponha o preço de venda.');
+      const cat = $('#pf-cat', j.el);
+      if (!cat.value.trim()) {
+        const sug = N.categoriaPorTexto(x.categorias) || N.categoriaPorTexto(x.nome);
+        // Usa a categoria que a loja já tem com o mesmo nome (mantém a grafia dela).
+        cat.value = S.produtos.map((q) => q.categoria).find((k) => k && sug && k.toLowerCase() === sug.toLowerCase()) || sug;
+      }
+      achou('✅ Produto encontrado: confira e ponha o preço de venda' + ($('#pf-val', j.el).value ? '.' : ' (e a validade, que vem impressa na embalagem).')
+        + (x.precoMedio ? ` Preço médio no mercado: ${brl(x.precoMedio)}.` : ''));
       preco.focus();
       if (x.foto && !foto) { try { foto = await reduzirFoto(await (await fetch(x.foto)).blob()); mostrarFoto(); } catch {} }
     } catch { achou(navigator.onLine ? 'Não deu para buscar agora. Digite o nome.' : 'Sem internet: digite o nome do produto.'); ultimo = ''; }

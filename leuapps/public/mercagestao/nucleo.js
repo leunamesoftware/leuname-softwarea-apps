@@ -70,6 +70,67 @@ function digitoEAN(semDigito) {
   return (10 - (soma % 10)) % 10;
 }
 
+/**
+ * Código 2D / GS1 (DataMatrix ou GS1-128): além do produto (01), pode trazer validade (17) e lote (10).
+ * Aceita "(01)07896003701685(17)261231(10)L23" e a forma corrida do leitor (separador GS ou ]d2 no começo).
+ * Devolve { gtin, validade: 'AAAA-MM-DD' | '', lote } ou null se não for GS1.
+ */
+const GS1_FIXO = { '01': 14, '11': 6, '13': 6, '15': 6, '16': 6, '17': 6, '20': 2 };
+export function lerGS1(texto) {
+  let t = String(texto || '').trim().replace(/^\][A-Za-z]\d/, '');
+  const ai = {};
+  if (t.startsWith('(')) {
+    for (const m of t.matchAll(/\((\d{2,4})\)([^(]*)/g)) ai[m[1]] = m[2].trim();
+  } else {
+    if (!/^01\d{14}./.test(t)) return null;
+    while (t.length) {
+      const k = t.slice(0, 2), n = GS1_FIXO[k];
+      if (n) { ai[k] = t.slice(2, 2 + n); t = t.slice(2 + n); }
+      else if (['10', '21', '30', '37', '90', '91', '92'].includes(k)) {
+        const fim = t.indexOf('\x1d'); ai[k] = fim < 0 ? t.slice(2) : t.slice(2, fim); t = fim < 0 ? '' : t.slice(fim);
+      } else break;
+      t = t.replace(/^\x1d+/, '');
+    }
+  }
+  if (!/^\d{14}$/.test(ai['01'] || '') || !eanValido(ai['01'])) return null;
+  // GTIN-14 com zeros na frente vira o EAN-13 (ou EAN-8) que está no produto.
+  let gtin = ai['01'];
+  while (gtin.length > 8 && gtin.startsWith('0') && gtin.length !== 13) gtin = gtin.slice(1);
+  if (gtin.length === 13 && gtin.startsWith('00000')) gtin = gtin.slice(5);
+  let validade = '';
+  const v = ai['17'] || ai['15'];
+  if (/^\d{6}$/.test(v || '')) {
+    const ano = 2000 + Number(v.slice(0, 2)), mes = Number(v.slice(2, 4));
+    // Dia 00 = fim do mês.
+    const dia = Number(v.slice(4, 6)) || new Date(Date.UTC(ano, mes, 0)).getUTCDate();
+    if (mes >= 1 && mes <= 12) validade = `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+  }
+  return { gtin, validade, lote: ai['10'] || '' };
+}
+
+/** Categoria do mercado a partir das categorias da base de produtos (ou do nome). '' se não reconhecer. */
+const CATEGORIAS = [
+  ['Pet', /pet-food|dog|cat-food|ra[cç][aã]o|petisco/],
+  ['Biscoitos', /biscuit|cookie|biscoito|bolacha|wafer|cracker|rosquinha/],
+  ['Salgadinhos', /salty-snack|chips|crisps|salgadinho|amendoim|pipoca|popcorn/],
+  ['Bebidas', /beverage|drink|soda|juice|waters|beer|wine|bebida|refrigerante|suco|cerveja|vinho|[aá]gua mineral|energ[eé]tico/],
+  ['Laticínios', /dairy|milk|cheese|yogurt|butter|leite|queijo|iogurte|manteiga|requeij[aã]o|creme de leite/],
+  ['Higiene', /hygiene|shampoo|soap|toothpaste|deodorant|cosmetic|higiene|sabonete|creme dental|desodorante|papel higi[eê]nico|fralda|absorvente|condicionador/],
+  ['Limpeza', /detergent|cleaning|laundry|bleach|limpeza|detergente|sab[aã]o em p[oó]|amaciante|desinfetante|[aá]gua sanit[aá]ria|esponja/],
+  ['Congelados', /frozen|congelad|sorvete|ice-cream/],
+  ['Frios e carnes', /meat|sausage|ham|chicken|carne|lingui[cç]a|presunto|mortadela|salsicha|frango|bacon/],
+  ['Padaria', /bread|bakery|cake|p[aã]o|bolo|torrada/],
+  ['Doces', /chocolate|candy|confection|sweet|doce|bala|bombom|gelatina|achocolatado/],
+  ['Matinais', /breakfast-cereal|cereal|granola|aveia/],
+  ['Hortifruti', /fresh-fruit|fresh-vegetable|fruta|verdura|legume/],
+  ['Mercearia', /pasta|rice|beans|flour|sugar|oil|coffee|sauce|condiment|spice|canned|macarr[aã]o|arroz|feij[aã]o|farinha|a[cç][uú]car|[oó]leo|caf[eé]|molho|tempero|sal |enlatad|conserva|azeite|fub[aá]/],
+];
+export function categoriaPorTexto(texto) {
+  const t = ' ' + String(texto || '').toLowerCase() + ' ';
+  const c = CATEGORIAS.find(([, re]) => re.test(t));
+  return c ? c[0] : '';
+}
+
 /** Confere EAN-8, EAN-13 (e GTIN-12/14) pelo dígito verificador. */
 export function eanValido(codigo) {
   const c = String(codigo || '').trim();

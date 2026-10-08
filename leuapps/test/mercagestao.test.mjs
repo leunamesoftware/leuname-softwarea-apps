@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { lerGS1, categoriaPorTexto } from '../public/mercagestao/nucleo.js';
 import {
   numeroBR, totalItem, resumoVenda, conferirPagamento, eanValido, lerEtiquetaBalanca, precoPorMargem, margemDe,
   diasParaVencer, situacaoValidade, saldoFiado, podeFiado, fechamentoCaixa, resumoPeriodo, curvaABC, lerXmlNfe,
@@ -172,4 +173,19 @@ test('etiqueta com preço: vale o total da etiqueta', () => {
   const p = montarNfce({ itens: [{ nome: 'Queijo', preco: 39.99, qtd: 0.499, unidade: 'kg', totalFixo: 19.95, ncm: '04069090' }], pagamentos: [{ forma: 'pix', valor: 19.95 }] }, { cnpj: '12345678000199' });
   assert.equal(p.items[0].valor_bruto, 19.95);
   assert.ok(Math.abs(p.items[0].quantidade_comercial * p.items[0].valor_unitario_comercial - 19.95) <= 0.01, 'SEFAZ aceita até 1 centavo de diferença');
+});
+
+test('código 2D (GS1): produto, validade e lote', () => {
+  assert.deepEqual(lerGS1('(01)07896003701685(17)261231(10)L23'), { gtin: '7896003701685', validade: '2026-12-31', lote: 'L23' });
+  assert.deepEqual(lerGS1(']d2010789600370168510AB12\x1d17270600'), { gtin: '7896003701685', validade: '2027-06-30', lote: 'AB12' });
+  assert.equal(lerGS1('7896003701685'), null);
+  assert.equal(lerGS1('(01)07896003701684(17)261231'), null);
+});
+
+test('categoria pela base de produtos ou pelo nome', () => {
+  assert.equal(categoriaPorTexto('en:snacks en:sweet-snacks en:biscuits en:chocolate-biscuits'), 'Biscoitos');
+  assert.equal(categoriaPorTexto('en:beverages en:carbonated-drinks en:sodas'), 'Bebidas');
+  assert.equal(categoriaPorTexto('Detergente Líquido Ypê Neutro 500ml'), 'Limpeza');
+  assert.equal(categoriaPorTexto('Arroz Branco Tipo 1 5kg'), 'Mercearia');
+  assert.equal(categoriaPorTexto('xyz'), '');
 });
