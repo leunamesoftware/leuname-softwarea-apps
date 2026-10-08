@@ -15,7 +15,8 @@ function ambiente() {
     CREATE TABLE pedidos (id TEXT PRIMARY KEY, nome TEXT, email TEXT, status TEXT, pagamento_id TEXT, chave TEXT, criado_em TEXT, atualizado_em TEXT, plano TEXT, assinatura_id TEXT, conta_id TEXT, email_enviado TEXT);
     CREATE TABLE acessos (chave TEXT PRIMARY KEY, plano TEXT, expira_em TEXT, atualizado_em TEXT);
     CREATE TABLE testes_apps (conta_id TEXT, app TEXT, inicio TEXT);`);
-  lic.exec(`CREATE TABLE licencas (id TEXT, app_id TEXT, chave TEXT, cliente_nome TEXT, cliente_contato TEXT, origem TEXT, status TEXT, criado_em TEXT);`);
+  lic.exec(`CREATE TABLE apps (id TEXT PRIMARY KEY, nome TEXT, criado_em TEXT);
+    CREATE TABLE licencas (id TEXT, app_id TEXT REFERENCES apps(id), chave TEXT, cliente_nome TEXT, cliente_contato TEXT, origem TEXT, status TEXT, criado_em TEXT);`);
   return { env: { DB: d1(db), LICDB: d1(lic), DONO_EMAIL: 'dono@x.com', APP_ID: 'calculadora-receitas' }, db };
 }
 

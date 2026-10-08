@@ -31,6 +31,8 @@ export async function licencaAtiva(env, bruta) {
 
 export async function emitirLicenca(env, nome, email, appId = env.APP_ID, origem = 'mercadopago') {
   const chave = await gerarChave();
+  // licencas.app_id aponta para apps(id): app novo sem cadastro faria a licença (do dono e das vendas) falhar.
+  await env.LICDB.prepare("INSERT OR IGNORE INTO apps (id, nome, criado_em) VALUES (?, ?, datetime('now'))").bind(appId, appId).run();
   await env.LICDB.prepare(`INSERT INTO licencas (id, app_id, chave, cliente_nome, cliente_contato, origem, status, criado_em)
     VALUES (?, ?, ?, ?, ?, ?, 'ativa', datetime('now'))`)
     .bind(crypto.randomUUID(), appId, chave, nome, email, origem).run();
