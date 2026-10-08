@@ -437,6 +437,8 @@ function telaCaixa() {
     if (r.produto) { leitor.value = ''; desenharTiles(''); adicionarProduto(r.produto, r.qtd ?? mult, r.preco ?? null, r.totalFixo ?? null); mult = null; return; }
     if (r.lista.length === 1 && !/^\d+$/.test(t)) return escolher(r.lista[0]);
     if (r.lista.length) { lista = r.lista; selecionada = 0; mostrarSug(); return; }
+    // Código novo no caixa: o dono cadastra na hora (o app puxa os dados) e o produto já entra na venda.
+    if (ehDono() && N.eanValido(t)) { leitor.value = ''; return formProduto(null, { codigo: t, aoSalvar: (p) => { desenharTiles(''); adicionarProduto(p, mult); mult = null; } }); }
     toast(/^\d{6,}$/.test(t) ? 'Código não cadastrado. Cadastre em Produtos.' : 'Nenhum produto encontrado.', true);
     leitor.select();
   };
@@ -849,13 +851,14 @@ async function telaProdutos() {
   $('#p-csv').onclick = exportarProdutos;
   desenhar();
 }
-function formProduto(p) {
+function formProduto(p, op = {}) {
   const novo = !p;
-  p = p || { id: uid(), nome: '', codigo: '', categoria: '', unidade: 'un', custo: 0, preco: 0, estoque: 0, estoqueMin: null, validade: '', plu: '', ncm: '' };
+  p = p || { id: uid(), nome: '', codigo: op.codigo || '', categoria: '', unidade: 'un', custo: 0, preco: 0, estoque: 0, estoqueMin: null, validade: '', plu: '', ncm: '' };
   const v = (x) => (x == null || x === 0 ? '' : String(x).replace('.', ','));
   const j = janela(`<h2>${novo ? 'Novo produto' : 'Editar produto'}</h2>
     <div class="campos">
       <label>Código de barras<div class="leitor"><input id="pf-codigo" value="${esc(p.codigo)}" inputmode="numeric">${botaoCamera('pf-codigo')}</div></label>
+      ${novo ? '<p id="pf-achou" class="sub" style="grid-column:1/-1;margin:0">Leia o código de barras: o app busca nome, foto e NCM sozinho.</p>' : ''}
       <label style="grid-column:1/-1">Nome do produto<input id="pf-nome" value="${esc(p.nome)}"></label>
       <label>Categoria<input id="pf-cat" value="${esc(p.categoria || '')}" list="pf-cats"></label>
       <label>Vende por<select id="pf-un"><option value="un">Unidade</option><option value="kg" ${p.unidade === 'kg' ? 'selected' : ''}>Peso (kg)</option></select></label>
@@ -873,7 +876,6 @@ function formProduto(p) {
     <div class="linha-botoes" style="justify-content:space-between;margin-top:12px">
       <div>${novo ? '' : `<button class="btn ${p.inativo ? '' : 'perigo'}" id="pf-ativo">${p.inativo ? 'Reativar' : 'Desativar'}</button>`}</div>
       <div class="linha-botoes"><button class="btn" data-fechar>Voltar</button><button class="btn prim" id="pf-ok">Salvar</button></div></div>`, { larga: true });
-  ligarCameras(j.el);
   const custo = $('#pf-custo', j.el), margem = $('#pf-margem', j.el), preco = $('#pf-preco', j.el);
   margem.oninput = () => { if (numeroBR(custo.value) > 0) preco.value = String(N.precoPorMargem(numeroBR(custo.value), numeroBR(margem.value))).replace('.', ','); };
   preco.oninput = () => { if (numeroBR(custo.value) > 0) margem.value = String(N.margemDe(numeroBR(custo.value), numeroBR(preco.value))).replace('.', ','); };
@@ -884,6 +886,34 @@ function formProduto(p) {
     try { foto = await reduzirFoto(f); const v = $('#pf-foto-ver', j.el); v.outerHTML = `<img id="pf-foto-ver" src="${foto}" style="width:48px;height:48px;border-radius:8px;object-fit:contain;background:#F1F5F9">`; }
     catch { toast('Não deu para ler esta foto.', true); }
   };
+  // Produto novo: com o código de barras, puxa nome, marca, foto e NCM das bases de produtos (servidor da loja).
+  let ultimo = '';
+  const achou = (t) => { const a = $('#pf-achou', j.el); if (a) a.textContent = t; };
+  const mostrarFoto = () => { $('#pf-foto-ver', j.el).outerHTML = `<img id="pf-foto-ver" src="${foto}" style="width:48px;height:48px;border-radius:8px;object-fit:contain;background:#F1F5F9">`; };
+  const completar = async () => {
+    const c = $('#pf-codigo', j.el).value.trim();
+    if (!novo || c === ultimo || !N.eanValido(c)) return;
+    ultimo = c;
+    const ja = S.porCodigo.get(c);
+    if (ja) return achou(`⚠️ Este código já é do produto "${ja.nome}".`);
+    achou('🔎 Procurando o produto…');
+    try {
+      const d = await (await fetch('/produto/' + c, { cache: 'default' })).json();
+      if ($('#pf-codigo', j.el).value.trim() !== c) return;
+      if (!d.ok) { achou('Não achei este código nas bases de produtos. Digite o nome.'); $('#pf-nome', j.el).focus(); return; }
+      const x = d.produto, nome = $('#pf-nome', j.el), tem = (a, b) => a.toLowerCase().includes(b.toLowerCase());
+      if (!nome.value.trim()) nome.value = [x.nome, x.marca && !tem(x.nome, x.marca) ? x.marca : '', x.quantidade && !tem(x.nome, x.quantidade) ? x.quantidade : ''].filter(Boolean).join(' ');
+      if (x.ncm && !$('#pf-ncm', j.el).value) $('#pf-ncm', j.el).value = x.ncm;
+      achou('✅ Produto encontrado: confira o nome e ponha o preço de venda.');
+      preco.focus();
+      if (x.foto && !foto) { try { foto = await reduzirFoto(await (await fetch(x.foto)).blob()); mostrarFoto(); } catch {} }
+    } catch { achou(navigator.onLine ? 'Não deu para buscar agora. Digite o nome.' : 'Sem internet: digite o nome do produto.'); ultimo = ''; }
+  };
+  ligarCameras(j.el, completar);
+  const cod = $('#pf-codigo', j.el);
+  cod.addEventListener('change', completar);
+  cod.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); completar(); } });
+  if (novo && p.codigo) completar();
   const at = $('#pf-ativo', j.el); if (at) at.onclick = async () => { p.inativo = !p.inativo; await salvar('produtos', p); j.fechar(); telaProdutos(); };
   $('#pf-ok', j.el).onclick = async () => {
     const erro = (t) => { $('#pf-erro', j.el).textContent = t; $('#pf-erro', j.el).hidden = false; };
@@ -907,6 +937,7 @@ function formProduto(p) {
     await carregarProdutos();
     toast('Produto salvo.'); j.fechar();
     if (S.tela === 'produtos') telaProdutos();
+    if (op.aoSalvar) op.aoSalvar(p);
   };
 }
 // Foto do produto: reduzida para 200 px (fica leve no aparelho).

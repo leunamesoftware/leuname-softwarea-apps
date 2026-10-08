@@ -38,7 +38,57 @@ async function fiscal(req, url) {
     return json({ mensagem: 'O emissor não respondeu. Tente de novo.' }, 502);
   }
 }
-const DONO_LIVRE = /^\/dono\/(app\.webmanifest|robo-\d+\.png|sw\.js)$/;
+// Cadastro pelo código de barras (MercaGestão): busca nome, marca, foto e NCM em bases públicas de produtos.
+// Cosmos (Bluesoft, a mais completa do Brasil e com NCM) só entra se o segredo COSMOS_TOKEN existir;
+// sem ele, usa as bases abertas Open Food/Products/Beauty Facts (grátis, sem chave).
+const FOTO_HOSTS = /^(images|static)\.open(food|products|beauty)facts\.org$|^cdn-cosmos\.bluesoft\.com\.br$/;
+const textoLimpo = (s, max = 120) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, max);
+async function buscarCosmos(ean, env) {
+  if (!env.COSMOS_TOKEN) return null;
+  const r = await fetch(`https://api.cosmos.bluesoft.com.br/gtins/${ean}.json`, { headers: { 'X-Cosmos-Token': env.COSMOS_TOKEN, 'User-Agent': 'Cosmos-API-Request', Accept: 'application/json' } });
+  if (!r.ok) return null;
+  const d = await r.json();
+  if (!d?.description) return null;
+  return { nome: textoLimpo(d.description), marca: textoLimpo(d.brand?.name, 60), ncm: String(d.ncm?.code || '').replace(/\D/g, '').slice(0, 8), foto: d.thumbnail || '', fonte: 'Cosmos' };
+}
+async function buscarOpenFacts(ean) {
+  const campos = 'product_name_pt,product_name,generic_name_pt,brands,quantity,image_front_url,image_url';
+  const bases = ['world.openfoodfacts.org', 'world.openproductsfacts.org', 'world.openbeautyfacts.org'];
+  const achados = await Promise.all(bases.map(async (b) => {
+    try {
+      const r = await fetch(`https://${b}/api/v2/product/${ean}.json?fields=${campos}`, { headers: { 'User-Agent': 'MercaGestao/1.0 (leunamesoftware.com.br)' } });
+      const d = r.ok ? await r.json() : null;
+      const p = d?.status === 1 ? d.product : null;
+      const nome = p && textoLimpo(p.product_name_pt || p.product_name || p.generic_name_pt);
+      return nome ? { nome, marca: textoLimpo(String(p.brands || '').split(',')[0], 60), quantidade: textoLimpo(p.quantity, 30), foto: p.image_front_url || p.image_url || '', fonte: 'Open Facts' } : null;
+    } catch { return null; }
+  }));
+  return achados.find(Boolean) || null;
+}
+async function produtoPorCodigo(url, env, ctx) {
+  const json = (d, status = 200, cache = 'no-store') => new Response(JSON.stringify(d), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': cache } });
+  if (url.pathname === '/produto/foto') {
+    let u; try { u = new URL(url.searchParams.get('u') || ''); } catch { return new Response('Foto inválida.', { status: 400 }); }
+    if (u.protocol !== 'https:' || !FOTO_HOSTS.test(u.hostname)) return new Response('Foto inválida.', { status: 400 });
+    const r = await fetch(u, { cf: { cacheTtl: 2592000, cacheEverything: true } });
+    const tipo = r.headers.get('Content-Type') || '';
+    if (!r.ok || !tipo.startsWith('image/')) return new Response('Sem foto.', { status: 404 });
+    return new Response(r.body, { headers: { 'Content-Type': tipo, 'Cache-Control': 'public, max-age=2592000' } });
+  }
+  const ean = (url.pathname.match(/^\/produto\/(\d{8,14})$/) || [])[1];
+  if (!ean) return json({ erro: 'codigo' }, 400);
+  const chave = new Request(`https://${MERCA_HOST}/produto/${ean}`);
+  const guardado = await caches.default.match(chave);
+  if (guardado) return guardado;
+  let p = null;
+  try { p = (await buscarCosmos(ean, env)) || (await buscarOpenFacts(ean)); } catch {}
+  if (p?.foto) p.foto = /^https?:/.test(p.foto) ? '/produto/foto?u=' + encodeURIComponent(p.foto.replace(/^http:/, 'https:')) : '';
+  // Achou: guarda 30 dias. Não achou: 1 dia (a base pode ganhar o produto depois).
+  const resp = json(p ? { ok: true, produto: p } : { ok: false }, 200, `public, max-age=${p ? 2592000 : 86400}`);
+  ctx.waitUntil(caches.default.put(chave, resp.clone()));
+  return resp;
+}
+const DONO_LIVRE =/^\/dono\/(app\.webmanifest|robo-\d+\.png|sw\.js)$/;
 async function eDono(req, env) {
   if (!env.CONTAS || !env.DONO_EMAIL) return false;
   try {
@@ -86,7 +136,7 @@ document.getElementById('f').addEventListener('submit', async (e) => {
 <\/script></body></html>`;
 
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
     // Link do WhatsApp sem "https" chega como http: manda direto (um salto só) para a versão segura.
     // Só para abrir páginas (GET/HEAD): envios de programas antigos (POST) seguem como estavam.
@@ -152,6 +202,7 @@ export default {
     // MercaGestão no endereço próprio: mercagestao.leunamesoftware.com.br/ mostra o que está em /mercagestao/.
     if (url.hostname === MERCA_HOST) {
       if (url.pathname.startsWith('/fiscal/')) return fiscal(req, url);
+      if (url.pathname.startsWith('/produto/') && req.method === 'GET') return produtoPorCodigo(url, env, ctx);
       if (!url.pathname.startsWith('/img/') && !url.pathname.startsWith('/mercagestao/')) url.pathname = '/mercagestao' + (url.pathname === '/' ? '/' : url.pathname);
       req = new Request(url, req);
     }
