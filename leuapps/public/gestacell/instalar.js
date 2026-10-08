@@ -25,15 +25,15 @@
     && !(matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone);
   // A LeuApps instalada abre o link com ?de=leuapps: ali é a janelinha do Android (com X), onde não dá para instalar.
   var daLeuapps = p.get('de') === 'leuapps';
-  // Quem tocou em "Usar sem instalar" não vê a tela de novo por 7 dias (o link com ?instalar=1 mostra sempre).
-  var semInstalar = 0; try { semInstalar = Number(localStorage.getItem('li-sem-instalar')) || 0; } catch (e) {}
-  if (Date.now() - semInstalar < 7 * 864e5) noNavegadorDoCelular = false;
+  var instalado = matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone;
   if (p.get('instalar') !== '1' && p.get('atalho') !== '1' && !noNavegadorDoCelular && !daLeuapps) return;
+  // Já é o app instalado (abriu pelo ícone ou pelo link do e-mail): tira o ?instalar=1 e segue para o app.
+  if (instalado && !daLeuapps) { p.delete('instalar'); p.delete('atalho'); history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash); return; }
   p.delete('instalar'); p.delete('atalho'); p.delete('de');
   history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
   // Veio da loja (?instalar=1): mostra sempre a tela de instalação. Se a página está numa janela de app, é a
   // janelinha que o Android abre de dentro da LeuApps instalada: ali o Chrome não instala, só no Chrome de verdade.
-  var janelinha = daLeuapps || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || navigator.standalone;
+  var janelinha = daLeuapps;
 
   var ua = navigator.userAgent;
   var ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -55,19 +55,19 @@
     var corpo;
     if (novo === 'pronto') {
       corpo = '<div class="li-ok" aria-hidden="true">✓</div><p class="li-texto"><b>' + nome + ' instalado!</b> O ícone já está ' + onde + '.</p>'
-        + '<p class="li-texto">Abra o app pelo ícone. Lá dentro você cria a sua conta (nome, e-mail e senha) e começa a usar.</p>'
-        + '<a class="li-sim" href="' + loja + '">Voltar para a LeuApps</a><button type="button" class="li-nao" data-usar>Abrir aqui mesmo</button>';
+        + '<p class="li-texto">Abra pelo ícone e entre com o seu e-mail e senha.</p>';
     } else if (novo === 'botao') {
-      corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">Grátis para instalar · o ícone fica ' + onde + '</p>'
-        + '<button type="button" class="li-nao" data-usar>Usar sem instalar</button>';
+      corpo = '<button type="button" class="li-sim" data-instalar>Instalar</button><p class="li-mini">O ícone fica ' + onde + '</p>';
     } else if (novo === 'janelinha') {
       corpo = '<button type="button" class="li-sim" data-usar>Abrir o ' + nome + '</button>'
         + '<p class="li-texto"><b>Para instalar</b> (ícone na tela do celular):</p>'
         + '<ol class="li-passos"><li>Toque nos <b>⋮</b> lá em cima, à direita.</li><li>Toque em <b>Abrir no Chrome</b>.</li><li>No Chrome, toque em <b>Instalar</b>.</li></ol>'
         + '<button type="button" class="li-nao" data-copiar>Copiar o endereço</button>';
     } else if (novo === 'passos') {
-      corpo = (celular && !ios ? '<p class="li-texto">Se o <b>' + nome + '</b> já está instalado, abra pelo ícone ' + onde + '. Se ainda não está:</p>' : '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p>') + '<ol class="li-passos">' + passos() + '</ol>'
-        + '<button type="button" class="li-nao" data-usar>Já instalei · abrir aqui mesmo</button>';
+      // iPhone (a Apple não tem botão de instalar) e navegador sem instalação: o jeito pelo menu.
+      // No Chrome/Edge só chega aqui se em 1 minuto não liberar: quase sempre é porque já está instalado.
+      corpo = ios || (firefox && !celular) ? '<p class="li-texto">Para colocar o <b>' + nome + '</b> ' + onde + ':</p><ol class="li-passos">' + passos() + '</ol>'
+        : '<p class="li-texto">O <b>' + nome + '</b> já está instalado. Abra pelo ícone ' + onde + '.</p>';
     } else {
       // Na 1ª visita o navegador só libera a instalação depois de alguns segundos na página. A tela espera sozinha
       // e, quando liberar, abre a confirmação do navegador (ou mostra "Toque aqui para instalar"). Sem três pontinhos.
@@ -115,8 +115,7 @@
     tela.setAttribute('aria-label', 'Instalar ' + nome);
     tela.innerHTML = '<div class="li-barra"><button type="button" class="li-voltar" data-voltar aria-label="Voltar para a loja"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><span class="li-loja">LeuApps</span></div>'
       + '<div class="li-meio"><div class="li-topo">' + (icone ? '<img src="' + icone + '" alt="">' : '') + '<div><h1>' + nome + '</h1><div class="li-dev">LeuName Softwares</div><div class="li-selo">Verificado pela LeuApps</div></div></div>'
-      + '<div class="li-corpo"></div>'
-      + '<div class="li-fatos"><span><b>L</b>Classificação Livre</span><span><b>Sem anúncios</b>no app</span><span><b>Sua conta</b>criada no app</span></div></div>';
+      + '<div class="li-corpo"></div></div>';
     tela.addEventListener('click', function (e) {
       if (e.target.closest('[data-voltar]')) { if (document.referrer && history.length > 1) history.back(); else location.href = loja; return; }
       if (e.target.closest('[data-copiar]')) {
@@ -125,7 +124,7 @@
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () { b.textContent = url; }); else b.textContent = url;
         return;
       }
-      if (e.target.closest('[data-usar]')) { try { localStorage.setItem('li-sem-instalar', String(Date.now())); } catch (x) {} tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
+      if (e.target.closest('[data-usar]')) { tela.remove(); tela = null; document.documentElement.style.overflow = ''; return; }
       if (e.target.closest('[data-instalar]')) {
         if (pedido) return pedirInstalacao();
         // O navegador ainda não liberou o botão: espera um pouco; só mostra o passo a passo se ele não liberar.
