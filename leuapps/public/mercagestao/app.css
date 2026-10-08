@@ -121,7 +121,7 @@ details.mais-precos summary { cursor: pointer; font-weight: 700; display: flex; 
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--linha); vertical-align: middle; }
 th { font-size: 11.5px; color: var(--suave); text-transform: uppercase; letter-spacing: .5px; font-weight: 700; background: #F8FAFC; }
-.cartao.tabela { padding: 0; overflow: hidden; }
+.cartao.tabela { padding: 0; overflow-x: auto; }
 .cartao.tabela > h3 { padding: 14px 16px 0; }
 .cartao.tabela table th:first-child, .cartao.tabela table td:first-child { padding-left: 16px; }
 .cartao.tabela table th:last-child, .cartao.tabela table td:last-child { padding-right: 16px; }
@@ -226,7 +226,23 @@ table.dre tr.total.neg td { color: var(--vermelho); }
 .sugestoes { position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid var(--linha); border-radius: 12px; box-shadow: 0 14px 30px rgba(15,23,42,.14); max-height: 340px; overflow-y: auto; padding: 4px; }
 .sugestoes button { display: flex; justify-content: space-between; width: 100%; border: 0; background: none; padding: 10px 12px; cursor: pointer; text-align: left; border-radius: 8px; }
 .sugestoes button:hover, .sugestoes button.sel { background: var(--verde-claro); }
-@media (max-width: 1300px) { .pdv { grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto minmax(0, 1fr) auto; } .pdv-pagar { grid-column: 2; } .pdv-venda { grid-row: 2; grid-column: 2; } .pdv-produtos { grid-row: 2 / 4; } .atalhos-teclas { display: none; } }
+/* Notebook pequeno/tablet deitado: as 3 colunas ficam mais estreitas (o total e o pagamento sempre à vista). */
+@media (max-width: 1300px) { .pdv { grid-template-columns: minmax(0, 1fr) 330px 250px; gap: 10px; } .atalhos-teclas { display: none; } .tiles { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); } }
+@media (max-width: 1300px) and (min-width: 901px) {
+  .formas { gap: 6px; }
+  .formas button { min-height: 50px; font-size: 12px; gap: 2px; }
+  .campo-grande input { font-size: 22px; min-height: 46px; }
+  .troco { font-size: 22px; padding: 6px 12px; }
+  .pdv-pagar #finalizar { min-height: 52px !important; margin-top: 10px !important; }
+  .pdv-venda .total-azul { font-size: 22px; padding: 8px 14px; }
+  .pdv-venda h2 { font-size: 16px; } .pdv-venda h2 .btn.peq { padding: 4px 8px; font-size: 12px; }
+  .itens-tab table td, .itens-tab table th { padding: 7px 2px; font-size: 13.5px; }
+  .itens-tab .q button { width: 24px; height: 24px; } .x { width: 24px; height: 24px; }
+  .contas-venda .btn { font-size: 13px; padding: 6px 8px; }
+}
+@media (max-width: 600px) {
+  .tab-produtos th:nth-child(2), .tab-produtos td:nth-child(2), .tab-produtos th:nth-child(3), .tab-produtos td:nth-child(3) { display: none; }
+}
 @media (max-width: 900px) {
   .pdv { display: flex; flex-direction: column; height: auto; }
   .pdv-produtos { order: 3; } .pdv-venda { order: 1; } .pdv-pagar { order: 2; }

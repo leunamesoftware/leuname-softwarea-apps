@@ -932,7 +932,7 @@ async function telaProdutos() {
   };
   conteudo().innerHTML = `${cabeca('produtos', 'Produtos', 'Cadastro, preços, promoções e etiquetas.', `<button class="btn prim" id="p-novo">${ic('mais', 18)} Novo produto</button><button class="btn" id="p-xml">${ic('arquivo', 18)} Importar XML da nota</button><button class="btn" id="p-etq">${ic('etiqueta', 18)} Etiquetas</button><button class="btn" id="p-csv">${ic('baixar', 18)} Planilha</button>`)}
     <div class="linha-botoes" style="margin-bottom:10px"><input id="p-busca" placeholder="Buscar por nome, código ou categoria" style="flex:1;min-width:200px"><select id="p-so" style="width:auto"><option value="">Ativos</option><option value="baixo">Estoque baixo</option><option value="inativo">Inativos</option></select><span class="sub" id="p-qtd" style="align-self:center"></span></div>
-    <div class="cartao tabela"><table><thead><tr><th>Produto</th><th class="dir">Custo</th><th class="dir">Margem</th><th class="dir">Preço</th><th class="dir">Estoque</th></tr></thead><tbody id="p-lista"></tbody></table></div>`;
+    <div class="cartao tabela"><table class="tab-produtos"><thead><tr><th>Produto</th><th class="dir">Custo</th><th class="dir">Margem</th><th class="dir">Preço</th><th class="dir">Estoque</th></tr></thead><tbody id="p-lista"></tbody></table></div>`;
   $('#p-busca').oninput = (e) => { busca = e.target.value; desenhar(); };
   $('#p-so').onchange = (e) => { so = e.target.value; desenhar(); };
   $('#p-novo').onclick = () => formProduto(null);
