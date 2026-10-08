@@ -302,3 +302,37 @@ ul.dicas { padding-left: 20px; margin: 0; } ul.dicas li { margin-bottom: 8px; fo
 .busca-sugestoes button:hover, .busca-sugestoes button:focus-visible { background: var(--laranja-claro); }
 .busca-sugestoes img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
 .busca-sugestoes .nada { padding: 8px; color: var(--suave); }
+
+/* ===== Computador: menu na lateral e conteúdo largo (o celular continua igual) ===== */
+@media (min-width: 1024px) {
+  body { padding-bottom: 0; padding-left: 232px; }
+  body.abertura { padding-left: 0; }
+  .topo { margin-left: -232px; padding-left: 24px; padding-right: 150px; z-index: 7; }
+  main { max-width: 1120px; padding: 24px 32px 40px; }
+  .abas { top: 56px; right: auto; bottom: 0; width: 232px; display: flex; flex-direction: column; gap: 4px; padding: 18px 12px; border-top: 0; border-right: 1px solid var(--linha); }
+  .abas button { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; font-size: 20px; text-align: left; }
+  .abas button span { font-size: 15px; }
+  .abas button:hover { background: var(--fundo); }
+  .abas button.ativa { background: var(--laranja-claro); }
+  .aviso { bottom: 28px; left: 232px; }
+  .modal-fundo { align-items: center; }
+  .modal { border-radius: 20px; max-width: 620px; padding: 24px; }
+  h1 { font-size: 28px; }
+
+  /* Calcular: formulário à esquerda, resultado fixo à direita. */
+  main[data-aba="calcular"] { display: grid; grid-template-columns: minmax(0, 1fr) 380px; column-gap: 28px; align-items: start; }
+  main[data-aba="calcular"] > * { grid-column: 1; }
+  main[data-aba="calcular"] > #resultado { grid-column: 2; grid-row: 1 / span 60; position: sticky; top: 80px; }
+  main[data-aba="calcular"] > #resultado > :first-child { margin-top: 0; }
+  #itens { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+
+  /* Vendas e ingredientes: cartões lado a lado. */
+  main[data-aba="historico"] > .cartao, main[data-aba="ingredientes"] .cartao { max-width: none; }
+  main[data-aba="historico"] .kpis { grid-template-columns: repeat(4, 1fr); }
+
+  /* Livro de receitas: mais largo e com a navegação no rodapé da área de conteúdo. */
+  main[data-aba="receitas"] { max-width: 900px; }
+  .livro-nav { bottom: 0; left: 232px; max-width: 900px; }
+  .estante { min-height: calc(100vh - 120px); }
+  .livro-capa { width: 340px; }
+}

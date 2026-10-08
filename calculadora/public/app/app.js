@@ -10,7 +10,7 @@ const LINK_COMPRA = PAGINAS + '/comprar';
 const fotoDe = (r) => (String(r.foto || '').startsWith('/') ? RAIZ + r.foto : r.foto);
 // App instalado pela Play/APK: regra do Google proíbe vender dentro do app; a compra é feita no site/canal.
 const APP_LOJA = /QuantoCobrarApp/.test(navigator.userAgent);
-const VERSAO_APP = '6.6';
+const VERSAO_APP = '6.7';
 const tela = document.getElementById('tela');
 const abas = document.getElementById('abas');
 
@@ -236,6 +236,7 @@ function abrir(aba, extra) {
   if (!logado()) return telaAtivacao();
   if (estado.acesso?.bloqueado) return telaBloqueio();
   estado.aba = aba;
+  tela.dataset.aba = aba;
   document.body.classList.remove('abertura');
   abas.hidden = false;
   abas.querySelectorAll('button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
@@ -464,7 +465,8 @@ function htmlContracapa() {
 function ajustarFolha() {
   const pg = document.getElementById('pagina'), nav = tela.querySelector('.livro-nav');
   if (!pg || !nav) return;
-  const livre = innerHeight - pg.getBoundingClientRect().top - nav.offsetHeight - abas.offsetHeight - 14;
+  // No computador o menu fica na lateral (não come altura embaixo).
+  const livre = innerHeight - pg.getBoundingClientRect().top - nav.offsetHeight - (matchMedia('(min-width: 1024px)').matches ? 0 : abas.offsetHeight) - 14;
   pg.style.height = Math.max(300, livre) + 'px';
 }
 addEventListener('resize', () => { if (estado.aba === 'receitas' && livro.aberto) ajustarFolha(); });
