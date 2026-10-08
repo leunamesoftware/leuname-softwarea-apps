@@ -2,35 +2,31 @@
 // Sai pelo Gmail da empresa (segredo GMAIL_SENHA_APP) ou, se um dia trocar, pelo Resend (RESEND_API_KEY + EMAIL_FROM).
 // Sem nenhum dos dois, não manda: a venda fica na Área do Dono para mandar à mão.
 // Nunca atrapalha a compra: qualquer erro aqui é só registrado.
-// App novo à venda: acrescente o link dele em LINKS (o mesmo link de instalar usado na página de compra aprovada).
+// App novo à venda: acrescente em LINKS o link de instalar (o mesmo da página de compra aprovada) e a cor do app.
 import { PLANOS } from './planos.js';
 import { enviarPeloGmail } from './smtp.js';
 
 export const LINKS = {
-  gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1' },
-  radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1' },
-  construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1' },
-  quantocobrar: { nome: 'Quanto Cobrar', url: 'https://quantocobrar.leunamesoftware.com.br/app/?instalar=1' },
+  gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1', cor: '#0B2545' },
+  radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1', cor: '#1F6FEB' },
+  construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1', cor: '#EA580C' },
+  quantocobrar: { nome: 'Quanto Cobrar', url: 'https://quantocobrar.leunamesoftware.com.br/app/?instalar=1', cor: '#E8590C' },
 };
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Curto de propósito (pedido do dono): o nome do app e um botão só, Instalar, na cor do app.
 export function montarEmailCompra(pedido) {
   const P = PLANOS[pedido.plano] || {};
   const app = LINKS[P.app] || LINKS.quantocobrar;
   const nome = String(pedido.nome || '').split(' ')[0];
-  const passos = (titulo, itens) => `<p style="margin:18px 0 6px"><b>${titulo}</b></p><ol style="margin:0;padding-left:20px">${itens.map((i) => `<li style="margin:4px 0">${i}</li>`).join('')}</ol>`;
-  const html = `<div style="font:16px/1.5 Arial,sans-serif;color:#1A1630;max-width:520px">
-  <h2 style="margin:0 0 8px">Compra aprovada, ${esc(nome)}! 🎉</h2>
-  <p>O <b>${esc(app.nome)}</b> já está liberado na sua conta. Para instalar, use este link (serve para o celular e para o computador):</p>
-  <p style="margin:20px 0"><a href="${app.url}" style="background:#ea580c;color:#fff;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;display:inline-block">Instalar o ${esc(app.nome)}</a></p>
-  ${passos('No celular', ['Abra o link no <b>Chrome</b>.', 'Toque em <b>Instalar</b> e espere uns segundos.', 'Confirme em <b>Instalar</b>. O ícone aparece na tela do celular.'])}
-  ${passos('No computador', ['Abra o link no <b>Chrome</b> ou no <b>Edge</b>.', 'Clique em <b>Instalar</b> e confirme.', 'O ícone aparece na área de trabalho.'])}
-  ${passos('No iPhone', ['Abra o link no <b>Safari</b>.', 'Toque em <b>Compartilhar</b> e em <b>Adicionar à Tela de Início</b>.'])}
-  <p style="margin-top:18px">Para entrar, use o <b>mesmo e-mail e senha</b> da sua compra. Eles também funcionam na loja LeuApps: <a href="https://www.leunamesoftware.com.br">www.leunamesoftware.com.br</a></p>
-  <p style="color:#5D5A6B;font-size:14px">Dúvidas? Responda este e-mail.<br>LeuName Softwares</p></div>`;
-  const texto = `Compra aprovada, ${nome}!\n\nO ${app.nome} já está liberado na sua conta. Para instalar no celular ou no computador, abra este link no Chrome e toque em Instalar:\n${app.url}\n\nNo iPhone: abra no Safari, toque em Compartilhar e em Adicionar à Tela de Início.\n\nPara entrar, use o mesmo e-mail e senha da sua compra.\n\nLeuName Softwares`;
-  return { assunto: `Seu ${app.nome} está liberado: veja como instalar`, html, texto };
+  const html = `<div style="font:16px/1.5 Arial,sans-serif;color:#1A1630;max-width:480px;text-align:center;padding:8px 0">
+  <p style="margin:0 0 4px;color:#5D5A6B;font-size:14px">LeuName Softwares</p>
+  <h2 style="margin:0 0 18px">${esc(nome ? nome + ', seu ' : 'Seu ')}${esc(app.nome)} está liberado</h2>
+  <a href="${app.url}" style="background:${app.cor};color:#fff;text-decoration:none;font-weight:bold;font-size:18px;padding:16px 40px;border-radius:999px;display:inline-block">Instalar</a>
+  <p style="margin:18px 0 0;color:#5D5A6B;font-size:14px">Entre com o mesmo e-mail e senha da compra.</p></div>`;
+  const texto = `${nome ? nome + ', seu ' : 'Seu '}${app.nome} está liberado.\n\nInstalar: ${app.url}\n\nEntre com o mesmo e-mail e senha da compra.\n\nLeuName Softwares`;
+  return { assunto: `Seu ${app.nome} está liberado`, html, texto };
 }
 
 /** Manda um e-mail pelo serviço ligado (Gmail da empresa ou Resend). Devolve { ok, como, erro }. */

@@ -73,6 +73,15 @@ de verificação da Google. O caminho é sempre o app pelo navegador.
 
 Marque como **Segredo**. O `calculadora/wrangler.toml` tem `keep_vars = true`, para a publicação não apagar o que o dono colocou no painel. **Nunca tire essa linha:** sem ela, uma variável de texto some a cada publicação (já aconteceu).
 
+## Padrão do dono: curto e objetivo (vale para todo app novo)
+- **E-mail da compra:** "LeuName Softwares", "Seu <App> está liberado", **um botão só: Instalar**, na cor do
+  app, e uma linha: "Entre com o mesmo e-mail e senha da compra." Nada de passo a passo.
+  - A cor fica em `LINKS` (`calculadora/src/email.js`).
+- **Tela do link de instalar:** ícone, nome e **um botão só: Instalar**, na cor do app (`data-cor` no `<script src="/instalar.js">`).
+  - Sem "Usar sem instalar", sem três pontinhos, sem texto extra.
+  - Dentro do app já instalado, a tela não aparece.
+- O cliente não pode perder tempo: **clicou no link → botão Instalar → instalado.**
+
 ## Conta do cliente: trava de aparelhos e senha
 - **1 celular + 1 computador por conta.** Cada sessão guarda o tipo de aparelho (pelo navegador) e um
   identificador (cookie `ln_aparelho`). Entrar num aparelho novo do mesmo tipo desconecta o anterior

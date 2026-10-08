@@ -28,7 +28,8 @@ test('erro do provedor não derruba a compra', async () => {
 
 test('texto tem o passo a passo e o nome', () => {
   const m = montarEmailCompra({ ...pedido, plano: 'gestacell_anual' });
-  assert.match(m.texto, /Toque em Instalar|toque em Instalar/);
+  assert.match(m.texto, /Instalar: https:\/\/gestacell\.leunamesoftware\.com\.br\/\?instalar=1/);
+  assert.match(m.html, /#0B2545/);
   assert.match(m.html, /Maria/);
 });
 
