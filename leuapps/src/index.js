@@ -53,20 +53,24 @@ async function buscarCosmos(ean, env) {
     categorias: textoLimpo([d.gpc?.description, d.ncm?.full_description || d.ncm?.description].filter(Boolean).join(' | '), 400),
     precoMedio: Number(d.avg_price) > 0 ? Number(d.avg_price) : null, fonte: 'Cosmos' };
 }
+// Devolve { p, falhou }: falhou = alguma base não respondeu (aí o "não achei" não pode ficar guardado).
 async function buscarOpenFacts(ean) {
   const campos = 'product_name_pt,product_name,generic_name_pt,brands,quantity,image_front_url,image_url,categories_tags';
   const bases = ['world.openfoodfacts.org', 'world.openproductsfacts.org', 'world.openbeautyfacts.org'];
+  let falhou = false;
   const achados = await Promise.all(bases.map(async (b) => {
     try {
-      const r = await fetch(`https://${b}/api/v2/product/${ean}.json?fields=${campos}`, { headers: { 'User-Agent': 'MercaGestao/1.0 (leunamesoftware.com.br)' } });
-      const d = r.ok ? await r.json() : null;
+      const r = await fetch(`https://${b}/api/v2/product/${ean}.json?fields=${campos}`, { headers: { 'User-Agent': 'MercaGestao/1.0 (leunamesoftware.com.br)', Accept: 'application/json' } });
+      if (!r.ok && r.status !== 404) { falhou = true; console.error('produto', b, r.status); return null; }
+      const d = await r.json().catch(() => null);
       const p = d?.status === 1 ? d.product : null;
       const nome = p && textoLimpo(p.product_name_pt || p.product_name || p.generic_name_pt);
       return nome ? { nome, marca: textoLimpo(String(p.brands || '').split(',')[0], 60), quantidade: textoLimpo(p.quantity, 30), foto: p.image_front_url || p.image_url || '',
         categorias: textoLimpo((p.categories_tags || []).join(' '), 400) || (b.includes('beauty') ? 'hygiene' : ''), fonte: 'Open Facts' } : null;
-    } catch { return null; }
+    } catch (e) { falhou = true; console.error('produto', b, e?.message); return null; }
   }));
-  return achados.find(Boolean) || null;
+  const p = achados.find(Boolean) || null;
+  return { p, falhou: !p && falhou };
 }
 async function produtoPorCodigo(url, env, ctx) {
   const json = (d, status = 200, cache = 'no-store') => new Response(JSON.stringify(d), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': cache } });
@@ -80,13 +84,15 @@ async function produtoPorCodigo(url, env, ctx) {
   }
   const ean = (url.pathname.match(/^\/produto\/(\d{8,14})$/) || [])[1];
   if (!ean) return json({ erro: 'codigo' }, 400);
-  const chave = new Request(`https://${MERCA_HOST}/produto/v2/${ean}`);
+  const chave = new Request(`https://${MERCA_HOST}/produto/v3/${ean}`);
   const guardado = await caches.default.match(chave);
   if (guardado) return guardado;
-  let p = null;
-  try { p = (await buscarCosmos(ean, env)) || (await buscarOpenFacts(ean)); } catch {}
+  let p = null, falhou = false;
+  try { p = await buscarCosmos(ean, env); } catch (e) { console.error('cosmos', e?.message); }
+  if (!p) ({ p, falhou } = await buscarOpenFacts(ean));
   if (p?.foto) p.foto = /^https?:/.test(p.foto) ? '/produto/foto?u=' + encodeURIComponent(p.foto.replace(/^http:/, 'https:')) : '';
   // Achou: guarda 30 dias. Não achou: 1 dia (a base pode ganhar o produto depois).
+  if (falhou) return json({ ok: false, falhou: true });
   const resp = json(p ? { ok: true, produto: p } : { ok: false }, 200, `public, max-age=${p ? 2592000 : 86400}`);
   ctx.waitUntil(caches.default.put(chave, resp.clone()));
   return resp;

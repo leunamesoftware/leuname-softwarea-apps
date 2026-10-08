@@ -900,35 +900,41 @@ function formProduto(p, op = {}) {
       c = gs1.gtin; $('#pf-codigo', j.el).value = c;
       if (gs1.validade) $('#pf-val', j.el).value = gs1.validade;
     }
-    if (!novo || c === ultimo || !N.eanValido(c)) return;
+    if (c === ultimo || !N.eanValido(c)) return;
     ultimo = c;
     const ja = S.porCodigo.get(c);
-    if (ja) return achou(`⚠️ Este código já é do produto "${ja.nome}".`);
+    if (ja && ja.id !== p.id) return achou(`⚠️ Este código já é do produto "${ja.nome}".`);
     achou('🔎 Procurando o produto…');
-    try {
-      const d = await (await fetch('/produto/' + c, { cache: 'default' })).json();
-      if ($('#pf-codigo', j.el).value.trim() !== c) return;
-      if (!d.ok) { achou('Não achei este código nas bases de produtos. Digite o nome.'); $('#pf-nome', j.el).focus(); return; }
-      const x = d.produto, nome = $('#pf-nome', j.el), tem = (a, b) => a.toLowerCase().includes(b.toLowerCase());
-      if (!nome.value.trim()) nome.value = [x.nome, x.marca && !tem(x.nome, x.marca) ? x.marca : '', x.quantidade && !tem(x.nome, x.quantidade) ? x.quantidade : ''].filter(Boolean).join(' ');
-      if (x.ncm && !$('#pf-ncm', j.el).value) $('#pf-ncm', j.el).value = x.ncm;
-      const cat = $('#pf-cat', j.el);
-      if (!cat.value.trim()) {
-        const sug = N.categoriaPorTexto(x.categorias) || N.categoriaPorTexto(x.nome);
-        // Usa a categoria que a loja já tem com o mesmo nome (mantém a grafia dela).
-        cat.value = S.produtos.map((q) => q.categoria).find((k) => k && sug && k.toLowerCase() === sug.toLowerCase()) || sug;
-      }
-      achou('✅ Produto encontrado: confira e ponha o preço de venda' + ($('#pf-val', j.el).value ? '.' : ' (e a validade, que vem impressa na embalagem).')
-        + (x.precoMedio ? ` Preço médio no mercado: ${brl(x.precoMedio)}.` : ''));
-      preco.focus();
-      if (x.foto && !foto) { try { foto = await reduzirFoto(await (await fetch(x.foto)).blob()); mostrarFoto(); } catch {} }
-    } catch { achou(navigator.onLine ? 'Não deu para buscar agora. Digite o nome.' : 'Sem internet: digite o nome do produto.'); ultimo = ''; }
+    const r = await buscarNaBase(c);
+    if ($('#pf-codigo', j.el).value.trim() !== c) return;
+    if (!r.produto) {
+      ultimo = r.erro ? '' : c;
+      achou(r.erro ? (navigator.onLine ? 'Não deu para consultar a base de produtos agora. Tente de novo ou digite o nome.' : 'Sem internet: digite o nome do produto.')
+        : 'Este código não está nas bases de produtos. Digite o nome (só desta vez: depois o app já sabe).');
+      if (!$('#pf-nome', j.el).value.trim()) $('#pf-nome', j.el).focus();
+      return;
+    }
+    // Só preenche o que estiver vazio: nada que você digitou é trocado.
+    const x = r.produto, nome = $('#pf-nome', j.el), tem = (a, b) => a.toLowerCase().includes(b.toLowerCase());
+    if (!nome.value.trim()) nome.value = [x.nome, x.marca && !tem(x.nome, x.marca) ? x.marca : '', x.quantidade && !tem(x.nome, x.quantidade) ? x.quantidade : ''].filter(Boolean).join(' ');
+    if (x.ncm && !$('#pf-ncm', j.el).value) $('#pf-ncm', j.el).value = x.ncm;
+    const cat = $('#pf-cat', j.el);
+    if (!cat.value.trim()) {
+      const sug = N.categoriaPorTexto(x.categorias) || N.categoriaPorTexto(x.nome);
+      // Usa a categoria que a loja já tem com o mesmo nome (mantém a grafia dela).
+      cat.value = S.produtos.map((q) => q.categoria).find((k) => k && sug && k.toLowerCase() === sug.toLowerCase()) || sug;
+    }
+    achou('✅ Produto encontrado: confira e ponha o preço de venda' + ($('#pf-val', j.el).value ? '.' : ' (e a validade, que vem impressa na embalagem).')
+      + (x.precoMedio ? ` Preço médio no mercado: ${brl(x.precoMedio)}.` : ''));
+    if (!numeroBR(preco.value)) preco.focus();
+    if (x.foto && !foto) { try { foto = await reduzirFoto(await (await fetch(x.foto)).blob()); mostrarFoto(); } catch {} }
   };
   ligarCameras(j.el, completar);
   const cod = $('#pf-codigo', j.el);
   cod.addEventListener('change', completar);
   cod.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); completar(); } });
-  if (novo && p.codigo) completar();
+  // Produto novo com código, ou já cadastrado com dados faltando: busca o que falta.
+  if (p.codigo && (novo || !p.nome || !p.categoria || !p.ncm || !p.foto)) completar();
   const at = $('#pf-ativo', j.el); if (at) at.onclick = async () => { p.inativo = !p.inativo; await salvar('produtos', p); j.fechar(); telaProdutos(); };
   $('#pf-ok', j.el).onclick = async () => {
     const erro = (t) => { $('#pf-erro', j.el).textContent = t; $('#pf-erro', j.el).hidden = false; };
@@ -954,6 +960,32 @@ function formProduto(p, op = {}) {
     if (S.tela === 'produtos') telaProdutos();
     if (op.aoSalvar) op.aoSalvar(p);
   };
+}
+// Dados do produto pelo código de barras. 1º o servidor da loja (Cosmos, se ligado, e bases abertas, com cache);
+// se ele não achar ou não responder, o próprio aparelho consulta as bases abertas (Open Food/Products/Beauty Facts).
+async function buscarNaBase(ean) {
+  let erro = false;
+  try {
+    const r = await fetch('/produto/' + ean);
+    const d = r.ok ? await r.json() : null;
+    if (d?.ok) return { produto: d.produto };
+    if (!d || d.falhou) erro = true;
+  } catch { erro = true; }
+  const campos = 'product_name_pt,product_name,generic_name_pt,brands,quantity,image_front_url,image_url,categories_tags';
+  const achados = await Promise.all(['openfoodfacts', 'openproductsfacts', 'openbeautyfacts'].map(async (b) => {
+    try {
+      const r = await fetch(`https://world.${b}.org/api/v2/product/${ean}.json?fields=${campos}`);
+      if (!r.ok && r.status !== 404) { erro = true; return null; }
+      const x = (await r.json())?.product;
+      const nome = x && String(x.product_name_pt || x.product_name || x.generic_name_pt || '').replace(/\s+/g, ' ').trim();
+      if (!nome) return null;
+      const f = x.image_front_url || x.image_url || '';
+      return { nome, marca: String(x.brands || '').split(',')[0].trim(), quantidade: String(x.quantity || '').trim(),
+        categorias: (x.categories_tags || []).join(' ') || (b === 'openbeautyfacts' ? 'hygiene' : ''), foto: f ? '/produto/foto?u=' + encodeURIComponent(f) : '' };
+    } catch { erro = true; return null; }
+  }));
+  const produto = achados.find(Boolean);
+  return produto ? { produto } : { produto: null, erro };
 }
 // Foto do produto: reduzida para 200 px (fica leve no aparelho).
 async function reduzirFoto(arquivo) {
