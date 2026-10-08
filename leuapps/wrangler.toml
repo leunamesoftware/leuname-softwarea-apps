@@ -46,6 +46,10 @@ custom_domain = true
 pattern = "gestacell.leunamesoftware.com.br"
 custom_domain = true
 
+[[routes]]
+pattern = "mercagestao.leunamesoftware.com.br"
+custom_domain = true
+
 # Downloads dos APKs da loja para Android (leuapps.apk, gestacell.apk): /baixar/<arquivo>.
 [[r2_buckets]]
 binding = "DOWNLOADS"

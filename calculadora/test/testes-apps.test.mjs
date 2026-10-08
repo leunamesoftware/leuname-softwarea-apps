@@ -57,3 +57,13 @@ test('ConstruGestão: teste grátis de 7 dias; só assinatura mensal ou pagament
   assert.equal(PLANOS.construgestao_anual, undefined);
   assert.equal(PLANOS.construgestao.licenca, 'construgestao');
 });
+
+test('MercaGestão: pagamento único de R$ 200 em até 6x, 7 dias grátis e e-mail com o link de instalar', async () => {
+  const { PLANOS: P, TESTE_DIAS: T } = await import('../src/planos.js');
+  const { LINKS } = await import('../src/email.js');
+  assert.deepEqual([P.mercagestao.preco, P.mercagestao.parcelas, P.mercagestao.licenca, P.mercagestao.app], [200, 6, 'mercagestao', 'mercagestao']);
+  assert.equal(P.mercagestao.dias, undefined, 'vitalício');
+  assert.equal(P.mercagestao_mensal, undefined, 'sem mensal');
+  assert.equal(T.mercagestao, 7);
+  assert.equal(LINKS.mercagestao.url, 'https://mercagestao.leunamesoftware.com.br/?instalar=1');
+});

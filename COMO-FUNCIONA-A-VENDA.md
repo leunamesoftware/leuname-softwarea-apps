@@ -33,8 +33,8 @@ de verificação da Google. O caminho é sempre o app pelo navegador.
 2. **Tela Instalar.** Copie o `instalar.js` (a cópia mais nova é `CONSTRUGESTAO/frontend/instalar.js` no Leunamesite)
    e coloque no `<head>`:
    `<script src="/instalar.js" data-nome="Nome do App" data-icone="/icon-192.png" data-cor="#ea580c"></script>`.
-   - **Ao mudar o instalar.js, copie para os 4 apps:** `leuapps/public/gestacell/`, `calculadora/public/`,
-     `CONSTRUGESTAO/frontend/` e `RADAR-PREVENTIVO/frontend/public/`.
+   - **Ao mudar o instalar.js, copie para os 5 apps:** `leuapps/public/gestacell/`, `leuapps/public/mercagestao/`,
+     `calculadora/public/`, `CONSTRUGESTAO/frontend/` e `RADAR-PREVENTIVO/frontend/public/`.
    - Como funciona: no celular (navegador) ou com `?instalar=1`, aparece a tela com **Instalar**.
      Se o Chrome ainda não liberou a instalação (na 1ª visita ele espera alguns segundos), a tela mostra
      "Preparando a instalação…" e abre a confirmação sozinha quando liberar. **Não mostra passos de três pontinhos**

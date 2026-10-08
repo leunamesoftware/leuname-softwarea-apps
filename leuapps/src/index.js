@@ -12,6 +12,32 @@ function seguro(resp) {
 // Manifesto e ícones ficam abertos porque o celular os busca sem a sessão na hora de instalar.
 const DONO_HOST = 'dono.leunamesoftware.com.br';
 const GESTACELL_HOST = 'gestacell.leunamesoftware.com.br';
+const MERCA_HOST = 'mercagestao.leunamesoftware.com.br';
+
+// NFC-e do MercaGestão: ponte para o emissor (Focus NFe). O navegador não fala direto com o emissor (CORS),
+// então o app manda aqui com o token da própria loja; nada é guardado no servidor.
+async function fiscal(req, url) {
+  const json = (d, status) => new Response(JSON.stringify(d), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+  const token = req.headers.get('X-Fiscal-Token') || '';
+  if (!token || token.length > 200) return json({ mensagem: 'Falta o token do emissor.' }, 401);
+  const m = url.pathname.match(/^\/fiscal\/nfce(?:\/([A-Za-z0-9-]{1,50}))?$/);
+  const metodo = req.method;
+  if (!m || (!m[1] && metodo !== 'POST') || (m[1] && !['GET', 'DELETE'].includes(metodo))) return json({ mensagem: 'Rota fiscal inválida.' }, 404);
+  const ref = m[1] || url.searchParams.get('ref') || '';
+  if (!/^[A-Za-z0-9-]{1,50}$/.test(ref)) return json({ mensagem: 'Referência inválida.' }, 400);
+  const base = req.headers.get('X-Fiscal-Ambiente') === 'producao' ? 'https://api.focusnfe.com.br' : 'https://homologacao.focusnfe.com.br';
+  const destino = m[1] ? `${base}/v2/nfce/${ref}` : `${base}/v2/nfce?ref=${ref}`;
+  try {
+    const r = await fetch(destino, {
+      method: metodo,
+      headers: { Authorization: 'Basic ' + btoa(token + ':'), 'Content-Type': 'application/json' },
+      body: metodo === 'GET' ? undefined : await req.text(),
+    });
+    return new Response(r.body, { status: r.status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+  } catch {
+    return json({ mensagem: 'O emissor não respondeu. Tente de novo.' }, 502);
+  }
+}
 const DONO_LIVRE = /^\/dono\/(app\.webmanifest|robo-\d+\.png|sw\.js)$/;
 async function eDono(req, env) {
   if (!env.CONTAS || !env.DONO_EMAIL) return false;
@@ -121,6 +147,12 @@ export default {
     if (url.hostname !== DONO_HOST && (url.pathname === '/dono' || url.pathname.startsWith('/dono/'))) return Response.redirect(`https://${DONO_HOST}/`, 302);
     if (url.hostname === DONO_HOST) {
       if (url.pathname !== '/apps.json' && !url.pathname.startsWith('/img/') && !url.pathname.startsWith('/dono/')) url.pathname = '/dono' + url.pathname;
+      req = new Request(url, req);
+    }
+    // MercaGestão no endereço próprio: mercagestao.leunamesoftware.com.br/ mostra o que está em /mercagestao/.
+    if (url.hostname === MERCA_HOST) {
+      if (url.pathname.startsWith('/fiscal/')) return fiscal(req, url);
+      if (!url.pathname.startsWith('/img/') && !url.pathname.startsWith('/mercagestao/')) url.pathname = '/mercagestao' + (url.pathname === '/' ? '/' : url.pathname);
       req = new Request(url, req);
     }
     // Gestacell no endereço próprio: gestacell.leunamesoftware.com.br/ mostra o que está em /gestacell/.

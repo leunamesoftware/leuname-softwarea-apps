@@ -58,7 +58,13 @@
       "📦 Calcula para 10, 50 ou 200 unidades",
       "📊 Controle das suas vendas"
     ],
-    "capturas": ["/img/telas/quantocobrar-play-1.webp", "/img/telas/quantocobrar-play-2.webp", "/img/telas/quantocobrar-play-3.webp", "/img/telas/quantocobrar-play-4.webp", "/img/telas/quantocobrar-play-5.webp"],
+    "capturas": [
+      "/img/telas/quantocobrar-play-1.webp",
+      "/img/telas/quantocobrar-play-2.webp",
+      "/img/telas/quantocobrar-play-3.webp",
+      "/img/telas/quantocobrar-play-4.webp",
+      "/img/telas/quantocobrar-play-5.webp"
+    ],
     "instalar": "https://quantocobrar.leunamesoftware.com.br/app/?instalar=1",
     "manifestWww": "/quantocobrar/manifest.webmanifest?v=5",
     "abrirWww": "/quantocobrar/app/",
@@ -99,7 +105,17 @@
         "data": "out 2026"
       }
     ],
-    "secoes": ["Comer e beber", "Negócios", "Finanças", "Ferramentas", "Premium", "Grátis para testar", "Apps favoritos", "Ferramentas de negócios", "Ferramentas e utilitários"],
+    "secoes": [
+      "Comer e beber",
+      "Negócios",
+      "Finanças",
+      "Ferramentas",
+      "Premium",
+      "Grátis para testar",
+      "Apps favoritos",
+      "Ferramentas de negócios",
+      "Ferramentas e utilitários"
+    ],
     "escolha": true,
     "dados": {
       "coleta": "Nome e e-mail da conta, e as receitas, ingredientes e preços que você cadastra",
@@ -148,7 +164,13 @@
       "👥 Clientes e fornecedores",
       "💰 Financeiro e relatórios"
     ],
-    "capturas": ["/img/telas/gestacell-play-1.webp", "/img/telas/gestacell-play-2.webp", "/img/telas/gestacell-play-3.webp", "/img/telas/gestacell-play-4.webp", "/img/telas/gestacell-play-5.webp"],
+    "capturas": [
+      "/img/telas/gestacell-play-1.webp",
+      "/img/telas/gestacell-play-2.webp",
+      "/img/telas/gestacell-play-3.webp",
+      "/img/telas/gestacell-play-4.webp",
+      "/img/telas/gestacell-play-5.webp"
+    ],
     "instalar": "https://gestacell.leunamesoftware.com.br/?instalar=1",
     "manifestWww": "/gestacell/www.webmanifest",
     "abrirWww": "/gestacell/",
@@ -259,7 +281,13 @@
       "📄 Documentos organizados",
       "➕ Cadastro rápido"
     ],
-    "capturas": ["/img/telas/radar-play-1.webp", "/img/telas/radar-play-2.webp", "/img/telas/radar-play-3.webp", "/img/telas/radar-play-4.webp", "/img/telas/radar-play-5.webp"],
+    "capturas": [
+      "/img/telas/radar-play-1.webp",
+      "/img/telas/radar-play-2.webp",
+      "/img/telas/radar-play-3.webp",
+      "/img/telas/radar-play-4.webp",
+      "/img/telas/radar-play-5.webp"
+    ],
     "instalar": "https://radar.leunamesoftware.com.br/?instalar=1",
     "abrirFrame": "https://radar.leunamesoftware.com.br/?leuapps=1",
     "instalarDireto": {
@@ -288,7 +316,15 @@
         "data": "2026"
       }
     ],
-    "secoes": ["Negócios", "Finanças", "Produtividade", "Ferramentas", "Premium", "Ferramentas de negócios", "Ferramentas e utilitários"],
+    "secoes": [
+      "Negócios",
+      "Finanças",
+      "Produtividade",
+      "Ferramentas",
+      "Premium",
+      "Ferramentas de negócios",
+      "Ferramentas e utilitários"
+    ],
     "dados": {
       "coleta": "Nome e e-mail da conta, e os documentos, contas e prazos que você cadastra",
       "uso": "Para avisar você antes de cada vencimento"
@@ -342,19 +378,120 @@
         "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
       }
     ],
-    "opcoes": [["Assinatura mensal", "R$ 19,90/mês", "no cartão, cancele quando quiser"], ["Vitalício", "R$ 49,90", "paga uma vez só, é seu para sempre"]],
+    "opcoes": [
+      [
+        "Assinatura mensal",
+        "R$ 19,90/mês",
+        "no cartão, cancele quando quiser"
+      ],
+      [
+        "Vitalício",
+        "R$ 49,90",
+        "paga uma vez só, é seu para sempre"
+      ]
+    ],
     "instalar": "https://construgestao.leunamesoftware.com.br/",
     "abrirFrame": "https://construgestao.leunamesoftware.com.br/",
-    "instalarDireto": {"url": "https://construgestao.leunamesoftware.com.br/", "id": "https://construgestao.leunamesoftware.com.br/"},
-    "capturas": ["/img/telas/construgestao-play-1b.webp", "/img/telas/construgestao-play-2.webp", "/img/telas/construgestao-play-3.webp", "/img/telas/construgestao-play-4.webp", "/img/telas/construgestao-play-5.webp"],
+    "instalarDireto": {
+      "url": "https://construgestao.leunamesoftware.com.br/",
+      "id": "https://construgestao.leunamesoftware.com.br/"
+    },
+    "capturas": [
+      "/img/telas/construgestao-play-1b.webp",
+      "/img/telas/construgestao-play-2.webp",
+      "/img/telas/construgestao-play-3.webp",
+      "/img/telas/construgestao-play-4.webp",
+      "/img/telas/construgestao-play-5.webp"
+    ],
     "descricao": "Sistema de gestão para loja de material de construção: vendas, orçamentos, entregas, estoque com aviso do que precisa comprar, clientes, fornecedores e calculadoras de material da obra e de preço. Funciona no celular e no computador.",
-    "recursos": ["🧾 Vendas, orçamentos e entregas", "📦 Estoque com aviso do que precisa comprar", "🧮 Calculadora de material da obra e do preço de venda", "👥 Clientes, fornecedores e pedidos que faltaram", "📊 Relatórios da loja"],
-    "tags": ["Empresa", "Material de construção"],
-    "secoes": ["Negócios", "Finanças", "Produtividade", "Ferramentas", "Ferramentas de negócios"],
+    "recursos": [
+      "🧾 Vendas, orçamentos e entregas",
+      "📦 Estoque com aviso do que precisa comprar",
+      "🧮 Calculadora de material da obra e do preço de venda",
+      "👥 Clientes, fornecedores e pedidos que faltaram",
+      "📊 Relatórios da loja"
+    ],
+    "tags": [
+      "Empresa",
+      "Material de construção"
+    ],
+    "secoes": [
+      "Negócios",
+      "Finanças",
+      "Produtividade",
+      "Ferramentas",
+      "Ferramentas de negócios"
+    ],
     "destaque": {
       "imagem": "/img/destaques/construgestao-v2.webp",
       "titulo": "ConstruGestão",
       "frase": "Sua loja de construção no controle",
+      "textoNaImagem": true
+    }
+  },
+  {
+    "id": "mercagestao",
+    "nome": "MercaGestão",
+    "categoria": "Mercado e mercearia",
+    "resumo": "Caixa com leitor de código de barras, cupom, NFC-e, estoque, validade e fiado.",
+    "icone": "/img/mercagestao-192.webp",
+    "url": "https://mercagestao.leunamesoftware.com.br",
+    "preco": "7 dias grátis · R$ 200 uma vez só",
+    "exigeCompra": true,
+    "teste": 7,
+    "versao": "1.0",
+    "planos": [
+      {
+        "nome": "Vitalício",
+        "tipo": "unico",
+        "preco": "R$ 200,00",
+        "detalhe": "Paga uma vez, é seu para sempre · caixa, cupom, NFC-e, estoque, validade, fiado e relatórios · Pix ou cartão em até 6x",
+        "url": "/loja/comprar?app=mercagestao&plano=unico",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
+      }
+    ],
+    "opcoes": [
+      [
+        "Vitalício",
+        "R$ 200",
+        "paga uma vez só, sem mensalidade"
+      ]
+    ],
+    "instalar": "https://mercagestao.leunamesoftware.com.br/",
+    "abrirFrame": "https://mercagestao.leunamesoftware.com.br/",
+    "instalarDireto": {
+      "url": "https://mercagestao.leunamesoftware.com.br/",
+      "id": "https://mercagestao.leunamesoftware.com.br/"
+    },
+    "capturas": [
+      "/img/telas/mercagestao-1.webp",
+      "/img/telas/mercagestao-2.webp",
+      "/img/telas/mercagestao-3.webp",
+      "/img/telas/mercagestao-4.webp",
+      "/img/telas/mercagestao-5.webp"
+    ],
+    "descricao": "Sistema de caixa e gestão para mercado, mercearia e mini-mercado. Leitor de código de barras (de mão ou câmera do celular), etiqueta da balança, cupom na impressora térmica, NFC-e, estoque com validade e perdas, fiado com limite, importação do XML da nota do fornecedor e relatórios de lucro. Funciona no computador e no celular, até sem internet.",
+    "recursos": [
+      "🛒 Caixa rápido: leitor, câmera e balança",
+      "🧾 Cupom na térmica (80 ou 58 mm) e NFC-e",
+      "📦 Estoque, validade, perdas e XML da nota",
+      "📒 Fiado com limite e cobrança no WhatsApp",
+      "📊 Fechamento de caixa, lucro e curva ABC"
+    ],
+    "tags": [
+      "Empresa",
+      "Mercado"
+    ],
+    "secoes": [
+      "Negócios",
+      "Finanças",
+      "Produtividade",
+      "Ferramentas de negócios"
+    ],
+    "destaque": {
+      "imagem": "/img/destaques/mercagestao.webp",
+      "titulo": "MercaGestão",
+      "frase": "Seu mercado no controle",
       "textoNaImagem": true
     }
   }

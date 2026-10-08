@@ -10,6 +10,7 @@ export const LINKS = {
   gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1', cor: '#0B2545' },
   radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1', cor: '#1F6FEB' },
   construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1', cor: '#EA580C' },
+  mercagestao: { nome: 'MercaGestão', url: 'https://mercagestao.leunamesoftware.com.br/?instalar=1', cor: '#15803D' },
   quantocobrar: { nome: 'Quanto Cobrar', url: 'https://quantocobrar.leunamesoftware.com.br/app/?instalar=1', cor: '#E8590C' },
 };
 

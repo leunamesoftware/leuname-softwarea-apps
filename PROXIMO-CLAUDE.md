@@ -39,6 +39,7 @@ Situação de 8 de outubro de 2026, escrita pelo Claude que montou a venda sem a
 | Gestacell | gestacell.leunamesoftware.com.br | `leuapps/public/gestacell/` | completo |
 | Radar Preventivo | radar.leunamesoftware.com.br | Leunamesite `RADAR-PREVENTIVO/` (React + Worker) | completo; falta a trava de aparelhos (seção 5) |
 | ConstruGestão | construgestao.leunamesoftware.com.br | Leunamesite `CONSTRUGESTAO/frontend/index.html` | funciona, mas tem partes escondidas que faltam fazer (seção 5) |
+| MercaGestão | mercagestao.leunamesoftware.com.br | `leuapps/public/mercagestao/` (app.js + nucleo.js testado em `leuapps/test/mercagestao.test.mjs`) | completo; NFC-e pelo emissor Focus NFe ainda sem teste com conta real (seção 5) |
 
 Cursos: `leuapps/public/cursos.json`, com 4 cursos. Campos: `id`, `nome`, `nomeCurto`, `resumo`, `icone`, `destaque`,
 `categorias`, `preco`, `nivel`, `app`, `aulas[{parte,titulo,minutos,texto}]`, `unidade`, `certificado`.
@@ -112,11 +113,13 @@ Plano sugerido:
    - Na página de compra, o recebedor aparece como TRANS ANTUNES enquanto o CNPJ troca de nome.
 4. **Produtos de arquivo** (seção 4).
 5. **Microsoft Store** para computador com Windows (opcional). Dá para empacotar os PWAs pelo PWABuilder.
-6. **MercaGestão** (PDV para mini-mercado), combinado mas **não começado**. O dono quer:
-   - pagamento único de R$ 200, sem custo mensal;
-   - funcionar no computador da loja, com dados no próprio aparelho;
-   - leitor de código de barras, fiado, validade e perdas, produto por peso, cupom 80 mm, importar XML da nota.
-   **Pergunte antes de começar.**
+6. **MercaGestão: NFC-e.** O app monta a nota e manda pela ponte `/fiscal/nfce` (worker da loja, `fiscal()` em
+   `leuapps/src/index.js`) para o Focus NFe, com o token da própria loja (Configurações → Nota fiscal). Falta testar
+   em homologação com uma conta real do Focus (o cliente contrata, sobe o certificado A1 e o CSC lá).
+   - Identidade própria: azul/azul-marinho/laranja, ícone do dono (`img/mercagestao-*.png`). Não copiar dos outros apps.
+   - Dados no aparelho (IndexedDB `mercagestao`); cópia de segurança em Configurações.
+   - Leitor: de mão (USB = teclado + Enter), câmera (`BarcodeDetector` ou `lib/zxing.min.js`), etiqueta da balança (EAN 2…).
+   - Impressão: cupom 80/58 mm pela janela de impressão ou Bluetooth ESC/POS (Chrome).
 
 ## 6. Segredos e onde ficam (nunca no código)
 | Segredo | Onde | Para quê |
