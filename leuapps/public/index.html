@@ -640,6 +640,32 @@
     .pagina-app .instalar-app { display: flex; justify-content: center; margin: 4px 0 6px; }
     .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
     .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
+    /* ===== Computador: menu na lateral, conteúdo largo (o celular continua igual) ===== */
+    @media (min-width: 1024px) {
+      body { padding-left: 232px; }
+      .menu { top: 0; right: auto; width: 232px; flex-direction: column; justify-content: flex-start; padding: 20px 12px 16px; border-right: 1px solid var(--linha, #DDD8EA); }
+      .menu div { display: flex; flex-direction: column; gap: 4px; max-width: none; align-items: stretch; }
+      .menu button { display: flex; align-items: center; gap: 10px; padding: 6px 10px 6px 6px; border-radius: 14px; font-size: 15px; text-align: left; cursor: pointer; }
+      .menu button:hover { background: var(--fundo); }
+      .menu button span { width: 44px; height: 36px; flex: none; }
+      .menu .menu-meus { order: -1; margin-bottom: 10px; padding: 8px 10px 8px 6px; background: var(--verde-claro); }
+      .menu .menu-meus .bola { width: 40px; height: 40px; margin: 0; border-radius: 12px; }
+      .rodape { height: 24px; }
+      .topo-linha, main, .grade, .lista-cats, .det-corpo { max-width: 1180px; }
+      .topo { padding-left: 32px; padding-right: 32px; }
+      main { padding: 0 32px 24px; }
+      .destaque { flex-basis: calc(50% - 8px); max-height: 330px; }
+      .dest-item { flex-basis: calc(50% - 8px); scroll-snap-align: start; }
+      .banner-topo { margin-left: 0; margin-right: 0; border-radius: 0 0 32px 32px; min-height: 400px; }
+      .det-botoes-grandes, .det-corpo > .acao, .det-corpo > .acoes-det { max-width: 420px; }
+      .lista { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+      .grade { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 28px 20px; }
+      .pagina-secao, .detalhe { left: 232px; }
+      .pagina-secao { bottom: 0; }
+      .folha-fundo { align-items: center; }
+      .folha { border-radius: 26px; }
+      .aviso-loja { bottom: 28px; left: 248px; }
+    }
   </style>
   <style>
     html.pelo-atalho body > :not(#janela-app) { visibility: hidden; }
@@ -2033,7 +2059,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       if (fecharPagina && /^#(lista|curso|dados|sobre|avaliacoes)\/|^#meus-apps$/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); $('pagina-secao').hidden = true; $('pagina-curso').hidden = true; document.body.style.overflow = ''; }
       document.body.classList.toggle('na-apps', qual === 'apps');
       document.body.classList.toggle('rolar-topo', ['apps', 'cursos'].includes(qual));
-      document.documentElement.style.setProperty('--altura-menu', (document.querySelector('.menu')?.offsetHeight || 80) + 'px');
+      document.documentElement.style.setProperty('--altura-menu', (matchMedia('(min-width: 1024px)').matches ? 0 : (document.querySelector('.menu')?.offsetHeight || 80)) + 'px');
       for (const n of ['cursos', 'apps', 'pesquisa', 'livros', 'servicos', 'voce']) { $('aba-' + n).hidden = qual !== n; $('tab-' + n)?.setAttribute('aria-selected', qual === n); }
       const comBusca = qual === 'pesquisa' || qual === 'livros'; abaAtual = qual;
       $('topo-inicio').hidden = comBusca; $('topo-busca').hidden = !comBusca;
