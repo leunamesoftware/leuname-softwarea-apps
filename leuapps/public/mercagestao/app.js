@@ -1,6 +1,7 @@
 // MercaGestão — caixa e gestão de mercado. Os dados ficam no próprio aparelho (IndexedDB).
 // Regras e contas em nucleo.js (testadas). Acesso pela conta da loja LeuApps (teste de 7 dias ou vitalício).
 import * as N from './nucleo.js';
+import { ic } from './icones.js';
 
 const { brl, reais, centavos, numeroBR, FORMAS } = N;
 const APP = 'mercagestao';
@@ -52,7 +53,7 @@ async function cfg(id, padrao = {}) { return { ...padrao, ...((await pegar('conf
 
 // ---------- estado ----------
 const S = {
-  operador: null, tela: 'caixa', produtos: [], porCodigo: new Map(), porPLU: new Map(),
+  operador: null, tela: null, produtos: [], porCodigo: new Map(), porPLU: new Map(),
   loja: {}, impressao: {}, balanca: {}, fiscal: {}, caixa: null,
   venda: { itens: [], descontoVenda: null, cliente: null, cpf: '' },
 };
@@ -229,29 +230,55 @@ const ehDono = () => S.operador?.papel === 'dono';
 // =====================================================================
 // 3) Estrutura (menu + telas)
 // =====================================================================
-const TELAS = [
-  ['caixa', '🛒', 'Caixa'], ['vendas', '🧾', 'Vendas'], ['produtos', '📦', 'Produtos'], ['estoque', '🏷️', 'Estoque'],
-  ['clientes', '👥', 'Clientes e fiado'], ['financeiro', '💰', 'Financeiro'], ['gaveta', '🗄️', 'Abrir/fechar caixa'],
-  ['relatorios', '📊', 'Relatórios'], ['config', '⚙️', 'Configurações'],
+const MENU = [
+  ['Operação', [['inicio', 'Painel'], ['caixa', 'Caixa (PDV)', 'Caixa'], ['vendas', 'Vendas'], ['gaveta', 'Abrir/fechar caixa', 'Gaveta']]],
+  ['Cadastros', [['produtos', 'Produtos'], ['estoque', 'Estoque'], ['clientes', 'Clientes e fiado', 'Clientes']]],
+  ['Gestão', [['financeiro', 'Financeiro'], ['relatorios', 'Relatórios'], ['config', 'Configurações', 'Ajustes']]],
 ];
-const SO_DONO = new Set(['financeiro', 'relatorios', 'config']);
+const SO_DONO = new Set(['inicio', 'financeiro', 'relatorios', 'config']);
+let relogio = null;
 function montarApp() {
   onkeydown = null;
-  raiz.innerHTML = `<div class="app"><nav class="menu">
-      <div class="marca"><img src="/img/mercagestao-192.png" alt="">MercaGestão</div>
-      ${TELAS.filter(([id]) => ehDono() || !SO_DONO.has(id)).map(([id, ico, nome]) => `<button data-tela="${id}"><span class="ico">${ico}</span>${nome}</button>`).join('')}
-      <div class="rodape-menu">${esc(S.operador.nome)} · <a href="#" id="sair" style="color:#fff">sair</a></div>
-    </nav><main class="principal" id="conteudo"></main></div>`;
+  const o = S.operador;
+  raiz.innerHTML = `<div class="app"><nav class="menu" aria-label="Menu">
+      <div class="marca"><img src="/img/mercagestao-192.png" alt=""><div><b>MercaGestão</b><small>${esc(S.loja.nome || 'Meu mercado')}</small></div></div>
+      ${MENU.map(([grupo, itens]) => {
+        const vis = itens.filter(([id]) => ehDono() || !SO_DONO.has(id));
+        return vis.length ? `<div class="grupo">${grupo}</div>` + vis.map(([id, nome, curto]) => `<button data-tela="${id}" title="${nome}">${ic(id)}<span class="longo">${nome}</span><span class="curto">${curto || nome}</span></button>`).join('') : '';
+      }).join('')}
+      <div class="rodape-menu"><span class="avatar">${esc((o.nome.trim()[0] || '?').toUpperCase())}</span><div><b>${esc(o.nome)}</b><small>${o.papel === 'dono' ? 'Dono' : 'Caixa'}</small></div>
+        <button id="sair" title="Trocar de pessoa">${ic('sair', 18)}</button></div>
+    </nav><div class="area"><header class="barra">
+      <div class="barra-esq"><b>${esc(S.loja.nome || 'Meu mercado')}</b><span id="hoje"></span></div>
+      <div class="barra-dir"><span class="pill" id="pill-caixa"></span><span class="relogio">${ic('relogio', 16)}<span id="hora"></span></span></div>
+    </header><main class="principal" id="conteudo"></main></div></div>`;
   $$('[data-tela]').forEach((b) => (b.onclick = () => ir(b.dataset.tela)));
-  $('#sair').onclick = (e) => { e.preventDefault(); S.operador = null; telaPin(); };
-  ir(S.tela || 'caixa');
+  $('#sair').onclick = () => { S.operador = null; S.tela = null; telaPin(); };
+  const tic = () => {
+    const d = new Date();
+    const h = $('#hora'); if (!h) return clearInterval(relogio);
+    h.textContent = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    $('#hoje').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  };
+  clearInterval(relogio); relogio = setInterval(tic, 15000); tic();
+  const pode = (t) => t && (ehDono() || !SO_DONO.has(t));
+  ir(pode(S.tela) ? S.tela : ehDono() ? 'inicio' : 'caixa');
+}
+function pillCaixa() {
+  const p = $('#pill-caixa'); if (!p) return;
+  p.className = 'pill ' + (S.caixa ? 'ok' : 'off');
+  p.innerHTML = S.caixa ? `<i></i>Caixa aberto<small> desde ${new Date(S.caixa.abertoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</small>` : '<i></i>Caixa fechado';
 }
 function ir(tela) {
   S.tela = tela;
   $$('[data-tela]').forEach((b) => b.classList.toggle('ativo', b.dataset.tela === tela));
+  document.body.dataset.tela = tela;
   onkeydown = null;
-  ({ caixa: telaCaixa, vendas: telaVendas, produtos: telaProdutos, estoque: telaEstoque, clientes: telaClientes, financeiro: telaFinanceiro, gaveta: telaGaveta, relatorios: telaRelatorios, config: telaConfig })[tela]();
+  pillCaixa();
+  ({ inicio: telaInicio, caixa: telaCaixa, vendas: telaVendas, produtos: telaProdutos, estoque: telaEstoque, clientes: telaClientes, financeiro: telaFinanceiro, gaveta: telaGaveta, relatorios: telaRelatorios, config: telaConfig })[tela]();
 }
+// Cabeçalho das telas: ícone, título, subtítulo e botões.
+const cabeca = (id, titulo, sub = '', botoes = '') => `<div class="topo"><div class="topo-tit"><span class="topo-ic">${ic(id, 22)}</span><div><h1>${titulo}</h1>${sub ? `<p class="sub">${sub}</p>` : ''}</div></div>${botoes ? `<div class="linha-botoes">${botoes}</div>` : ''}</div>`;
 const conteudo = () => $('#conteudo');
 
 function janela(html, { larga = false } = {}) {
@@ -281,7 +308,7 @@ async function carregarScript(src) {
 }
 function lerCamera() {
   return new Promise(async (resolver) => {
-    const j = janela(`<h2>📷 Aponte para o código de barras</h2><div class="camera"><video playsinline muted></video><div class="mira"></div></div>
+    const j = janela(`<h2>Aponte para o código de barras</h2><div class="camera"><video playsinline muted></video><div class="mira"></div></div>
       <p class="sub">Segure o celular parado, a uns 15 cm do código.</p><div class="linha-botoes" style="justify-content:flex-end"><button class="btn" data-fechar>Fechar</button></div>`);
     const video = $('video', j.el);
     let parar = false, stream = null, leitorZX = null;
@@ -315,7 +342,7 @@ function lerCamera() {
     }
   });
 }
-const botaoCamera = (id) => `<button class="btn" type="button" data-camera="${id}" title="Ler com a câmera">📷</button>`;
+const botaoCamera = (id) => `<button class="btn icone" type="button" data-camera="${id}" title="Ler com a câmera">${ic('camera', 20)}</button>`;
 function ligarCameras(el, depois) {
   $$('[data-camera]', el).forEach((b) => (b.onclick = async () => {
     const c = await lerCamera(); if (!c) return;
@@ -356,7 +383,7 @@ function itemDe(p, qtd = 1, preco = null) {
 async function adicionarProduto(p, qtd = null, preco = null, totalFixo = null) {
   if (!p) return;
   if (p.unidade === 'kg' && qtd == null) {
-    const j = janela(`<h2>⚖️ ${esc(p.nome)}</h2><label>Peso (kg)<input id="peso" inputmode="decimal" placeholder="0,500"></label>
+    const j = janela(`<h2>${ic('balanca', 20)} ${esc(p.nome)}</h2><label>Peso (kg)<input id="peso" inputmode="decimal" placeholder="0,500"></label>
       <p class="sub">${brl(p.preco)} o kg</p><div class="linha-botoes" style="justify-content:flex-end"><button class="btn" data-fechar>Voltar</button><button class="btn prim" id="peso-ok">Adicionar</button></div>`);
     const ok = () => { const kg = numeroBR($('#peso', j.el).value); if (kg <= 0) return toast('Digite o peso.', true); j.fechar(); adicionarProduto(p, Math.round(kg * 1000) / 1000, preco); };
     $('#peso-ok', j.el).onclick = ok; $('#peso', j.el).addEventListener('keydown', (e) => { if (e.key === 'Enter') ok(); });
@@ -364,15 +391,14 @@ async function adicionarProduto(p, qtd = null, preco = null, totalFixo = null) {
   }
   const q = qtd ?? 1;
   const v = S.venda;
-  const igual = p.unidade !== 'kg' && v.itens.find((i) => i.produtoId === p.id && i.preco === (preco ?? p.preco) && !i.desconto);
-  if (igual && totalFixo == null) igual.qtd += q; else v.itens.push({ ...itemDe(p, q, preco), ...(totalFixo != null ? { totalFixo } : {}) });
+  // Preço automático (promoção/atacado) só quando o preço não veio da etiqueta da balança.
+  const auto = preco == null && totalFixo == null;
+  const igual = p.unidade !== 'kg' && v.itens.find((i) => i.produtoId === p.id && (auto ? i.auto : i.preco === preco) && !i.desconto && i.totalFixo == null);
+  if (igual && totalFixo == null) igual.qtd += q; else v.itens.push({ ...itemDe(p, q, preco), ...(totalFixo != null ? { totalFixo } : {}), ...(auto ? { auto: true } : {}) });
   if (p.estoque != null && p.unidade !== 'kg' && p.estoque - q < 0) toast(`Atenção: estoque de "${p.nome}" ficou negativo.`, true);
   desenharVenda();
 }
-// Ícone de cada categoria (bloco do topo do caixa).
-const ICONE_CAT = [[/bebida|refri|suco|cerveja|água/i, '🥤'], [/mercearia|grão|arroz|feij/i, '🧺'], [/horti|fruta|verdura|legume/i, '🍎'], [/carne|açougue|frango/i, '🥩'],
-  [/latic|leite|frio|queijo/i, '🥛'], [/padaria|pão/i, '🥖'], [/limpeza/i, '🧴'], [/higiene|perfum/i, '🧼'], [/biscoit|doce|bomboni/i, '🍪'], [/congel/i, '🧊']];
-const iconeCat = (c) => (ICONE_CAT.find(([re]) => re.test(c)) || [, '🏷️'])[1];
+// Cor de cada categoria e dos produtos sem foto (sempre a mesma para o mesmo nome).
 const CORES_TILE = ['#1D4ED8', '#F97316', '#16A34A', '#9333EA', '#DC2626', '#0891B2', '#CA8A04'];
 const corDe = (t) => CORES_TILE[[...String(t)].reduce((s, c) => s + c.charCodeAt(0), 0) % CORES_TILE.length];
 const ESPERA = 'mg_espera';
@@ -380,8 +406,8 @@ const vendasEmEspera = () => { try { return JSON.parse(LS.get(ESPERA) || '[]'); 
 
 function telaCaixa() {
   if (!S.caixa) {
-    conteudo().innerHTML = `<div class="topo"><h1>🛒 Caixa</h1></div><div class="cartao" style="max-width:420px">
-      <h2 style="margin-top:0">O caixa está fechado</h2><p class="sub">Para começar a vender, abra o caixa com o dinheiro do troco.</p>
+    conteudo().innerHTML = `${cabeca('caixa', 'Caixa (PDV)', 'Abra o caixa para começar a vender.')}<div class="cartao abrir-caixa">
+      <span class="grande-ic">${ic('gaveta', 30)}</span><h2>O caixa está fechado</h2><p class="sub">Para começar a vender, abra o caixa com o dinheiro do troco.</p>
       <label style="margin-top:10px">Fundo de troco (R$)<input id="fundo" inputmode="decimal" placeholder="0,00"></label>
       <button class="btn prim grande" style="width:100%;margin-top:12px" id="abrir">Abrir caixa</button></div>`;
     $('#abrir').onclick = () => abrirCaixa(numeroBR($('#fundo').value));
@@ -394,34 +420,33 @@ function telaCaixa() {
     <div class="pdv-busca">
       <div style="position:relative;flex:1;max-width:760px"><input id="leitor" placeholder="Digite o código de barras ou nome do produto…" autocomplete="off" autofocus><div class="sugestoes" id="sug" hidden></div></div>
       ${botaoCamera('leitor')}
-      <div class="oper">👤<div><b>${esc(S.operador.nome)}</b>Caixa aberto ${horaBR(S.caixa.abertoEm)}</div></div>
+      <div class="atalhos-teclas"><span><kbd>F2</kbd> buscar</span><span><kbd>F4</kbd> finalizar</span><span><kbd>F6</kbd> tirar último</span><span><kbd>F9</kbd> cliente</span></div>
     </div>
     <div class="painel pdv-produtos">
-      <div class="cats"><button data-cat="" class="${S.cat ? '' : 'sel'}"><span>▦</span>Todos</button>${cats.map((c) => `<button data-cat="${esc(c)}" class="${S.cat === c ? 'sel' : ''}"><span>${iconeCat(c)}</span>${esc(c)}</button>`).join('')}</div>
+      <div class="cats"><button data-cat="" class="${S.cat ? '' : 'sel'}"><span>${ic('inicio', 18)}</span>Todos</button>${cats.map((c) => `<button data-cat="${esc(c)}" class="${S.cat === c ? 'sel' : ''}"><span class="ponto" style="background:${corDe(c)}"></span>${esc(c)}</button>`).join('')}</div>
       <div class="tiles" id="tiles"></div>
     </div>
     <div class="painel pdv-venda">
-      <h2>Venda atual <span class="linha-botoes"><button class="btn peq" id="cli">👤 Cliente</button><button class="btn peq perigo" id="limpar">🗑 Limpar</button></span></h2>
+      <h2>Venda atual <span class="linha-botoes"><button class="btn peq" id="cli">${ic('usuario', 16)} Cliente</button><button class="btn peq perigo" id="limpar">${ic('lixeira', 16)} Limpar</button></span></h2>
       <div id="cliente-venda" class="sub" style="margin:-4px 0 6px"></div>
       <div class="itens-tab"><table><thead><tr><th>Produto</th><th>Qtd</th><th class="dir">Total</th><th></th></tr></thead><tbody id="itens"></tbody></table></div>
       <div class="contas-venda">
-        <label style="display:grid;grid-template-columns:1fr 130px;align-items:center;gap:8px">🏷️ Desconto (R$)<input id="desc-valor" inputmode="decimal" placeholder="0,00" style="text-align:right"></label>
+        <label style="display:grid;grid-template-columns:1fr 130px;align-items:center;gap:8px"><span class="com-ic">${ic('etiqueta', 16)} Desconto (R$)</span><input id="desc-valor" inputmode="decimal" placeholder="0,00" style="text-align:right"></label>
         <div class="l"><span>Subtotal</span><b id="v-sub">R$ 0,00</b></div>
         <div class="l"><span>Desconto</span><b id="v-desc" style="color:var(--vermelho)">R$ 0,00</b></div>
         <div class="total-azul"><span>Total</span><span id="total">R$ 0,00</span></div>
-        <div class="linha-botoes"><button class="btn perigo" id="cancelar" style="flex:1">✕ Cancelar venda</button><button class="btn" id="suspender" style="flex:1">⏸ Suspender</button></div>
+        <div class="linha-botoes"><button class="btn perigo" id="cancelar" style="flex:1">${ic('x', 16)} Cancelar venda</button><button class="btn" id="suspender" style="flex:1">${ic('pausa', 16)} Suspender</button></div>
         <div id="espera"></div>
       </div>
     </div>
     <div class="painel pdv-pagar">
       <h2>Pagamento</h2>
-      <div class="formas">${[['dinheiro', '💵', 'Dinheiro'], ['pix', '⚡', 'Pix'], ['debito', '💳', 'Débito'], ['credito', '💳', 'Crédito'], ['fiado', '📒', 'Fiado'], ['multiplo', '➗', 'Múltiplo']]
-        .map(([k, ic, n]) => `<button data-pag="${k}" class="${S.pag.forma === k ? 'sel' : ''}"><span>${ic}</span>${n}</button>`).join('')}</div>
+      <div class="formas">${[['dinheiro', 'dinheiro', 'Dinheiro'], ['pix', 'pix', 'Pix'], ['debito', 'cartao', 'Débito'], ['credito', 'cartao', 'Crédito'], ['fiado', 'fiado', 'Fiado'], ['multiplo', 'multiplo', 'Múltiplo']]
+        .map(([k, i, n]) => `<button data-pag="${k}" class="${S.pag.forma === k ? 'sel' : ''}"><span>${ic(i, 22)}</span>${n}</button>`).join('')}</div>
       <label class="campo-grande" style="margin-top:12px">Valor recebido (R$)<input id="recebido" inputmode="decimal" placeholder="0,00"></label>
       <div style="margin-top:10px"><span class="sub">Troco (R$)</span><div class="troco" id="troco">0,00</div></div>
       ${S.fiscal.ativo && S.fiscal.token ? `<label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:14px;color:var(--texto)"><input type="checkbox" id="nota" style="width:20px;min-height:20px" ${S.fiscal.automatico ? 'checked' : ''}> Emitir NFC-e</label>` : ''}
-      <button class="btn ok grande" id="finalizar" style="margin-top:auto;min-height:60px">✔ Finalizar pagamento (F4)</button>
-      <div class="atalhos" style="margin-top:6px">F2 buscar · F4 finalizar · F6 tirar último · F9 cliente</div>
+      <button class="btn ok grande" id="finalizar" style="margin-top:auto;min-height:60px">${ic('check', 22)} Finalizar venda <kbd>F4</kbd></button>
     </div></div>`;
   const leitor = $('#leitor'), sug = $('#sug');
   let selecionada = -1, lista = [], mult = null;
@@ -497,13 +522,25 @@ function desenharTiles(filtro) {
   $$('[data-tile]', el).forEach((b) => (b.onclick = () => adicionarProduto(S.produtos.find((p) => p.id === b.dataset.tile))));
 }
 function novaVenda() { S.venda = { itens: [], descontoVenda: null, cliente: null, cpf: '' }; S.pag = { forma: 'dinheiro', recebido: '' }; }
+// Promoção e atacado: o preço de cada item automático é refeito pela quantidade total do produto na venda.
+function reprecificar(itens) {
+  const hoje = hojeISO();
+  for (const i of itens) {
+    if (!i.auto) continue;
+    const p = S.produtos.find((x) => x.id === i.produtoId); if (!p) continue;
+    const qtd = itens.filter((x) => x.produtoId === i.produtoId).reduce((s, x) => s + (Number(x.qtd) || 0), 0);
+    const r = N.precoVigente(p, qtd, hoje);
+    i.preco = r.preco; i.regra = r.regra;
+  }
+}
 function desenharVenda(campoDesconto = true) {
   const el = $('#itens'); if (!el) return;
+  reprecificar(S.venda.itens);
   const v = S.venda, r = N.resumoVenda(v.itens, v.descontoVenda);
   el.innerHTML = v.itens.length ? v.itens.map((i, k) => `<tr>
-      <td><b>${esc(i.nome)}</b><div class="sub">${brl(i.preco)}${i.unidade === 'kg' ? '/kg' : ''}</div></td>
+      <td><b>${esc(i.nome)}</b><div class="sub">${brl(i.preco)}${i.unidade === 'kg' ? '/kg' : ''}${i.regra === 'promo' ? ' <span class="selo ambar">promoção</span>' : i.regra === 'atacado' ? ' <span class="selo verde">atacado</span>' : ''}</div></td>
       <td>${i.unidade === 'kg' || i.totalFixo != null ? qtdTxt(i.qtd, i.unidade) : `<span class="q"><button data-menos="${k}">−</button><b style="min-width:22px;text-align:center">${i.qtd}</b><button data-mais="${k}">+</button></span>`}</td>
-      <td class="dir numero"><b>${din(N.totalItem(i))}</b></td><td><button class="x" data-tirar="${k}" title="Tirar">✕</button></td></tr>`).join('')
+      <td class="dir numero"><b>${din(N.totalItem(i))}</b></td><td><button class="x" data-tirar="${k}" title="Tirar">${ic('x', 14)}</button></td></tr>`).join('')
     : '<tr><td colspan="4" class="vazio">Passe o código de barras ou toque no produto.</td></tr>';
   $$('[data-mais]', el).forEach((b) => (b.onclick = () => { v.itens[+b.dataset.mais].qtd++; desenharVenda(); }));
   $$('[data-menos]', el).forEach((b) => (b.onclick = () => { const i = v.itens[+b.dataset.menos]; if (i.qtd > 1) i.qtd--; else v.itens.splice(+b.dataset.menos, 1); desenharVenda(); }));
@@ -511,9 +548,9 @@ function desenharVenda(campoDesconto = true) {
   const box = el.closest('.itens-tab'); if (box) box.scrollTop = box.scrollHeight;
   $('#v-sub').textContent = din(r.subtotal); $('#v-desc').textContent = din(r.desconto); $('#total').textContent = din(r.total);
   if (campoDesconto) $('#desc-valor').value = v.descontoVenda ? String(v.descontoVenda.valor).replace('.', ',') : '';
-  $('#cliente-venda').innerHTML = v.cliente ? `👤 <b>${esc(v.cliente.nome)}</b>` : v.cpf ? `CPF na nota: ${esc(v.cpf)}` : '';
+  $('#cliente-venda').innerHTML = v.cliente ? `${ic('usuario', 15)} <b>${esc(v.cliente.nome)}</b>` : v.cpf ? `CPF na nota: ${esc(v.cpf)}` : '';
   const espera = vendasEmEspera();
-  $('#espera').innerHTML = espera.length ? `<div class="linha-botoes">${espera.map((e, k) => `<button class="btn peq" data-retomar="${k}">▶ Retomar ${e.cliente ? esc(e.cliente.nome) : 'venda ' + (k + 1)} (${din(N.resumoVenda(e.itens, e.descontoVenda).total)})</button>`).join('')}</div>` : '';
+  $('#espera').innerHTML = espera.length ? `<div class="linha-botoes">${espera.map((e, k) => `<button class="btn peq" data-retomar="${k}">${ic('play', 14)} Retomar ${e.cliente ? esc(e.cliente.nome) : 'venda ' + (k + 1)} (${din(N.resumoVenda(e.itens, e.descontoVenda).total)})</button>`).join('')}</div>` : '';
   $$('[data-retomar]').forEach((b) => (b.onclick = () => {
     if (S.venda.itens.length) return toast('Finalize ou suspenda a venda atual antes de retomar outra.', true);
     const lista = vendasEmEspera(); const [e] = lista.splice(+b.dataset.retomar, 1); LS.set(ESPERA, JSON.stringify(lista));
@@ -583,7 +620,7 @@ async function finalizarVenda() {
   const pagamentos = [];
   const podeNota = S.fiscal.ativo && S.fiscal.token;
   const j = janela(`<h2>Finalizar · ${din(r.total)}</h2>
-    <div class="pagamentos">${Object.entries(FORMAS).map(([k, n]) => `<button class="btn" data-forma="${k}">${{ dinheiro: '💵', pix: '⚡', debito: '💳', credito: '💳', fiado: '📒', vale: '🎫', outro: '•' }[k]} ${n}</button>`).join('')}</div>
+    <div class="pagamentos">${Object.entries(FORMAS).map(([k, n]) => `<button class="btn" data-forma="${k}">${ic({ dinheiro: 'dinheiro', pix: 'pix', debito: 'cartao', credito: 'cartao', fiado: 'fiado', vale: 'ticket', outro: 'multiplo' }[k], 18)} ${n}</button>`).join('')}</div>
     <label style="margin-top:10px">Valor<input id="f-valor" inputmode="decimal"></label>
     <div id="f-lista" style="margin-top:10px"></div>
     <div id="f-situacao" class="aviso" style="margin-top:10px"></div>
@@ -785,11 +822,11 @@ async function telaVendas() {
   const desenhar = () => {
     const lista = vendas.filter((v) => !filtro || v.data.slice(0, 10) === filtro || dataLocal(v.data) === filtro);
     const pend = vendas.filter((v) => v.nfce && v.nfce.status === 'pendente' && !v.cancelada);
-    conteudo().innerHTML = `<div class="topo"><h1>🧾 Vendas</h1><div class="linha-botoes"><input type="date" id="v-data" value="${filtro}" style="width:auto"><button class="btn" id="v-todas">Todas</button></div></div>
+    conteudo().innerHTML = `${cabeca('vendas', 'Vendas', 'Histórico, reimpressão, devolução e nota fiscal.', `<input type="date" id="v-data" value="${filtro}" style="width:auto"><button class="btn" id="v-todas">Todas</button>`)}
       ${pend.length ? `<div class="aviso" style="margin-bottom:10px">${pend.length} NFC-e pendente(s). <button class="btn peq prim" id="v-pend">Emitir agora</button></div>` : ''}
       <div class="cartao tabela"><table><thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Pagamento</th><th class="dir">Total</th><th>Nota</th></tr></thead><tbody>
       ${lista.map((v) => `<tr class="clicavel" data-v="${v.id}"><td>${v.numero}</td><td>${horaBR(v.data)}</td><td>${esc(v.cliente || '—')}</td><td>${v.pagamentos.map((p) => FORMAS[p.forma]).join(' + ')}</td>
-        <td class="dir numero">${v.cancelada ? '<s>' + brl(v.total) + '</s>' : brl(v.total)}</td><td>${v.cancelada ? '<span class="selo vermelho">cancelada</span>' : seloNota(v.nfce)}</td></tr>`).join('') || '<tr><td colspan="6" class="vazio">Nenhuma venda neste dia.</td></tr>'}
+        <td class="dir numero">${v.cancelada ? '<s>' + brl(v.total) + '</s>' : brl(v.total)}</td><td>${v.cancelada ? '<span class="selo vermelho">cancelada</span>' : seloNota(v.nfce)}${(v.devolucoes || []).length ? ' <span class="selo ambar">devolução</span>' : ''}</td></tr>`).join('') || '<tr><td colspan="6" class="vazio">Nenhuma venda neste dia.</td></tr>'}
       </tbody></table></div>`;
     $('#v-data').onchange = (e) => { filtro = e.target.value; desenhar(); };
     $('#v-todas').onclick = () => { filtro = ''; desenhar(); };
@@ -805,12 +842,15 @@ function detalheVenda(v) {
     <table>${v.itens.map((i) => `<tr><td>${esc(i.nome)}</td><td>${qtdTxt(i.qtd, i.unidade)} × ${brl(i.preco)}</td><td class="dir">${din(N.totalItem(i))}</td></tr>`).join('')}
     ${v.desconto ? `<tr><td colspan="2">Desconto</td><td class="dir">-${brl(v.desconto)}</td></tr>` : ''}<tr><td colspan="2"><b>Total</b></td><td class="dir"><b>${brl(v.total)}</b></td></tr></table>
     <p>${v.pagamentos.map((p) => `${FORMAS[p.forma]} ${brl(p.valor)}`).join(' · ')}${v.troco ? ' · troco ' + brl(v.troco) : ''}</p>
+    ${(v.devolucoes || []).map((d) => `<div class="aviso">${ic('devolver', 16)} Devolução em ${horaBR(d.data)}: ${d.itens.map((i) => `${qtdTxt(i.qtd, i.unidade)} × ${esc(i.nome)}`).join(', ')} · <b>${brl(d.valor)}</b> (${esc(d.formaNome)})</div>`).join('')}
     ${v.nfce ? `<div class="aviso ${v.nfce.status === 'autorizado' ? 'ok' : v.nfce.status === 'erro' ? 'erro' : ''}">NFC-e: ${esc(v.nfce.status)}${v.nfce.numero ? ' nº ' + esc(v.nfce.numero) : ''}${v.nfce.erro ? ' — ' + esc(v.nfce.erro) : ''}</div>` : ''}
     <div class="linha-botoes" style="justify-content:flex-end;margin-top:12px">
-      <button class="btn" data-fechar>Fechar</button><button class="btn" id="dv-imp">🖨️ Imprimir</button>
+      <button class="btn" data-fechar>Fechar</button><button class="btn" id="dv-imp">${ic('impressora', 18)} Imprimir</button>
       ${!v.cancelada && S.fiscal.ativo && S.fiscal.token && (!v.nfce || ['erro', 'pendente'].includes(v.nfce.status)) ? '<button class="btn" id="dv-nota">Emitir NFC-e</button>' : ''}
+      ${!v.cancelada ? `<button class="btn" id="dv-devolver">${ic('devolver', 18)} Troca / devolução</button>` : ''}
       ${!v.cancelada && ehDono() ? '<button class="btn perigo" id="dv-cancelar">Cancelar venda</button>' : ''}</div>`);
   $('#dv-imp', j.el).onclick = () => imprimirVenda(v);
+  const dv = $('#dv-devolver', j.el); if (dv) dv.onclick = () => { j.fechar(); devolverItens(v); };
   const n = $('#dv-nota', j.el); if (n) n.onclick = async () => { n.disabled = true; await emitirNota(v); j.fechar(); telaVendas(); };
   const c = $('#dv-cancelar', j.el);
   if (c) c.onclick = async () => {
@@ -827,6 +867,45 @@ function detalheVenda(v) {
   };
 }
 
+// Troca / devolução: o valor de cada item já sai com o desconto da venda repartido; o produto pode voltar ao estoque.
+function devolverItens(v) {
+  const r = N.resumoVenda(v.itens, v.descontoVenda);
+  const fator = r.subtotal ? r.total / r.subtotal : 1;
+  const jaDevolvido = (k) => (v.devolucoes || []).reduce((s, d) => s + d.itens.filter((i) => i.k === k).reduce((t, i) => t + Number(i.qtd), 0), 0);
+  const linhas = v.itens.map((i, k) => ({ i, k, max: Math.round((Number(i.qtd) - jaDevolvido(k)) * 1000) / 1000, unit: N.totalItem(i) / (Number(i.qtd) || 1) * fator }));
+  if (!linhas.some((l) => l.max > 0)) return toast('Todos os itens desta venda já foram devolvidos.', true);
+  const j = janela(`<h2>${ic('devolver', 20)} Troca / devolução · venda ${v.numero}</h2><p class="sub">Digite quanto de cada item o cliente está devolvendo.</p>
+    <div class="tabela"><table><thead><tr><th>Item</th><th class="dir">Comprou</th><th class="dir">Devolver</th><th class="dir">Valor</th></tr></thead><tbody>
+    ${linhas.map((l) => `<tr><td>${esc(l.i.nome)}</td><td class="dir">${qtdTxt(l.max, l.i.unidade)}</td><td class="dir"><input data-dev="${l.k}" inputmode="decimal" placeholder="0" style="width:90px;text-align:right" ${l.max > 0 ? '' : 'disabled'}></td><td class="dir numero" id="dvv-${l.k}">R$ 0,00</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="campos" style="margin-top:10px"><label>Devolver o dinheiro como<select id="dv-forma"><option value="dinheiro">Dinheiro (sai da gaveta)</option><option value="pix">Pix</option><option value="cartao">Estorno no cartão</option>${v.clienteId ? '<option value="fiado">Abater no fiado do cliente</option>' : ''}<option value="troca">Troca por outro produto (sem devolver dinheiro)</option></select></label>
+      <label>O produto<select id="dv-estoque"><option value="1">Volta para o estoque</option><option value="0">Não volta (avariado/vencido)</option></select></label></div>
+    <div class="total-grande" style="margin-top:10px"><span>Total da devolução</span><b id="dv-total">R$ 0,00</b></div>
+    <div class="linha-botoes" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-fechar>Voltar</button><button class="btn prim" id="dv-ok">Confirmar devolução</button></div>`, { larga: true });
+  const ler = () => linhas.map((l) => { const c = $(`[data-dev="${l.k}"]`, j.el); const q = Math.min(l.max, Math.max(0, numeroBR(c.value))); return { ...l, q, valor: Math.round(l.unit * q) }; });
+  const atualizar = () => { const x = ler(); x.forEach((l) => ($(`#dvv-${l.k}`, j.el).textContent = din(l.valor))); $('#dv-total', j.el).textContent = din(x.reduce((s, l) => s + l.valor, 0)); };
+  $$('[data-dev]', j.el).forEach((c) => (c.oninput = atualizar));
+  $('#dv-ok', j.el).onclick = async () => {
+    const x = ler().filter((l) => l.q > 0);
+    if (!x.length) return toast('Digite a quantidade de pelo menos um item.', true);
+    const forma = $('#dv-forma', j.el).value, volta = $('#dv-estoque', j.el).value === '1';
+    const valor = x.reduce((s, l) => s + l.valor, 0);
+    const nomes = { dinheiro: 'dinheiro', pix: 'Pix', cartao: 'estorno no cartão', fiado: 'abatido no fiado', troca: 'troca por outro produto' };
+    const d = { id: uid(), data: new Date().toISOString(), operador: S.operador.nome, forma, formaNome: nomes[forma], estoque: volta, valor: reais(valor),
+      itens: x.map((l) => ({ k: l.k, produtoId: l.i.produtoId, nome: l.i.nome, unidade: l.i.unidade, qtd: l.q, valor: reais(l.valor), custo: volta ? l.i.custo || 0 : 0 })) };
+    v.devolucoes = [...(v.devolucoes || []), d];
+    await salvar('vendas', v);
+    if (volta) for (const i of d.itens) await moverEstoque(i.produtoId, i.qtd, 'devolucao', `Devolução venda ${v.numero}`, v.id);
+    if (forma === 'dinheiro' && S.caixa) { S.caixa.sangrias.push({ valor: d.valor, obs: `Devolução venda ${v.numero}`, data: d.data, por: S.operador.nome }); await salvar('caixas', S.caixa); }
+    if (forma === 'fiado') await salvar('fiado', { id: uid(), clienteId: v.clienteId, tipo: 'pagamento', valor: d.valor, forma: 'outro', data: d.data, obs: `Devolução venda ${v.numero}` });
+    j.fechar(); toast(`Devolução registrada: ${brl(d.valor)}.`); telaVendas();
+    $('#cupom').innerHTML = `<div class="cupom l${S.impressao.largura === '58' ? 58 : 80}"><div class="c b">${esc(S.loja.nome)}</div><hr><div class="c b">COMPROVANTE DE DEVOLUÇÃO</div><hr>
+      ${d.itens.map((i) => `<div>${qtdTxt(i.qtd, i.unidade)} × ${esc(i.nome)} <span style="float:right">${brl(i.valor)}</span></div>`).join('')}<hr>
+      <div class="b">Total: ${brl(d.valor)} (${esc(d.formaNome)})</div><div>Venda ${v.numero} · ${horaBR(d.data)} · ${esc(d.operador)}</div></div>`;
+    if (S.impressao.automatico) setTimeout(() => window.print(), 60);
+  };
+}
+
 // =====================================================================
 // 8) PRODUTOS
 // =====================================================================
@@ -837,20 +916,29 @@ async function telaProdutos() {
     const q = busca.toLowerCase();
     const lista = S.produtos.filter((p) => (!q || p.nome.toLowerCase().includes(q) || String(p.codigo || '').includes(q) || String(p.categoria || '').toLowerCase().includes(q))
       && (!so || (so === 'baixo' ? p.estoqueMin != null && Number(p.estoque) <= Number(p.estoqueMin) : so === 'inativo' ? p.inativo : !p.inativo)));
-    $('#p-lista').innerHTML = lista.map((p) => `<tr class="clicavel" data-p="${p.id}"><td>${esc(p.codigo || '')}</td><td>${esc(p.nome)}${p.inativo ? ' <span class="selo">inativo</span>' : ''}<div class="sub">${esc(p.categoria || '')}</div></td>
-      <td class="dir numero">${brl(p.preco)}${p.unidade === 'kg' ? '/kg' : ''}</td><td class="dir numero ${p.estoqueMin != null && Number(p.estoque) <= Number(p.estoqueMin) ? 'b' : ''}" style="${p.estoqueMin != null && Number(p.estoque) <= Number(p.estoqueMin) ? 'color:var(--vermelho);font-weight:800' : ''}">${qtdTxt(p.estoque ?? 0, p.unidade)}</td></tr>`).join('')
-      || '<tr><td colspan="4" class="vazio">Nenhum produto. Toque em "Novo produto" ou importe o XML da nota do fornecedor.</td></tr>';
+    const hoje = hojeISO();
+    $('#p-lista').innerHTML = lista.map((p) => {
+      const baixo = p.estoqueMin != null && Number(p.estoque) <= Number(p.estoqueMin);
+      const vig = N.precoVigente(p, 1, hoje), m = p.custo ? N.margemDe(p.custo, p.preco) : null;
+      return `<tr class="clicavel" data-p="${p.id}"><td><div class="prod-cel">${miniatura(p)}<div><b>${esc(p.nome)}</b>${p.inativo ? ' <span class="selo">inativo</span>' : ''}
+        <div class="sub">${esc(p.categoria || 'Sem categoria')}${p.codigo ? ' · ' + esc(p.codigo) : ''}</div></div></div></td>
+        <td class="dir numero">${p.custo ? brl(p.custo) : '<span class="sub">—</span>'}</td>
+        <td class="dir numero">${m == null ? '<span class="sub">—</span>' : `<span class="selo ${m < 15 ? 'vermelho' : m < 30 ? 'ambar' : 'verde'}">${String(m).replace('.', ',')}%</span>`}</td>
+        <td class="dir numero"><b>${brl(p.preco)}${p.unidade === 'kg' ? '/kg' : ''}</b>${vig.regra === 'promo' ? `<div><span class="selo ambar">promo ${brl(vig.preco)}</span></div>` : ''}${p.precoAtacado ? `<div class="sub">atacado ${brl(p.precoAtacado)} (${p.qtdAtacado}+)</div>` : ''}</td>
+        <td class="dir numero">${baixo ? `<span class="selo vermelho">${qtdTxt(p.estoque ?? 0, p.unidade)}</span>` : qtdTxt(p.estoque ?? 0, p.unidade)}</td></tr>`;
+    }).join('') || `<tr><td colspan="5"><div class="vazio-grande">${ic('produtos', 34)}<b>Nenhum produto por aqui</b><span>Cadastre pelo código de barras (o app puxa os dados) ou importe o XML da nota do fornecedor.</span></div></td></tr>`;
     $$('[data-p]').forEach((tr) => (tr.onclick = () => formProduto(S.produtos.find((p) => p.id === tr.dataset.p))));
     $('#p-qtd').textContent = `${lista.length} de ${S.produtos.length}`;
   };
-  conteudo().innerHTML = `<div class="topo"><h1>📦 Produtos</h1><div class="linha-botoes"><button class="btn prim" id="p-novo">+ Novo produto</button><button class="btn" id="p-xml">📄 Importar XML da nota</button><button class="btn" id="p-csv">⬇️ Exportar planilha</button></div></div>
+  conteudo().innerHTML = `${cabeca('produtos', 'Produtos', 'Cadastro, preços, promoções e etiquetas.', `<button class="btn prim" id="p-novo">${ic('mais', 18)} Novo produto</button><button class="btn" id="p-xml">${ic('arquivo', 18)} Importar XML da nota</button><button class="btn" id="p-etq">${ic('etiqueta', 18)} Etiquetas</button><button class="btn" id="p-csv">${ic('baixar', 18)} Planilha</button>`)}
     <div class="linha-botoes" style="margin-bottom:10px"><input id="p-busca" placeholder="Buscar por nome, código ou categoria" style="flex:1;min-width:200px"><select id="p-so" style="width:auto"><option value="">Ativos</option><option value="baixo">Estoque baixo</option><option value="inativo">Inativos</option></select><span class="sub" id="p-qtd" style="align-self:center"></span></div>
-    <div class="cartao tabela"><table><thead><tr><th>Código</th><th>Produto</th><th class="dir">Preço</th><th class="dir">Estoque</th></tr></thead><tbody id="p-lista"></tbody></table></div>`;
+    <div class="cartao tabela"><table><thead><tr><th>Produto</th><th class="dir">Custo</th><th class="dir">Margem</th><th class="dir">Preço</th><th class="dir">Estoque</th></tr></thead><tbody id="p-lista"></tbody></table></div>`;
   $('#p-busca').oninput = (e) => { busca = e.target.value; desenhar(); };
   $('#p-so').onchange = (e) => { so = e.target.value; desenhar(); };
   $('#p-novo').onclick = () => formProduto(null);
   $('#p-xml').onclick = importarXml;
   $('#p-csv').onclick = exportarProdutos;
+  $('#p-etq').onclick = () => etiquetasGondola(S.produtos.filter((p) => !p.inativo));
   desenhar();
 }
 function formProduto(p, op = {}) {
@@ -870,6 +958,14 @@ function formProduto(p, op = {}) {
       <label>Estoque atual<input id="pf-estoque" inputmode="decimal" value="${v(p.estoque)}" ${novo ? '' : 'disabled title="Mude o estoque pela tela Estoque"'}></label>
       <label>Estoque mínimo (aviso)<input id="pf-min" inputmode="decimal" value="${v(p.estoqueMin)}"></label>
       <label>Validade (lote atual)<input id="pf-val" type="date" value="${esc(p.validade || '')}"></label>
+      <details class="mais-precos" style="grid-column:1/-1" ${p.precoPromo || p.precoAtacado ? 'open' : ''}><summary>${ic('promocao', 18)} Promoção e preço de atacado</summary>
+        <div class="campos" style="margin-top:8px">
+          <label>Preço promocional (R$)<input id="pf-promo" inputmode="decimal" value="${v(p.precoPromo)}"></label>
+          <label>Promoção a partir de<input id="pf-promo-de" type="date" value="${esc(p.promoDe || '')}"></label>
+          <label>Promoção até<input id="pf-promo-ate" type="date" value="${esc(p.promoAte || '')}"></label>
+          <label>Preço no atacado (R$)<input id="pf-atac" inputmode="decimal" value="${v(p.precoAtacado)}"></label>
+          <label>Atacado a partir de (unidades)<input id="pf-atac-qtd" inputmode="numeric" value="${v(p.qtdAtacado)}"></label>
+        </div><p class="sub">No caixa vale sozinho o menor preço: a promoção nas datas marcadas e o atacado quando a quantidade chega no mínimo.</p></details>
       <label>Código na balança (PLU)<input id="pf-plu" inputmode="numeric" value="${esc(p.plu || '')}"></label>
       <label>NCM (para NFC-e)<input id="pf-ncm" inputmode="numeric" maxlength="10" value="${esc(p.ncm || '')}"></label>
       <label>Foto (aparece no caixa)<span style="display:flex;gap:8px;align-items:center">${p.foto ? `<img id="pf-foto-ver" src="${p.foto}" style="width:48px;height:48px;border-radius:8px;object-fit:contain;background:#F1F5F9">` : '<span id="pf-foto-ver"></span>'}<input id="pf-foto" type="file" accept="image/*"></span></label>
@@ -947,6 +1043,12 @@ function formProduto(p, op = {}) {
     const ncm = $('#pf-ncm', j.el).value.replace(/\D/g, '');
     if (ncm && ncm.length !== 8) return erro('O NCM tem 8 números.');
     const min = $('#pf-min', j.el).value.trim();
+    const promo = numeroBR($('#pf-promo', j.el).value), atac = numeroBR($('#pf-atac', j.el).value), atacQtd = numeroBR($('#pf-atac-qtd', j.el).value);
+    if (promo && promo >= numeroBR(preco.value)) return erro('O preço promocional precisa ser menor que o preço de venda.');
+    if (atac && (atac >= numeroBR(preco.value) || atacQtd < 2)) return erro('Atacado: preço menor que o de venda e a partir de 2 unidades ou mais.');
+    const de = $('#pf-promo-de', j.el).value, ate = $('#pf-promo-ate', j.el).value;
+    if (de && ate && ate < de) return erro('A data final da promoção é antes da inicial.');
+    Object.assign(p, { precoPromo: promo || null, promoDe: promo ? de : '', promoAte: promo ? ate : '', precoAtacado: atac || null, qtdAtacado: atac ? atacQtd : null });
     Object.assign(p, {
       codigo, nome, categoria: $('#pf-cat', j.el).value.trim(), unidade: $('#pf-un', j.el).value, custo: numeroBR(custo.value), preco: numeroBR(preco.value),
       estoqueMin: min === '' ? null : numeroBR(min), validade: $('#pf-val', j.el).value, plu, ncm, foto, atualizadoEm: new Date().toISOString(),
@@ -987,6 +1089,50 @@ async function buscarNaBase(ean) {
   const produto = achados.find(Boolean);
   return produto ? { produto } : { produto: null, erro };
 }
+// Miniatura do produto nas listas: a foto ou a inicial na cor da categoria.
+const miniatura = (p, tam = 40) => p.foto ? `<img class="mini" src="${p.foto}" alt="" style="width:${tam}px;height:${tam}px">`
+  : `<span class="mini" style="width:${tam}px;height:${tam}px;background:${corDe(p.categoria || p.nome)}">${esc((p.nome.trim()[0] || '?').toUpperCase())}</span>`;
+
+// Etiquetas de gôndola (folha A4, 3 por linha): nome, preço grande, promoção e código de barras.
+function barrasSVG(codigo) {
+  const b = N.barrasEAN(codigo); if (!b) return '';
+  const rects = [...b].map((x, k) => (x === '1' ? `<rect x="${k}" y="0" width="1" height="40"/>` : '')).join('');
+  return `<svg viewBox="0 0 ${b.length} 40" preserveAspectRatio="none" class="barras">${rects}</svg><div class="num">${esc(codigo)}</div>`;
+}
+function etiquetaHTML(p) {
+  const v = N.precoVigente(p, 1, hojeISO());
+  const [r, c] = v.preco.toFixed(2).split('.');
+  return `<div class="etq${v.regra === 'promo' ? ' promo' : ''}">${v.regra === 'promo' ? `<div class="etq-faixa">OFERTA${p.promoAte ? ' até ' + dataBR(p.promoAte).slice(0, 5) : ''}</div>` : ''}
+    <div class="etq-nome">${esc(p.nome)}</div>
+    <div class="etq-preco">${v.regra === 'promo' ? `<s>${brl(p.preco)}</s>` : ''}<span class="rs">R$</span><b>${r}</b><span class="cent">,${c}${p.unidade === 'kg' ? '<small>/kg</small>' : ''}</span></div>
+    ${p.precoAtacado ? `<div class="etq-atac">A partir de ${p.qtdAtacado} un.: <b>${brl(p.precoAtacado)}</b></div>` : ''}
+    <div class="etq-cod">${p.codigo ? barrasSVG(p.codigo) : ''}</div></div>`;
+}
+function etiquetasGondola(lista) {
+  if (!lista.length) return toast('Cadastre produtos primeiro.', true);
+  const hoje = hojeISO();
+  const j = janela(`<h2>${ic('etiqueta', 20)} Etiquetas de gôndola</h2><p class="sub">Escolha os produtos. Sai em folha A4, 3 etiquetas por linha (corte na linha pontilhada).</p>
+    <div class="linha-botoes" style="margin:8px 0"><input id="et-busca" placeholder="Filtrar" style="flex:1;min-width:160px"><button class="btn peq" id="et-todos">Marcar todos</button><button class="btn peq" id="et-nada">Desmarcar</button><button class="btn peq" id="et-promo">${ic('promocao', 16)} Só promoções</button></div>
+    <div class="lista-check" id="et-lista">${lista.map((p) => `<label data-n="${esc(p.nome.toLowerCase())}"><input type="checkbox" value="${p.id}"> ${miniatura(p, 28)}<span>${esc(p.nome)}</span><b>${brl(N.precoVigente(p, 1, hoje).preco)}</b></label>`).join('')}</div>
+    <div class="linha-botoes" style="justify-content:space-between;margin-top:12px"><span class="sub" id="et-qtd"></span><span class="linha-botoes"><button class="btn" data-fechar>Voltar</button><button class="btn prim" id="et-ok">${ic('impressora', 18)} Imprimir</button></span></div>`, { larga: true });
+  const caixas = () => $$('#et-lista input', j.el);
+  const conta = () => { $('#et-qtd', j.el).textContent = `${caixas().filter((c) => c.checked).length} marcada(s)`; };
+  $('#et-lista', j.el).onchange = conta;
+  $('#et-busca', j.el).oninput = (e) => { const q = e.target.value.toLowerCase(); $$('#et-lista label', j.el).forEach((l) => (l.hidden = q && !l.dataset.n.includes(q))); };
+  $('#et-todos', j.el).onclick = () => { caixas().forEach((c) => { if (!c.closest('label').hidden) c.checked = true; }); conta(); };
+  $('#et-nada', j.el).onclick = () => { caixas().forEach((c) => (c.checked = false)); conta(); };
+  $('#et-promo', j.el).onclick = () => { caixas().forEach((c) => (c.checked = N.precoVigente(lista.find((p) => p.id === c.value), 1, hoje).regra === 'promo')); conta(); };
+  conta();
+  $('#et-ok', j.el).onclick = () => {
+    const sel = caixas().filter((c) => c.checked).map((c) => lista.find((p) => p.id === c.value));
+    if (!sel.length) return toast('Marque pelo menos um produto.', true);
+    j.fechar();
+    $('#cupom').innerHTML = `<div class="folha-etq">${sel.map(etiquetaHTML).join('')}</div>`;
+    const estilo = document.createElement('style'); estilo.textContent = '@page { size: A4; margin: 8mm; }'; document.head.appendChild(estilo);
+    setTimeout(() => { window.print(); estilo.remove(); }, 80);
+  };
+}
+
 // Foto do produto: reduzida para 200 px (fica leve no aparelho).
 async function reduzirFoto(arquivo) {
   const img = await createImageBitmap(arquivo);
@@ -1061,14 +1207,14 @@ async function telaEstoque() {
   const val = S.produtos.filter((p) => !p.inativo && p.validade).map((p) => ({ p, s: N.situacaoValidade(p.validade), d: N.diasParaVencer(p.validade) })).filter((x) => x.s === 'vencido' || x.s === 'vencendo').sort((a, b) => a.d - b.d);
   const perdasMes = (await todos('estoque')).filter((m) => m.tipo === 'perda' && m.data.slice(0, 7) === hojeISO().slice(0, 7));
   const valorPerdas = perdasMes.reduce((s, m) => s + Math.round(centavos(m.custo || 0) * Math.abs(m.qtd)), 0);
-  conteudo().innerHTML = `<div class="topo"><h1>🏷️ Estoque</h1><div class="linha-botoes"><button class="btn prim" id="e-ent">+ Entrada</button><button class="btn perigo" id="e-perda">Perda / quebra</button><button class="btn" id="e-ajuste">Acertar contagem</button></div></div>
+  conteudo().innerHTML = `${cabeca('estoque', 'Estoque', 'Entradas, perdas, contagem e validade.', `<button class="btn prim" id="e-ent">${ic('mais', 18)} Entrada</button><button class="btn perigo" id="e-perda">Perda / quebra</button><button class="btn" id="e-ajuste">Acertar contagem</button>`)}
     <div class="grade c4" style="margin-bottom:12px"><div class="cartao kpi"><b>${baixo.length}</b><span>com estoque baixo</span></div><div class="cartao kpi"><b>${val.filter((x) => x.s === 'vencido').length}</b><span>vencidos</span></div>
       <div class="cartao kpi"><b>${val.filter((x) => x.s === 'vencendo').length}</b><span>vencem em até 15 dias</span></div><div class="cartao kpi"><b>${din(valorPerdas)}</b><span>de perdas este mês</span></div></div>
     <div class="grade c2">
-      <div class="cartao"><h3 style="margin-top:0">⏰ Validade</h3>${val.length ? `<table>${val.map((x) => `<tr><td>${esc(x.p.nome)}</td><td>${dataBR(x.p.validade)}</td><td><span class="selo ${x.s === 'vencido' ? 'vermelho' : 'ambar'}">${x.d < 0 ? 'vencido há ' + -x.d + ' dia(s)' : x.d === 0 ? 'vence hoje' : 'vence em ' + x.d + ' dia(s)'}</span></td></tr>`).join('')}</table>` : '<p class="sub">Nada vencendo nos próximos 15 dias.</p>'}</div>
-      <div class="cartao"><h3 style="margin-top:0">📉 Estoque baixo</h3>${baixo.length ? `<table>${baixo.map((p) => `<tr><td>${esc(p.nome)}</td><td class="dir">${qtdTxt(p.estoque ?? 0, p.unidade)}</td><td class="sub dir">mín. ${qtdTxt(p.estoqueMin, p.unidade)}</td></tr>`).join('')}</table>` : '<p class="sub">Tudo acima do mínimo.</p>'}</div>
+      <div class="cartao"><h3 class="cartao-tit">${ic('calendario', 18)} Validade</h3>${val.length ? `<table>${val.map((x) => `<tr><td>${esc(x.p.nome)}</td><td>${dataBR(x.p.validade)}</td><td><span class="selo ${x.s === 'vencido' ? 'vermelho' : 'ambar'}">${x.d < 0 ? 'vencido há ' + -x.d + ' dia(s)' : x.d === 0 ? 'vence hoje' : 'vence em ' + x.d + ' dia(s)'}</span></td></tr>`).join('')}</table>` : '<p class="sub">Nada vencendo nos próximos 15 dias.</p>'}</div>
+      <div class="cartao"><h3 class="cartao-tit">${ic('alerta', 18)} Estoque baixo</h3>${baixo.length ? `<table>${baixo.map((p) => `<tr><td>${esc(p.nome)}</td><td class="dir">${qtdTxt(p.estoque ?? 0, p.unidade)}</td><td class="sub dir">mín. ${qtdTxt(p.estoqueMin, p.unidade)}</td></tr>`).join('')}</table>` : '<p class="sub">Tudo acima do mínimo.</p>'}</div>
     </div>
-    <div class="cartao tabela" style="margin-top:12px"><h3 style="margin-top:0">Movimentos</h3><table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th class="dir">Qtd</th><th>Obs.</th></tr></thead><tbody>
+    <div class="cartao tabela" style="margin-top:12px"><h3 class="cartao-tit">Movimentos</h3><table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th class="dir">Qtd</th><th>Obs.</th></tr></thead><tbody>
     ${movs.map((m) => `<tr><td>${horaBR(m.data)}</td><td>${esc(m.nome)}</td><td>${esc(m.tipo)}</td><td class="dir numero" style="color:${m.qtd < 0 ? 'var(--vermelho)' : 'var(--ok)'}">${m.qtd > 0 ? '+' : ''}${String(m.qtd).replace('.', ',')}</td><td class="sub">${esc(m.obs || '')}</td></tr>`).join('') || '<tr><td colspan="5" class="vazio">Sem movimentos.</td></tr>'}</tbody></table></div>`;
   $('#e-ent').onclick = () => movimentoManual('entrada');
   $('#e-perda').onclick = () => movimentoManual('perda');
@@ -1124,7 +1270,7 @@ async function telaClientes() {
   const saldo = (id) => N.saldoFiado(movs.filter((m) => m.clienteId === id));
   const total = clientes.reduce((s, c) => s + Math.max(0, saldo(c.id)), 0);
   let busca = '';
-  conteudo().innerHTML = `<div class="topo"><h1>👥 Clientes e fiado</h1><button class="btn prim" id="c-novo">+ Novo cliente</button></div>
+  conteudo().innerHTML = `${cabeca('clientes', 'Clientes e fiado', 'Conta de cada cliente, limite e cobrança.', `<button class="btn prim" id="c-novo">${ic('mais', 18)} Novo cliente</button>`)}
     <div class="grade c4" style="margin-bottom:12px"><div class="cartao kpi"><b>${din(total)}</b><span>a receber no fiado</span></div><div class="cartao kpi"><b>${clientes.filter((c) => saldo(c.id) > 0).length}</b><span>clientes devendo</span></div></div>
     <input id="c-busca" placeholder="Buscar cliente" style="margin-bottom:10px">
     <div class="cartao tabela"><table><thead><tr><th>Cliente</th><th>Telefone</th><th class="dir">Limite</th><th class="dir">Deve</th></tr></thead><tbody id="c-lista"></tbody></table></div>`;
@@ -1159,7 +1305,7 @@ async function contaCliente(c) {
   const zap = fone ? `https://wa.me/${fone.length <= 11 ? '55' + fone : fone}?text=${encodeURIComponent(N.textoCobrancaFiado(S.loja.nome || 'mercado', c, saldo))}` : '';
   const j = janela(`<h2>${esc(c.nome)}</h2><p class="sub">${esc(c.telefone || '')}${c.limite ? ' · limite ' + brl(c.limite) : ''}</p>
     <div class="total-grande" style="margin:10px 0"><span>Deve no fiado</span><b>${din(saldo)}</b></div>
-    <div class="linha-botoes"><button class="btn prim" id="cc-receber" ${saldo > 0 ? '' : 'disabled'}>Receber pagamento</button>${zap && saldo > 0 ? `<a class="btn" href="${zap}" target="_blank" rel="noopener">💬 Cobrar no WhatsApp</a>` : ''}<button class="btn" id="cc-editar">Editar</button></div>
+    <div class="linha-botoes"><button class="btn prim" id="cc-receber" ${saldo > 0 ? '' : 'disabled'}>Receber pagamento</button>${zap && saldo > 0 ? `<a class="btn" href="${zap}" target="_blank" rel="noopener">${ic('whatsapp', 18)} Cobrar no WhatsApp</a>` : ''}<button class="btn" id="cc-editar">Editar</button></div>
     <h3>Extrato</h3><table>${movs.map((m) => `<tr><td>${dataBR(m.data)}</td><td>${m.tipo === 'compra' ? 'Compra' : 'Pagamento ' + (FORMAS[m.forma] || '')}</td><td class="sub">${esc(m.obs || '')}</td><td class="dir" style="color:${m.tipo === 'compra' ? 'var(--vermelho)' : 'var(--ok)'}">${m.tipo === 'compra' ? '' : '-'}${brl(m.valor)}</td></tr>`).join('') || '<tr><td class="vazio">Sem lançamentos.</td></tr>'}</table>
     <div class="linha-botoes" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-fechar>Fechar</button></div>`, { larga: true });
   $('#cc-editar', j.el).onclick = () => { j.fechar(); formCliente(c); };
@@ -1190,11 +1336,11 @@ async function telaFinanceiro() {
   const forns = (await todos('fornecedores')).sort((a, b) => a.nome.localeCompare(b.nome));
   const abertas = contas.filter((c) => !c.pagoEm);
   const venc = abertas.filter((c) => c.vencimento < hojeISO());
-  conteudo().innerHTML = `<div class="topo"><h1>💰 Financeiro</h1><div class="linha-botoes"><button class="btn prim" id="fi-conta">+ Conta a pagar</button><button class="btn" id="fi-forn">+ Fornecedor</button></div></div>
+  conteudo().innerHTML = `${cabeca('financeiro', 'Financeiro', 'Contas a pagar e fornecedores.', `<button class="btn prim" id="fi-conta">${ic('mais', 18)} Conta a pagar</button><button class="btn" id="fi-forn">${ic('mais', 18)} Fornecedor</button>`)}
     <div class="grade c4" style="margin-bottom:12px"><div class="cartao kpi"><b>${brl(abertas.reduce((s, c) => s + c.valor, 0))}</b><span>a pagar</span></div><div class="cartao kpi"><b style="color:var(--vermelho)">${brl(venc.reduce((s, c) => s + c.valor, 0))}</b><span>vencido (${venc.length})</span></div></div>
-    <div class="cartao tabela"><h3 style="margin-top:0">Contas a pagar</h3><table><thead><tr><th>Vencimento</th><th>Descrição</th><th class="dir">Valor</th><th></th></tr></thead><tbody>
+    <div class="cartao tabela"><h3 class="cartao-tit">Contas a pagar</h3><table><thead><tr><th>Vencimento</th><th>Descrição</th><th class="dir">Valor</th><th></th></tr></thead><tbody>
     ${contas.map((c) => `<tr><td>${dataBR(c.vencimento)}</td><td>${esc(c.descricao)}</td><td class="dir">${brl(c.valor)}</td><td class="dir">${c.pagoEm ? `<span class="selo verde">pago ${dataBR(c.pagoEm)}</span>` : `<span class="selo ${c.vencimento < hojeISO() ? 'vermelho' : 'ambar'}">${c.vencimento < hojeISO() ? 'vencida' : 'em aberto'}</span> <button class="btn peq prim" data-pagar="${c.id}">Paguei</button>`} <button class="btn peq" data-apagar="${c.id}" title="Apagar">✕</button></td></tr>`).join('') || '<tr><td colspan="4" class="vazio">Nenhuma conta.</td></tr>'}</tbody></table></div>
-    <div class="cartao tabela" style="margin-top:12px"><h3 style="margin-top:0">Fornecedores</h3><table><tbody>${forns.map((f) => `<tr><td>${esc(f.nome)}</td><td>${esc(f.cnpj || '')}</td><td>${esc(f.telefone || '')}</td></tr>`).join('') || '<tr><td class="vazio">Os fornecedores entram sozinhos ao importar o XML da nota.</td></tr>'}</tbody></table></div>`;
+    <div class="cartao tabela" style="margin-top:12px"><h3 class="cartao-tit">Fornecedores</h3><table><tbody>${forns.map((f) => `<tr><td>${esc(f.nome)}</td><td>${esc(f.cnpj || '')}</td><td>${esc(f.telefone || '')}</td></tr>`).join('') || '<tr><td class="vazio">Os fornecedores entram sozinhos ao importar o XML da nota.</td></tr>'}</tbody></table></div>`;
   $$('[data-pagar]').forEach((b) => (b.onclick = async () => { const c = contas.find((x) => x.id === b.dataset.pagar); c.pagoEm = hojeISO(); await salvar('contas', c); telaFinanceiro(); }));
   $$('[data-apagar]').forEach((b) => (b.onclick = async () => { if (await confirmar('Apagar esta conta?', 'Apagar')) { await apagar('contas', b.dataset.apagar); telaFinanceiro(); } }));
   $('#fi-conta').onclick = () => {
@@ -1235,18 +1381,17 @@ async function resumoDoCaixa(caixa) {
 async function telaGaveta() {
   const historico = (await todos('caixas')).filter((c) => c.fechadoEm).sort((a, b) => b.fechadoEm.localeCompare(a.fechadoEm)).slice(0, 30);
   if (!S.caixa) {
-    conteudo().innerHTML = `<div class="topo"><h1>🗄️ Abrir caixa</h1></div><div class="cartao" style="max-width:420px"><label>Fundo de troco (R$)<input id="fundo" inputmode="decimal" placeholder="0,00"></label>
+    conteudo().innerHTML = `${cabeca('gaveta', 'Abrir caixa', 'Comece o dia com o dinheiro do troco.')}<div class="cartao" style="max-width:420px"><label>Fundo de troco (R$)<input id="fundo" inputmode="decimal" placeholder="0,00"></label>
       <button class="btn prim grande" style="width:100%;margin-top:12px" id="abrir">Abrir caixa</button></div>${tabelaCaixas(historico)}`;
     $('#abrir').onclick = () => abrirCaixa(numeroBR($('#fundo').value));
     return;
   }
   const r = await resumoDoCaixa(S.caixa);
   const formas = Object.entries(r.porForma).filter(([k]) => !k.startsWith('receb_'));
-  conteudo().innerHTML = `<div class="topo"><h1>🗄️ Caixa aberto</h1><div class="linha-botoes"><button class="btn" id="g-sup">+ Suprimento</button><button class="btn" id="g-san">− Sangria</button><button class="btn perigo" id="g-fechar">Fechar caixa</button></div></div>
-    <p class="sub">Aberto ${horaBR(S.caixa.abertoEm)} por ${esc(S.caixa.abertoPor)}</p>
+  conteudo().innerHTML = `${cabeca('gaveta', 'Caixa aberto', `Aberto ${horaBR(S.caixa.abertoEm)} por ${esc(S.caixa.abertoPor)}`, `<button class="btn" id="g-sup">${ic('mais', 18)} Suprimento</button><button class="btn" id="g-san">${ic('menos', 18)} Sangria</button><button class="btn perigo" id="g-fechar">Fechar caixa</button>`)}
     <div class="grade c4" style="margin:12px 0"><div class="cartao kpi"><b>${din(r.totalVendido)}</b><span>vendido (${r.qtdVendas} vendas)</span></div><div class="cartao kpi"><b>${din(r.dinheiroEsperado)}</b><span>dinheiro que deve ter na gaveta</span></div>
       <div class="cartao kpi"><b>${din(r.sangrias)}</b><span>sangrias</span></div><div class="cartao kpi"><b>${din(r.suprimentos)}</b><span>suprimentos</span></div></div>
-    <div class="cartao"><h3 style="margin-top:0">Por forma de pagamento</h3><table>${formas.map(([k, v]) => `<tr><td>${FORMAS[k] || k}</td><td class="dir">${din(k === 'dinheiro' ? v - r.trocos : v)}</td></tr>`).join('') || '<tr><td class="sub">Nenhuma venda ainda.</td></tr>'}
+    <div class="cartao"><h3 class="cartao-tit">Por forma de pagamento</h3><table>${formas.map(([k, v]) => `<tr><td>${FORMAS[k] || k}</td><td class="dir">${din(k === 'dinheiro' ? v - r.trocos : v)}</td></tr>`).join('') || '<tr><td class="sub">Nenhuma venda ainda.</td></tr>'}
       ${Object.entries(r.porForma).filter(([k]) => k.startsWith('receb_')).map(([k, v]) => `<tr><td>Fiado recebido (${FORMAS[k.slice(6)]})</td><td class="dir">${din(v)}</td></tr>`).join('')}</table></div>${tabelaCaixas(historico)}`;
   const mov = (tipo) => {
     const j = janela(`<h2>${tipo === 'sangrias' ? 'Sangria (tirar dinheiro)' : 'Suprimento (pôr dinheiro)'}</h2><label>Valor<input id="mv-valor" inputmode="decimal"></label><label style="margin-top:8px">Motivo<input id="mv-obs" placeholder="${tipo === 'sangrias' ? 'Ex.: depósito, pagamento de fornecedor' : 'Ex.: troco'}"></label>
@@ -1273,7 +1418,7 @@ async function telaGaveta() {
     };
   };
 }
-const tabelaCaixas = (h) => h.length ? `<div class="cartao tabela" style="margin-top:12px"><h3 style="margin-top:0">Caixas fechados</h3><table><thead><tr><th>Fechado</th><th>Por</th><th class="dir">Vendido</th><th class="dir">Esperado</th><th class="dir">Contado</th><th class="dir">Diferença</th></tr></thead><tbody>
+const tabelaCaixas = (h) => h.length ? `<div class="cartao tabela" style="margin-top:12px"><h3 class="cartao-tit">Caixas fechados</h3><table><thead><tr><th>Fechado</th><th>Por</th><th class="dir">Vendido</th><th class="dir">Esperado</th><th class="dir">Contado</th><th class="dir">Diferença</th></tr></thead><tbody>
   ${h.map((c) => `<tr><td>${horaBR(c.fechadoEm)}</td><td>${esc(c.fechadoPor)}</td><td class="dir">${brl(c.totalVendido)}</td><td class="dir">${brl(c.esperado)}</td><td class="dir">${brl(c.contado)}</td><td class="dir" style="color:${c.diferenca < 0 ? 'var(--vermelho)' : 'var(--ok)'}">${brl(c.diferenca)}</td></tr>`).join('')}</tbody></table></div>` : '';
 function imprimirFechamento(c, r) {
   $('#cupom').innerHTML = `<div class="cupom l${S.impressao.largura === '58' ? 58 : 80}"><div class="c b">${esc(S.loja.nome)}</div><hr><div class="c b">FECHAMENTO DE CAIXA</div><hr>
@@ -1285,11 +1430,77 @@ function imprimirFechamento(c, r) {
   setTimeout(() => window.print(), 60);
 }
 
+// ---------- peças dos painéis ----------
+const kpi = (icone, nome, valor, sub = '', tom = '') => `<div class="kpi-card ${tom}"><span class="kpi-ic">${ic(icone, 20)}</span><div><span class="kpi-nome">${nome}</span><b class="numero">${valor}</b>${sub ? `<small>${sub}</small>` : ''}</div></div>`;
+// Gráfico de barras em SVG (valores em centavos).
+function grafico(dados, alto = 190) {
+  const max = Math.max(1, ...dados.map((d) => d.valor)), n = dados.length, w = 100 / n;
+  return `<div class="grafico"><svg viewBox="0 0 100 ${alto}" preserveAspectRatio="none" style="height:${alto}px">
+    ${[0.25, 0.5, 0.75, 1].map((f) => `<line x1="0" x2="100" y1="${alto - 24 - (alto - 44) * f}" y2="${alto - 24 - (alto - 44) * f}" class="guia"/>`).join('')}
+    ${dados.map((d, k) => { const h = (alto - 44) * (d.valor / max); return `<rect x="${k * w + w * 0.2}" y="${alto - 24 - h}" width="${w * 0.6}" height="${Math.max(h, d.valor ? 1.5 : 0)}" rx="1" class="${d.destaque ? 'hoje' : ''}"><title>${d.rot}: ${din(d.valor)}</title></rect>`; }).join('')}
+  </svg><div class="grafico-rot" style="grid-template-columns:repeat(${n},1fr)">${dados.map((d) => `<span><b>${d.valor ? din(d.valor).replace('R$', '').trim().replace(/,\d\d$/, '') : '–'}</b>${d.rot}</span>`).join('')}</div></div>`;
+}
+function barrasFormas(porForma) {
+  const lista = Object.entries(porForma).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const total = lista.reduce((s, [, v]) => s + v, 0) || 1;
+  const icf = { dinheiro: 'dinheiro', pix: 'pix', debito: 'cartao', credito: 'cartao', fiado: 'fiado', vale: 'ticket', outro: 'multiplo' };
+  return lista.map(([k, v]) => `<div class="forma-linha"><span class="com-ic">${ic(icf[k] || 'multiplo', 16)} ${FORMAS[k] || k}</span><div class="trilho"><i style="width:${Math.max(2, (v / total) * 100)}%"></i></div><b class="numero">${din(v)}</b><small>${Math.round((v / total) * 100)}%</small></div>`).join('')
+    || '<p class="sub">Nenhuma venda ainda.</p>';
+}
+
+// =====================================================================
+// PAINEL (início do dono): o dia do mercado num olhar
+// =====================================================================
+async function telaInicio() {
+  const [vendas, contas, movsFiado, produtosArr] = await Promise.all([todos('vendas'), todos('contas'), todos('fiado'), todos('produtos')]);
+  const produtos = Object.fromEntries(produtosArr.map((p) => [p.id, p]));
+  const hoje = hojeISO(), ontem = dataLocal(new Date(Date.now() - 864e5).toISOString());
+  const doDia = (d) => vendas.filter((v) => dataLocal(v.data) === d);
+  const rh = N.resumoPeriodo(doDia(hoje), produtos), ro = N.resumoPeriodo(doDia(ontem), produtos);
+  const variacao = ro.liquido ? Math.round(((rh.liquido - ro.liquido) / ro.liquido) * 100) : null;
+  const semana = N.vendasPorDia(vendas, hoje, 7, dataLocal);
+  const sem = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  const r7 = N.resumoPeriodo(vendas.filter((v) => dataLocal(v.data) >= semana[0].dia), produtos);
+  const ativos = produtosArr.filter((p) => !p.inativo);
+  const baixo = ativos.filter((p) => p.estoqueMin != null && Number(p.estoque) <= Number(p.estoqueMin));
+  const vencendo = ativos.filter((p) => p.validade && N.diasParaVencer(p.validade) <= 7).sort((a, b) => a.validade.localeCompare(b.validade));
+  const porCliente = {}; for (const m of movsFiado) porCliente[m.clienteId] = (porCliente[m.clienteId] || 0) + (m.tipo === 'compra' ? 1 : -1) * centavos(m.valor);
+  const fiado = Object.values(porCliente).filter((x) => x > 0);
+  const contasAbertas = contas.filter((c) => !c.pagoEm && c.vencimento <= dataLocal(new Date(Date.now() + 3 * 864e5).toISOString()));
+  const hora = new Date().getHours();
+  const alertas = [
+    baixo.length && { ic: 'alerta', tom: 'vermelho', t: `${baixo.length} produto(s) com estoque baixo`, d: baixo.slice(0, 3).map((p) => p.nome).join(', '), ir: 'estoque' },
+    vencendo.length && { ic: 'calendario', tom: 'ambar', t: `${vencendo.length} produto(s) vencendo em até 7 dias`, d: vencendo.slice(0, 3).map((p) => `${p.nome} (${dataBR(p.validade).slice(0, 5)})`).join(', '), ir: 'estoque' },
+    contasAbertas.length && { ic: 'financeiro', tom: 'ambar', t: `${contasAbertas.length} conta(s) a pagar vencendo`, d: `${brl(contasAbertas.reduce((s, c) => s + c.valor, 0))} até ${dataBR(dataLocal(new Date(Date.now() + 3 * 864e5).toISOString())).slice(0, 5)}`, ir: 'financeiro' },
+    fiado.length && { ic: 'fiado', tom: 'azul', t: `${din(fiado.reduce((s, x) => s + x, 0))} a receber no fiado`, d: `${fiado.length} cliente(s) devendo`, ir: 'clientes' },
+  ].filter(Boolean);
+  conteudo().innerHTML = `<div class="topo"><div class="topo-tit"><span class="topo-ic">${ic('inicio', 22)}</span><div><h1>${hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'}, ${esc(S.operador.nome.split(' ')[0])}</h1><p class="sub">Assim está o ${esc(S.loja.nome || 'mercado')} hoje.</p></div></div>
+      <div class="linha-botoes"><button class="btn prim" id="i-caixa">${ic('caixa', 18)} ${S.caixa ? 'Ir para o caixa' : 'Abrir o caixa'}</button><button class="btn" id="i-prod">${ic('mais', 18)} Produto</button><button class="btn" id="i-xml">${ic('arquivo', 18)} Nota do fornecedor</button></div></div>
+    <div class="kpis">
+      ${kpi('tendencia', 'Vendido hoje', din(rh.liquido), variacao == null ? 'ontem sem vendas' : `${variacao >= 0 ? '▲' : '▼'} ${Math.abs(variacao)}% sobre ontem`, variacao != null && variacao < 0 ? 'neg' : '')}
+      ${kpi('lucro', 'Lucro de hoje', din(rh.lucro), rh.liquido ? `margem ${Math.round((rh.lucro / rh.liquido) * 100)}%` : 'venda − custo', rh.lucro < 0 ? 'neg' : 'ok')}
+      ${kpi('vendas', 'Vendas hoje', String(rh.qtd), `ticket médio ${din(rh.ticketMedio)}`)}
+      ${kpi('produtos', 'Produtos ativos', String(ativos.length), baixo.length ? `${baixo.length} com estoque baixo` : 'estoque em dia', baixo.length ? 'neg' : '')}
+    </div>
+    <div class="painel-grade">
+      <div class="cartao g-semana"><h3 class="cartao-tit">${ic('relatorios', 18)} Últimos 7 dias <span class="sub" style="margin-left:auto">${din(r7.liquido)} · lucro ${din(r7.lucro)}</span></h3>
+        ${grafico(semana.map((d) => ({ rot: sem[new Date(d.dia + 'T12:00:00').getDay()], valor: d.total, destaque: d.dia === hoje })))}</div>
+      <div class="cartao g-alertas"><h3 class="cartao-tit">${ic('alerta', 18)} Precisa de atenção</h3>
+        ${alertas.map((a) => `<button class="alerta-linha ${a.tom}" data-ir="${a.ir}"><span class="al-ic">${ic(a.ic, 18)}</span><span><b>${a.t}</b><small>${esc(a.d)}</small></span>${ic('descer', 16, 'gira')}</button>`).join('') || `<div class="tudo-ok">${ic('check', 22)}<b>Tudo em dia</b><span>Sem estoque baixo, validade perto ou contas vencendo.</span></div>`}</div>
+      <div class="cartao"><h3 class="cartao-tit">${ic('cartao', 18)} Formas de pagamento hoje</h3>${barrasFormas(rh.porForma)}</div>
+      <div class="cartao"><h3 class="cartao-tit">${ic('tendencia', 18)} Mais vendidos (7 dias)</h3>${r7.ranking.slice(0, 5).map((x, k) => `<div class="top-linha"><span class="pos">${k + 1}</span><span class="nome">${esc(x.nome)}</span><small>${String(Math.round(x.qtd * 1000) / 1000).replace('.', ',')} un.</small><b class="numero">${din(x.total)}</b></div>`).join('') || '<p class="sub">Ainda sem vendas.</p>'}</div>
+    </div>`;
+  $('#i-caixa').onclick = () => ir(S.caixa ? 'caixa' : 'gaveta');
+  $('#i-prod').onclick = () => formProduto(null, { aoSalvar: () => telaInicio() });
+  $('#i-xml').onclick = importarXml;
+  $$('[data-ir]').forEach((b) => (b.onclick = () => ir(b.dataset.ir)));
+}
+
 // =====================================================================
 // 13) RELATÓRIOS
 // =====================================================================
 async function telaRelatorios() {
-  const vendas = await todos('vendas');
+  const vendas = await todos('vendas'), contas = await todos('contas');
   const produtos = Object.fromEntries((await todos('produtos')).map((p) => [p.id, p]));
   let de = hojeISO().slice(0, 8) + '01', ate = hojeISO();
   const desenhar = () => {
@@ -1299,20 +1510,30 @@ async function telaRelatorios() {
     const porDia = {};
     for (const v of lista) if (!v.cancelada) porDia[dataLocal(v.data)] = (porDia[dataLocal(v.data)] || 0) + centavos(v.total);
     const dias = Object.entries(porDia).sort();
-    const maxDia = Math.max(1, ...dias.map(([, x]) => x));
-    $('#rel').innerHTML = `<div class="grade c4" style="margin-bottom:12px">
-        <div class="cartao kpi"><b>${din(r.faturamento)}</b><span>faturamento</span></div><div class="cartao kpi"><b>${din(r.lucro)}</b><span>lucro bruto (venda − custo)</span></div>
-        <div class="cartao kpi"><b>${r.qtd}</b><span>vendas</span></div><div class="cartao kpi"><b>${din(r.ticketMedio)}</b><span>ticket médio</span></div></div>
+    const pagas = contas.filter((c) => c.pagoEm && c.pagoEm >= de && c.pagoEm <= ate);
+    const l = N.lucroDoPeriodo(r, pagas);
+    $('#rel').innerHTML = `<div class="kpis">
+        ${kpi('tendencia', 'Faturamento', din(r.faturamento), r.devolvido ? `devoluções −${din(r.devolvido)}` : `${r.qtd} vendas`)}
+        ${kpi('lucro', 'Lucro líquido', din(l.lucroLiquido), `margem ${String(l.margem).replace('.', ',')}%`, l.lucroLiquido < 0 ? 'neg' : 'ok')}
+        ${kpi('vendas', 'Vendas', String(r.qtd), 'no período')}
+        ${kpi('ticket', 'Ticket médio', din(r.ticketMedio), 'por venda')}</div>
       <div class="grade c2">
-        <div class="cartao"><h3 style="margin-top:0">Vendas por dia</h3>${dias.map(([d, x]) => `<div style="display:grid;grid-template-columns:80px 1fr 90px;gap:8px;align-items:center;margin:4px 0"><span class="sub">${dataBR(d)}</span><div style="height:14px;border-radius:6px;background:var(--verde);width:${Math.max(2, (x / maxDia) * 100)}%"></div><span class="dir numero">${din(x)}</span></div>`).join('') || '<p class="sub">Sem vendas no período.</p>'}</div>
-        <div class="cartao"><h3 style="margin-top:0">Por forma de pagamento</h3><table>${Object.entries(r.porForma).map(([k, v]) => `<tr><td>${FORMAS[k] || k}</td><td class="dir">${din(v)}</td></tr>`).join('') || '<tr><td class="sub">—</td></tr>'}</table></div>
-      </div>
-      <div class="cartao tabela" style="margin-top:12px"><h3 style="margin-top:0">Produtos que mais vendem (curva ABC)</h3><table><thead><tr><th>Produto</th><th class="dir">Quantidade</th><th class="dir">Total</th><th>Classe</th></tr></thead><tbody>
+        <div class="cartao"><h3 class="cartao-tit">${ic('lucro', 18)} Lucro do período</h3><table class="dre">
+          <tr><td>Vendas</td><td class="dir">${din(l.vendas)}</td></tr>
+          <tr><td>(−) Devoluções</td><td class="dir neg">${din(l.devolucoes)}</td></tr>
+          <tr><td>(−) Custo dos produtos vendidos</td><td class="dir neg">${din(l.custo)}</td></tr>
+          <tr class="sub-total"><td>= Lucro bruto</td><td class="dir">${din(l.lucroBruto)}</td></tr>
+          <tr><td>(−) Despesas pagas (Financeiro)</td><td class="dir neg">${din(l.despesas)}</td></tr>
+          <tr class="total ${l.lucroLiquido < 0 ? 'neg' : ''}"><td>= Lucro líquido</td><td class="dir">${din(l.lucroLiquido)}</td></tr></table>
+          <p class="sub">O custo vem do cadastro (ou da nota do fornecedor). Produto sem custo conta como lucro inteiro.</p></div>
+        <div class="cartao"><h3 class="cartao-tit">${ic('relatorios', 18)} Vendas por dia</h3>${dias.length ? grafico(dias.map(([d, x]) => ({ rot: dataBR(d).slice(0, 5), valor: x }))) : '<p class="sub">Sem vendas no período.</p>'}</div>
+        <div class="cartao"><h3 class="cartao-tit">${ic('cartao', 18)} Por forma de pagamento</h3>${barrasFormas(r.porForma)}</div>
+      <div class="cartao tabela" style="margin-top:12px"><h3 class="cartao-tit">Produtos que mais vendem (curva ABC)</h3><table><thead><tr><th>Produto</th><th class="dir">Quantidade</th><th class="dir">Total</th><th>Classe</th></tr></thead><tbody>
       ${abc.slice(0, 50).map((x) => `<tr><td>${esc(x.nome)}</td><td class="dir">${String(Math.round(x.qtd * 1000) / 1000).replace('.', ',')}</td><td class="dir">${din(x.total)}</td><td><span class="selo ${x.classe === 'A' ? 'verde' : x.classe === 'B' ? 'ambar' : ''}">${x.classe}</span></td></tr>`).join('') || '<tr><td colspan="4" class="vazio">Sem vendas.</td></tr>'}</tbody></table>
       <p class="sub">A = produtos que fazem 80% do faturamento: nunca deixe faltar.</p></div>`;
   };
-  conteudo().innerHTML = `<div class="topo"><h1>📊 Relatórios</h1><div class="linha-botoes"><label>De<input type="date" id="r-de" value="${de}"></label><label>Até<input type="date" id="r-ate" value="${ate}"></label>
-    <button class="btn" id="r-hoje" style="align-self:end">Hoje</button><button class="btn" id="r-mes" style="align-self:end">Este mês</button></div></div><div id="rel"></div>`;
+  conteudo().innerHTML = `${cabeca('relatorios', 'Relatórios', 'Faturamento, lucro real e o que mais vende.', `<label>De<input type="date" id="r-de" value="${de}"></label><label>Até<input type="date" id="r-ate" value="${ate}"></label>
+    <button class="btn" id="r-hoje" style="align-self:end">Hoje</button><button class="btn" id="r-mes" style="align-self:end">Este mês</button>`)}<div id="rel"></div>`;
   $('#r-de').onchange = (e) => { de = e.target.value; desenhar(); };
   $('#r-ate').onchange = (e) => { ate = e.target.value; desenhar(); };
   $('#r-hoje').onclick = () => { de = ate = hojeISO(); $('#r-de').value = de; $('#r-ate').value = ate; desenhar(); };
@@ -1326,22 +1547,22 @@ async function telaRelatorios() {
 async function telaConfig() {
   const ops = await todos('operadores');
   const L = S.loja, I = S.impressao, B = S.balanca, F = S.fiscal;
-  conteudo().innerHTML = `<div class="topo"><h1>⚙️ Configurações</h1></div><div class="grade c2">
-    <div class="cartao"><h3 style="margin-top:0">🏪 Mercado (sai no cupom)</h3><div class="campos">
+  conteudo().innerHTML = `${cabeca('config', 'Configurações', 'Mercado, impressora, balança, nota fiscal, pessoas e cópia de segurança.')}<div class="grade c2">
+    <div class="cartao"><h3 class="cartao-tit">${ic('loja', 18)} Mercado (sai no cupom)</h3><div class="campos">
       <label style="grid-column:1/-1">Nome<input id="cl-nome" value="${esc(L.nome)}"></label><label>CNPJ<input id="cl-cnpj" value="${esc(L.cnpj)}"></label><label>Telefone<input id="cl-tel" value="${esc(L.telefone)}"></label>
       <label style="grid-column:1/-1">Endereço<input id="cl-end" value="${esc(L.endereco)}"></label><label style="grid-column:1/-1">Mensagem no fim do cupom<input id="cl-msg" value="${esc(L.mensagem)}"></label></div>
       <button class="btn prim" id="cl-ok" style="margin-top:10px">Salvar</button></div>
-    <div class="cartao"><h3 style="margin-top:0">🖨️ Impressora térmica</h3><div class="campos">
+    <div class="cartao"><h3 class="cartao-tit">${ic('impressora', 18)} Impressora térmica</h3><div class="campos">
       <label>Largura do papel<select id="ci-larg"><option value="80">80 mm</option><option value="58" ${I.largura === '58' ? 'selected' : ''}>58 mm</option></select></label>
       <label>Ao concluir a venda<select id="ci-auto"><option value="1">Imprimir o cupom</option><option value="0" ${I.automatico ? '' : 'selected'}>Não imprimir</option></select></label>
       <label>Como imprimir<select id="ci-bt"><option value="0">Impressora do computador/celular (USB ou rede)</option><option value="1" ${I.bluetooth ? 'selected' : ''}>Impressora Bluetooth (Chrome)</option></select></label></div>
       <p class="sub">USB: instale a impressora no Windows e deixe como padrão; na janela de impressão escolha ela, sem margens. Bluetooth: no primeiro cupom o Chrome pede para escolher a impressora.</p>
       <div class="linha-botoes" style="margin-top:10px"><button class="btn prim" id="ci-ok">Salvar</button><button class="btn" id="ci-teste">Imprimir teste</button></div></div>
-    <div class="cartao"><h3 style="margin-top:0">⚖️ Balança (etiqueta com código 2…)</h3><div class="campos">
+    <div class="cartao"><h3 class="cartao-tit">${ic('balanca', 18)} Balança (etiqueta com código 2…)</h3><div class="campos">
       <label>Dígitos do código do produto<select id="cb-dig"><option value="4">4</option><option value="5" ${B.digitosCodigo == 5 ? 'selected' : ''}>5</option><option value="6" ${B.digitosCodigo == 6 ? 'selected' : ''}>6</option></select></label>
       <label>A etiqueta traz<select id="cb-val"><option value="preco">O preço total</option><option value="peso" ${B.valor === 'peso' ? 'selected' : ''}>O peso</option></select></label></div>
       <p class="sub">No produto, preencha "Código na balança (PLU)" com o mesmo código cadastrado na balança.</p><button class="btn prim" id="cb-ok" style="margin-top:10px">Salvar</button></div>
-    <div class="cartao"><h3 style="margin-top:0">🧾 Nota fiscal (NFC-e)</h3>
+    <div class="cartao"><h3 class="cartao-tit">${ic('nota', 18)} Nota fiscal (NFC-e)</h3>
       <p class="sub">A NFC-e é emitida por um serviço emissor autorizado (Focus NFe). A loja precisa de: <b>certificado digital A1</b>, <b>inscrição estadual</b>, <b>credenciamento na SEFAZ</b> para NFC-e e o <b>CSC</b> (código do QR Code). O certificado e o CSC ficam no painel do emissor; aqui vai só o token dele.</p>
       <div class="campos" style="margin-top:8px">
         <label>Usar NFC-e<select id="cn-ativo"><option value="0">Não (só cupom não fiscal)</option><option value="1" ${F.ativo ? 'selected' : ''}>Sim</option></select></label>
@@ -1353,9 +1574,9 @@ async function telaConfig() {
         <label>No caixa<select id="cn-auto"><option value="1">Marcar "Emitir NFC-e" sempre</option><option value="0" ${F.automatico ? '' : 'selected'}>Deixar desmarcado</option></select></label></div>
       <p class="sub">Confira CSOSN/CST e CFOP com o seu contador. Cada produto precisa do NCM.</p>
       <div class="linha-botoes" style="margin-top:10px"><button class="btn prim" id="cn-ok">Salvar</button></div></div>
-    <div class="cartao"><h3 style="margin-top:0">👤 Pessoas do caixa</h3><table>${ops.map((o) => `<tr><td>${esc(o.nome)}</td><td><span class="selo">${o.papel === 'dono' ? 'dono' : 'caixa'}</span>${o.inativo ? ' <span class="selo vermelho">inativo</span>' : ''}</td><td class="dir">${o.id !== S.operador.id ? `<button class="btn peq" data-op="${o.id}">${o.inativo ? 'Reativar' : 'Desativar'}</button>` : ''} <button class="btn peq" data-pin="${o.id}">Trocar PIN</button></td></tr>`).join('')}</table>
+    <div class="cartao"><h3 class="cartao-tit">${ic('clientes', 18)} Pessoas do caixa</h3><table>${ops.map((o) => `<tr><td>${esc(o.nome)}</td><td><span class="selo">${o.papel === 'dono' ? 'dono' : 'caixa'}</span>${o.inativo ? ' <span class="selo vermelho">inativo</span>' : ''}</td><td class="dir">${o.id !== S.operador.id ? `<button class="btn peq" data-op="${o.id}">${o.inativo ? 'Reativar' : 'Desativar'}</button>` : ''} <button class="btn peq" data-pin="${o.id}">Trocar PIN</button></td></tr>`).join('')}</table>
       <button class="btn" id="co-novo" style="margin-top:10px">+ Pessoa no caixa</button><p class="sub">"Caixa" só vende e vê vendas; "dono" vê tudo.</p></div>
-    <div class="cartao"><h3 style="margin-top:0">💾 Cópia de segurança</h3><p class="sub">Os dados ficam neste aparelho. Faça uma cópia toda semana e guarde no Google Drive ou WhatsApp.</p>
+    <div class="cartao"><h3 class="cartao-tit">${ic('backup', 18)} Cópia de segurança</h3><p class="sub">Os dados ficam neste aparelho. Faça uma cópia toda semana e guarde no Google Drive ou WhatsApp.</p>
       <div class="linha-botoes"><button class="btn prim" id="bk-exp">Baixar cópia</button><button class="btn" id="bk-imp">Restaurar cópia</button></div>
       <p class="sub" style="margin-top:12px">Conta LeuApps: <a href="https://www.leunamesoftware.com.br/">abrir a loja</a></p></div>
   </div>`;

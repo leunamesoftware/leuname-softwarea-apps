@@ -189,3 +189,43 @@ test('categoria pela base de produtos ou pelo nome', () => {
   assert.equal(categoriaPorTexto('Arroz Branco Tipo 1 5kg'), 'Mercearia');
   assert.equal(categoriaPorTexto('xyz'), '');
 });
+
+test('preço de promoção e de atacado', async () => {
+  const { precoVigente } = await import('../public/mercagestao/nucleo.js');
+  const p = { preco: 10, precoPromo: 8.5, promoDe: '2026-10-01', promoAte: '2026-10-10', precoAtacado: 7.9, qtdAtacado: 12 };
+  assert.deepEqual(precoVigente(p, 1, '2026-10-05'), { preco: 8.5, regra: 'promo' });
+  assert.deepEqual(precoVigente(p, 1, '2026-10-11'), { preco: 10, regra: 'normal' });
+  assert.deepEqual(precoVigente(p, 12, '2026-10-11'), { preco: 7.9, regra: 'atacado' });
+  assert.deepEqual(precoVigente({ preco: 5 }, 3, '2026-10-05'), { preco: 5, regra: 'normal' });
+  // Promoção mais barata que o atacado: vale a promoção.
+  assert.deepEqual(precoVigente({ preco: 10, precoPromo: 6, precoAtacado: 7, qtdAtacado: 2 }, 5, '2026-10-05'), { preco: 6, regra: 'promo' });
+});
+
+test('barras do EAN-13 e EAN-8 para a etiqueta', async () => {
+  const { barrasEAN } = await import('../public/mercagestao/nucleo.js');
+  const b = barrasEAN('7891000100103');
+  assert.equal(b.length, 95);
+  assert.ok(b.startsWith('101') && b.endsWith('101') && b.slice(45, 50) === '01010');
+  // 4006381333931: exemplo clássico; começa com o dígito 4 (paridade LGLLGG) e o primeiro grupo é o "0" em L.
+  assert.equal(barrasEAN('4006381333931').slice(3, 10), '0001101');
+  assert.equal(barrasEAN('96385074').length, 67);
+  assert.equal(barrasEAN('7891000100104'), '');
+});
+
+test('devolução e lucro do período', async () => {
+  const { resumoPeriodo, lucroDoPeriodo, vendasPorDia } = await import('../public/mercagestao/nucleo.js');
+  const vendas = [
+    { data: '2026-10-07T10:00:00', total: 30, pagamentos: [{ forma: 'pix', valor: 30 }], itens: [{ produtoId: 'a', nome: 'A', preco: 10, qtd: 3, custo: 6 }],
+      devolucoes: [{ valor: 10, itens: [{ produtoId: 'a', nome: 'A', qtd: 1, valor: 10, custo: 6 }] }] },
+    { data: '2026-10-08T10:00:00', total: 20, pagamentos: [{ forma: 'dinheiro', valor: 20 }], itens: [{ produtoId: 'b', nome: 'B', preco: 20, qtd: 1, custo: 12 }] },
+    { data: '2026-10-08T11:00:00', total: 99, cancelada: true, pagamentos: [], itens: [] },
+  ];
+  const r = resumoPeriodo(vendas);
+  assert.equal(r.faturamento, 5000); assert.equal(r.devolvido, 1000); assert.equal(r.liquido, 4000);
+  assert.equal(r.custo, 2400); assert.equal(r.lucro, 1600);
+  assert.equal(r.ranking.find((x) => x.nome === 'A').qtd, 2);
+  const l = lucroDoPeriodo(r, [{ valor: 5 }]);
+  assert.equal(l.lucroBruto, 1600); assert.equal(l.despesas, 500); assert.equal(l.lucroLiquido, 1100); assert.equal(l.margem, 27.5);
+  const dias = vendasPorDia(vendas, '2026-10-08', 3);
+  assert.deepEqual(dias.map((d) => d.total), [0, 2000, 2000]);
+});

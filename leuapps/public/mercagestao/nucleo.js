@@ -239,12 +239,89 @@ export function resumoPeriodo(vendas, produtosPorId = {}) {
       custo += Math.round(centavos(custoUnit) * (Number(i.qtd) || 0));
     }
   }
-  const ranking = Object.values(porProduto).sort((a, b) => b.total - a.total);
+  // Devoluções (trocas): saem do faturamento e o custo volta (o produto voltou para a prateleira).
+  let devolvido = 0, custoDevolvido = 0;
+  for (const v of ok) for (const d of v.devolucoes || []) {
+    devolvido += centavos(d.valor);
+    for (const i of d.itens || []) {
+      custoDevolvido += Math.round(centavos(i.custo || 0) * (Number(i.qtd) || 0));
+      const t = porProduto[i.produtoId || i.nome];
+      if (t) { t.qtd -= Number(i.qtd) || 0; t.total -= centavos(i.valor || 0); }
+    }
+  }
+  const ranking = Object.values(porProduto).filter((r) => r.qtd > 0).sort((a, b) => b.total - a.total);
+  const liquido = faturamento - devolvido;
   return {
-    qtd: ok.length, faturamento, custo, lucro: faturamento - custo,
+    qtd: ok.length, faturamento, devolvido, liquido, custo: custo - custoDevolvido, lucro: liquido - (custo - custoDevolvido),
     ticketMedio: ok.length ? Math.round(faturamento / ok.length) : 0,
     porForma, ranking,
   };
+}
+
+/**
+ * Lucro do período (DRE simples), tudo em centavos:
+ * vendas − devoluções − custo dos produtos = lucro bruto; − despesas pagas = lucro líquido.
+ */
+export function lucroDoPeriodo(resumo, despesasPagas = []) {
+  const despesas = despesasPagas.reduce((s, c) => s + centavos(c.valor), 0);
+  const lucroBruto = resumo.lucro;
+  const lucroLiquido = lucroBruto - despesas;
+  return {
+    vendas: resumo.faturamento, devolucoes: resumo.devolvido || 0, custo: resumo.custo, lucroBruto, despesas, lucroLiquido,
+    margem: resumo.liquido > 0 ? Math.round((lucroLiquido / resumo.liquido) * 1000) / 10 : 0,
+  };
+}
+
+/** Vendas de cada um dos últimos `dias` dias (até `hoje`, AAAA-MM-DD), em centavos, para o gráfico do painel. */
+export function vendasPorDia(vendas, hoje, dias = 7, dataLocal = (iso) => iso.slice(0, 10)) {
+  const fim = new Date(hoje + 'T12:00:00Z');
+  const lista = [];
+  for (let k = dias - 1; k >= 0; k--) {
+    const d = new Date(fim.getTime() - k * 864e5).toISOString().slice(0, 10);
+    lista.push({ dia: d, total: 0, qtd: 0 });
+  }
+  const por = Object.fromEntries(lista.map((x) => [x.dia, x]));
+  for (const v of vendas) {
+    if (v.cancelada) continue;
+    const x = por[dataLocal(v.data)];
+    if (!x) continue;
+    x.total += centavos(v.total) - (v.devolucoes || []).reduce((s, d) => s + centavos(d.valor), 0);
+    x.qtd += 1;
+  }
+  return lista;
+}
+
+/**
+ * Preço que vale agora para o produto: promoção (com datas) e preço de atacado (a partir de X unidades).
+ * Vale o menor. Retorna { preco, regra: 'normal' | 'promo' | 'atacado' }.
+ */
+export function precoVigente(p, qtd = 1, hoje = '') {
+  let preco = Number(p.preco) || 0, regra = 'normal';
+  const promo = Number(p.precoPromo) || 0;
+  if (promo > 0 && promo < preco && (!p.promoDe || !hoje || hoje >= p.promoDe) && (!p.promoAte || !hoje || hoje <= p.promoAte)) { preco = promo; regra = 'promo'; }
+  const atac = Number(p.precoAtacado) || 0, min = Number(p.qtdAtacado) || 0;
+  if (atac > 0 && min > 0 && (Number(qtd) || 0) >= min && atac < preco) { preco = atac; regra = 'atacado'; }
+  return { preco, regra };
+}
+
+/**
+ * Barras do EAN-13 (ou EAN-8) para desenhar a etiqueta de gôndola: texto de 0 e 1 (1 = barra preta).
+ * Retorna '' se o código não for um EAN válido.
+ */
+const EAN_L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+const EAN_G = EAN_L.map((c) => [...c].map((b) => (b === '1' ? '0' : '1')).reverse().join(''));
+const EAN_R = EAN_L.map((c) => [...c].map((b) => (b === '1' ? '0' : '1')).join(''));
+const EAN_PARIDADE = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
+export function barrasEAN(codigo) {
+  const c = String(codigo || '').trim();
+  if (!eanValido(c)) return '';
+  if (c.length === 8) {
+    return '101' + [...c.slice(0, 4)].map((d) => EAN_L[d]).join('') + '01010' + [...c.slice(4)].map((d) => EAN_R[d]).join('') + '101';
+  }
+  const e = c.length === 12 ? '0' + c : c;
+  if (e.length !== 13) return '';
+  const par = EAN_PARIDADE[e[0]];
+  return '101' + [...e.slice(1, 7)].map((d, i) => (par[i] === 'L' ? EAN_L : EAN_G)[d]).join('') + '01010' + [...e.slice(7)].map((d) => EAN_R[d]).join('') + '101';
 }
 
 /** Curva ABC: A = até 80% do faturamento, B = até 95%, C = resto. */

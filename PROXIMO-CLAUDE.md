@@ -141,3 +141,12 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - **Textos:** evitar o número 13 em textos e exemplos.
 - **PR:** só criar quando ele pedir.
 - **Commits:** com as linhas `Co-Authored-By` e `Claude-Session` que a sessão indicar.
+- **Todo app abre bonito no computador (pedido do dono).** Tela deitada a partir de 900 px = modo computador
+  (menu na lateral, conteúdo largo); celular em pé = modo celular, mesmo com "Versão para computador" ligada no Chrome.
+  Regra usada: `@media (min-width: 900px) and (orientation: landscape)` (Quanto Cobrar, loja, Radar). App novo já nasce assim.
+- **Sem licença/chave para o cliente:** ele compra, recebe o e-mail, instala e entra com e-mail e senha. App novo:
+  o servidor cadastra o app sozinho na tabela `apps` do banco de licenças (registro interno das compras).
+- **MercaGestão (visual e recursos):** ícones próprios (`icones.js`, sem emoji), Painel do dono (vendas, lucro, 7 dias,
+  alertas), promoção com datas e preço de atacado (`precoVigente`), etiquetas de gôndola A4 com código de barras
+  (`barrasEAN`), troca/devolução na venda e lucro real nos relatórios (`lucroDoPeriodo`). Cadastro pelo código de barras
+  busca nome/foto/categoria/NCM (`/produto/<ean>` no worker da loja; Cosmos se o segredo `COSMOS_TOKEN` existir).

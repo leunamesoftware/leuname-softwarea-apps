@@ -1,7 +1,7 @@
 // MercaGestão instalado (mercagestao.leunamesoftware.com.br): rede primeiro; sem internet abre o que ficou guardado.
 // Os dados do mercado ficam no próprio aparelho (IndexedDB); aqui só os arquivos do app.
-const VERSAO = 'mercagestao-v5';
-const BASE = ['/', '/app.css?v=2', '/app.js?v=5', '/nucleo.js', '/instalar.js', '/app.webmanifest', '/img/mercagestao-192.png'];
+const VERSAO = 'mercagestao-v6';
+const BASE = ['/', '/app.css?v=3', '/app.js?v=6', '/nucleo.js', '/icones.js', '/instalar.js', '/app.webmanifest', '/img/mercagestao-192.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSAO).then((c) => c.addAll(BASE)).catch(() => {}).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSAO).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {
