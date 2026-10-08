@@ -665,6 +665,21 @@
       .folha-fundo { align-items: center; }
       .folha { border-radius: 26px; }
       .aviso-loja { bottom: 28px; left: 248px; }
+      /* Marca da loja no topo do menu (no topo da página o logo some para não repetir). */
+      .menu::before { content: "LeuApps"; display: flex; align-items: center; height: 42px; margin: 0 4px 18px; padding-left: 50px; font-size: 21px; font-weight: 800; letter-spacing: -.3px; color: var(--texto);
+        background: url(/img/leuapps-192.webp) no-repeat left center / 40px 40px; }
+      .topo-linha .logo { display: none; }
+      .topo { padding-left: 40px; padding-right: 40px; }
+      main { padding: 0 40px 32px; }
+      .rolar { margin: 0 -40px; padding: 0 40px 6px; scroll-padding-inline: 40px; }
+      .det-corpo { max-width: 1100px; padding-left: 40px; padding-right: 40px; }
+      .det-barra { padding-left: 24px; padding-right: 24px; }
+      .menu button[aria-selected="true"] { background: var(--verde-claro); }
+    }
+    @media (min-width: 1500px) and (orientation: landscape) {
+      .topo-linha, main, .grade, .lista-cats { max-width: 1440px; }
+      .lista { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .destaque, .dest-item { flex-basis: calc(33.333% - 10px); }
     }
   </style>
   <style>
