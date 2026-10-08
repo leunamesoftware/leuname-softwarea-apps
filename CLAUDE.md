@@ -2,6 +2,7 @@
 
 - Loja própria: **LeuApps** (www.leunamesoftware.com.br), na pasta `leuapps/`. Não usamos a Play Store.
 - Servidor de vendas e contas (Mercado Pago, e-mail + senha) e o app Quanto Cobrar: pasta `calculadora/`.
+- **Comece por `PROXIMO-CLAUDE.md`** (estado atual, pendências, como criar app novo) e `COMO-FUNCIONA-A-VENDA.md`.
 - **Para criar ou publicar um app novo na loja, siga `leuapps/COMO-PUBLICAR-APP.md`.**
 - Respostas curtas, em português, direto ao ponto.
 
