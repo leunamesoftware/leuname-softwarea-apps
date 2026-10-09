@@ -510,21 +510,19 @@
   },
   {
     "id": "leuburger",
-    "nome": "LeuBurger PDV",
-    "categoria": "Lanchonete e hamburgueria",
-    "resumo": "Caixa da lanchonete + app de pedidos para os seus clientes, com entrega acompanhada.",
-    "icone": "/img/leuburger-192.webp",
-    "url": "https://leuburger.leunamesoftware.com.br",
-    "preco": "7 dias grátis · R$ 29,90/mês",
-    "exigeCompra": true,
-    "teste": 7,
-    "versao": "1.0",
+    "nome": "Pedêê Parceiro",
+    "categoria": "Para lojistas",
+    "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o motoboy. 30 dias grátis.",
+    "icone": "/img/pedee-parceiro-192.webp",
+    "url": "https://leuburger.leunamesoftware.com.br/parceiro/",
+    "preco": "30 dias grátis · R$ 29,90/mês",
+    "versao": "2.0",
     "planos": [
       {
         "nome": "Mensal",
         "tipo": "mensal",
         "preco": "R$ 29,90/mês",
-        "detalhe": "Caixa, pedidos, estoque, entregas com motoboy e a loja no app de pedidos LeuPede · cartão de crédito, renova sozinho · cancele quando quiser",
+        "detalhe": "Pedidos do app Pedêê, cardápio, motoboys e painel completo (caixa e estoque) · cartão de crédito, renova sozinho · cancele quando quiser",
         "url": "/loja/comprar?app=leuburger&plano=mensal",
         "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
       }
@@ -536,29 +534,18 @@
         "menos de R$ 1 por dia, cancele quando quiser"
       ]
     ],
-    "instalar": "https://leuburger.leunamesoftware.com.br/",
-    "abrirFrame": "https://leuburger.leunamesoftware.com.br/",
+    "instalar": "https://leuburger.leunamesoftware.com.br/parceiro/",
+    "abrirFrame": "https://leuburger.leunamesoftware.com.br/parceiro/",
     "instalarDireto": {
-      "url": "https://leuburger.leunamesoftware.com.br/",
-      "id": "https://leuburger.leunamesoftware.com.br/"
+      "url": "https://leuburger.leunamesoftware.com.br/parceiro/",
+      "id": "https://leuburger.leunamesoftware.com.br/parceiro/"
     },
-    "capturas": [
-      "/img/telas/leuburger-1.webp",
-      "/img/telas/leuburger-2.webp",
-      "/img/telas/leuburger-3.webp",
-      "/img/telas/leuburger-4.webp",
-      "/img/telas/leuburger-5.webp",
-      "/img/telas/leuburger-6.webp"
-    ],
-    "descricao": "Sistema de caixa (PDV) para lanchonete, hamburgueria, pastelaria e açaí. Monte o pedido com tamanhos, adicionais e “sem cebola”, receba em dinheiro (com troco), Pix ou cartão, divida o pagamento e imprima o comprovante na térmica ou mande pelo WhatsApp. O estoque baixa sozinho a cada venda, o caixa fecha com conferência e os relatórios mostram o lucro. Cada funcionário tem o próprio login. A loja também aparece no LeuPede, o app de pedidos dos clientes: eles pedem pelo celular, você aceita no caixa e o cliente acompanha o motoboy em tempo real. Funciona no computador, tablet e celular.",
+    "descricao": "App do lojista do Pedêê. Cadastre sua loja pelo WhatsApp, monte o cardápio, receba os pedidos com aviso sonoro, aceite, avise que está pronto e escolha o motoboy da sua loja. Sem comissão: R$ 29,90 por mês, com o primeiro mês grátis. Inclui o painel completo com caixa e estoque.",
     "recursos": [
-      "🍔 Pedido com tamanhos, adicionais e observações",
-      "📱 Seus clientes pedem pelo app LeuPede",
-      "💵 Dinheiro com troco, Pix, débito e crédito",
-      "🧾 Comprovante na térmica (58 ou 80 mm) e WhatsApp",
-      "📦 Estoque que baixa sozinho e avisa o que comprar",
-      "📊 Caixa com sangria, fechamento e relatórios de lucro",
-      "👥 Funcionários com login e permissões"
+      "📲 Pedidos chegando com aviso sonoro",
+      "🍔 Cardápio com fotos, preços e adicionais",
+      "🏍️ Escolha o motoboy de cada entrega",
+      "💸 Sem comissão por pedido"
     ],
     "tags": [
       "Empresa",
@@ -572,9 +559,67 @@
     ],
     "destaque": {
       "imagem": "/img/destaques/leuburger.webp",
-      "titulo": "LeuBurger PDV",
-      "frase": "Sua lanchonete no controle",
+      "titulo": "Pedêê Parceiro",
+      "frase": "Venda mais, sem comissão",
       "textoNaImagem": true
     }
+  },
+  {
+    "id": "pedee",
+    "nome": "Pedêê: comida em casa",
+    "categoria": "Comida e bebida",
+    "resumo": "Peça lanche, pizza, açaí e marmita das lojas perto de você e acompanhe a entrega.",
+    "icone": "/img/pedee-192.webp",
+    "url": "https://leuburger.leunamesoftware.com.br/pedir/",
+    "preco": "Grátis",
+    "versao": "1.0",
+    "instalar": "https://leuburger.leunamesoftware.com.br/pedir/",
+    "abrirFrame": "https://leuburger.leunamesoftware.com.br/pedir/",
+    "instalarDireto": {
+      "url": "https://leuburger.leunamesoftware.com.br/pedir/",
+      "id": "https://leuburger.leunamesoftware.com.br/pedir/"
+    },
+    "descricao": "Veja as lojas da sua região, compare notas e avaliações, monte o pedido e acompanhe cada etapa até a sua casa. Pague na entrega em dinheiro, Pix ou cartão.",
+    "recursos": [
+      "🍔 Lojas perto de você, com notas e estrelas",
+      "❤️ Favoritas e histórico de pedidos",
+      "🛵 Acompanhe o pedido até chegar",
+      "⭐ Avalie depois de receber"
+    ],
+    "tags": [
+      "Comida"
+    ],
+    "secoes": [
+      "Comer e beber"
+    ]
+  },
+  {
+    "id": "pedee-entregador",
+    "nome": "Pedêê Entregador",
+    "categoria": "Para entregadores",
+    "resumo": "Receba as entregas das lojas parceiras, veja o endereço no mapa e marque cada etapa.",
+    "icone": "/img/pedee-entregador-192.webp",
+    "url": "https://leuburger.leunamesoftware.com.br/entregador/",
+    "preco": "Grátis",
+    "versao": "1.0",
+    "instalar": "https://leuburger.leunamesoftware.com.br/entregador/",
+    "abrirFrame": "https://leuburger.leunamesoftware.com.br/entregador/",
+    "instalarDireto": {
+      "url": "https://leuburger.leunamesoftware.com.br/entregador/",
+      "id": "https://leuburger.leunamesoftware.com.br/entregador/"
+    },
+    "descricao": "App do motoboy. Crie a conta com seu WhatsApp, fique disponível e receba as entregas das lojas que te adicionaram, com endereço, mapa, forma de pagamento e troco.",
+    "recursos": [
+      "🔔 Aviso sonoro de nova entrega",
+      "📍 Endereço e mapa com um toque",
+      "💵 Mostra se precisa levar troco",
+      "✅ Saí para entrega e Entreguei"
+    ],
+    "tags": [
+      "Entregas"
+    ],
+    "secoes": [
+      "Negócios"
+    ]
   }
 ]
