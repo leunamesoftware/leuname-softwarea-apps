@@ -126,7 +126,7 @@ function Inicio() {
   const destaques = [...lista].filter((l) => l.aceitando).sort((a, b) => (b.nota || 0) - (a.nota || 0) || b.avaliacoes - a.avaliacoes).slice(0, 8);
   const temTipo = new Set((lojas || []).map((l) => l.tipo));
   const famosos = [...(lojas || [])].sort((a, b) => (b.avaliacoes * (b.nota || 0)) - (a.avaliacoes * (a.nota || 0))).slice(0, 10);
-  const andamento = g.pedidos.filter((p) => Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3);
+  const andamento = g.pedidos.filter((p) => !p.fim && Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3);
   return (
     <div className="pd com-abas">
       <header className="pd-cab">
@@ -146,7 +146,6 @@ function Inicio() {
           ))}
           <Link to="/culinarias" className="pd-cat-todas"><span>➕</span>Ver todas</Link>
         </div>
-        {andamento.length > 0 && <div className="pd-faixa">{andamento.map((p) => <Link key={p.token} className="pd-pedido" to={`/pedido/${p.token}`}><Ic n="sacola" /><span><b>{p.loja}</b><small>Acompanhar pedido</small></span><Ic n="direita" /></Link>)}</div>}
         {erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div> : !lista.length ? (
           <div className="vazio"><span style={{ fontSize: 40 }}>{tipo ? EMOJI[tipo] : '🍽️'}</span><b>{tipo ? 'Nenhuma loja desse tipo por aqui ainda' : 'Nenhuma loja por aqui ainda'}</b>
             <span>{tipo ? 'Veja as outras categorias.' : `Estamos chegando! Peça para a sua lanchonete preferida entrar no ${NOME_APP}.`}</span>
