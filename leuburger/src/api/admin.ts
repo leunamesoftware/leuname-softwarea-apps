@@ -23,11 +23,16 @@ export const admin = new Hono<{ Bindings: Env; Variables: Vars }>();
 admin.post('/admin/entrar', async (c) => {
   const d = await corpo<{ email?: string; senha?: string }>(c);
   const email = String(d.email || '').trim().toLowerCase();
-  if (!c.env.DONO_EMAIL || email !== c.env.DONO_EMAIL.toLowerCase() || !d.senha || !c.env.CONTAS) throw erro(401, 'login_invalido', 'E-mail ou senha não conferem.');
-  // A senha é a mesma da Área do Dono (conferida no servidor de contas; aqui não se guarda senha).
-  const r = await c.env.CONTAS.fetch(new Request(`${LOJA}/api/dono/entrar`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': c.req.header('User-Agent') || '' }, body: JSON.stringify({ email, senha: d.senha }) }));
-  if (r.status === 429) throw erro(429, 'muitas_tentativas', 'Muitas tentativas. Espere um minuto.');
-  if (!r.ok) throw erro(401, 'login_invalido', 'E-mail ou senha não conferem.');
+  if (!c.env.DONO_EMAIL || !c.env.CONTAS) throw erro(503, 'sem_contas', 'Login indisponível agora. Tente de novo.');
+  if (email !== c.env.DONO_EMAIL.toLowerCase()) throw erro(401, 'login_invalido', 'Este e-mail não é o do administrador.');
+  if (!d.senha) throw erro(400, 'dados_invalidos', 'Digite a senha.');
+  // Vale a senha da Área do Dono ou a senha da conta LeuApps do dono (as duas são conferidas no servidor de contas).
+  const cab = { 'Content-Type': 'application/json', 'User-Agent': c.req.header('User-Agent') || '', 'CF-Connecting-IP': c.req.header('CF-Connecting-IP') || '' };
+  const tentar = (rota: string) => c.env.CONTAS!.fetch(new Request(`${LOJA}${rota}`, { method: 'POST', headers: cab, body: JSON.stringify({ email, senha: d.senha }) }));
+  let r = await tentar('/api/dono/entrar');
+  if (!r.ok && r.status !== 429) r = await tentar('/api/conta/entrar');
+  if (r.status === 429) throw erro(429, 'muitas_tentativas', 'Muitas tentativas. Espere um minuto e tente de novo.');
+  if (!r.ok) throw erro(401, 'login_invalido', 'Senha não confere. Use a senha da Área do Dono ou a da sua conta LeuApps.');
   const token = aleatorio();
   await c.env.BANCO.prepare('INSERT INTO admin_sessoes (token_hash, email, expira_em, criado_em) VALUES (?,?,?,?)').bind(await sha256(token), email, new Date(Date.now() + 30 * 864e5).toISOString(), agora()).run();
   setCookie(c, COOKIE, token, { httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 30 * 86400 });

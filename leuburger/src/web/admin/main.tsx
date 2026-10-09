@@ -30,7 +30,7 @@ function Entrar({ aoEntrar }: { aoEntrar: () => void }) {
       <form className="cartao" onSubmit={(e) => { e.preventDefault(); enviar(); }}>
         <img src="/admin-icone-192.png" alt="" width={72} height={72} />
         <h1>Pedêê Admin</h1>
-        <p>Só o administrador. Use o seu e-mail e a senha da Área do Dono.</p>
+        <p>Só o administrador: e-mail do dono e a senha da Área do Dono (ou a da sua conta LeuApps).</p>
         <label className="campo">E-mail<input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} autoComplete="username" /></label>
         <label className="campo">Senha<input type="password" value={f.senha} onChange={(e) => setF({ ...f, senha: e.target.value })} autoComplete="current-password" /></label>
         {erro && <p className="aviso erro">{erro}</p>}
