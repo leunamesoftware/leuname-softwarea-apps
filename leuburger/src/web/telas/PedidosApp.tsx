@@ -1,4 +1,4 @@
-// Pedidos que chegam pelo app dos clientes (LeuPede): aceitar (vira venda e vai para a cozinha) ou recusar com motivo.
+// Pedidos que chegam pelo app dos clientes (Pedêê): aceitar (vira venda e vai para a cozinha) ou recusar com motivo.
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, type Forma } from '../../regras/pedido';
 import { get, post } from '../api';

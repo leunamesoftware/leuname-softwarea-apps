@@ -1,4 +1,4 @@
-// LeuPede: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
+// Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -10,7 +10,7 @@ import { Ic } from '../icones';
 import '../estilo.css';
 import './pedir.css';
 
-export const NOME_APP = 'LeuPede';
+export const NOME_APP = 'Pedêê';
 
 // ---------- tipos ----------
 interface LojaCartao {

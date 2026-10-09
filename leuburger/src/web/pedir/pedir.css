@@ -1,7 +1,7 @@
 /* LeuPede (app dos clientes): celular primeiro, centralizado no computador. */
 body { background: var(--fundo); }
 .pd { min-height: 100dvh; max-width: 760px; margin: 0 auto; background: var(--fundo); }
-.pd-topo { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 12px; padding-top: calc(8px + env(safe-area-inset-top)); background: var(--laranja); color: #fff; }
+.pd-topo { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 12px; padding-top: calc(8px + env(safe-area-inset-top)); background: linear-gradient(90deg, #FF7A00, #F0300F); color: #fff; }
 .pd-marca { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 20px; }
 .pd-marca img { width: 32px; height: 32px; border-radius: 8px; border: 2px solid rgba(255,255,255,.6); }
 .pd-local { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; max-width: 55%; padding: 7px 10px; border-radius: 99px; border: 0; background: rgba(255,255,255,.18); color: #fff; font: inherit; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

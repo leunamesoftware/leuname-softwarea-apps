@@ -1,4 +1,4 @@
-// LeuPede: app de pedidos dos clientes. Um app só para todas as lojas.
+// Pedêê: app de pedidos dos clientes. Um app só para todas as lojas.
 // - Público (sem login): lista de lojas perto do cliente, cardápio da loja, fazer pedido e acompanhar.
 // - Loja (com login): pedidos do app para aceitar ou recusar e a configuração da loja no app.
 // O cliente nunca vê custo, receita, estoque nem dados de outras lojas; cada loja só vê os pedidos dela.
@@ -9,7 +9,7 @@ import { agora, aleatorio, corpo, erro, novoId, type C, type D1Prepared, type Em
 import { exigir, validar } from './cadastros';
 import { registrarVenda } from './vendas';
 
-export const NOME_APP = 'LeuPede';
+export const NOME_APP = 'Pedêê';
 export const TIPOS_LOJA = { lanches: 'Lanches', hamburgueria: 'Hamburgueria', restaurante: 'Restaurante', marmitaria: 'Marmitaria', pizzaria: 'Pizzaria', acai: 'Açaí e sorvetes', pastelaria: 'Pastelaria', japonesa: 'Comida japonesa', doces: 'Doces e bolos', bebidas: 'Bebidas' } as const;
 
 type Loja = Empresa & {

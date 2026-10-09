@@ -1,4 +1,4 @@
-// Configurações → Loja no app: como a loja aparece no LeuPede (app dos clientes).
+// Configurações → Loja no app: como a loja aparece no Pedêê (app dos clientes).
 import { useState } from 'react';
 import { brl, lerValor } from '../../regras/pedido';
 import { get, post, put } from '../api';
