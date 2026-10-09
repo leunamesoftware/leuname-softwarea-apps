@@ -560,7 +560,8 @@ interface Acomp {
   loja: string; slug: string; loja_telefone: string | null; numero: number | null; situacao: string; motivo_recusa: string | null; tipo: 'entrega' | 'balcao'; endereco: string | null;
   forma: Forma; troco_para: number | null; itens: { nome: string; qtd: number; total: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[];
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
-  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; cancelado_pelo_cliente: boolean;
+  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; cancelado_pelo_cliente: boolean; codigo_entrega: string | null; entregador_foto: string | null;
+  mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; pode_conversar: boolean;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 const AVISO: Record<string, string> = {
@@ -577,13 +578,18 @@ function Pedido() {
   const { token = '' } = useParams();
   const [p, setP] = useState<Acomp | null>(null), [erro, setErro] = useState('');
   const [vez, setVez] = useState(0), [aviso, setAviso] = useState('');
-  const antes = useRef<string | null>(null);
+  const antes = useRef<string | null>(null), msgs = useRef<number | null>(null);
+  const [texto, setTexto] = useState('');
+  const responder = async (t: string) => { if (!t.trim()) return; try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/mensagem`, { texto: t.trim() }); setTexto(''); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); } };
   useEffect(() => {
     let parar = false;
     const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => {
       if (parar) return;
       const nova = r.pedido.situacao;
       if (antes.current && antes.current !== nova && AVISO[nova]) { setAviso(AVISO[nova]); alo(); setTimeout(() => setAviso(''), 9000); }
+      const doEntregador = r.pedido.mensagens.filter((m) => m.de === 'entregador');
+      if (msgs.current != null && doEntregador.length > msgs.current) { setAviso(`💬 Entregador: ${doEntregador[doEntregador.length - 1].texto}`); alo(); setTimeout(() => setAviso(''), 12000); }
+      msgs.current = doEntregador.length;
       antes.current = nova;
       setP(r.pedido); setErro(''); marcarFim(token, nova);
     }).catch((e) => setErro(msgErro(e)));
@@ -622,6 +628,16 @@ function Pedido() {
         {faltam(p.cancelar_ate) && <section className="cartao" style={{ textAlign: 'center' }}>
           <p style={{ margin: '0 0 8px' }}>Mudou de ideia? Você pode cancelar por mais <b>{faltam(p.cancelar_ate)}</b>.</p>
           <button className="btn bloco" onClick={cancelar} disabled={cancelando}>Cancelar pedido</button>
+        </section>}
+        {p.codigo_entrega && <section className="cartao pd-codigo">
+          <small>Código de entrega</small><b>{p.codigo_entrega}</b>
+          <span>Passe este código ao entregador <u>só quando receber</u> o pedido. Sem ele a entrega não é confirmada.</span>
+        </section>}
+        {p.pode_conversar && <section className="cartao pd-entregador">
+          <div className="pd-ent-topo">{p.entregador_foto ? <img src={p.entregador_foto} alt="" /> : <span className="pd-ent-sem">🛵</span>}<div><small>Seu entregador</small><b>{p.entregador || 'Entregador'}</b></div></div>
+          {p.mensagens.length > 0 && <div className="pd-chat">{p.mensagens.map((m, k) => <p key={k} className={m.de === 'cliente' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}</div>}
+          <div className="pd-rapidas">{['👍 Já estou descendo', '🏢 Pode deixar na portaria', '⏳ Estou aguardando'].map((t) => <button key={t} className="chip" onClick={() => responder(t)}>{t}</button>)}</div>
+          <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={200} placeholder="Mensagem para o entregador" aria-label="Mensagem para o entregador" onKeyDown={(e) => { if (e.key === 'Enter') responder(texto); }} /><button className="btn prim" onClick={() => responder(texto)} disabled={!texto.trim()}>Enviar</button></div>
         </section>}
         {p.mapa && <section className="cartao">
           <Mapa dados={p.mapa} />

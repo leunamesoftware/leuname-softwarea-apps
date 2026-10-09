@@ -13,7 +13,20 @@ const FINAIS = ['entregue', 'retirado'];
 const PASSOS: Record<string, Andamento[]> = { entrega: ['preparando', 'pronto', 'a_caminho', 'entregue'], balcao: ['preparando', 'pronto', 'retirado'] };
 
 /** Grava o novo passo com o horário (o painel e o cliente mostram quando aconteceu). */
-export async function mudarAndamento(c: C, v: { id: string; tipo: string; andamento: string }, novo: Andamento, entregador?: string | null) {
+export async function mudarAndamento(c: C, v: { id: string; tipo: string; andamento: string }, novo: Andamento, entregador?: string | null, codigo?: string | null) {
+  if (novo === 'entregue') {
+    // Pedido do app: só fecha com o código de entrega que o cliente passa (protege a loja, o entregador e o cliente).
+    const r = await c.env.BANCO.prepare('SELECT codigo_entrega FROM vendas WHERE id = ?').bind(v.id).first<{ codigo_entrega: string | null }>();
+    if (r?.codigo_entrega) {
+      const chave = `cod|${v.id}`, db = c.env.BANCO;
+      const t = await db.prepare('SELECT qtd FROM tentativas WHERE chave = ?').bind(chave).first<{ qtd: number }>();
+      if ((t?.qtd ?? 0) >= 8) throw erro(429, 'muitas_tentativas', 'Código errado muitas vezes. Fale com a loja.');
+      if (String(codigo || '').replace(/\D/g, '') !== r.codigo_entrega) {
+        await db.prepare('INSERT INTO tentativas (chave, qtd, desde) VALUES (?, 1, ?) ON CONFLICT(chave) DO UPDATE SET qtd = qtd + 1').bind(chave, agora()).run();
+        throw erro(400, 'codigo_errado', codigo ? 'Código errado. Peça de novo ao cliente (está no app dele, na tela do pedido).' : 'Peça ao cliente o código de entrega (4 números) e digite aqui.', { codigo: 'Código errado.' });
+      }
+    }
+  }
   if (!PASSOS[v.tipo]?.includes(novo)) throw erro(400, 'andamento_invalido', 'Este passo não vale para este pedido.');
   if (novo === 'pronto') {
     // Pedido do app: a loja só marca "pronto" depois do prazo de cancelamento do cliente (a loja de demonstração não espera).
@@ -37,7 +50,7 @@ andamento.get('/andamento', async (c) => {
       v.endereco_entrega, v.observacao, v.token_cliente, v.token_entregador, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
-      (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em
+      (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em, (v.codigo_entrega IS NOT NULL) AS pede_codigo
     FROM vendas v LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.token_cliente IS NOT NULL
       AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em >= ?)
@@ -51,10 +64,10 @@ andamento.get('/andamento', async (c) => {
 
 andamento.post('/vendas/:id/andamento', async (c) => {
   exigir(c, 'vender');
-  const d = validar(z.object({ andamento: z.enum(ANDAMENTOS), entregador: z.string().trim().max(40).nullable().optional() }), await corpo(c));
+  const d = validar(z.object({ andamento: z.enum(ANDAMENTOS), entregador: z.string().trim().max(40).nullable().optional(), codigo: z.string().max(10).nullable().optional() }), await corpo(c));
   const v = await c.env.BANCO.prepare("SELECT id, tipo, andamento FROM vendas WHERE id = ? AND empresa_id = ? AND status = 'concluida'").bind(c.req.param('id'), c.get('empresa').id).first<{ id: string; tipo: string; andamento: string }>();
   if (!v) throw erro(404, 'nao_encontrado', 'Pedido não encontrado ou cancelado.');
-  await mudarAndamento(c, v, d.andamento, d.entregador === undefined ? undefined : d.entregador || null);
+  await mudarAndamento(c, v, d.andamento, d.entregador === undefined ? undefined : d.entregador || null, d.codigo);
   return c.json({ ok: true });
 });
 
@@ -88,10 +101,10 @@ publico.get('/publico/entrega/:token', async (c) => {
   return c.json({ pedido: { ...comum(v, itens), cliente: v.cliente, cliente_telefone: v.cliente_telefone, endereco: v.endereco_entrega, observacao: v.observacao, troco: v.troco, pagamentos: pag, token_cliente: v.token_cliente } });
 });
 publico.post('/publico/entrega/:token', async (c) => {
-  const d = validar(z.object({ andamento: z.enum(['a_caminho', 'entregue']), entregador: z.string().trim().max(40).optional() }), await corpo(c));
+  const d = validar(z.object({ andamento: z.enum(['a_caminho', 'entregue']), entregador: z.string().trim().max(40).optional(), codigo: z.string().max(10).nullable().optional() }), await corpo(c));
   const { v } = await pedidoDoToken(c, 'token_entregador', c.req.param('token'));
   if (v.status !== 'concluida') throw erro(409, 'cancelado', 'Este pedido foi cancelado pela loja.');
   if (v.tipo !== 'entrega') throw erro(400, 'andamento_invalido', 'Este pedido não é de entrega.');
-  await mudarAndamento(c, { id: v.id, tipo: v.tipo, andamento: v.andamento }, d.andamento, d.entregador ? d.entregador : undefined);
+  await mudarAndamento(c, { id: v.id, tipo: v.tipo, andamento: v.andamento }, d.andamento, d.entregador ? d.entregador : undefined, d.codigo);
   return c.json({ ok: true });
 });

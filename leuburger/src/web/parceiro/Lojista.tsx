@@ -116,7 +116,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 
 // ---------- pedidos ----------
 interface Novo { cancelar_ate: string | null; cancelado_em: string | null; nome_cliente?: string; id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { app_cancelar_ate: string | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface EmAndamento { app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -145,7 +145,12 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
   };
   useEffect(() => { carregar(); const t = setInterval(carregar, 10000); return () => clearInterval(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const agir = async (id: string, fn: () => Promise<unknown>) => { setOcupado(id); try { await fn(); await carregar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(''); } };
-  const andar = (p: EmAndamento, andamento: string) => agir(p.id, () => post(`/vendas/${p.id}/andamento`, { andamento }));
+  const andar = (p: EmAndamento, andamento: string) => {
+    // Pedido do app entregue pela própria loja: também pede o código que o cliente tem no app.
+    let codigo: string | null = null;
+    if (andamento === 'entregue' && p.pede_codigo) { codigo = prompt('Código de entrega (4 números) que o cliente vê no app dele:'); if (!codigo) return; }
+    return agir(p.id, () => post(`/vendas/${p.id}/andamento`, { andamento, codigo }));
+  };
   useRelogio(novos.some((p) => p.cancelar_ate) || lista.some((p) => p.app_cancelar_ate));
   const abertos = lista.filter((p) => !['entregue', 'retirado'].includes(p.andamento));
   const feitos = lista.filter((p) => ['entregue', 'retirado'].includes(p.andamento)).reverse();

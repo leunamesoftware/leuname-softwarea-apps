@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
+import { enviarFoto } from './entregador';
 import { agora, aleatorio, auditar, corpo, erro, janelaCancelarMs, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { registrarVenda } from './vendas';
@@ -175,11 +176,14 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
   // Cliente cancela só nos primeiros minutos e antes de o pedido ficar pronto.
+  // Conversa com o entregador (só enquanto a entrega está com ele); ninguém vê o telefone do outro.
+  const conversa = o.entregador_id && !['entregue', 'retirado', 'cancelado'].includes(situacao)
+    ? (await c.env.BANCO.prepare('SELECT de, texto, criado_em FROM mensagens_entrega WHERE venda_id = ? ORDER BY criado_em').bind(o.venda_id).all()).results.slice(-12) : [];
   const ate = new Date(o.criado_em).getTime() + janelaCancelarMs(c.env);
   const cancelar_ate = !o.cancelado_em && ['aguardando', 'preparando'].includes(situacao) && ate > Date.now() ? new Date(ate).toISOString() : null;
   return c.json({ pedido: {
@@ -187,6 +191,8 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
     avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, cancelar_ate, cancelado_pelo_cliente: Boolean(o.cancelado_em),
+    codigo_entrega: o.tipo === 'entrega' && ['preparando', 'pronto', 'a_caminho'].includes(situacao) ? o.codigo_entrega : null,
+    entregador_foto: o.entregador_id && o.tem_foto ? `/api/publico/app/pedido/${token}/entregador-foto` : null, mensagens: conversa, pode_conversar: Boolean(o.entregador_id) && ['pronto', 'a_caminho', 'preparando'].includes(situacao),
     // Mapa ao vivo: só enquanto o entregador está a caminho.
     mapa: situacao === 'a_caminho' && o.tipo === 'entrega' ? {
       loja: o.loja_lat != null ? { lat: o.loja_lat, lng: o.loja_lng } : null,
@@ -194,6 +200,29 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
       entregador: o.pos_lat != null ? { lat: o.pos_lat, lng: o.pos_lng, em: o.pos_em } : null,
     } : null,
   } });
+});
+
+/** Foto do entregador deste pedido (só quem tem o link do pedido vê). */
+appPublico.get('/publico/app/pedido/:token/entregador-foto', async (c) => {
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const f = await c.env.BANCO.prepare('SELECT e.foto FROM pedidos_online o JOIN vendas v ON v.id = o.venda_id JOIN entregadores e ON e.id = v.entregador_id WHERE o.token = ?').bind(token).first<{ foto: string | null }>();
+  if (!f?.foto) throw erro(404, 'sem_foto', 'Sem foto.');
+  return enviarFoto(f.foto);
+});
+
+/** Cliente responde ao entregador pelo app. */
+appPublico.post('/publico/app/pedido/:token/mensagem', async (c) => {
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(200) }), await corpo(c));
+  const db = c.env.BANCO;
+  const v = await db.prepare("SELECT v.id FROM pedidos_online o JOIN vendas v ON v.id = o.venda_id WHERE o.token = ? AND v.entregador_id IS NOT NULL AND v.status = 'concluida' AND v.andamento NOT IN ('entregue','retirado')").bind(token).first<{ id: string }>();
+  if (!v) throw erro(409, 'sem_conversa', 'A conversa abre quando um entregador pega o seu pedido.');
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ?').bind(v.id, 'cliente').first<{ n: number }>();
+  if ((n?.n ?? 0) >= 30) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'cliente',?,?)").bind(novoId(), v.id, d.texto, agora()).run();
+  return c.json({ ok: true });
 });
 
 /** Cliente cancela o pedido dentro do prazo (padrão 5 min) e enquanto a loja ainda não marcou "pronto". */
@@ -295,6 +324,8 @@ appLoja.post('/pedidos-app/:id/aceitar', async (c) => {
     entrega: o.tipo === 'entrega' ? { endereco: String(o.endereco || ''), taxa: o.taxa_entrega } : null,
   });
   await db.prepare("UPDATE pedidos_online SET status = 'aceito', venda_id = ?, respondido_em = ? WHERE id = ? AND status = 'aguardando'").bind(r.id, agora(), o.id).run();
+  // Código de entrega: o cliente vê no app e passa ao entregador só quando recebe o pedido.
+  if (o.tipo === 'entrega') await db.prepare('UPDATE vendas SET codigo_entrega = COALESCE(codigo_entrega, ?) WHERE id = ?').bind(String(crypto.getRandomValues(new Uint32Array(1))[0] % 10000).padStart(4, '0'), r.id).run();
   return c.json({ ok: true, venda_id: r.id });
 });
 

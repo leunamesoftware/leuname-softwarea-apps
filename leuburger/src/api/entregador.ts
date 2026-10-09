@@ -4,12 +4,13 @@ import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { z } from 'zod';
 import { mudarAndamento } from './andamento';
+import { distanciaKm } from './online';
 import { agora, aleatorio, corpo, erro, hashSenha, iguais, novoId, sha256, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 
 const COOKIE = 'pe_sessao';
 const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
-interface Entregador { id: string; nome: string; email: string; veiculo: string; cidade: string | null; disponivel: number; ativo: number }
+interface Entregador { id: string; nome: string; email: string; veiculo: string; cidade: string | null; disponivel: number; ativo: number; foto: string | null }
 
 async function abrirSessaoEntregador(c: C, id: string) {
   const token = aleatorio();
@@ -25,7 +26,17 @@ async function entregadorLogado(c: C): Promise<Entregador> {
   if (!e) throw erro(401, 'sem_sessao', 'Sua sessão terminou. Entre de novo.');
   return e;
 }
-const publico = (e: Entregador) => ({ id: e.id, nome: e.nome, email: e.email, veiculo: e.veiculo, cidade: e.cidade, disponivel: Boolean(e.disponivel) });
+const publico = (e: Entregador) => ({ id: e.id, nome: e.nome, email: e.email, veiculo: e.veiculo, cidade: e.cidade, disponivel: Boolean(e.disponivel), tem_foto: Boolean(e.foto) });
+
+/** Foto tirada na câmera do celular, já reduzida pelo app (data URL pequena). */
+const FOTO = /^data:image\/(jpeg|webp|png);base64,[A-Za-z0-9+/=]+$/;
+const validarFoto = (f: unknown) => { const t = String(f || ''); if (!FOTO.test(t) || t.length > 160_000) throw erro(400, 'foto_invalida', 'Tire a foto de novo (rosto de frente, com boa luz).'); return t; };
+export function enviarFoto(foto: string) {
+  const m = /^data:(image\/[a-z]+);base64,(.*)$/.exec(foto)!;
+  const bin = atob(m[2]), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Response(bytes, { headers: { 'content-type': m[1], 'cache-control': 'private, max-age=300' } });
+}
 
 // ---------- app do entregador ----------
 export const entregador = new Hono<{ Bindings: Env; Variables: Vars }>();
@@ -37,12 +48,13 @@ entregador.post('/entregador/cadastrar', async (c) => {
     senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.').max(100),
     veiculo: z.enum(['moto', 'bike']).default('moto'),
     cidade: z.string().trim().max(60).optional().nullable(),
+    foto: z.string().optional().nullable(),
   }), await corpo(c));
-  const db = c.env.BANCO;
+  const foto = d.foto ? validarFoto(d.foto) : null, db = c.env.BANCO;
   if (await db.prepare('SELECT 1 FROM entregadores WHERE email = ?').bind(d.email).first()) throw erro(409, 'ja_cadastrado', 'Este e-mail já tem cadastro. Toque em "Já tenho cadastro".', { email: 'Já cadastrado.' });
   const id = novoId(), sal = aleatorio(16);
-  await db.prepare('INSERT INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES (?,?,?,?,?,?,?,?)')
-    .bind(id, d.nome, d.email, await hashSenha(d.senha, sal), sal, d.veiculo, d.cidade || null, agora()).run();
+  await db.prepare('INSERT INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em, foto) VALUES (?,?,?,?,?,?,?,?,?)')
+    .bind(id, d.nome, d.email, await hashSenha(d.senha, sal), sal, d.veiculo, d.cidade || null, agora(), foto).run();
   await abrirSessaoEntregador(c, id);
   return c.json({ ok: true }, 201);
 });
@@ -76,6 +88,52 @@ entregador.get('/entregador/eu', async (c) => {
   return c.json({ entregador: publico(e), lojas });
 });
 
+entregador.post('/entregador/foto', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = await corpo<{ dados?: string }>(c);
+  await c.env.BANCO.prepare('UPDATE entregadores SET foto = ? WHERE id = ?').bind(validarFoto(d.dados), e.id).run();
+  return c.json({ ok: true });
+});
+entregador.get('/entregador/foto', async (c) => {
+  const e = await entregadorLogado(c);
+  if (!e.foto) throw erro(404, 'sem_foto', 'Sem foto.');
+  return enviarFoto(e.foto);
+});
+
+/** Mensagem do entregador para o cliente (o telefone do cliente não aparece para o entregador). */
+entregador.post('/entregador/entregas/:id/mensagem', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(200) }), await corpo(c));
+  const db = c.env.BANCO, id = c.req.param('id');
+  const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida' AND andamento NOT IN ('entregue','retirado')").bind(id, e.id).first();
+  if (!v) throw erro(404, 'nao_encontrado', 'Esta entrega não está com você.');
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ?').bind(id, 'entregador').first<{ n: number }>();
+  if ((n?.n ?? 0) >= 30) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'entregador',?,?)").bind(novoId(), id, d.texto, agora()).run();
+  return c.json({ ok: true });
+});
+
+/** Ganhos e histórico do entregador (últimos 30 dias): taxa de entrega de cada pedido entregue e os km da loja até o cliente. */
+entregador.get('/entregador/resumo', async (c) => {
+  const e = await entregadorLogado(c);
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.finalizado_em, v.saiu_em, v.taxa_entrega, v.endereco_entrega, em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng,
+      (SELECT dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng
+    FROM vendas v JOIN empresas em ON em.id = v.empresa_id
+    WHERE v.entregador_id = ? AND v.status = 'concluida' AND v.andamento = 'entregue' AND v.finalizado_em > ? ORDER BY v.finalizado_em DESC LIMIT 500`)
+    .bind(e.id, new Date(Date.now() - 30 * 864e5).toISOString()).all<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  return c.json({ entregas: results.map((r) => ({
+    id: r.id, numero: r.numero, quando: r.finalizado_em, saiu_em: r.saiu_em, loja: r.loja, endereco: r.endereco_entrega, ganho: r.taxa_entrega || 0,
+    km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: r.loja_lat, lng: r.loja_lng }, { lat: r.dest_lat, lng: r.dest_lng }) * 10) / 10 : null,
+  })) });
+});
+
+entregador.post('/entregador/veiculo', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = validar(z.object({ veiculo: z.enum(['moto', 'bike']) }), await corpo(c));
+  await c.env.BANCO.prepare('UPDATE entregadores SET veiculo = ? WHERE id = ?').bind(d.veiculo, e.id).run();
+  return c.json({ ok: true });
+});
+
 entregador.post('/entregador/disponivel', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ disponivel: z.boolean() }), await corpo(c));
@@ -87,14 +145,16 @@ entregador.post('/entregador/disponivel', async (c) => {
 entregador.get('/entregador/entregas', async (c) => {
   const e = await entregadorLogado(c);
   const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.finalizado_em, v.endereco_entrega, v.observacao,
-      em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, em.telefone AS loja_telefone, cl.nome AS cliente, cl.telefone AS cliente_telefone,
+      em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, em.telefone AS loja_telefone, cl.nome AS cliente,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
       (SELECT dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng
     FROM vendas v JOIN empresas em ON em.id = v.empresa_id LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.entregador_id = ? AND v.status = 'concluida' AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em > ?)
     ORDER BY v.criado_em DESC LIMIT 50`).bind(e.id, new Date(Date.now() - 12 * 3600e3).toISOString()).all();
-  return c.json({ entregas: results });
+  const ids = results.map((r) => String(r.id));
+  const { results: msgs } = ids.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_entrega WHERE venda_id IN (${ids.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...ids).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
+  return c.json({ entregas: results.map((r) => ({ ...r, km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: Number(r.loja_lat), lng: Number(r.loja_lng) }, { lat: Number(r.dest_lat), lng: Number(r.dest_lng) }) * 10) / 10 : null, mensagens: msgs.filter((m) => m.venda_id === r.id).slice(-12) })) });
 });
 
 /** O app do entregador manda a posição dele; vale para as entregas dele que estão a caminho. */
@@ -108,10 +168,10 @@ entregador.post('/entregador/posicao', async (c) => {
 
 entregador.post('/entregador/entregas/:id', async (c) => {
   const e = await entregadorLogado(c);
-  const d = validar(z.object({ andamento: z.enum(['a_caminho', 'entregue']) }), await corpo(c));
+  const d = validar(z.object({ andamento: z.enum(['a_caminho', 'entregue']), codigo: z.string().max(10).nullable().optional() }), await corpo(c));
   const v = await c.env.BANCO.prepare("SELECT id, tipo, andamento FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida'").bind(c.req.param('id'), e.id).first<{ id: string; tipo: string; andamento: string }>();
   if (!v) throw erro(404, 'nao_encontrado', 'Esta entrega não está com você (ou foi cancelada pela loja).');
-  await mudarAndamento(c, v, d.andamento);
+  await mudarAndamento(c, v, d.andamento, undefined, d.codigo);
   return c.json({ ok: true });
 });
 

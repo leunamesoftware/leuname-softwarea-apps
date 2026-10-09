@@ -153,3 +153,18 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-pista.entregue span, .pd-pista.retirado span { animation: none; }
 .pd-pista.a_caminho span { animation: pd-balanca 1s ease-in-out infinite; }
 .pd-alo { position: sticky; top: 8px; z-index: 5; background: #111827; color: #fff; padding: 14px 16px; border-radius: 14px; font-weight: 700; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); animation: pd-entra .35s ease; }
+
+/* Código de entrega, entregador (foto) e conversa sem telefone */
+.pd-codigo { text-align: center; display: grid; gap: 4px; border: 2px dashed var(--laranja); }
+.pd-codigo small { color: var(--suave); font-weight: 700; } .pd-codigo b { font-size: 40px; letter-spacing: 12px; color: var(--laranja); }
+.pd-codigo span { font-size: 14px; color: var(--suave); }
+.pd-entregador { display: grid; gap: 10px; }
+.pd-ent-topo { display: flex; align-items: center; gap: 12px; }
+.pd-ent-topo img, .pd-ent-sem { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid #16A34A; display: grid; place-items: center; font-size: 30px; background: #F0FDF4; flex: none; }
+.pd-ent-topo div { display: grid; } .pd-ent-topo small { color: var(--suave); } .pd-ent-topo b { font-size: 18px; }
+.pd-chat { display: grid; gap: 6px; }
+.pd-chat p { margin: 0; padding: 8px 10px; border-radius: 12px; max-width: 85%; display: grid; }
+.pd-chat p small { font-size: 11px; opacity: .7; }
+.pd-chat p.eu { justify-self: end; background: #FFEDD5; } .pd-chat p.ele { justify-self: start; background: #F3F4F6; }
+.pd-rapidas { display: flex; flex-wrap: wrap; gap: 6px; } .pd-rapidas .chip { font-size: 13px; }
+.pd-chat-enviar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }

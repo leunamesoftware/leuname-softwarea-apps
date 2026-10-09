@@ -9,3 +9,37 @@
 .ent-valor b { margin-left: auto; font-size: 20px; }
 .ent-valor em { flex-basis: 100%; font-style: normal; font-weight: 800; color: #B45309; }
 .ent-verde { background: #16A34A !important; border-color: #16A34A !important; }
+
+/* Tela inicial estilo iFood: mapa em cima, foto, disponível, SOS e o ganho do dia */
+.ent-app { padding-bottom: 76px; }
+.ent-mapa { position: relative; }
+.ent-mapa .mapa-caixa { border-radius: 0; }
+.ent-flutua { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 500; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 18px; padding: 10px 12px; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+.ent-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid #16A34A; flex: none; display: grid; place-items: center; font-size: 24px; background: #F0FDF4; }
+.ent-avatar.grande { width: 120px; height: 120px; border-width: 4px; }
+.ent-disp2 { flex: 1; border: 0; border-radius: 99px; padding: 10px 14px; font: inherit; font-weight: 900; font-size: 16px; background: #E5E7EB; color: #374151; }
+.ent-disp2.sim { background: #16A34A; color: #fff; }
+.ent-sos { flex: none; text-decoration: none; font-weight: 900; color: #DC2626; background: #FEF2F2; border-radius: 99px; padding: 9px 12px; }
+.ent-busca { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 500; background: #F0FDF4; color: #166534; font-weight: 700; padding: 10px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.ent-ganho { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px; background: #fff; border: 0; border-radius: 99px; padding: 14px 20px; box-shadow: 0 8px 22px rgba(0,0,0,.14); font: inherit; cursor: pointer; margin-top: -34px; position: relative; z-index: 600; }
+.ent-ganho b { font-size: 28px; text-align: center; } .ent-ganho > span:last-of-type { font-size: 22px; }
+.ent-ganho small { grid-column: 1 / -1; text-align: center; color: var(--suave); font-weight: 600; }
+.ent-cifrao { width: 30px; height: 30px; border-radius: 50%; background: #4B5563; color: #fff; display: grid; place-items: center; font-weight: 900; }
+.ent-chat { display: grid; gap: 6px; padding: 10px; border-radius: 12px; background: #F9FAFB; }
+.ent-chat p { margin: 0; padding: 8px 10px; border-radius: 12px; max-width: 85%; display: grid; }
+.ent-chat p small { font-size: 11px; opacity: .7; }
+.ent-chat p.eu { justify-self: end; background: #DCFCE7; } .ent-chat p.ele { justify-self: start; background: #fff; border: 1px solid #E5E7EB; }
+.ent-rapidas { display: flex; flex-wrap: wrap; gap: 6px; }
+.ent-rapidas .chip { font-size: 13px; }
+.ent-codigo { font-size: 40px; text-align: center; letter-spacing: 14px; font-weight: 900; width: 100%; padding: 10px; }
+.ent-meta { height: 10px; background: #E5E7EB; border-radius: 99px; overflow: hidden; margin: 10px 0 6px; }
+.ent-meta i { display: block; height: 100%; background: #16A34A; }
+.ent-lanc { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; background: none; border: 0; padding: 10px 0; font: inherit; text-align: left; cursor: pointer; }
+.ent-lanc span { display: grid; } .ent-lanc small { color: var(--suave); }
+.ent-abas button.ativo { color: #15803D; }
+.ent-menu-topo { background: linear-gradient(90deg, #15803D, #166534); color: #fff; display: flex; align-items: center; gap: 14px; padding: 28px 16px 36px; border-radius: 0 0 24px 24px; }
+.ent-menu-topo div { display: grid; min-width: 0; } .ent-menu-topo b { font-size: 22px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ent-menu-topo small { opacity: .85; }
+.ent-menu-topo .ent-avatar.grande { width: 84px; height: 84px; border-color: #fff; }
+.ent-abas button { background: none; border: 0; display: grid; justify-items: center; gap: 2px; padding: 8px 0 6px; font: inherit; font-size: 12px; font-weight: 700; color: var(--suave); cursor: pointer; }
+.ent-abas button.ativo { color: #15803D; }
+.ent-lanc b { text-align: left; }

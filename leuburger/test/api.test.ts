@@ -318,7 +318,11 @@ describe('LeuPede (app de pedidos dos clientes)', () => {
     expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.situacao).toBe('a_caminho');
     // Avaliação: só depois de entregue, uma vez; aparece na loja.
     expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 5 })).status).toBe(409);
-    await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'entregue' });
+    // A loja que leva também precisa do código que está com o cliente.
+    expect((await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'entregue' })).corpo.erro).toBe('codigo_errado');
+    const cod = (await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.codigo_entrega;
+    expect((await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'entregue', codigo: cod })).status).toBe(200);
+    expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.codigo_entrega).toBeNull();
     expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 6 })).status).toBe(400);
     expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 4, comentario: 'Chegou quentinho' })).status).toBe(200);
     expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 1 })).status).toBe(409);
@@ -439,8 +443,26 @@ describe('Mapa ao vivo da entrega', () => {
     expect(mapa).toMatchObject({ loja: { lat: -22.5046, lng: -43.1823 }, destino: { lat: -22.51, lng: -43.19 }, entregador: { lat: -22.508, lng: -43.186 } });
     // Sem login do entregador não manda posição; depois de entregue o mapa some.
     expect((await A.navegador().post('/entregador/posicao', { lat: 0, lng: 0 })).status).toBe(401);
-    await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue' });
+    // Entregar exige o código que só o cliente vê; e a conversa não mostra telefone a ninguém.
+    const pd = (await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido;
+    expect(pd.codigo_entrega).toMatch(/^\d{4}$/);
+    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: 'Estou aqui na frente' })).status).toBe(200);
+    expect((await cli.post(`/publico/app/pedido/${token}/mensagem`, { texto: 'Já estou descendo' })).status).toBe(200);
+    expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mensagens.map((m: { texto: string }) => m.texto)).toEqual(['Estou aqui na frente', 'Já estou descendo']);
+    const naRua = (await moto.get('/entregador/entregas')).corpo.entregas[0];
+    expect(naRua.cliente_telefone).toBeUndefined();
+    expect(naRua.mensagens).toHaveLength(2);
+    expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue' })).status).toBe(400);
+    expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue', codigo: pd.codigo_entrega === '0000' ? '1111' : '0000' })).corpo.erro).toBe('codigo_errado');
+    expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue', codigo: pd.codigo_entrega })).status).toBe(200);
     expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa).toBeNull();
+    const resumo = (await moto.get('/entregador/resumo')).corpo.entregas;
+    expect(resumo[0]).toMatchObject({ ganho: 500, km: expect.any(Number) });
+    // Foto: o entregador manda; o cliente do pedido consegue ver.
+    const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    expect((await moto.post('/entregador/foto', { dados: 'texto qualquer' })).status).toBe(400);
+    expect((await moto.post('/entregador/foto', { dados: png })).status).toBe(200);
+    expect((await moto.get('/entregador/eu')).corpo.entregador.tem_foto).toBe(true);
   });
 });
 

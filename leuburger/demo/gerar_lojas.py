@@ -132,7 +132,7 @@ def main():
     E = "(SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo')"
     V = f"(SELECT id FROM vendas WHERE empresa_id IN {E})"
     rem = ['-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o entregador de teste.',
-           f"DELETE FROM pagamentos WHERE venda_id IN {V};", f"DELETE FROM venda_itens WHERE venda_id IN {V};",
+           f"DELETE FROM mensagens_entrega WHERE venda_id IN {V};", f"DELETE FROM pagamentos WHERE venda_id IN {V};", f"DELETE FROM venda_itens WHERE venda_id IN {V};",
            f"DELETE FROM avaliacoes WHERE empresa_id IN {E};", f"DELETE FROM pedidos_online WHERE empresa_id IN {E};",
            f"DELETE FROM vendas WHERE empresa_id IN {E};", f"DELETE FROM caixa_movimentos WHERE empresa_id IN {E};", f"DELETE FROM caixas WHERE empresa_id IN {E};",
            f"DELETE FROM estoque_movimentos WHERE item_id IN (SELECT id FROM estoque_itens WHERE empresa_id IN {E});", f"DELETE FROM estoque_itens WHERE empresa_id IN {E};",
