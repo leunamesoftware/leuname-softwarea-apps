@@ -13,7 +13,7 @@ const FINAIS = ['entregue', 'retirado'];
 const PASSOS: Record<string, Andamento[]> = { entrega: ['preparando', 'pronto', 'a_caminho', 'entregue'], balcao: ['preparando', 'pronto', 'retirado'] };
 
 /** Grava o novo passo com o horário (o painel e o cliente mostram quando aconteceu). */
-async function mudarAndamento(c: C, v: { id: string; tipo: string; andamento: string }, novo: Andamento, entregador?: string | null) {
+export async function mudarAndamento(c: C, v: { id: string; tipo: string; andamento: string }, novo: Andamento, entregador?: string | null) {
   if (!PASSOS[v.tipo]?.includes(novo)) throw erro(400, 'andamento_invalido', 'Este passo não vale para este pedido.');
   const q = agora();
   const campo = novo === 'pronto' ? 'pronto_em' : novo === 'a_caminho' ? 'saiu_em' : FINAIS.includes(novo) ? 'finalizado_em' : null;
@@ -27,7 +27,7 @@ export const andamento = new Hono<{ Bindings: Env; Variables: Vars }>();
 andamento.get('/andamento', async (c) => {
   exigir(c, 'vender');
   const desde = new Date(Date.now() - 864e5).toISOString(), recentes = new Date(Date.now() - 3 * 3600e3).toISOString();
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.tipo, v.andamento, v.total, v.troco, v.criado_em, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.tipo, v.andamento, v.total, v.troco, v.criado_em, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, v.entregador_id,
       v.endereco_entrega, v.observacao, v.token_cliente, v.token_entregador, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas

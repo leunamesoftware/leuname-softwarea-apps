@@ -9,7 +9,6 @@ import { Modal, msgErro } from '../comuns';
 import { Ic } from '../icones';
 import '../estilo.css';
 import './pedir.css';
-import { Lojista } from './Lojista';
 
 export const NOME_APP = 'Pedêê';
 
@@ -609,7 +608,6 @@ function App() {
       <Route path="/pedidos" element={<MeusPedidos />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/pedido/:token" element={<Pedido />} />
-      <Route path="/loja" element={<Lojista />} />
       <Route path="/:slug" element={<Loja />} />
     </Routes>
   );

@@ -1,0 +1,17 @@
+{
+  "name": "Pedêê Entregador",
+  "short_name": "Pedêê Entregador",
+  "description": "App do entregador Pedêê: receba as entregas das lojas e marque quando sair e quando entregar.",
+  "id": "/entregador/",
+  "start_url": "/entregador/",
+  "scope": "/entregador/",
+  "display": "standalone",
+  "background_color": "#166534",
+  "theme_color": "#166534",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/entregador-icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/entregador-icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/entregador-icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

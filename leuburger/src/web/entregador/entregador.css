@@ -1,0 +1,11 @@
+/* Pedêê Entregador: verde para diferenciar do app da loja. */
+.ent-topo { background: linear-gradient(90deg, #15803D, #166534) !important; }
+.ent-disp { margin-left: auto; border: 0; border-radius: 99px; padding: 7px 12px; font: inherit; font-weight: 800; font-size: 13px; background: rgba(255,255,255,.18); color: #fff; }
+.ent-card { background: #fff; border: 2px solid #BBF7D0; border-radius: 16px; padding: 14px; display: grid; gap: 8px; box-shadow: var(--sombra); }
+.ent-end { display: flex; gap: 10px; align-items: flex-start; font-size: 17px; }
+.ent-end > .ic { color: #15803D; flex: none; margin-top: 2px; }
+.ent-end div { display: grid; } .ent-end small { color: var(--suave); font-size: 14px; }
+.ent-valor { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; padding: 10px; border-radius: 12px; background: #F0FDF4; }
+.ent-valor b { margin-left: auto; font-size: 20px; }
+.ent-valor em { flex-basis: 100%; font-style: normal; font-weight: 800; color: #B45309; }
+.ent-verde { background: #16A34A !important; border-color: #16A34A !important; }

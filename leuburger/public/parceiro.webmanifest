@@ -1,0 +1,17 @@
+{
+  "name": "Pedêê Parceiro",
+  "short_name": "Pedêê Parceiro",
+  "description": "App do lojista Pedêê: receba os pedidos, monte o cardápio e chame seus motoboys.",
+  "id": "/parceiro/",
+  "start_url": "/parceiro/",
+  "scope": "/parceiro/",
+  "display": "standalone",
+  "background_color": "#171C22",
+  "theme_color": "#171C22",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/parceiro-icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/parceiro-icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/parceiro-icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -378,3 +378,37 @@ describe('Pedêê: lojista cadastra a loja pelo app', () => {
     expect((await outra.post('/auth/entrar', { login: '21999991234', senha: 'segredo1' })).status).toBe(200);
   });
 });
+
+describe('Pedêê Entregador (app do motoboy)', () => {
+  it('motoboy se cadastra, a loja vincula pelo WhatsApp, escolhe quem entrega e ele marca saí/entreguei no app', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.post('/caixa/abrir', { fundo: 0 });
+    const moto = A.navegador();
+    // Loja tenta vincular antes do motoboy ter o app.
+    expect((await n.post('/entregadores', { telefone: '21977776666' })).status).toBe(404);
+    expect((await moto.post('/entregador/cadastrar', { nome: 'João Moto', telefone: '(21) 97777-6666', senha: 'moto123', veiculo: 'moto' })).status).toBe(201);
+    expect((await moto.get('/entregador/eu')).corpo.entregador).toMatchObject({ nome: 'João Moto', telefone: '21977776666', disponivel: true });
+    expect((await n.post('/entregadores', { telefone: '21977776666' })).corpo.nome).toBe('João Moto');
+    const lista = (await n.get('/entregadores')).corpo.entregadores;
+    expect(lista).toHaveLength(1);
+    expect((await moto.get('/entregador/eu')).corpo.lojas.length).toBe(1);
+
+    const v = (await n.post('/vendas', { chave: 'moto-0001', itens: [{ produtoId: p('X-Burger').id, qtd: 1 }], pagamentos: [{ forma: 'dinheiro', valor: 5000 }], entrega: { endereco: 'Rua B, 20', taxa: 500 } })).corpo.venda;
+    // Sem estar com ele, o motoboy não vê nem mexe.
+    expect((await moto.get('/entregador/entregas')).corpo.entregas).toHaveLength(0);
+    expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'a_caminho' })).status).toBe(404);
+    expect((await n.post(`/vendas/${v.id}/entregador`, { entregador_id: lista[0].id })).status).toBe(200);
+    const ent = (await moto.get('/entregador/entregas')).corpo.entregas;
+    expect(ent[0]).toMatchObject({ id: v.id, endereco_entrega: 'Rua B, 20', troco: 2610, loja: expect.any(String) });
+    expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'a_caminho' })).status).toBe(200);
+    expect((await n.get('/andamento')).corpo.pedidos.find((x: { id: string }) => x.id === v.id)).toMatchObject({ andamento: 'a_caminho', entregador: 'João Moto' });
+    expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'entregue' })).status).toBe(200);
+    // Outra loja não pode usar o motoboy sem vincular; sem login do entregador não entra.
+    const beto = A.navegador();
+    await beto.post('/auth/entrar', { login: 'beto@burger.com', senha: 'senha-beto' });
+    expect((await beto.post(`/vendas/${v.id}/entregador`, { entregador_id: lista[0].id })).status).toBe(404);
+    expect((await A.navegador().get('/entregador/entregas')).status).toBe(401);
+    expect((await A.navegador().post('/entregador/entrar', { telefone: '21977776666', senha: 'errada' })).status).toBe(401);
+    expect((await A.navegador().post('/entregador/entrar', { telefone: '21977776666', senha: 'moto123' })).status).toBe(200);
+  });
+});

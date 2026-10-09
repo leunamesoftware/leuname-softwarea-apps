@@ -1,7 +1,6 @@
-// Pedêê para o lojista: cadastra a loja no próprio app e cuida de tudo num painel simples
-// (Pedidos, Cardápio e Minha loja). O caixa completo continua disponível para quem quiser.
+// Pedêê Parceiro (app do lojista): cadastra a loja e cuida de tudo num painel simples
+// (Pedidos, Cardápio, Motoboys e Minha loja). O caixa completo continua disponível para quem quiser.
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
 import { del, ErroApp, get, post, put } from '../api';
 import { Modal, msgErro, reduzirFoto } from '../comuns';
@@ -30,7 +29,7 @@ export function Lojista() {
 }
 
 function TopoLoja({ titulo, children }: { titulo: string; children?: React.ReactNode }) {
-  return <header className="pd-topo"><Link className="pd-voltar" to="/" aria-label="Voltar para as lojas"><Ic n="voltar" /></Link><span className="pd-topo-tit">{titulo}</span>{children || <span style={{ width: 40 }} />}</header>;
+  return <header className="pd-topo"><img src="/parceiro-icone-64.png" alt="" style={{ width: 36, height: 36, borderRadius: 9 }} /><span className="pd-topo-tit">{titulo}</span>{children || <span style={{ width: 36 }} />}</header>;
 }
 
 // ---------- entrar ou cadastrar ----------
@@ -54,7 +53,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
     <button type="button" className="depois btn-ic" onClick={() => setVer(!ver)} aria-label={ver ? 'Esconder senha' : 'Mostrar senha'}><Ic n={ver ? 'olhoFechado' : 'olho'} /></button></span></label>;
   return (
     <div className="pd">
-      <TopoLoja titulo="Tenho uma loja" />
+      <TopoLoja titulo="Pedêê Parceiro" />
       <main className="pd-corpo">
         <section className="cartao" style={{ textAlign: 'center' }}>
           <img src="/pedir-icone-192.png" alt="" style={{ width: 72, height: 72, borderRadius: 18 }} />
@@ -89,7 +88,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
 }
 
 // ---------- painel ----------
-type Aba = 'pedidos' | 'cardapio' | 'loja';
+type Aba = 'pedidos' | 'cardapio' | 'motoboys' | 'loja';
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('pedidos');
   const [novos, setNovos] = useState(0);
@@ -101,10 +100,11 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       <main className="pd-corpo" style={{ paddingBottom: 90 }}>
         {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} />}
         {aba === 'cardapio' && <Cardapio />}
+        {aba === 'motoboys' && <Motoboys />}
         {aba === 'loja' && <MinhaLoja e={e} recarregar={recarregar} aoSair={aoSair} />}
       </main>
       <nav className="pd-abas-lojista">
-        {([['pedidos', 'pedidos', 'Pedidos'], ['cardapio', 'produtos', 'Cardápio'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
+        {([['pedidos', 'pedidos', 'Pedidos'], ['cardapio', 'produtos', 'Cardápio'], ['motoboys', 'seta', 'Motoboys'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
           <button key={v} className={aba === v ? 'ativo' : ''} onClick={() => setAba(v)}><span className="bolha"><Ic n={ic} />{v === 'pedidos' && novos > 0 && <i>{novos}</i>}</span>{n}</button>
         ))}
       </nav>
@@ -114,7 +114,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 
 // ---------- pedidos ----------
 interface Novo { id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface EmAndamento { id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -125,10 +125,11 @@ function plim() {
   } catch { /* sem som */ }
 }
 
-function Pedidos({ aoContar, loja }: { aoContar: (n: number) => void; loja: string }) {
+function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) {
   const [novos, setNovos] = useState<Novo[]>([]), [lista, setLista] = useState<EmAndamento[]>([]);
   const [carregou, setCarregou] = useState(false), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
   const [recusar, setRecusar] = useState<Novo | null>(null);
+  const [escolher, setEscolher] = useState<EmAndamento | null>(null);
   const vistos = useRef<Set<string> | null>(null);
   const carregar = async () => {
     try {
@@ -174,9 +175,10 @@ function Pedidos({ aoContar, loja }: { aoContar: (n: number) => void; loja: stri
           <div className="ped-acoes">
             {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'pronto')}><Ic n="check" />Pronto</button>}
             {p.andamento === 'pronto' && p.tipo === 'balcao' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'retirado')}><Ic n="check" />Cliente retirou</button>}
-            {p.andamento === 'pronto' && p.tipo === 'entrega' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'a_caminho')}><Ic n="seta" />Saiu para entrega</button>}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'a_caminho')}><Ic n="seta" />Saiu para entrega</button>}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && p.entregador_id && <span className="selo">Esperando {p.entregador?.split(' ')[0]} sair</span>}
             {p.andamento === 'a_caminho' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'entregue')}><Ic n="check" />Entregue</button>}
-            {p.tipo === 'entrega' && <a className="btn" href={`https://wa.me/?text=${encodeURIComponent(`🛵 Entrega do pedido #${p.numero} – ${loja}\n${p.cliente ? p.cliente + '\n' : ''}${p.endereco_entrega}\n\nAbra para ver o mapa e marcar quando sair e quando entregar:\n${location.origin}/m/${p.token_entregador}`)}`} target="_blank" rel="noopener"><Ic n="whatsapp" />Motoboy</a>}
+            {p.tipo === 'entrega' && p.andamento !== 'a_caminho' && <button className="btn" onClick={() => setEscolher(p)}><Ic n="seta" />{p.entregador ? `Motoboy: ${p.entregador.split(' ')[0]}` : 'Escolher motoboy'}</button>}
             {p.cliente_telefone && <a className="btn" href={wa(p.cliente_telefone)} target="_blank" rel="noopener" aria-label="WhatsApp do cliente"><Ic n="usuario" /></a>}
           </div>
         </article>
@@ -184,6 +186,7 @@ function Pedidos({ aoContar, loja }: { aoContar: (n: number) => void; loja: stri
       {feitos.length > 0 && <><h2 className="pd-tit">Finalizados (últimas 3 horas)</h2>{feitos.map((p) => (
         <div key={p.id} className="linha-valor" style={{ padding: '6px 0', borderBottom: '1px solid var(--linha)' }}><span>#{p.numero} · {p.cliente || 'Cliente'} · {p.andamento === 'entregue' ? 'entregue' : 'retirado'}</span><b className="num">{brl(p.total)}</b></div>
       ))}</>}
+      {escolher && <EscolherMotoboy pedido={escolher} aoFechar={() => setEscolher(null)} aoEscolher={async (id) => { const v = escolher; setEscolher(null); await agir(v.id, () => post(`/vendas/${v.id}/entregador`, { entregador_id: id })); }} />}
       {recusar && <Modal titulo="Recusar pedido" aoFechar={() => setRecusar(null)}>
         <p style={{ marginTop: 0 }}>Escolha o motivo. O cliente vê na tela do pedido.</p>
         <div className="chips" style={{ flexWrap: 'wrap' }}>{['Acabou um item do pedido', 'Fora da área de entrega', 'Loja muito cheia agora', 'Já vamos fechar'].map((m) => (
@@ -320,6 +323,57 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
       </section>
       <a className="btn bloco" href="/" target="_blank" rel="noopener"><Ic n="caixa" />Painel completo (caixa, estoque)</a>
       <button className="btn bloco" onClick={async () => { await post('/auth/sair').catch(() => {}); aoSair(); }}><Ic n="sair" />Sair</button>
+    </>
+  );
+}
+
+// ---------- motoboys da loja ----------
+interface Moto { id: string; nome: string; telefone: string; veiculo: string; disponivel: boolean; em_rota: number }
+const VEICULO: Record<string, string> = { moto: '🛵', bike: '🚲', carro: '🚗' };
+
+function EscolherMotoboy({ pedido, aoFechar, aoEscolher }: { pedido: { numero: number; entregador_id: string | null }; aoFechar: () => void; aoEscolher: (id: string | null) => void }) {
+  const [lista, setLista] = useState<Moto[] | null>(null);
+  useEffect(() => { get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch(() => setLista([])); }, []);
+  return (
+    <Modal titulo={`Quem leva o pedido #${pedido.numero}?`} aoFechar={aoFechar}>
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <p style={{ margin: 0 }}>Você ainda não tem motoboys. Abra a aba <b>Motoboys</b> e cadastre pelo WhatsApp deles (eles precisam ter o app <b>Pedêê Entregador</b>).</p> : (
+        <div className="lista-config">{lista.map((m) => (
+          <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) com ele` : ''}</small></span>
+            <button className={`btn peq ${pedido.entregador_id === m.id ? '' : 'prim'}`} onClick={() => aoEscolher(m.id)}>{pedido.entregador_id === m.id ? 'Escolhido' : 'Escolher'}</button></div>
+        ))}</div>
+      )}
+      {pedido.entregador_id && <button className="btn bloco" style={{ marginTop: 12 }} onClick={() => aoEscolher(null)}>Tirar o motoboy deste pedido</button>}
+    </Modal>
+  );
+}
+
+function Motoboys() {
+  const [lista, setLista] = useState<Moto[] | null>(null), [tel, setTel] = useState(''), [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
+  const carregar = () => get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch((e) => setMsg(msgErro(e)));
+  useEffect(() => { carregar(); const t = setInterval(carregar, 20000); return () => clearInterval(t); }, []);
+  const adicionar = async () => {
+    setOcupado(true); setMsg('');
+    try { const r = await post<{ nome: string }>('/entregadores', { telefone: tel }); setMsg(`${r.nome} agora é motoboy da sua loja.`); setTel(''); carregar(); } catch (e) { setMsg(msgErro(e)); } finally { setOcupado(false); }
+  };
+  const tirar = async (m: Moto) => { if (!confirm(`Tirar ${m.nome} dos motoboys da loja?`)) return; await del(`/entregadores/${m.id}`).catch(() => {}); carregar(); };
+  return (
+    <>
+      <section className="cartao">
+        <h2 className="cartao-tit">Seus motoboys</h2>
+        <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>O motoboy baixa o app <b>Pedêê Entregador</b> e se cadastra. Depois você coloca o WhatsApp dele aqui. Quando o pedido ficar pronto, você escolhe quem leva e a entrega aparece no app dele, com aviso.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 8 }}>
+          <input value={tel} onChange={(e) => setTel(e.target.value)} inputMode="tel" placeholder="WhatsApp do motoboy" aria-label="WhatsApp do motoboy" />
+          <button className="btn prim" onClick={adicionar} disabled={ocupado || tel.replace(/\D/g, '').length < 10}><Ic n="mais" />Adicionar</button>
+        </div>
+        {msg && <p className="aviso" style={{ marginBottom: 0 }}>{msg}</p>}
+      </section>
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>🛵</span><b>Nenhum motoboy ainda</b><span>Adicione pelo WhatsApp acima.</span></div> : (
+        <section className="cartao"><div className="lista-config">{lista.map((m) => (
+          <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) agora` : ''}</small></span>
+            <a className="btn-ic" href={wa(m.telefone)} target="_blank" rel="noopener" aria-label={`WhatsApp de ${m.nome}`}><Ic n="whatsapp" /></a>
+            <button className="btn-ic vermelho" onClick={() => tirar(m)} aria-label={`Tirar ${m.nome}`}><Ic n="lixeira" /></button></div>
+        ))}</div></section>
+      )}
     </>
   );
 }

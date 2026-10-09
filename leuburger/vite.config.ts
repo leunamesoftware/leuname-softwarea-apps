@@ -7,7 +7,7 @@ export default defineConfig({
   root: 'src/web',
   publicDir: '../../public',
   plugins: [react()],
-  // Duas páginas: o caixa da loja (/) e o app dos clientes (/pedir/).
-  build: { outDir: '../../dist', emptyOutDir: true, rollupOptions: { input: { caixa: resolve(__dirname, 'src/web/index.html'), pedir: resolve(__dirname, 'src/web/pedir/index.html') } } },
+  // Páginas: caixa da loja (/), app dos clientes (/pedir/), do lojista (/parceiro/) e do entregador (/entregador/).
+  build: { outDir: '../../dist', emptyOutDir: true, rollupOptions: { input: { caixa: resolve(__dirname, 'src/web/index.html'), pedir: resolve(__dirname, 'src/web/pedir/index.html'), parceiro: resolve(__dirname, 'src/web/parceiro/index.html'), entregador: resolve(__dirname, 'src/web/entregador/index.html') } } },
   server: { port: 5175, proxy: { '/api': 'http://localhost:8795' } },
 });
