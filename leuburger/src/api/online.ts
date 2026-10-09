@@ -5,9 +5,11 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
-import { agora, aleatorio, corpo, erro, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
+import { agora, aleatorio, auditar, corpo, erro, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { registrarVenda } from './vendas';
+import { abrirSessao } from './auth';
+import { hashSenha, type Usuario } from './base';
 
 export const NOME_APP = 'Pedêê';
 export const TIPOS_LOJA = { lanches: 'Lanches', hamburgueria: 'Hamburgueria', restaurante: 'Restaurante', marmitaria: 'Marmitaria', pizzaria: 'Pizzaria', acai: 'Açaí e sorvetes', pastelaria: 'Pastelaria', japonesa: 'Comida japonesa', doces: 'Doces e bolos', bebidas: 'Bebidas' } as const;
@@ -210,6 +212,11 @@ appLoja.post('/pedidos-app/:id/aceitar', async (c) => {
     lote.push(db.prepare('INSERT INTO clientes (id, empresa_id, nome, telefone, endereco, observacao, criado_em) VALUES (?,?,?,?,?,?,?)').bind(clienteId, emp.id, o.nome, o.telefone, o.endereco, 'Cliente do app', agora()));
   } else if (o.endereco) lote.push(db.prepare('UPDATE clientes SET endereco = COALESCE(endereco, ?) WHERE id = ?').bind(o.endereco, clienteId));
   if (lote.length) await db.batch(lote);
+  // Loja do app que não usa o caixa do balcão: abre o caixa sozinha no primeiro pedido aceito.
+  if (!(await db.prepare('SELECT 1 FROM caixas WHERE empresa_id = ? AND fechado_em IS NULL').bind(emp.id).first())) {
+    await db.batch([db.prepare('INSERT INTO caixas (id, empresa_id, aberto_por, aberto_em, fundo) VALUES (?,?,?,?,0)').bind(novoId(), emp.id, c.get('usuario').id, agora()),
+      auditar(c, 'caixa_aberto', { automatico: true })]);
+  }
   // Total com os preços de agora; pagamento como o cliente escolheu (o dinheiro com o troco que ele pediu).
   const p = await calcularPedidoApp(c, { ...emp, taxa_entrega_padrao: o.taxa_entrega } as Loja, JSON.parse(o.itens), o.tipo);
   const valor = o.forma === 'dinheiro' && o.troco_para && o.troco_para >= p.total ? o.troco_para : p.total;
@@ -233,7 +240,8 @@ appLoja.post('/pedidos-app/:id/recusar', async (c) => {
 
 // ---------- configuração da loja no app ----------
 const CAMPOS = 'slug, no_app, aceitando, tipo_loja, descricao, logo_id, capa_id, tempo_entrega, pedido_minimo, faz_entrega, faz_retirada, lat, lng, raio_km, taxa_entrega_padrao, cidade, uf, endereco, telefone, nome';
-export const sugerirSlug = (nome: string) => semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'minha-loja';
+const RESERVADOS = new Set(['loja', 'pedido', 'pedidos', 'admin', 'entrar', 'app']);
+export const sugerirSlug = (nome: string) => { const s = semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40); return !s || s.length < 3 ? 'minha-loja' : RESERVADOS.has(s) ? `${s}-1` : s; };
 
 appLoja.get('/loja-app', async (c) => {
   exigir(c, 'configuracoes');
@@ -257,6 +265,7 @@ appLoja.put('/loja-app', async (c) => {
   exigir(c, 'configuracoes');
   const d = validar(esqLojaApp, await corpo(c));
   const db = c.env.BANCO, emp = c.get('empresa');
+  if (RESERVADOS.has(d.slug)) throw erro(400, 'slug_reservado', 'Escolha outro endereço.', { slug: 'Endereço reservado.' });
   if (await db.prepare('SELECT 1 FROM empresas WHERE slug = ? AND id <> ?').bind(d.slug, emp.id).first()) throw erro(409, 'slug_em_uso', 'Este endereço já é de outra loja. Escolha outro.', { slug: 'Já está em uso.' });
   if (d.no_app && !emp.cidade) throw erro(400, 'sem_cidade', 'Preencha a cidade da loja em Dados da empresa antes de aparecer no app.');
   await db.prepare(`UPDATE empresas SET slug=?, no_app=?, aceitando=?, faz_entrega=?, faz_retirada=?, tipo_loja=?, descricao=?, logo_id=?, capa_id=?, tempo_entrega=?, pedido_minimo=?, lat=?, lng=?, raio_km=? WHERE id=?`)
@@ -271,4 +280,44 @@ appLoja.post('/loja-app/aceitando', async (c) => {
   const d = validar(z.object({ aceitando: z.boolean() }), await corpo(c));
   await c.env.BANCO.prepare('UPDATE empresas SET aceitando = ? WHERE id = ?').bind(d.aceitando ? 1 : 0, c.get('empresa').id).run();
   return c.json({ ok: true });
+});
+
+// ---------- cadastro da loja pelo próprio app (sem conta na LeuApps) ----------
+export const DIAS_GRATIS = 30;
+const esqCadastroLoja = z.object({
+  loja: z.string().trim().min(2, 'Digite o nome da loja.').max(60),
+  tipo_loja: z.enum(Object.keys(TIPOS_LOJA) as [keyof typeof TIPOS_LOJA, ...(keyof typeof TIPOS_LOJA)[]]),
+  nome: z.string().trim().min(2, 'Digite o seu nome.').max(60),
+  whatsapp: z.string().trim().refine((t) => digitos(t).length >= 10 && digitos(t).length <= 11, 'Digite o WhatsApp com DDD.'),
+  cidade: z.string().trim().min(2, 'Digite a cidade.').max(60),
+  uf: z.string().trim().length(2, 'UF com 2 letras.'),
+  endereco: z.string().trim().min(5, 'Digite o endereço da loja.').max(150),
+  senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.').max(100),
+});
+
+/** O lojista cria a loja direto no app: já entra logado, com a loja no app e o primeiro mês grátis. */
+appPublico.post('/publico/app/cadastrar-loja', async (c) => {
+  const d = validar(esqCadastroLoja, await corpo(c));
+  const db = c.env.BANCO, login = digitos(d.whatsapp);
+  const ip = c.req.header('CF-Connecting-IP') || 'local';
+  const rec = await db.prepare("SELECT COUNT(*) AS n FROM auditoria WHERE acao = 'loja_cadastrada' AND detalhe LIKE ? AND criado_em > ?").bind(`%"ip":"${ip}"%`, new Date(Date.now() - 864e5).toISOString()).first<{ n: number }>();
+  if ((rec?.n || 0) >= 3) throw erro(429, 'muitos_cadastros', 'Muitos cadastros seguidos deste aparelho. Tente amanhã ou fale com a gente.');
+  if (await db.prepare('SELECT 1 FROM usuarios WHERE login = ?').bind(login).first()) throw erro(409, 'ja_cadastrado', 'Este WhatsApp já tem uma loja. Toque em Entrar.', { whatsapp: 'Já cadastrado.' });
+  // Endereço da loja no app (/pedir/<slug>): nome sem acento; se já existir, ganha um número.
+  const base = sugerirSlug(d.loja);
+  let slug = base;
+  for (let i = 2; await db.prepare('SELECT 1 FROM empresas WHERE slug = ?').bind(slug).first(); i++) slug = `${base.slice(0, 36)}-${i}`;
+  const emp = novoId(), uid = novoId(), sal = aleatorio(16), quando = agora();
+  const ate = new Date(Date.now() + DIAS_GRATIS * 864e5).toISOString();
+  await db.batch([
+    db.prepare(`INSERT INTO empresas (id, conta_email, nome, telefone, endereco, cidade, uf, acesso_ate, criado_em, slug, no_app, aceitando, tipo_loja, faz_entrega, faz_retirada, formas_pagamento)
+      VALUES (?,?,?,?,?,?,?,?,?,?,1,1,?,1,1,'["dinheiro","pix","debito","credito"]')`)
+      .bind(emp, `app-${login}@pedee.app`, d.loja, d.whatsapp, d.endereco, d.cidade, d.uf.toUpperCase(), ate, quando, slug, d.tipo_loja),
+    db.prepare("INSERT INTO usuarios (id, empresa_id, nome, login, senha_hash, senha_sal, papel, dono, criado_em) VALUES (?,?,?,?,?,?,'admin',0,?)")
+      .bind(uid, emp, d.nome, login, await hashSenha(d.senha, sal), sal, quando),
+    db.prepare("INSERT INTO auditoria (id, empresa_id, usuario_id, acao, detalhe, criado_em) VALUES (?,?,?,'loja_cadastrada',?,?)").bind(novoId(), emp, uid, JSON.stringify({ ip, slug }), quando),
+  ]);
+  const u = await db.prepare('SELECT * FROM usuarios WHERE id = ?').bind(uid).first<Usuario>();
+  await abrirSessao(c, u!);
+  return c.json({ ok: true, slug, gratisAte: ate }, 201);
 });

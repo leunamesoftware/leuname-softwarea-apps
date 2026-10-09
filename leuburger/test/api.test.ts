@@ -305,11 +305,9 @@ describe('LeuPede (app de pedidos dos clientes)', () => {
     let acomp = await cli.get(`/publico/app/pedido/${r.corpo.token}`);
     expect(acomp.corpo.pedido).toMatchObject({ situacao: 'aguardando', total: 2290 + 400 + 500, taxa_entrega: 500 });
 
-    // Loja: aceitar exige caixa aberto; depois vira venda com o cliente cadastrado e o troco para R$ 50.
+    // Loja: aceitar abre o caixa sozinho (se estiver fechado) e vira venda com o cliente cadastrado e o troco para R$ 50.
     const lista = await n.get('/pedidos-app');
     const o = lista.corpo.pedidos[0];
-    expect((await n.post(`/pedidos-app/${o.id}/aceitar`)).status).toBe(409);
-    await n.post('/caixa/abrir', { fundo: 0 });
     const ac = await n.post(`/pedidos-app/${o.id}/aceitar`);
     expect(ac.status).toBe(200);
     const venda = (await n.get(`/vendas/${ac.corpo.venda_id}`)).corpo.venda;
@@ -343,5 +341,31 @@ describe('LeuPede (app de pedidos dos clientes)', () => {
     // Loja sem produtos não aparece no app.
     expect((await beto.put('/loja-app', { ...cfg, slug: 'beto-burger' })).status).toBe(200);
     expect((await cli.get('/publico/app/loja/beto-burger')).status).toBe(404);
+  });
+});
+
+describe('Pedêê: lojista cadastra a loja pelo app', () => {
+  it('cadastra, já entra, monta o cardápio e a loja aparece para o cliente', async () => {
+    const lj = A.navegador();
+    const dados = { loja: 'Açaí da Praça', tipo_loja: 'acai', nome: 'Rita', whatsapp: '(21) 99999-1234', cidade: 'Duque de Caxias', uf: 'rj', endereco: 'Praça Central, 10 - Xerém', senha: 'segredo1' };
+    expect((await lj.post('/publico/app/cadastrar-loja', { ...dados, senha: '123' })).status).toBe(400);
+    const r = await lj.post('/publico/app/cadastrar-loja', dados);
+    expect(r.status).toBe(201);
+    expect(r.corpo.slug).toBe('acai-da-praca');
+    const eu = await lj.get('/eu');
+    expect(eu.corpo.usuario).toMatchObject({ login: '21999991234', papel: 'admin' });
+    expect(eu.corpo.empresa).toMatchObject({ nome: 'Açaí da Praça', no_app: true, aceitando: true, slug: 'acai-da-praca' });
+    // Mesmo WhatsApp de novo: não cria outra loja. Outra loja com o mesmo nome ganha número.
+    expect((await A.navegador().post('/publico/app/cadastrar-loja', dados)).status).toBe(409);
+    expect((await A.navegador().post('/publico/app/cadastrar-loja', { ...dados, whatsapp: '21988887777' })).corpo.slug).toBe('acai-da-praca-2');
+    // Sem produto ainda não aparece; com produto aparece na cidade.
+    const cli = A.navegador();
+    expect((await cli.get('/publico/app/lojas?cidade=duque de caxias')).corpo.lojas).toHaveLength(0);
+    const cat = await lj.post('/categorias', { nome: 'Açaí', icone: 'acai' });
+    expect((await lj.post('/produtos', { nome: 'Açaí 500 ml', categoria_id: cat.corpo.id, preco: 1800 })).status).toBe(201);
+    expect((await cli.get('/publico/app/lojas?cidade=duque de caxias')).corpo.lojas.map((l: { nome: string }) => l.nome)).toEqual(['Açaí da Praça']);
+    // Entra de novo pelo WhatsApp e a senha.
+    const outra = A.navegador();
+    expect((await outra.post('/auth/entrar', { login: '21999991234', senha: 'segredo1' })).status).toBe(200);
   });
 });

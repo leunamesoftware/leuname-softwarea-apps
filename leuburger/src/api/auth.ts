@@ -31,7 +31,7 @@ function cookiesDe(r: Response): string {
   return lista.filter(Boolean).map((c) => c.split(';')[0]).join('; ');
 }
 
-async function abrirSessao(c: C, u: Usuario) {
+export async function abrirSessao(c: C, u: Usuario) {
   const token = aleatorio();
   const expira = new Date(Date.now() + DIAS_SESSAO * 864e5).toISOString();
   await c.env.BANCO.prepare('INSERT INTO sessoes (token_hash, usuario_id, empresa_id, expira_em, criado_em) VALUES (?,?,?,?,?)')

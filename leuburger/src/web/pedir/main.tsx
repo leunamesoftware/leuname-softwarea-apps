@@ -9,6 +9,7 @@ import { Modal, msgErro } from '../comuns';
 import { Ic } from '../icones';
 import '../estilo.css';
 import './pedir.css';
+import { Lojista } from './Lojista';
 
 export const NOME_APP = 'Pedêê';
 
@@ -86,9 +87,10 @@ function Inicio() {
     <div className="pd">
       <header className="pd-topo">
         <span className="pd-marca"><img src="/pedir-icone-64.png" alt="" />{NOME_APP}</span>
-        <button className="pd-local" onClick={() => setEscolherLocal(true)}><Ic n="inicio" t={16} />{g.local ? 'Perto de você' : g.cidade || 'Escolher local'}<Ic n="baixo" t={16} /></button>
+        <Link className="pd-sou-loja" to="/loja">Tenho uma loja</Link>
       </header>
       <main className="pd-corpo">
+        <button className="pd-local-linha" onClick={() => setEscolherLocal(true)}><Ic n="inicio" t={16} />Entregar em: <b>{g.local ? 'perto de você' : g.cidade || 'escolher local'}</b><Ic n="baixo" t={16} /></button>
         <span className="entrada pd-busca"><Ic n="busca" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar loja, lanche, pizza, marmita…" aria-label="Buscar" /></span>
         {andamento.length > 0 && <section>
           <h2 className="pd-tit">Seus pedidos de hoje</h2>
@@ -106,6 +108,7 @@ function Inicio() {
         {erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div> : !lista.length ? (
           <div className="vazio"><Ic n="loja" t={40} /><b>Nenhuma loja por aqui ainda</b><span>Tente outra cidade, ou peça para a sua lanchonete preferida entrar no {NOME_APP}.</span><button className="btn" onClick={() => setEscolherLocal(true)}>Mudar o local</button></div>
         ) : <div className="pd-lojas">{lista.map((l) => <CartaoLoja key={l.slug} l={l} />)}</div>}
+        <Link className="pd-cta-loja" to="/loja"><Ic n="loja" t={28} /><span><b>Tem lanchonete, pizzaria ou açaí?</b><small>Venda pelo Pedêê. Primeiro mês grátis, sem comissão.</small></span><Ic n="direita" /></Link>
       </main>
       {escolherLocal && <EscolherLocal aoFechar={(mudou) => { setEscolherLocal(false); if (mudou) setG(ler()); }} podeFechar={Boolean(g.local || g.cidade)} />}
     </div>
@@ -437,6 +440,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Inicio />} />
       <Route path="/pedido/:token" element={<Pedido />} />
+      <Route path="/loja" element={<Lojista />} />
       <Route path="/:slug" element={<Loja />} />
     </Routes>
   );
