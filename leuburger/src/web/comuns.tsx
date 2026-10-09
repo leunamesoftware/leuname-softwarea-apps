@@ -34,7 +34,8 @@ export function Modal({ titulo, aoFechar, children, largo = false, pe }: { titul
     const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') aoFechar(); };
     addEventListener('keydown', tecla);
     const antes = document.activeElement as HTMLElement | null;
-    setTimeout(() => ref.current?.querySelector<HTMLElement>('input:not([type=checkbox]),select,textarea')?.focus(), 40);
+    // No celular não abre o teclado sozinho (ele cobria a tela); no computador já põe o cursor no primeiro campo.
+    if (!matchMedia('(pointer: coarse)').matches) setTimeout(() => ref.current?.querySelector<HTMLElement>('input:not([type=checkbox]),select,textarea')?.focus(), 40);
     return () => { removeEventListener('keydown', tecla); antes?.focus?.(); };
   }, [aoFechar]);
   return (

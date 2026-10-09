@@ -614,6 +614,7 @@ function Carrinho({ loja: l, slug, linhas, subtotal, aoFechar, mudarQtd, editar,
 }) {
   const g = ler();
   const podeEntregar = l.faz_entrega && l.entrega_aqui;
+  const [mudarDados, setMudarDados] = useState(false);
   const [f, setF] = useState({ nome: g.nome, telefone: g.telefone, endereco: g.endereco, tipo: (podeEntregar ? 'entrega' : 'balcao') as 'entrega' | 'balcao', forma: (l.formas[0] || 'pix') as Forma, troco: '', obs: '' });
   const [erro, setErro] = useState(''), [enviando, setEnviando] = useState(false);
   const [chave] = useState(novaChave);
@@ -662,8 +663,10 @@ function Carrinho({ loja: l, slug, linhas, subtotal, aoFechar, mudarQtd, editar,
         {l.faz_entrega && !l.entrega_aqui && <p className="aviso" style={{ marginTop: 8 }}>Você está fora da área de entrega desta loja. Dá para retirar no local.</p>}
         {f.tipo === 'balcao' && l.endereco && <p style={{ color: 'var(--suave)', margin: '8px 0 0' }}>Retirar em: {l.endereco}</p>}
         <div className="campos" style={{ marginTop: 12 }}>
-          <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
-          <label className="campo">WhatsApp<input value={f.telefone} onChange={muda('telefone')} inputMode="tel" autoComplete="tel" placeholder="(11) 98765-4321" /></label>
+          {ler().conta && !mudarDados ? <div className="campo largo pd-quem"><span>Pedido de <b>{f.nome}</b> · {f.telefone}</span><button type="button" className="link" onClick={() => setMudarDados(true)}>Alterar</button></div> : <>
+            <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
+            <label className="campo">WhatsApp<input value={f.telefone} onChange={muda('telefone')} inputMode="tel" autoComplete="tel" placeholder="(11) 98765-4321" /></label>
+          </>}
           {f.tipo === 'entrega' && <label className="campo largo">Endereço da entrega<input value={f.endereco} onChange={muda('endereco')} maxLength={200} autoComplete="street-address" placeholder="Rua, número, bairro e referência" /></label>}
         </div>
         <h3 className="pd-sub">Pagamento <small style={{ color: 'var(--suave)', fontWeight: 500 }}>(na entrega ou na retirada)</small></h3>
