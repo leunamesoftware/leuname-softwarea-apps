@@ -10,6 +10,7 @@ import { useSessao } from './sessao';
 const MENU: { para: string; nome: string; ic: string; acao: Acao }[] = [
   { para: '/', nome: 'Início', ic: 'inicio', acao: 'vender' },
   { para: '/caixa', nome: 'Frente de Caixa', ic: 'caixa', acao: 'vender' },
+  { para: '/acompanhar', nome: 'Acompanhar', ic: 'sino', acao: 'vender' },
   { para: '/pedidos', nome: 'Pedidos', ic: 'pedidos', acao: 'verPedidos' },
   { para: '/produtos', nome: 'Produtos', ic: 'produtos', acao: 'produtos' },
   { para: '/estoque', nome: 'Estoque', ic: 'estoque', acao: 'estoque' },
@@ -47,8 +48,8 @@ function Lateral({ aoNavegar }: { aoNavegar?: () => void }) {
 const BARRA: { para: string; nome: string; ic: string; acao: Acao }[] = [
   { para: '/', nome: 'Início', ic: 'inicio', acao: 'vender' },
   { para: '/caixa', nome: 'Caixa', ic: 'caixa', acao: 'vender' },
+  { para: '/acompanhar', nome: 'Acompanhar', ic: 'sino', acao: 'vender' },
   { para: '/pedidos', nome: 'Pedidos', ic: 'pedidos', acao: 'verPedidos' },
-  { para: '/produtos', nome: 'Produtos', ic: 'produtos', acao: 'produtos' },
 ];
 
 export function Layout() {
@@ -57,7 +58,6 @@ export function Layout() {
   const local = useLocation();
   useEffect(() => { setMenu(false); window.scrollTo(0, 0); }, [local.pathname]);
   const barra = BARRA.filter((b) => pode(b.acao));
-  if (!pode('produtos')) barra.push({ para: '/clientes', nome: 'Clientes', ic: 'clientes', acao: 'clientes' });
   return (
     <div className="app">
       <Lateral />

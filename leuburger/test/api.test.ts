@@ -133,6 +133,37 @@ describe('venda', () => {
     expect(rel.corpo.atual.lucro).toBe(2890 - 1000 - 2 * 700);
   });
 
+  it('andamento: painel da loja, link do motoboy (marca saída e entrega) e link do cliente (só vê)', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.post('/caixa/abrir', { fundo: 0 });
+    const r = await n.post('/vendas', { chave: 'andamento-01', itens: [{ produtoId: p('X-Burger').id, qtd: 1 }], pagamentos: [{ forma: 'dinheiro', valor: 5000 }], entrega: { endereco: 'Rua A, 10', taxa: 500 } });
+    const v = r.corpo.venda;
+    expect(v.andamento).toBe('preparando');
+    expect(v.token_cliente).toMatch(/^[\w-]{20,}$/);
+    expect(v.token_entregador).not.toBe(v.token_cliente);
+    expect((await n.get('/andamento')).corpo.pedidos.map((x: { id: string }) => x.id)).toContain(v.id);
+
+    // Loja marca pronto; balcão não aceita "a caminho" em pedido de retirada e vice-versa.
+    expect((await n.post(`/vendas/${v.id}/andamento`, { andamento: 'pronto', entregador: 'João' })).status).toBe(200);
+    expect((await n.post(`/vendas/${v.id}/andamento`, { andamento: 'retirado' })).status).toBe(400);
+
+    // Motoboy, sem login.
+    const moto = A.navegador();
+    const m = await moto.get(`/publico/entrega/${v.token_entregador}`);
+    expect(m.corpo.pedido).toMatchObject({ endereco: 'Rua A, 10', total: 2390, troco: 2610, entregador: 'João' });
+    expect((await moto.post(`/publico/entrega/${v.token_entregador}`, { andamento: 'a_caminho' })).status).toBe(200);
+    // Cliente vê "a caminho", mas o link dele não serve para marcar nada nem mostra o endereço.
+    const cli = await moto.get(`/publico/pedido/${v.token_cliente}`);
+    expect(cli.corpo.pedido).toMatchObject({ andamento: 'a_caminho', numero: v.numero });
+    expect(cli.corpo.pedido.endereco).toBeUndefined();
+    expect((await moto.post(`/publico/entrega/${v.token_cliente}`, { andamento: 'entregue' })).status).toBe(404);
+    expect((await moto.get('/publico/pedido/inventado-mas-com-tamanho-ok')).status).toBe(404);
+    expect((await moto.post(`/publico/entrega/${v.token_entregador}`, { andamento: 'entregue' })).status).toBe(200);
+    expect((await moto.get(`/publico/pedido/${v.token_cliente}`)).corpo.pedido.andamento).toBe('entregue');
+    // Sem login, nada além dos links.
+    expect((await moto.get('/andamento')).status).toBe(401);
+  });
+
   it('o servidor ignora preço vindo do navegador e recusa pedidos errados', async () => {
     const { n, p } = await donoComCardapio();
     await n.post('/caixa/abrir', { fundo: 0 });

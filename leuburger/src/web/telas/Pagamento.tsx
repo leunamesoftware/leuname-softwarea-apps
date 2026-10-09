@@ -227,7 +227,8 @@ export function VendaConcluida() {
           {v.tipo === 'entrega' && <div className="cartao"><b>🛵 Entrega</b><div>{v.cliente ? `${v.cliente} · ` : ''}{v.endereco_entrega}</div></div>}
           <div className="recebido"><Ic n="check" t={30} /><div><b>Pagamento registrado!</b><div>O pedido foi salvo no sistema.</div></div></div>
           <button className="btn prim grande bloco" onClick={() => imprimirComprovante(v, e)}><Ic n="impressora" />Imprimir comprovante <small style={{ fontWeight: 500 }}>(não fiscal)</small></button>
-          <a className="btn cinza grande bloco" href={`https://wa.me/${fone}?text=${encodeURIComponent(textoWhatsApp(v, e))}`} target="_blank" rel="noopener"><Ic n="compartilhar" />Compartilhar por WhatsApp</a>
+          <a className="btn cinza grande bloco" href={`https://wa.me/${fone}?text=${encodeURIComponent(textoWhatsApp(v, e))}`} target="_blank" rel="noopener"><Ic n="whatsapp" />Mandar ao cliente (comprovante + acompanhamento)</a>
+          {v.tipo === 'entrega' && <button className="btn grande bloco" onClick={() => nav('/acompanhar')}><Ic n="sino" />Acompanhar entrega</button>}
           <div className="dupla">
             <button className="btn cinza grande" onClick={() => nav('/caixa')}><Ic n="pedidos" />Novo pedido</button>
             <button className="btn grande" onClick={() => nav('/')}><Ic n="inicio" />Voltar ao início</button>

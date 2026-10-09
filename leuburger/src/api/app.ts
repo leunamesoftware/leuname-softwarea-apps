@@ -1,5 +1,6 @@
 // API do LeuBurger PDV (Hono). Rotas públicas: saúde e login. O resto exige sessão.
 import { Hono } from 'hono';
+import { andamento, publico } from './andamento';
 import { auth, exigirSessao } from './auth';
 import { ErroApi, type Env, type Vars } from './base';
 import { cadastros } from './cadastros';
@@ -28,9 +29,11 @@ export function criarApp() {
 
   app.get('/saude', (c) => c.json({ ok: true }));
   app.route('/auth', auth);
+  app.route('/', publico); // links do cliente e do motoboy (sem login)
   app.use('*', exigirSessao);
   app.route('/', gestao);
   app.route('/', cadastros);
   app.route('/', vendas);
+  app.route('/', andamento);
   return app;
 }

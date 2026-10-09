@@ -5,7 +5,7 @@ import type { Empresa } from './sessao';
 
 export interface VendaCompleta {
   id: string; numero: number; subtotal: number; desconto: number; total: number; troco: number; status: string; criado_em: string;
-  operador: string | null; cliente: string | null; cliente_telefone?: string | null; tipo?: string; endereco_entrega?: string | null; taxa_entrega?: number; observacao: string | null; motivo_cancelamento?: string | null; cancelada_em?: string | null; cancelada_por_nome?: string | null;
+  operador: string | null; cliente: string | null; cliente_telefone?: string | null; tipo?: string; endereco_entrega?: string | null; taxa_entrega?: number; andamento?: string; token_cliente?: string | null; token_entregador?: string | null; observacao: string | null; motivo_cancelamento?: string | null; cancelada_em?: string | null; cancelada_por_nome?: string | null;
   itens: { id: string; nome: string; foto_id?: string | null; icone?: string | null; qtd: number; preco_unit: number; total: number; produto_id: string | null; detalhes: { tamanho?: string; adicionais?: { nome: string; preco: number }[]; retirar?: string[]; observacao?: string } }[];
   pagamentos: { forma: string; valor: number }[];
 }
@@ -38,7 +38,8 @@ export function textoWhatsApp(v: VendaCompleta, e: Empresa) {
     ...v.itens.map((i) => `${i.qtd}x ${i.nome}${detalhesItem(i.detalhes) ? ` (${detalhesItem(i.detalhes)})` : ''} — ${brl(i.total)}`), '',
     v.desconto > 0 && `Desconto: -${brl(v.desconto)}`, Boolean(v.taxa_entrega) && `Taxa de entrega: ${brl(v.taxa_entrega!)}`, `*Total: ${brl(v.total)}*`,
     `Pagamento: ${v.pagamentos.map((p) => FORMAS[p.forma as keyof typeof FORMAS] || p.forma).join(' + ')}`, v.troco > 0 && `Troco: ${brl(v.troco)}`,
-    v.tipo === 'entrega' && `Entrega: ${v.endereco_entrega}`, '',
+    v.tipo === 'entrega' && `Entrega: ${v.endereco_entrega}`,
+    Boolean(v.token_cliente) && `\nAcompanhe seu pedido: ${location.origin}/p/${v.token_cliente}`, '',
     e.mensagem_cupom || 'Obrigado pela preferência!', '_Comprovante não fiscal_'];
   return linhas.filter((l): l is string => l !== false).join('\n');
 }

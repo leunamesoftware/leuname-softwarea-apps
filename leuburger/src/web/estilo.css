@@ -406,3 +406,45 @@ tr.clicavel { cursor: pointer; } tr.clicavel:hover td { background: #FFF8F4; }
   .so-movel { display: block; }
   .lista-movel.so-movel { display: grid; }
 }
+
+/* ---------- acompanhar pedidos (quadro) ---------- */
+.quadro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.quadro-col { background: #EAEDF1; border-radius: var(--raio); padding: 12px; display: grid; gap: 10px; }
+.quadro-col h2 { display: flex; align-items: center; gap: 8px; margin: 2px 4px 2px; font-size: 16px; }
+.quadro-col h2 .selo { margin-left: auto; }
+.quadro-vazio { margin: 4px; color: var(--suave); font-size: 14px; }
+.ped { background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 12px; display: grid; gap: 6px; box-shadow: var(--sombra); }
+.ped.final { opacity: .75; box-shadow: none; }
+.ped-topo { display: flex; align-items: center; gap: 8px; }
+.ped-topo b { font-size: 18px; }
+.ped-topo small, .ped-topo .tempo { margin-left: auto; color: var(--suave); font-weight: 700; font-size: 13px; }
+.tempo.medio { color: var(--ambar); } .tempo.alto { color: var(--vermelho); }
+.ped-cli { font-weight: 700; }
+.ped-itens { color: var(--texto); font-size: 14px; }
+.ped-obs { font-size: 13px; color: var(--ambar); font-weight: 600; }
+.ped-end { display: flex; gap: 6px; align-items: flex-start; font-size: 14px; color: var(--suave); }
+.ped-end .ic { flex: none; margin-top: 2px; }
+.ped-status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ped-status small { color: var(--suave); }
+.ped-status b { margin-left: auto; }
+.ped-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ped-acoes .btn { flex: 1 1 auto; min-height: 40px; padding: 7px 12px; font-size: 14px; }
+.selo.st-preparando { background: var(--ambar-claro); color: var(--ambar); }
+.selo.st-pronto { background: var(--azul-claro); color: var(--azul); }
+.selo.st-a_caminho { background: var(--laranja-claro); color: var(--laranja-forte); }
+.selo.st-entregue, .selo.st-retirado { background: var(--verde-claro); color: var(--verde); }
+.selo.st-cancelado { background: var(--vermelho-claro); color: var(--vermelho); }
+@media (max-width: 1100px) { .quadro { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- páginas do cliente e do motoboy ---------- */
+.publico { min-height: 100dvh; background: var(--fundo); }
+.publico header { background: var(--grafite); color: #fff; padding: 16px; text-align: center; font-size: 18px; }
+.publico main { max-width: 560px; margin: 0 auto; padding: 16px; display: grid; gap: 14px; }
+.passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.passos li { position: relative; display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; color: var(--suave); }
+.passos li .bola { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #D1D5DB; display: grid; place-items: center; background: #fff; z-index: 1; }
+.passos li:not(:last-child)::after { content: ""; position: absolute; left: 13px; top: 38px; bottom: -10px; width: 2px; background: #E5E7EB; }
+.passos li.feito { color: var(--texto); }
+.passos li.feito .bola { background: var(--verde); border-color: var(--verde); color: #fff; }
+.passos li.atual .bola { background: var(--laranja); border-color: var(--laranja); box-shadow: 0 0 0 5px var(--laranja-claro); }
+.passos li small { color: var(--suave); font-weight: 600; }

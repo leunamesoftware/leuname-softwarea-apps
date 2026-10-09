@@ -4,7 +4,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { baixaEstoque, calcularItem, conferirPagamentos, ErroPedido, pctDesconto, totais, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { pode } from '../regras/permissoes';
-import { agora, auditar, corpo, erro, novoId, type C, type D1Prepared, type Env, type Vars } from './base';
+import { agora, aleatorio, auditar, corpo, erro, novoId, type C, type D1Prepared, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 
 /** Dias do calendário local (AAAA-MM-DD) → intervalo em UTC. fuso = minutos do getTimezoneOffset (Brasília = 180). */
@@ -154,10 +154,10 @@ vendas.post('/vendas', async (c) => {
   const baixa = baixaEstoque(itens, receitas);
   const lote: D1Prepared[] = [
     // Número sequencial da lanchonete, tirado e somado na mesma transação.
-    db.prepare(`INSERT INTO vendas (id, empresa_id, numero, chave, caixa_id, usuario_id, cliente_id, observacao, subtotal, desconto, total, troco, tipo, endereco_entrega, taxa_entrega, criado_em)
-      VALUES (?, ?, (SELECT proximo_numero FROM empresas WHERE id = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    db.prepare(`INSERT INTO vendas (id, empresa_id, numero, chave, caixa_id, usuario_id, cliente_id, observacao, subtotal, desconto, total, troco, tipo, endereco_entrega, taxa_entrega, andamento, token_cliente, token_entregador, criado_em)
+      VALUES (?, ?, (SELECT proximo_numero FROM empresas WHERE id = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'preparando', ?, ?, ?)`)
       .bind(id, emp.id, emp.id, d.chave, cx.id, u.id, d.clienteId || null, (d.observacao || '').trim() || null, t.subtotal, t.desconto, t.total, troco,
-        d.entrega ? 'entrega' : 'balcao', d.entrega?.endereco || null, t.taxaEntrega, quando),
+        d.entrega ? 'entrega' : 'balcao', d.entrega?.endereco || null, t.taxaEntrega, aleatorio(18), aleatorio(18), quando),
     db.prepare('UPDATE empresas SET proximo_numero = proximo_numero + 1 WHERE id = ?').bind(emp.id),
     ...itens.map((i) => db.prepare('INSERT INTO venda_itens (id, venda_id, produto_id, nome, categoria, qtd, preco_unit, custo_unit, detalhes, total) VALUES (?,?,?,?,?,?,?,?,?,?)')
       .bind(novoId(), id, i.produtoId, i.nome, i.categoria, i.qtd, i.precoUnit, i.custoUnit, JSON.stringify(i.detalhes), i.total)),

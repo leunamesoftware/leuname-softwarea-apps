@@ -72,4 +72,5 @@
 20. LeuBurger PDV (`leuburger/`, React + Hono no Worker `leuburger`, D1 `leuburger`): caixa de lanchonete em
     https://leuburger.leunamesoftware.com.br. Dono da lanchonete entra com a conta LeuApps; funcionários com login próprio
     (Configurações → Usuários). Testes: `npm test` em `leuburger/`. Publicar: workflow `leuburger-publicar.yml` (Leunamesite).
-    Preço: R$ 29,90/mês ou R$ 149,90 vitalício (planos.js), 7 dias grátis.
+    Preço: R$ 29,90/mês ou R$ 149,90 vitalício (planos.js), 7 dias grátis. Acompanhar pedidos (/acompanhar): link do cliente
+    /p/<token_cliente> (só vê) e do motoboy /m/<token_entregador> (marca saí/entreguei), sem login.
