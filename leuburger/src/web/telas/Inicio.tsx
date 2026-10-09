@@ -11,7 +11,7 @@ interface DadosInicio {
   variacao: { faturamento: number | null; pedidos: number | null; ticketMedio: number | null; lucro: number | null };
   horas: { hora: number; total: number }[];
   maisVendidos: { nome: string; foto_id: string | null; icone: string | null; qtd: number }[];
-  categorias: { id: string; nome: string; icone: string; qtd: number }[];
+  categorias: { id: string; nome: string; icone: string; qtd: number; foto_id: string | null }[];
   estoque: { sem: number; baixo: number };
 }
 const FOTO_CAT: Record<string, string> = { hamburguer: '/img/hamburguer.webp', porcao: '/img/porcao.webp', bebida: '/img/bebida.webp', combo: '/img/combo.webp' };
@@ -63,10 +63,11 @@ function Painel({ nome }: { nome: string }) {
           ))}</div> : <Vazio icone="hamburguer" titulo="Sem vendas hoje" />}
         </section>
       </div>
+      {x.categorias.length > 0 && <h2 className="cartao-tit" style={{ margin: '4px 0 12px' }}>Seu cardápio <Link to="/produtos">Ver todos os produtos</Link></h2>}
       {x.categorias.length > 0 && <div className="cat-cartoes">
-        {x.categorias.slice(0, 4).map((c) => (
+        {x.categorias.map((c) => (
           <Link className="cat-cartao" key={c.id} to={`/produtos?cat=${c.id}`}>
-            {FOTO_CAT[c.icone] ? <img src={FOTO_CAT[c.icone]} alt="" /> : <div className="sem-foto" style={{ height: 124 }}><Ic n={c.icone} t={40} /></div>}
+            {c.foto_id ? <img src={`/api/fotos/${c.foto_id}`} alt="" loading="lazy" /> : FOTO_CAT[c.icone] ? <img src={FOTO_CAT[c.icone]} alt="" /> : <div className="sem-foto" style={{ height: 124 }}><Ic n={c.icone} t={40} /></div>}
             <div><span><b>{c.nome}</b><small>{c.qtd} {c.qtd === 1 ? 'produto' : 'produtos'}</small></span><span className="ir"><Ic n="seta" t={16} /></span></div>
           </Link>
         ))}

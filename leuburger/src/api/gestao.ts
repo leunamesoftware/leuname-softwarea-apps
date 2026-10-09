@@ -44,7 +44,8 @@ gestao.get('/inicio', async (c) => {
   const { results: maisVendidos } = await db.prepare(`SELECT i.produto_id, i.nome, p.foto_id, cat.icone, SUM(i.qtd) AS qtd, SUM(i.total) AS total FROM venda_itens i JOIN vendas v ON v.id = i.venda_id
     LEFT JOIN produtos p ON p.id = i.produto_id LEFT JOIN categorias cat ON cat.id = p.categoria_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.criado_em < ? GROUP BY i.produto_id, i.nome ORDER BY qtd DESC LIMIT 5`).bind(emp, iniH, fimH).all();
-  const { results: categorias } = await db.prepare(`SELECT c.id, c.nome, c.icone, (SELECT COUNT(*) FROM produtos p WHERE p.categoria_id = c.id AND p.ativo = 1) AS qtd FROM categorias c
+  const { results: categorias } = await db.prepare(`SELECT c.id, c.nome, c.icone, (SELECT COUNT(*) FROM produtos p WHERE p.categoria_id = c.id AND p.ativo = 1) AS qtd,
+    (SELECT p.foto_id FROM produtos p WHERE p.categoria_id = c.id AND p.ativo = 1 AND p.foto_id IS NOT NULL ORDER BY p.criado_em DESC LIMIT 1) AS foto_id FROM categorias c
     WHERE c.empresa_id = ? AND c.ativo = 1 ORDER BY c.ordem, c.nome`).bind(emp).all();
   const est = await db.prepare(`SELECT SUM(CASE WHEN qtd <= 0 THEN 1 ELSE 0 END) AS sem, SUM(CASE WHEN qtd > 0 AND qtd <= minimo THEN 1 ELSE 0 END) AS baixo FROM estoque_itens WHERE empresa_id = ? AND ativo = 1`).bind(emp).first<{ sem: number; baixo: number }>();
   return c.json({

@@ -19,6 +19,8 @@ export function Produtos() {
   const [situacao, setSituacao] = useState('ativos');
   const [editar, setEditar] = useState<Produto | 'novo' | null>(params.get('novo') ? 'novo' : null);
   const [cats, setCats] = useState(Boolean(params.get('categorias')));
+  const [visao, setVisao] = useState<'galeria' | 'lista'>(() => { try { return localStorage.getItem('leuburger_visao') === 'lista' ? 'lista' : 'galeria'; } catch { return 'galeria'; } });
+  const mudarVisao = (v: 'galeria' | 'lista') => { setVisao(v); try { localStorage.setItem('leuburger_visao', v); } catch { /* sem armazenamento */ } };
   const aviso = useAviso();
   const confirmar = useConfirmar();
   useEffect(() => { if (params.get('novo') || params.get('categorias')) setParams({}, { replace: true }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -43,8 +45,20 @@ export function Produtos() {
         <span className="entrada"><Ic n="busca" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar produto pelo nome, categoria ou código…" aria-label="Buscar produto" /></span>
         <select value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Categoria"><option value="">Todas as categorias</option>{categorias.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}</select>
         <select value={situacao} onChange={(e) => setSituacao(e.target.value)} aria-label="Situação"><option value="ativos">Ativos</option><option value="inativos">Inativos</option><option value="todos">Todos os status</option></select>
+        <span className="chips" role="group" aria-label="Como mostrar">
+          <button className={`chip ${visao === 'galeria' ? 'sel' : ''}`} onClick={() => mudarVisao('galeria')} aria-pressed={visao === 'galeria'}><Ic n="outro" t={18} />Galeria</button>
+          <button className={`chip ${visao === 'lista' ? 'sel' : ''}`} onClick={() => mudarVisao('lista')} aria-pressed={visao === 'lista'}><Ic n="menu" t={18} />Lista</button>
+        </span>
       </div>
-      {!lista.length ? <div className="cartao">{produtos.length ? <Vazio icone="busca" titulo="Nenhum produto encontrado" /> : <SemCardapio aoCriar={d.recarregar} />}</div> : <>
+      {!lista.length ? <div className="cartao">{produtos.length ? <Vazio icone="busca" titulo="Nenhum produto encontrado" /> : <SemCardapio aoCriar={d.recarregar} />}</div> : visao === 'galeria' ? (
+        <div className="produtos-grade">{lista.map((p) => (
+          <button key={p.id} className="produto-cartao" onClick={() => setEditar(p)} aria-label={`Editar ${p.nome}`} style={p.ativo ? undefined : { opacity: .6 }}>
+            <FotoProduto fotoId={p.foto_id} icone={p.categoria_icone} nome={p.nome} />
+            <div className="info"><b>{p.nome}</b><span className="num">{brl(p.preco)}{p.ativo ? '' : ' · inativo'}</span></div>
+            <span className="add" aria-hidden="true"><Ic n="lapis" t={16} /></span>
+          </button>
+        ))}</div>
+      ) : <>
         <div className="cartao tabela-cartao so-pc"><div className="tabela"><table>
           <thead><tr><th>Produto</th><th>Categoria</th><th className="dir">Custo</th><th className="dir">Preço de venda</th><th>Código</th><th>Status</th><th className="dir">Ações</th></tr></thead>
           <tbody>{lista.map((p) => (
