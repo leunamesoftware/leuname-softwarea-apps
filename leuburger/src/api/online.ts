@@ -135,6 +135,7 @@ const esqPedido = z.object({
   trocoPara: z.number().int().min(0).max(10_000_000).optional().nullable(),
   observacao: z.string().trim().max(200).optional().nullable(),
   itens: z.array(esqItem).min(1, 'O carrinho está vazio.').max(50),
+  lat: z.number().min(-90).max(90).optional().nullable(), lng: z.number().min(-180).max(180).optional().nullable(),
 });
 
 /** Cliente faz o pedido: fica aguardando a loja aceitar. */
@@ -158,10 +159,10 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
   if (d.forma === 'dinheiro' && d.trocoPara && d.trocoPara < p.total) throw erro(400, 'dados_invalidos', 'O troco precisa ser para um valor maior que o total.', { trocoPara: 'Valor menor que o total.' });
   const id = novoId(), token = aleatorio(18);
   try {
-    await db.prepare(`INSERT INTO pedidos_online (id, empresa_id, token, chave, nome, telefone, tipo, endereco, forma, troco_para, observacao, itens, resumo, subtotal, taxa_entrega, total, ip, criado_em)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, e.id, token, d.chave, d.nome, d.telefone, d.tipo, d.tipo === 'entrega' ? d.endereco : null, d.forma,
+    await db.prepare(`INSERT INTO pedidos_online (id, empresa_id, token, chave, nome, telefone, tipo, endereco, forma, troco_para, observacao, itens, resumo, subtotal, taxa_entrega, total, ip, criado_em, dest_lat, dest_lng)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, e.id, token, d.chave, d.nome, d.telefone, d.tipo, d.tipo === 'entrega' ? d.endereco : null, d.forma,
       d.forma === 'dinheiro' && d.trocoPara ? d.trocoPara : null, d.observacao || null, JSON.stringify(d.itens),
-      JSON.stringify(p.itens.map((i) => ({ nome: i.nome, qtd: i.qtd, total: i.total, detalhes: i.detalhes }))), p.subtotal, p.taxaEntrega, p.total, ip, agora()).run();
+      JSON.stringify(p.itens.map((i) => ({ nome: i.nome, qtd: i.qtd, total: i.total, detalhes: i.detalhes }))), p.subtotal, p.taxaEntrega, p.total, ip, agora(), d.tipo === 'entrega' ? d.lat ?? null : null, d.tipo === 'entrega' ? d.lng ?? null : null).run();
   } catch (err) {
     const outro = await db.prepare('SELECT token FROM pedidos_online WHERE empresa_id = ? AND chave = ?').bind(e.id, d.chave).first<{ token: string }>();
     if (outro) return c.json({ ok: true, token: outro.token, repetido: true });
@@ -174,7 +175,7 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
@@ -183,6 +184,12 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
     avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null,
+    // Mapa ao vivo: só enquanto o motoboy está a caminho.
+    mapa: situacao === 'a_caminho' && o.tipo === 'entrega' ? {
+      loja: o.loja_lat != null ? { lat: o.loja_lat, lng: o.loja_lng } : null,
+      destino: o.dest_lat != null ? { lat: o.dest_lat, lng: o.dest_lng } : null,
+      entregador: o.pos_lat != null ? { lat: o.pos_lat, lng: o.pos_lng, em: o.pos_em } : null,
+    } : null,
   } });
 });
 

@@ -96,6 +96,15 @@ entregador.get('/entregador/entregas', async (c) => {
   return c.json({ entregas: results });
 });
 
+/** O app do motoboy manda a posição dele; vale para as entregas dele que estão a caminho. */
+entregador.post('/entregador/posicao', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = validar(z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }), await corpo(c));
+  await c.env.BANCO.prepare("UPDATE vendas SET pos_lat = ?, pos_lng = ?, pos_em = ? WHERE entregador_id = ? AND andamento = 'a_caminho' AND status = 'concluida'")
+    .bind(d.lat, d.lng, agora(), e.id).run();
+  return c.json({ ok: true });
+});
+
 entregador.post('/entregador/entregas/:id', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ andamento: z.enum(['a_caminho', 'entregue']) }), await corpo(c));

@@ -100,12 +100,29 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
   const disponivel = async () => { await post('/entregador/disponivel', { disponivel: !eu.entregador.disponivel }).catch(() => {}); recarregar(); };
   const ativas = (lista || []).filter((x) => x.andamento !== 'entregue'), feitas = (lista || []).filter((x) => x.andamento === 'entregue');
   const ganho = feitas.length;
+  // Enquanto tem entrega a caminho, manda a posição para o cliente ver no mapa.
+  const emRota = ativas.some((x) => x.andamento === 'a_caminho');
+  const [gps, setGps] = useState<'ok' | 'negado' | ''>('');
+  useEffect(() => {
+    if (!emRota || !navigator.geolocation) return;
+    let ultimo = 0;
+    const id = navigator.geolocation.watchPosition((p) => {
+      setGps('ok');
+      if (Date.now() - ultimo < 8000) return;
+      ultimo = Date.now();
+      post('/entregador/posicao', { lat: p.coords.latitude, lng: p.coords.longitude }).catch(() => {});
+    }, (e) => { if (e.code === 1) setGps('negado'); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    return () => navigator.geolocation.clearWatch(id);
+  }, [emRota]);
   return (
     <div className="pd">
       <Topo><button className={`ent-disp ${eu.entregador.disponivel ? 'sim' : ''}`} onClick={disponivel}>{eu.entregador.disponivel ? '🟢 Disponível' : '⚪ Parado'}</button></Topo>
       <main className="pd-corpo">
         <p style={{ margin: 0 }}>Olá, <b>{eu.entregador.nome.split(' ')[0]}</b>! {ganho > 0 && <>Você fez <b>{ganho}</b> {ganho === 1 ? 'entrega' : 'entregas'} hoje.</>}</p>
         {erro && <p className="aviso erro">{erro}</p>}
+        {emRota && (gps === 'negado'
+          ? <p className="aviso erro">Ligue a localização do celular para o cliente te ver no mapa.</p>
+          : <p className="aviso" style={{ margin: 0 }}>📍 O cliente está vendo você no mapa. Deixe este app aberto durante a entrega.</p>)}
         <h2 className="pd-tit">Suas entregas agora</h2>
         {lista == null ? <div className="carregando"><div className="giro" /></div> : !ativas.length ? (
           <div className="vazio"><span style={{ fontSize: 44 }}>🛵</span><b>Nenhuma entrega com você</b><span>{eu.lojas.length ? 'Quando a loja passar uma entrega para você, ela aparece aqui com aviso. Deixe o app aberto.' : 'Passe o seu e-mail para a loja te adicionar como motoboy dela.'}</span></div>

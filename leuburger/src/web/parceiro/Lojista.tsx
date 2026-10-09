@@ -1,5 +1,6 @@
 // Pedêê Parceiro (app do lojista): cadastra a loja e cuida de tudo num painel simples
 // (Pedidos, Cardápio, Motoboys e Minha loja). O caixa completo continua disponível para quem quiser.
+import { CIDADES_RJ } from '../cidades-rj';
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
 import { del, ErroApp, get, post, put } from '../api';
@@ -74,7 +75,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
             <label className="campo">Tipo<select value={f.tipo_loja} onChange={muda('tipo_loja')}>{TIPOS.map(([v, n]) => <option key={v} value={v}>{n}</option>)}</select></label>
             <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
             <label className="campo">WhatsApp (será o seu login)<input value={f.whatsapp} onChange={muda('whatsapp')} inputMode="tel" autoComplete="tel" placeholder="(21) 99999-9999" /></label>
-            <label className="campo">Cidade<input value={f.cidade} onChange={muda('cidade')} maxLength={60} placeholder="Ex.: Duque de Caxias" /></label>
+            <label className="campo">Cidade<input value={f.cidade} onChange={muda('cidade')} maxLength={60} list="cidades-rj" placeholder="Ex.: Duque de Caxias" /><datalist id="cidades-rj">{CIDADES_RJ.map((c) => <option key={c} value={c} />)}</datalist></label>
             <label className="campo largo">Endereço da loja<input value={f.endereco} onChange={muda('endereco')} maxLength={150} placeholder="Rua, número e bairro" /></label>
             <label className="campo">UF<input value={f.uf} onChange={(e) => setF({ ...f, uf: e.target.value.toUpperCase().slice(0, 2) })} maxLength={2} /></label>
             {campoSenha}
@@ -311,7 +312,7 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
           <label className="campo">Tempo de entrega<input value={f.tempo} onChange={(x) => setF({ ...f, tempo: x.target.value.slice(0, 20) })} placeholder="Ex.: 30-45 min" /></label>
           <label className="campo">Pedido mínimo (R$)<input value={f.minimo} onChange={(x) => setF({ ...f, minimo: x.target.value })} inputMode="decimal" placeholder="0,00" /></label>
           <label className="campo largo">Endereço<input value={f.endereco} onChange={(x) => setF({ ...f, endereco: x.target.value })} maxLength={150} /></label>
-          <label className="campo">Cidade<input value={f.cidade} onChange={(x) => setF({ ...f, cidade: x.target.value })} maxLength={60} /></label>
+          <label className="campo">Cidade<input value={f.cidade} onChange={(x) => setF({ ...f, cidade: x.target.value })} maxLength={60} list="cidades-rj" /><datalist id="cidades-rj">{CIDADES_RJ.map((c) => <option key={c} value={c} />)}</datalist></label>
           <label className="campo">UF<input value={f.uf} onChange={(x) => setF({ ...f, uf: x.target.value.toUpperCase().slice(0, 2) })} maxLength={2} /></label>
         </div>
         <div className="lista-config" style={{ marginTop: 10 }}>

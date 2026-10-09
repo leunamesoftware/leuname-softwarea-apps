@@ -412,3 +412,34 @@ describe('Pedêê Entregador (app do motoboy)', () => {
     expect((await A.navegador().post('/entregador/entrar', { email: 'joao@moto.com', senha: 'moto123' })).status).toBe(200);
   });
 });
+
+describe('Mapa ao vivo da entrega', () => {
+  it('cliente manda a localização no pedido; enquanto o motoboy está a caminho o cliente vê a posição dele', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.put('/empresa', { nome: 'Burger Mapa', cidade: 'Petrópolis', uf: 'RJ', formas_pagamento: ['pix'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 500 });
+    const cfgR = await n.put('/loja-app', { slug: 'burger-mapa', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'hamburgueria', descricao: 'Teste', tempo_entrega: '30 min', pedido_minimo: 0, lat: -22.5046, lng: -43.1823, raio_km: 8 }); expect(cfgR.status, JSON.stringify(cfgR.corpo)).toBe(200);
+    const moto = A.navegador(), cli = A.navegador();
+    await moto.post('/entregador/cadastrar', { nome: 'Zé Moto', email: 'ze@moto.com', senha: 'moto123', veiculo: 'moto' });
+    await n.post('/entregadores', { email: 'ze@moto.com' });
+    const ped = await cli.post('/publico/app/loja/burger-mapa/pedido', { chave: 'mapa-cliente-01', nome: 'Rita', telefone: '24999990000', tipo: 'entrega', endereco: 'Rua A, 1', forma: 'pix', lat: -22.51, lng: -43.19,
+      itens: [{ produtoId: p('X-Bacon').id, qtd: 2 }] });
+    expect(ped.status).toBe(201);
+    const token = ped.corpo.token;
+    const [novo] = (await n.get('/pedidos-app')).corpo.pedidos;
+    const vendaId = (await n.post(`/pedidos-app/${novo.id}/aceitar`, {})).corpo.venda_id;
+    const eid = (await n.get('/entregadores')).corpo.entregadores[0].id;
+    await n.post(`/vendas/${vendaId}/entregador`, { entregador_id: eid });
+    // Antes de sair: sem mapa e a posição não vale.
+    expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa).toBeNull();
+    expect((await moto.post('/entregador/posicao', { lat: -22.5, lng: -43.18 })).status).toBe(200);
+    expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'a_caminho' })).status).toBe(200);
+    expect((await moto.post('/entregador/posicao', { lat: 91, lng: 0 })).status).toBe(400);
+    expect((await moto.post('/entregador/posicao', { lat: -22.508, lng: -43.186 })).status).toBe(200);
+    const mapa = (await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa;
+    expect(mapa).toMatchObject({ loja: { lat: -22.5046, lng: -43.1823 }, destino: { lat: -22.51, lng: -43.19 }, entregador: { lat: -22.508, lng: -43.186 } });
+    // Sem login do entregador não manda posição; depois de entregue o mapa some.
+    expect((await A.navegador().post('/entregador/posicao', { lat: 0, lng: 0 })).status).toBe(401);
+    await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue' });
+    expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa).toBeNull();
+  });
+});

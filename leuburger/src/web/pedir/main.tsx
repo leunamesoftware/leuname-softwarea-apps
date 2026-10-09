@@ -1,5 +1,7 @@
 // Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
+import { CIDADES_RJ } from '../cidades-rj';
+import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -21,6 +23,14 @@ interface LojaCartao {
 interface LojaCompleta extends LojaCartao { telefone: string | null; endereco: string | null; formas: Forma[] }
 interface Produto { id: string; categoria_id: string; nome: string; descricao: string | null; preco: number; foto_id: string | null; categoria_icone: string | null; opcoes: Opcoes }
 interface Categoria { id: string; nome: string; icone: string }
+/** Procura o endereço no mapa (OpenStreetMap, grátis) para o motoboy aparecer perto da casa do cliente; se falhar, o pedido segue normal. */
+async function procurarEndereco(q: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(q)}`, { signal: AbortSignal.timeout(4000) });
+    const j = (await r.json()) as { lat: string; lon: string }[];
+    return j[0] ? { lat: Number(j[0].lat), lng: Number(j[0].lon) } : null;
+  } catch { return null; }
+}
 interface ItemCarrinho extends EscolhaItem { chave: string }
 
 // ---------- guardado no aparelho ----------
@@ -255,7 +265,10 @@ function Perfil() {
 
 function EscolherLocal({ aoFechar, podeFechar }: { aoFechar: (mudou: boolean) => void; podeFechar: boolean }) {
   const [cidades, setCidades] = useState<{ cidade: string; uf: string | null; lojas: number }[]>([]);
-  const [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
+  const [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false), [busca, setBusca] = useState('');
+  const sem = (t: string) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const lista = CIDADES_RJ.map((nome) => ({ nome, lojas: cidades.find((c) => sem(c.cidade) === sem(nome))?.lojas || 0 }))
+    .filter((c) => sem(c.nome).includes(sem(busca.trim()))).sort((x, y) => (y.lojas - x.lojas) || x.nome.localeCompare(y.nome, 'pt-BR'));
   useEffect(() => { get<{ cidades: typeof cidades }>('/publico/app/cidades').then((r) => setCidades(r.cidades)).catch(() => {}); }, []);
   const usarGps = () => {
     if (!navigator.geolocation) return setMsg('Este aparelho não informa a localização. Escolha a cidade.');
@@ -271,12 +284,11 @@ function EscolherLocal({ aoFechar, podeFechar }: { aoFechar: (mudou: boolean) =>
       <p style={{ marginTop: 0 }}>Mostramos as lanchonetes e restaurantes perto de você.</p>
       <button className="btn prim grande bloco" onClick={usarGps} disabled={ocupado}><Ic n="inicio" />{ocupado ? 'Procurando…' : 'Usar minha localização'}</button>
       {msg && <p className="aviso erro" style={{ marginTop: 10 }}>{msg}</p>}
-      {cidades.length > 0 && <>
-        <p style={{ color: 'var(--suave)', margin: '16px 0 8px' }}>Ou escolha a cidade:</p>
-        <div className="lista-config">{cidades.map((c) => (
-          <div key={c.cidade + c.uf}><span>{c.cidade}{c.uf ? ` - ${c.uf}` : ''}</span><button className="btn peq" onClick={() => { gravar((g) => ({ ...g, cidade: c.cidade, local: null })); aoFechar(true); }}>{c.lojas} {c.lojas === 1 ? 'loja' : 'lojas'}</button></div>
-        ))}</div>
-      </>}
+      <p style={{ color: 'var(--suave)', margin: '16px 0 8px' }}>Ou escolha a cidade (estado do Rio de Janeiro):</p>
+      <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar cidade…" aria-label="Buscar cidade" style={{ marginBottom: 8 }} />
+      <div className="lista-config" style={{ maxHeight: 300, overflowY: 'auto' }}>{lista.map((c) => (
+        <div key={c.nome}><span>{c.nome}</span><button className={`btn peq ${c.lojas ? 'prim' : ''}`} onClick={() => { gravar((g) => ({ ...g, cidade: c.nome, local: null })); aoFechar(true); }}>{c.lojas ? `${c.lojas} ${c.lojas === 1 ? 'loja' : 'lojas'}` : 'Em breve'}</button></div>
+      ))}{!lista.length && <p style={{ margin: 8 }}>Nenhuma cidade encontrada.</p>}</div>
     </Modal>
   );
 }
@@ -486,8 +498,9 @@ function Carrinho({ loja: l, slug, linhas, subtotal, aoFechar, mudarQtd, editar,
     if (troco != null && (Number.isNaN(troco) || troco < total)) return setErro(`O troco precisa ser para um valor maior que ${brl(total)}.`);
     setEnviando(true); setErro('');
     try {
+      const dest = f.tipo === 'entrega' ? (ler().local || await procurarEndereco(`${f.endereco.trim()}, ${l.cidade || ''}, ${l.uf || 'RJ'}, Brasil`)) : null;
       const r = await post<{ token: string }>(`/publico/app/loja/${encodeURIComponent(slug)}/pedido`, {
-        chave, nome: f.nome.trim(), telefone: f.telefone.trim(), tipo: f.tipo, endereco: f.tipo === 'entrega' ? f.endereco.trim() : null, forma: f.forma, trocoPara: troco, observacao: f.obs.trim() || null,
+        lat: dest?.lat ?? null, lng: dest?.lng ?? null, chave, nome: f.nome.trim(), telefone: f.telefone.trim(), tipo: f.tipo, endereco: f.tipo === 'entrega' ? f.endereco.trim() : null, forma: f.forma, trocoPara: troco, observacao: f.obs.trim() || null,
         itens: linhas.map(({ i }) => ({ produtoId: i.produtoId, qtd: i.qtd, tamanho: i.tamanho ?? null, adicionais: i.adicionais || [], retirar: i.retirar || [], observacao: i.observacao })),
       });
       gravar((x) => ({ ...x, nome: f.nome.trim(), telefone: f.telefone.trim(), endereco: f.tipo === 'entrega' ? f.endereco.trim() : x.endereco,
@@ -542,7 +555,7 @@ interface Acomp {
   loja: string; slug: string; loja_telefone: string | null; numero: number | null; situacao: string; motivo_recusa: string | null; tipo: 'entrega' | 'balcao'; endereco: string | null;
   forma: Forma; troco_para: number | null; itens: { nome: string; qtd: number; total: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[];
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
-  avaliacao: { nota: number; comentario: string | null } | null;
+  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 const TITULO: Record<string, string> = {
@@ -579,6 +592,13 @@ function Pedido() {
           {p.situacao === 'recusado' && p.motivo_recusa && <p className="aviso erro" style={{ marginBottom: 0 }}>Motivo: {p.motivo_recusa}</p>}
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
+        {p.mapa && <section className="cartao">
+          <Mapa dados={p.mapa} />
+          {p.mapa.entregador ? (() => {
+            const alvo = p.mapa.destino || p.mapa.loja, km = alvo ? distanciaKm(p.mapa.entregador, alvo) : null;
+            return <p className="mapa-eta">🛵 {p.entregador || 'Seu entregador'} está a caminho{km != null && <small>· {km < 0.1 ? 'chegando' : `${km.toFixed(1).replace('.', ',')} km · cerca de ${minutosAte(km)} min`}</small>}</p>;
+          })() : <p className="mapa-eta"><small>Assim que o entregador abrir o app, você o vê no mapa.</small></p>}
+        </section>}
         {!['recusado', 'cancelado'].includes(p.situacao) && <section className="cartao"><ol className="passos">
           {passos.map((x, k) => <li key={k} className={`${k <= pos ? 'feito' : ''} ${k === pos ? 'atual' : ''}`}><span className="bola">{k <= pos ? <Ic n="check" t={16} /> : null}</span><b>{x.t}</b>{k <= pos && <small>{hora(x.h)}</small>}</li>)}
         </ol></section>}
