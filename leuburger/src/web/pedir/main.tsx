@@ -1,6 +1,7 @@
 // Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { CIDADES_RJ } from '../cidades-rj';
+import { faltam, useRelogio } from '../tempo';
 import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -559,12 +560,12 @@ interface Acomp {
   loja: string; slug: string; loja_telefone: string | null; numero: number | null; situacao: string; motivo_recusa: string | null; tipo: 'entrega' | 'balcao'; endereco: string | null;
   forma: Forma; troco_para: number | null; itens: { nome: string; qtd: number; total: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[];
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
-  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null;
+  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; cancelado_pelo_cliente: boolean;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 const TITULO: Record<string, string> = {
   aguardando: 'Esperando a loja aceitar…', preparando: 'Pedido aceito! Em preparo 👨‍🍳', pronto: 'Pedido pronto!', a_caminho: 'Saiu para entrega! 🛵',
-  entregue: 'Pedido entregue. Bom apetite! 😋', retirado: 'Pedido retirado. Bom apetite! 😋', recusado: 'A loja não pôde aceitar', cancelado: 'Pedido cancelado pela loja',
+  entregue: 'Pedido entregue. Bom apetite! 😋', retirado: 'Pedido retirado. Bom apetite! 😋', recusado: 'A loja não pôde aceitar', cancelado: 'Pedido cancelado',
 };
 
 function Pedido() {
@@ -578,6 +579,13 @@ function Pedido() {
     const t = setInterval(() => { if (!document.hidden) carregar(); }, 10000);
     return () => { parar = true; clearInterval(t); };
   }, [token, vez]);
+  useRelogio(Boolean(p?.cancelar_ate));
+  const [cancelando, setCancelando] = useState(false);
+  const cancelar = async () => {
+    if (!confirm('Cancelar este pedido?')) return;
+    setCancelando(true);
+    try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/cancelar`, {}); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); setVez((x) => x + 1); } finally { setCancelando(false); }
+  };
   if (!p) return <div className="pd"><TopoVoltar titulo="Seu pedido" /><main className="pd-corpo">{erro ? <p className="aviso erro">{erro}</p> : <div className="carregando"><div className="giro" /></div>}</main></div>;
   const ordem = p.tipo === 'entrega' ? ['aguardando', 'preparando', 'pronto', 'a_caminho', 'entregue'] : ['aguardando', 'preparando', 'pronto', 'retirado'];
   const pos = ordem.indexOf(p.situacao), final = ['entregue', 'retirado', 'recusado', 'cancelado'].includes(p.situacao);
@@ -596,6 +604,11 @@ function Pedido() {
           {p.situacao === 'recusado' && p.motivo_recusa && <p className="aviso erro" style={{ marginBottom: 0 }}>Motivo: {p.motivo_recusa}</p>}
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
+        {erro && <p className="aviso erro">{erro}</p>}
+        {faltam(p.cancelar_ate) && <section className="cartao" style={{ textAlign: 'center' }}>
+          <p style={{ margin: '0 0 8px' }}>Mudou de ideia? Você pode cancelar por mais <b>{faltam(p.cancelar_ate)}</b>.</p>
+          <button className="btn bloco" onClick={cancelar} disabled={cancelando}>Cancelar pedido</button>
+        </section>}
         {p.mapa && <section className="cartao">
           <Mapa dados={p.mapa} />
           {p.mapa.entregador ? (() => {

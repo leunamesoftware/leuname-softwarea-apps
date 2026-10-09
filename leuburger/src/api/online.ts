@@ -5,7 +5,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
-import { agora, aleatorio, auditar, corpo, erro, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
+import { agora, aleatorio, auditar, corpo, erro, janelaCancelarMs, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { registrarVenda } from './vendas';
 import { abrirSessao } from './auth';
@@ -175,15 +175,18 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const situacao = o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
+  const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
+  // Cliente cancela só nos primeiros minutos e antes de o pedido ficar pronto.
+  const ate = new Date(o.criado_em).getTime() + janelaCancelarMs(c.env);
+  const cancelar_ate = !o.cancelado_em && ['aguardando', 'preparando'].includes(situacao) && ate > Date.now() ? new Date(ate).toISOString() : null;
   return c.json({ pedido: {
     loja: o.loja, slug: o.slug, loja_telefone: o.loja_telefone, numero: o.numero || null, situacao, motivo_recusa: o.motivo_recusa, tipo: o.tipo, endereco: o.endereco,
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
-    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null,
+    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, cancelar_ate, cancelado_pelo_cliente: Boolean(o.cancelado_em),
     // Mapa ao vivo: só enquanto o entregador está a caminho.
     mapa: situacao === 'a_caminho' && o.tipo === 'entrega' ? {
       loja: o.loja_lat != null ? { lat: o.loja_lat, lng: o.loja_lng } : null,
@@ -191,6 +194,33 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
       entregador: o.pos_lat != null ? { lat: o.pos_lat, lng: o.pos_lng, em: o.pos_em } : null,
     } : null,
   } });
+});
+
+/** Cliente cancela o pedido dentro do prazo (padrão 5 min) e enquanto a loja ainda não marcou "pronto". */
+appPublico.post('/publico/app/pedido/:token/cancelar', async (c) => {
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const db = c.env.BANCO;
+  const o = await db.prepare(`SELECT o.id, o.empresa_id, o.status, o.criado_em, o.cancelado_em, o.venda_id, v.andamento, v.usuario_id, v.status AS venda_status FROM pedidos_online o LEFT JOIN vendas v ON v.id = o.venda_id WHERE o.token = ?`)
+    .bind(token).first<{ id: string; empresa_id: string; status: string; criado_em: string; cancelado_em: string | null; venda_id: string | null; andamento: string | null; usuario_id: string | null; venda_status: string | null }>();
+  if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  if (o.cancelado_em) throw erro(409, 'ja_cancelado', 'Este pedido já foi cancelado.');
+  if (o.status === 'recusado') throw erro(409, 'ja_recusado', 'A loja já recusou este pedido.');
+  if (new Date(o.criado_em).getTime() + janelaCancelarMs(c.env) < Date.now() || (o.venda_id && o.andamento !== 'preparando')) {
+    throw erro(409, 'fora_do_prazo', 'O prazo para cancelar já passou. Fale com a loja pelo WhatsApp.');
+  }
+  const quando = agora(), stmts: D1Prepared[] = [];
+  if (o.venda_id && o.venda_status === 'concluida') {
+    const { results: movs } = await db.prepare("SELECT item_id, qtd FROM estoque_movimentos WHERE ref = ? AND tipo = 'venda' AND empresa_id = ?").bind(o.venda_id, o.empresa_id).all<{ item_id: string; qtd: number }>();
+    stmts.push(db.prepare("UPDATE vendas SET status = 'cancelada', cancelada_em = ?, cancelada_por = ?, motivo_cancelamento = 'Cancelado pelo cliente no app' WHERE id = ? AND status = 'concluida'").bind(quando, o.usuario_id, o.venda_id));
+    for (const m of movs) {
+      stmts.push(db.prepare('UPDATE estoque_itens SET qtd = ROUND(qtd + ?, 3) WHERE id = ? AND empresa_id = ?').bind(-m.qtd, m.item_id, o.empresa_id));
+      stmts.push(db.prepare("INSERT INTO estoque_movimentos (id, empresa_id, item_id, tipo, qtd, ref, motivo, usuario_id, criado_em) VALUES (?,?,?,'cancelamento',?,?,'Cancelado pelo cliente no app',?,?)").bind(novoId(), o.empresa_id, m.item_id, -m.qtd, o.venda_id, o.usuario_id, quando));
+    }
+  }
+  stmts.push(db.prepare("UPDATE pedidos_online SET cancelado_em = ?, status = CASE WHEN status = 'aguardando' THEN 'recusado' ELSE status END, motivo_recusa = CASE WHEN status = 'aguardando' THEN 'Cancelado pelo cliente' ELSE motivo_recusa END, respondido_em = COALESCE(respondido_em, ?) WHERE id = ?").bind(quando, quando, o.id));
+  await db.batch(stmts);
+  return c.json({ ok: true });
 });
 
 /** Cliente avalia o pedido depois de receber (1 a 5 estrelas). Uma avaliação por pedido; só de pedido entregue ou retirado. */
@@ -223,9 +253,13 @@ export const appLoja = new Hono<{ Bindings: Env; Variables: Vars }>();
 /** Pedidos do app esperando resposta e os respondidos nas últimas 3 horas. */
 appLoja.get('/pedidos-app', async (c) => {
   exigir(c, 'vender');
-  const { results } = await c.env.BANCO.prepare(`SELECT id, status, nome, telefone, tipo, endereco, forma, troco_para, observacao, resumo, subtotal, taxa_entrega, total, motivo_recusa, venda_id, criado_em, respondido_em
+  const { results } = await c.env.BANCO.prepare(`SELECT id, status, nome, telefone, tipo, endereco, forma, troco_para, observacao, resumo, subtotal, taxa_entrega, total, motivo_recusa, venda_id, criado_em, respondido_em, cancelado_em
     FROM pedidos_online WHERE empresa_id = ? AND (status = 'aguardando' OR respondido_em > ?) ORDER BY criado_em`).bind(c.get('empresa').id, new Date(Date.now() - 3 * 3600e3).toISOString()).all<Record<string, unknown>>();
-  return c.json({ pedidos: results.map((p) => ({ ...p, itens: JSON.parse(String(p.resumo)), resumo: undefined })) });
+  const prazo = janelaCancelarMs(c.env);
+  return c.json({ pedidos: results.map((p) => {
+    const ate = new Date(String(p.criado_em)).getTime() + prazo;
+    return { ...p, itens: JSON.parse(String(p.resumo)), resumo: undefined, cancelar_ate: !p.cancelado_em && ate > Date.now() ? new Date(ate).toISOString() : null };
+  }) });
 });
 
 appLoja.post('/pedidos-app/:id/aceitar', async (c) => {

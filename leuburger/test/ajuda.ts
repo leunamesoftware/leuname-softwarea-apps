@@ -56,7 +56,7 @@ export function ambiente(contas: Parameters<typeof lojaFalsa>[0]) {
   const db = new DatabaseSync(':memory:');
   db.exec('PRAGMA foreign_keys = ON');
   for (const m of readdirSync(new URL('../migracoes/', import.meta.url)).filter((f) => f.endsWith('.sql')).sort()) db.exec(readFileSync(new URL('../migracoes/' + m, import.meta.url), 'utf8'));
-  const env: Env = { BANCO: d1(db), CONTAS: lojaFalsa(contas), DONO_EMAIL: 'dono@leuname.com' };
+  const env: Env = { BANCO: d1(db), CONTAS: lojaFalsa(contas), DONO_EMAIL: 'dono@leuname.com', JANELA_CANCELAR_MIN: '0' };
   const app = criarApp();
   /** Um navegador: guarda os cookies entre os pedidos. */
   const navegador = () => {

@@ -17,6 +17,8 @@ export interface Env {
   CONTAS?: Servico;
   ASSETS?: Servico;
   DONO_EMAIL?: string;
+  /** Minutos que o cliente tem para cancelar o pedido do app (padrão 5). */
+  JANELA_CANCELAR_MIN?: string;
 }
 
 export interface Usuario { id: string; empresa_id: string; nome: string; login: string; papel: Papel; dono: number }
@@ -64,3 +66,6 @@ export function iguais(a: string, b: string) {
   let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return d === 0;
 }
+
+/** Prazo (em milissegundos) em que o cliente ainda pode cancelar o pedido do app. */
+export const janelaCancelarMs = (env: Env) => Math.max(0, Number(env.JANELA_CANCELAR_MIN ?? 5)) * 60e3;

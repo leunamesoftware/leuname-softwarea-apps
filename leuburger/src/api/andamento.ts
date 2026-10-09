@@ -3,7 +3,7 @@
 // (o do cliente só mostra; o do entregador só marca "saí" e "entreguei").
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { agora, corpo, erro, type C, type Env, type Vars } from './base';
+import { agora, corpo, erro, janelaCancelarMs, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 
 export const ANDAMENTOS = ['preparando', 'pronto', 'a_caminho', 'entregue', 'retirado'] as const;
@@ -15,6 +15,12 @@ const PASSOS: Record<string, Andamento[]> = { entrega: ['preparando', 'pronto', 
 /** Grava o novo passo com o horário (o painel e o cliente mostram quando aconteceu). */
 export async function mudarAndamento(c: C, v: { id: string; tipo: string; andamento: string }, novo: Andamento, entregador?: string | null) {
   if (!PASSOS[v.tipo]?.includes(novo)) throw erro(400, 'andamento_invalido', 'Este passo não vale para este pedido.');
+  if (novo === 'pronto') {
+    // Pedido do app: a loja só marca "pronto" depois do prazo de cancelamento do cliente (a loja de demonstração não espera).
+    const o = await c.env.BANCO.prepare("SELECT o.criado_em, e.conta_email FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id WHERE o.venda_id = ?").bind(v.id).first<{ criado_em: string; conta_email: string }>();
+    const falta = o && !/^demo-.*@leupede\.demo$/.test(o.conta_email) ? new Date(o.criado_em).getTime() + janelaCancelarMs(c.env) - Date.now() : 0;
+    if (falta > 0) throw erro(409, 'aguarde_cancelamento', `O cliente ainda pode cancelar (faltam ${Math.floor(falta / 60e3)}:${String(Math.ceil((falta % 60e3) / 1e3) % 60).padStart(2, '0')}). Espere para marcar como pronto.`);
+  }
   const q = agora();
   const campo = novo === 'pronto' ? 'pronto_em' : novo === 'a_caminho' ? 'saiu_em' : FINAIS.includes(novo) ? 'finalizado_em' : null;
   await c.env.BANCO.prepare(`UPDATE vendas SET andamento = ?${campo ? `, ${campo} = COALESCE(${campo}, ?)` : ''}${entregador !== undefined ? ', entregador = ?' : ''} WHERE id = ? AND status = 'concluida'`)
@@ -30,12 +36,17 @@ andamento.get('/andamento', async (c) => {
   const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.tipo, v.andamento, v.total, v.troco, v.criado_em, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, v.entregador_id,
       v.endereco_entrega, v.observacao, v.token_cliente, v.token_entregador, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
-      (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas
+      (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
+      (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em
     FROM vendas v LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.token_cliente IS NOT NULL
       AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em >= ?)
     ORDER BY v.criado_em`).bind(c.get('empresa').id, desde, recentes).all();
-  return c.json({ pedidos: results });
+  const prazo = janelaCancelarMs(c.env);
+  return c.json({ pedidos: results.map((r) => {
+    const ate = r.app_criado_em ? new Date(String(r.app_criado_em)).getTime() + prazo : 0;
+    return { ...r, app_cancelar_ate: ate > Date.now() && r.andamento === 'preparando' ? new Date(ate).toISOString() : null };
+  }) });
 });
 
 andamento.post('/vendas/:id/andamento', async (c) => {

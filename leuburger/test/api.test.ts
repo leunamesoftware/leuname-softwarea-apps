@@ -443,3 +443,46 @@ describe('Mapa ao vivo da entrega', () => {
     expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa).toBeNull();
   });
 });
+
+describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
+  it('cliente cancela no prazo; a loja só marca pronto depois do prazo; fora do prazo não cancela', async () => {
+    A.env.JANELA_CANCELAR_MIN = '5';
+    try {
+      const { n, p } = await donoComCardapio();
+      await n.put('/empresa', { nome: 'Burger Prazo', cidade: 'Niterói', uf: 'RJ', formas_pagamento: ['pix'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 0 });
+      await n.put('/loja-app', { slug: 'burger-prazo', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'hamburgueria', descricao: 'Teste', tempo_entrega: '30 min', pedido_minimo: 0, lat: -22.9, lng: -43.1, raio_km: 8 });
+      const cli = A.navegador();
+      const novo = async (chave: string) => (await cli.post('/publico/app/loja/burger-prazo/pedido', { chave, nome: 'Rita', telefone: '21999990000', tipo: 'balcao', forma: 'pix', itens: [{ produtoId: p('X-Bacon').id, qtd: 1 }] })).corpo.token as string;
+
+      // 1) Cancela antes de a loja aceitar.
+      const t1 = await novo('prazo-cliente-001');
+      expect((await cli.get(`/publico/app/pedido/${t1}`)).corpo.pedido.cancelar_ate).toEqual(expect.any(String));
+      expect((await cli.post(`/publico/app/pedido/${t1}/cancelar`, {})).status).toBe(200);
+      const v1 = (await cli.get(`/publico/app/pedido/${t1}`)).corpo.pedido;
+      expect(v1).toMatchObject({ situacao: 'cancelado', cancelado_pelo_cliente: true, cancelar_ate: null });
+      expect((await cli.post(`/publico/app/pedido/${t1}/cancelar`, {})).status).toBe(409);
+
+      // 2) Loja aceita; ainda no prazo ela não consegue marcar pronto; o cliente cancela e a venda cai.
+      const t2 = await novo('prazo-cliente-002');
+      const lista = (await n.get('/pedidos-app')).corpo.pedidos;
+      const ped2 = lista.find((x: { cancelado_em: string | null; status: string }) => !x.cancelado_em && x.status === 'aguardando');
+      expect(ped2.cancelar_ate).toEqual(expect.any(String));
+      const venda = (await n.post(`/pedidos-app/${ped2.id}/aceitar`, {})).corpo.venda_id;
+      const esperar = await n.post(`/vendas/${venda}/andamento`, { andamento: 'pronto' });
+      expect(esperar.status).toBe(409);
+      expect(esperar.corpo.erro).toBe('aguarde_cancelamento');
+      expect((await n.get('/andamento')).corpo.pedidos.find((x: { id: string }) => x.id === venda).app_cancelar_ate).toEqual(expect.any(String));
+      expect((await cli.post(`/publico/app/pedido/${t2}/cancelar`, {})).status).toBe(200);
+      expect((await n.get('/andamento')).corpo.pedidos.some((x: { id: string }) => x.id === venda)).toBe(false);
+      expect((await n.get('/pedidos-app')).corpo.pedidos.filter((x: { cancelado_em: string | null }) => x.cancelado_em)).toHaveLength(2);
+
+      // 3) Passou o prazo: o cliente não cancela mais e a loja marca pronto.
+      const t3 = await novo('prazo-cliente-003');
+      const ped3 = (await n.get('/pedidos-app')).corpo.pedidos.find((x: { status: string; cancelado_em: string | null }) => x.status === 'aguardando' && !x.cancelado_em);
+      const venda3 = (await n.post(`/pedidos-app/${ped3.id}/aceitar`, {})).corpo.venda_id;
+      A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 6 * 60e3).toISOString()}' WHERE token = '${t3}'`);
+      expect((await cli.post(`/publico/app/pedido/${t3}/cancelar`, {})).status).toBe(409);
+      expect((await n.post(`/vendas/${venda3}/andamento`, { andamento: 'pronto' })).status).toBe(200);
+    } finally { A.env.JANELA_CANCELAR_MIN = '0'; }
+  });
+});

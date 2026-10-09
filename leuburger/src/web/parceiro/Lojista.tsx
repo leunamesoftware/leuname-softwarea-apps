@@ -1,6 +1,7 @@
 // Pedêê Parceiro (app do lojista): cadastra a loja e cuida de tudo num painel simples
 // (Pedidos, Cardápio, Entregadores e Minha loja). O caixa completo continua disponível para quem quiser.
 import { CIDADES_RJ } from '../cidades-rj';
+import { faltam, useRelogio } from '../tempo';
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
 import { del, ErroApp, get, post, put } from '../api';
@@ -114,8 +115,8 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 }
 
 // ---------- pedidos ----------
-interface Novo { id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface Novo { cancelar_ate: string | null; cancelado_em: string | null; nome_cliente?: string; id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
+interface EmAndamento { app_cancelar_ate: string | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -129,7 +130,7 @@ function plim() {
 function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) {
   const [novos, setNovos] = useState<Novo[]>([]), [lista, setLista] = useState<EmAndamento[]>([]);
   const [carregou, setCarregou] = useState(false), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
-  const [recusar, setRecusar] = useState<Novo | null>(null);
+  const [recusar, setRecusar] = useState<Novo | null>(null), [cancelados, setCancelados] = useState<Novo[]>([]);
   const [escolher, setEscolher] = useState<EmAndamento | null>(null);
   const vistos = useRef<Set<string> | null>(null);
   const carregar = async () => {
@@ -138,12 +139,14 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
       const n = a.pedidos.filter((p) => p.status === 'aguardando');
       if (vistos.current && n.some((p) => !vistos.current!.has(p.id))) plim();
       vistos.current = new Set(n.map((p) => p.id));
+      setCancelados(a.pedidos.filter((p) => p.cancelado_em && Date.now() - new Date(p.cancelado_em).getTime() < 2 * 3600e3));
       setNovos(n); setLista(b.pedidos); aoContar(n.length); setErro(''); setCarregou(true);
     } catch (e) { setErro(msgErro(e)); }
   };
   useEffect(() => { carregar(); const t = setInterval(carregar, 10000); return () => clearInterval(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const agir = async (id: string, fn: () => Promise<unknown>) => { setOcupado(id); try { await fn(); await carregar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(''); } };
   const andar = (p: EmAndamento, andamento: string) => agir(p.id, () => post(`/vendas/${p.id}/andamento`, { andamento }));
+  useRelogio(novos.some((p) => p.cancelar_ate) || lista.some((p) => p.app_cancelar_ate));
   const abertos = lista.filter((p) => !['entregue', 'retirado'].includes(p.andamento));
   const feitos = lista.filter((p) => ['entregue', 'retirado'].includes(p.andamento)).reverse();
   if (!carregou && !erro) return <div className="carregando"><div className="giro" /></div>;
@@ -158,6 +161,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           {p.observacao && <div className="ped-obs">Obs.: {p.observacao}</div>}
           {p.tipo === 'entrega' && <div className="ped-end"><Ic n="inicio" t={16} />{p.endereco}</div>}
           <div className="ped-status"><span>{FORMAS[p.forma]}{p.troco_para ? ` · troco p/ ${brl(p.troco_para)}` : ''}</span><b className="num">{brl(p.total)}</b></div>
+          {faltam(p.cancelar_ate) && <div className="aviso" style={{ margin: '6px 0' }}>⏳ O cliente ainda pode cancelar por {faltam(p.cancelar_ate)}. Se aceitar, só marque “Pronto” depois disso.</div>}
           <div className="ped-acoes">
             <button className="btn prim" disabled={ocupado === p.id} onClick={() => agir(p.id, () => post(`/pedidos-app/${p.id}/aceitar`))}><Ic n="check" />Aceitar</button>
             <button className="btn" onClick={() => setRecusar(p)}><Ic n="x" />Recusar</button>
@@ -165,6 +169,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           </div>
         </article>
       ))}
+      {cancelados.map((p) => <p key={p.id} className="aviso erro" style={{ margin: 0 }}>❌ <b>{p.nome}</b> cancelou o pedido ({brl(p.total)}). Não precisa preparar.</p>)}
       <h2 className="pd-tit">Em andamento</h2>
       {!abertos.length ? <p style={{ margin: 0, color: 'var(--suave)' }}>Nada em andamento.</p> : abertos.map((p) => (
         <article key={p.id} className="ped">
@@ -174,7 +179,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           {p.tipo === 'entrega' && <div className="ped-end"><Ic n="inicio" t={16} />{p.endereco_entrega}</div>}
           <div className="ped-status"><span className={`selo st-${p.andamento}`}>{({ preparando: 'Em preparo', pronto: 'Pronto', a_caminho: 'A caminho' } as Record<string, string>)[p.andamento]}</span><b className="num">{brl(p.total)}</b></div>
           <div className="ped-acoes">
-            {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'pronto')}><Ic n="check" />Pronto</button>}
+            {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id || Boolean(faltam(p.app_cancelar_ate))} onClick={() => andar(p, 'pronto')}><Ic n="check" />{faltam(p.app_cancelar_ate) ? `Pronto (espere ${faltam(p.app_cancelar_ate)})` : 'Pronto'}</button>}
             {p.andamento === 'pronto' && p.tipo === 'balcao' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'retirado')}><Ic n="check" />Cliente retirou</button>}
             {/* Entrega pronta sem entregador: o caminho principal é escolher o entregador (a entrega aparece no app dele). */}
             {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" onClick={() => setEscolher(p)}><Ic n="seta" />🛵 Escolher entregador</button>}
