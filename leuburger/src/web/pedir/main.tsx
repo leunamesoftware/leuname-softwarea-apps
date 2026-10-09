@@ -1,6 +1,7 @@
 // Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { CIDADES_RJ } from '../cidades-rj';
+import { CULINARIAS, DESTAQUE } from '../culinarias';
 import { alo, faltam, useRelogio } from '../tempo';
 import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
@@ -70,8 +71,8 @@ function Logo({ l, t = 56 }: { l: Pick<LojaCartao, 'logo_id' | 'nome'>; t?: numb
 }
 
 // ---------- categorias (tipos de loja) ----------
-const CATS: [string, string, string][] = [['hamburgueria', 'Hambúrguer', '🍔'], ['pizzaria', 'Pizza', '🍕'], ['lanches', 'Lanches', '🥪'], ['japonesa', 'Japonesa', '🍣'],
-  ['restaurante', 'Brasileira', '🍛'], ['marmitaria', 'Marmitas', '🍱'], ['acai', 'Açaí', '🍧'], ['doces', 'Doces', '🍰'], ['pastelaria', 'Pastel', '🥟'], ['bebidas', 'Bebidas', '🥤']];
+const CATS = CULINARIAS;
+const CATS_INICIO = DESTAQUE.map((t) => CULINARIAS.find((c) => c[0] === t)!);
 const EMOJI: Record<string, string> = Object.fromEntries(CATS.map(([t, , e]) => [t, e]));
 function Capa({ l, className }: { l: Pick<LojaCartao, 'capa_id' | 'tipo'>; className?: string }) {
   const src = foto(l.capa_id) || CAPA_TIPO[l.tipo];
@@ -132,9 +133,10 @@ function Inicio() {
       </header>
       <main className="pd-corpo">
         <div className="pd-cats-icones" role="group" aria-label="Categorias">
-          {CATS.map(([t, n, e]) => (
+          {CATS_INICIO.map(([t, n, e]) => (
             <button key={t} className={`${tipo === t ? 'sel' : ''} ${lojas && !temTipo.has(t) ? 'apagada' : ''}`} onClick={() => setTipo(tipo === t ? '' : t)}><span>{e}</span>{n}</button>
           ))}
+          <Link to="/culinarias" className="pd-cat-todas"><span>➕</span>Ver todas</Link>
         </div>
         {andamento.length > 0 && <div className="pd-faixa">{andamento.map((p) => <Link key={p.token} className="pd-pedido" to={`/pedido/${p.token}`}><Ic n="sacola" /><span><b>{p.loja}</b><small>Acompanhar pedido</small></span><Ic n="direita" /></Link>)}</div>}
         {!tipo && <div className="pd-banner"><div><b>Os melhores sabores perto de você</b><span>Peça e acompanhe a entrega em tempo real</span></div><img src="/img/hamburguer.webp" alt="" /></div>}
@@ -182,16 +184,86 @@ function CartaoLoja({ l }: { l: LojaCartao }) {
 function Buscar() {
   const [busca, setBusca] = useState('');
   const { lojas, erro } = useLojas(busca);
+  const todas = useLojas('').lojas;
   return (
     <div className="pd com-abas">
       <header className="pd-cab"><div className="pd-cab-linha"><span className="pd-logo-texto">Buscar</span></div>
-        <span className="entrada pd-busca"><Ic n="busca" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Nome da loja, pizza, açaí, marmita…" aria-label="Buscar" autoFocus /></span></header>
+        <span className="entrada pd-busca"><Ic n="busca" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Pizza, açaí, marmita, nome da loja…" aria-label="Buscar" /></span></header>
       <main className="pd-corpo">
-        {!busca.trim() && <div className="pd-cats-grade">{CATS.map(([t, n, e]) => <button key={t} onClick={() => setBusca(n)}><span>{e}</span>{n}</button>)}</div>}
-        {busca.trim() && (erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div>
-          : !lojas.length ? <div className="vazio"><Ic n="busca" t={36} /><b>Nada encontrado por aqui</b></div> : <div className="pd-lojas">{lojas.map((l) => <CartaoLoja key={l.slug} l={l} />)}</div>)}
+        {busca.trim() ? (erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div>
+          : !lojas.length ? <div className="vazio"><Ic n="busca" t={36} /><b>Nada encontrado por aqui</b></div> : <div className="pd-lojas">{lojas.map((l) => <CartaoLoja key={l.slug} l={l} />)}</div>)
+          : <Descobrir lojas={todas} />}
       </main>
       <Abas />
+    </div>
+  );
+}
+
+/** Culinárias, “Sugestões para você” e “Populares na sua região” (como no iFood), montados com as lojas do local escolhido. */
+function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
+  const nav = useNavigate();
+  const tipos = useMemo(() => {
+    const n = new Map<string, number>(); (lojas || []).forEach((l) => n.set(l.tipo, (n.get(l.tipo) || 0) + 1));
+    return CULINARIAS.filter(([t]) => n.has(t)).sort((a, b) => n.get(b[0])! - n.get(a[0])!);
+  }, [lojas]);
+  const [chip, setChip] = useState('');
+  const atual = chip || tipos[0]?.[0] || '';
+  const populares = (lojas || []).filter((l) => l.tipo === atual).sort((a, b) => (b.avaliacoes - a.avaliacoes) || ((b.nota || 0) - (a.nota || 0)));
+  const CORES = ['#E8160C', '#2563EB', '#7C3AED', '#059669', '#EA580C', '#DB2777'];
+  const sugestoes: { titulo: string; sub: string; img: string | null; ir: string }[] = [];
+  tipos.forEach(([t, n]) => {
+    const boas = (lojas || []).filter((l) => l.tipo === t && (l.nota || 0) >= 4.5).sort((a, b) => (b.nota || 0) - (a.nota || 0));
+    if (boas.length) sugestoes.push({ titulo: `Melhores da região em ${n}`, sub: 'Acima de 4,5 estrelas', img: foto(boas[0].capa_id) || CAPA_TIPO[t] || '/img/hamburguer.webp', ir: `/culinaria/${t}` });
+  });
+  const gratis = (lojas || []).filter((l) => l.faz_entrega && !l.taxa_entrega);
+  if (gratis.length) sugestoes.unshift({ titulo: 'Entrega grátis', sub: `${gratis.length} ${gratis.length === 1 ? 'loja' : 'lojas'} sem taxa`, img: foto(gratis.find((l) => l.capa_id)?.capa_id) || '/img/combo.webp', ir: '/culinaria/gratis' });
+  return (
+    <>
+      <div className="pd-tit-linha"><h2 className="pd-tit">Culinárias</h2><Link className="link" to="/culinarias">Ver todas</Link></div>
+      <div className="pd-cats-icones">{CATS_INICIO.map(([t, n, e]) => <Link key={t} to={`/culinaria/${t}`} className="pd-cat-link"><span>{e}</span>{n}</Link>)}</div>
+      {lojas == null ? <div className="carregando"><div className="giro" /></div> : <>
+        {sugestoes.length > 0 && <><h2 className="pd-tit">Sugestões para você</h2>
+          <div className="pd-sugestoes">{sugestoes.slice(0, 8).map((x, k) => (
+            <button key={x.ir} className="pd-sug" style={{ background: CORES[k % CORES.length] }} onClick={() => nav(x.ir)}>
+              <b>{x.titulo}</b><span>{x.sub}</span>{x.img && <img src={x.img} alt="" loading="lazy" />}
+            </button>
+          ))}</div></>}
+        {tipos.length > 0 && <><h2 className="pd-tit">Populares na sua região</h2>
+          <div className="pd-chips">{tipos.map(([t, n]) => <button key={t} className={`chip ${atual === t ? 'sel' : ''}`} onClick={() => setChip(t)}>{n}</button>)}</div>
+          <div className="pd-lojas">{populares.slice(0, 10).map((l) => <CartaoLoja key={l.slug} l={l} />)}</div></>}
+        {!lojas.length && <div className="vazio"><b>Ainda não há lojas no seu local</b><span>Toque em “Entregar em” na tela inicial e escolha outra cidade.</span></div>}
+      </>}
+    </>
+  );
+}
+
+/** Todas as culinárias (lista como a do iFood). */
+function Culinarias() {
+  return (
+    <div className="pd">
+      <TopoVoltar titulo="Culinárias" />
+      <main className="pd-corpo">
+        <h1 style={{ margin: '4px 0', fontSize: 22 }}>Todas as culinárias</h1>
+        <div className="pd-culinarias">{CULINARIAS.map(([t, n, e]) => <Link key={t} to={`/culinaria/${t}`}><span>{e}</span><b>{n}</b><Ic n="direita" /></Link>)}</div>
+      </main>
+    </div>
+  );
+}
+
+/** Lojas de uma culinária (ou com entrega grátis), as melhores primeiro. */
+function Culinaria() {
+  const { tipo = '' } = useParams();
+  const { lojas, erro } = useLojas('');
+  const info = CULINARIAS.find((c) => c[0] === tipo);
+  const lista = (lojas || []).filter((l) => (tipo === 'gratis' ? l.faz_entrega && !l.taxa_entrega : l.tipo === tipo)).sort((a, b) => ((b.nota || 0) - (a.nota || 0)) || (b.avaliacoes - a.avaliacoes));
+  return (
+    <div className="pd">
+      <TopoVoltar titulo={tipo === 'gratis' ? 'Entrega grátis' : info ? `${info[2]} ${info[1]}` : 'Lojas'} />
+      <main className="pd-corpo">
+        {erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div>
+          : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>{info?.[2] || '🍽️'}</span><b>Ainda não tem loja desta culinária no seu local</b><Link className="btn prim" to="/culinarias">Ver outras culinárias</Link></div>
+          : <div className="pd-lojas">{lista.map((l) => <CartaoLoja key={l.slug} l={l} />)}</div>}
+      </main>
     </div>
   );
 }
@@ -779,6 +851,8 @@ function App() {
       <Route path="/pedidos" element={<MeusPedidos />} />
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/pedido/:token" element={<Pedido />} />
+      <Route path="/culinarias" element={<Culinarias />} />
+      <Route path="/culinaria/:tipo" element={<Culinaria />} />
       <Route path="/:slug" element={<Loja />} />
     </Routes>
   );

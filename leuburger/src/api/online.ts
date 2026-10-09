@@ -14,7 +14,13 @@ import { abrirSessao } from './auth';
 import { hashSenha, type Usuario } from './base';
 
 export const NOME_APP = 'Pedêê';
-export const TIPOS_LOJA = { lanches: 'Lanches', hamburgueria: 'Hamburgueria', restaurante: 'Restaurante', marmitaria: 'Marmitaria', pizzaria: 'Pizzaria', acai: 'Açaí e sorvetes', pastelaria: 'Pastelaria', japonesa: 'Comida japonesa', doces: 'Doces e bolos', bebidas: 'Bebidas' } as const;
+export const TIPOS_LOJA = {
+  acai: 'Açaí', arabe: 'Árabe', bebidas: 'Bebidas', brasileira: 'Brasileira', cafeteria: 'Cafeterias', carnes: 'Carnes', sucos: 'Casa de Sucos', chinesa: 'Chinesa',
+  congelados: 'Congelados', cozinha_rapida: 'Cozinha Rápida', doces: 'Doces & Bolos', espetinhos: 'Espetinhos', frangos: 'Frangos', frutos_mar: 'Frutos do Mar',
+  hamburgueria: 'Hamburgueria', hotdog: 'Hot Dog', internacional: 'Internacional', italiana: 'Italiana', japonesa: 'Comida japonesa', lanches: 'Lanches',
+  marmitaria: 'Marmitaria', mexicana: 'Mexicana', pastelaria: 'Pastelaria', peixes: 'Peixes', pizzaria: 'Pizzaria', poke: 'Poke', regional: 'Regional',
+  restaurante: 'Restaurante', salgados: 'Salgados', saudavel: 'Saudável', sopas: 'Sopas & Caldos', sorvetes: 'Sorvetes', tapioca: 'Tapioca', variada: 'Variada',
+} as const;
 
 type Loja = Empresa & {
   slug: string; no_app: number; aceitando: number; tipo_loja: string; descricao: string | null; logo_id: string | null; capa_id: string | null; tempo_entrega: string | null;

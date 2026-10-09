@@ -1,6 +1,7 @@
 // Pedêê Parceiro (app do lojista): cadastra a loja e cuida de tudo num painel simples
 // (Pedidos, Cardápio, Entregadores e Minha loja). O caixa completo continua disponível para quem quiser.
 import { CIDADES_RJ } from '../cidades-rj';
+import { CULINARIAS } from '../culinarias';
 import { faltam, useRelogio } from '../tempo';
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
@@ -8,8 +9,7 @@ import { del, ErroApp, get, post, put } from '../api';
 import { Modal, msgErro, reduzirFoto } from '../comuns';
 import { Ic } from '../icones';
 
-const TIPOS: [string, string][] = [['lanches', 'Lanches'], ['hamburgueria', 'Hamburgueria'], ['pizzaria', 'Pizzaria'], ['restaurante', 'Restaurante'], ['marmitaria', 'Marmitaria'],
-  ['acai', 'Açaí e sorvetes'], ['pastelaria', 'Pastelaria'], ['japonesa', 'Comida japonesa'], ['doces', 'Doces e bolos'], ['bebidas', 'Bebidas']];
+const TIPOS: [string, string][] = CULINARIAS.map(([v, n]) => [v, n]);
 interface Empresa { id: string; nome: string; cnpj: string | null; telefone: string | null; endereco: string | null; cidade: string | null; uf: string | null; mensagem_cupom: string | null;
   formas_pagamento: Forma[]; desconto_max_caixa: number; largura_cupom: string; taxa_entrega_padrao: number; no_app: boolean; aceitando: boolean; slug: string | null; acesso_ate: string | null }
 interface Eu { usuario: { nome: string }; empresa: Empresa }
