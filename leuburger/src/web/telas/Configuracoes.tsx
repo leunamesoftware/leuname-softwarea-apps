@@ -8,9 +8,10 @@ import { Carregando, Falha, Modal, msgErro, useAviso, useDados, Vazio } from '..
 import { Ic } from '../icones';
 import { Cabeca } from '../Layout';
 import { useSessao, type Empresa } from '../sessao';
+import { LojaApp } from './LojaApp';
 
-type Aba = 'empresa' | 'usuarios' | 'pagamento' | 'impressao' | 'backup';
-const ABAS: [Aba, string, string][] = [['empresa', 'Dados da empresa', 'loja'], ['usuarios', 'Usuários e permissões', 'usuario'], ['pagamento', 'Pagamento e caixa', 'cartao'], ['impressao', 'Impressão', 'impressora'], ['backup', 'Backup', 'backup']];
+type Aba = 'empresa' | 'usuarios' | 'pagamento' | 'impressao' | 'backup' | 'app';
+const ABAS: [Aba, string, string][] = [['empresa', 'Dados da empresa', 'loja'], ['app', 'Loja no app', 'sino'], ['usuarios', 'Usuários e permissões', 'usuario'], ['pagamento', 'Pagamento e caixa', 'cartao'], ['impressao', 'Impressão', 'impressora'], ['backup', 'Backup', 'backup']];
 const lerLocal = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const gravarLocal = (k: string, v: string | null) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
 
@@ -36,6 +37,7 @@ export function Configuracoes() {
       {aba === 'pagamento' && <PagamentoCaixa />}
       {aba === 'impressao' && <Impressao />}
       {aba === 'backup' && <Backup />}
+      {aba === 'app' && <LojaApp />}
     </>
   );
 }

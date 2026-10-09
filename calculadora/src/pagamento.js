@@ -24,7 +24,7 @@ export async function criarPedido(env, origem, d, req) {
   const nome = String(d?.nome || '').trim().slice(0, 80);
   const email = String(d?.email || '').trim().toLowerCase().slice(0, 120);
   const plano = String(d?.plano || 'basico');
-  if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano]) return { erro: 'dados_invalidos', status: 400 };
+  if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano] || PLANOS[plano].foraDeVenda) return { erro: 'dados_invalidos', status: 400 };
   if (!senhaValida(d?.senha)) return { erro: 'senha_curta', status: 400 };
   const P = PLANOS[plano];
   // A compra fica ligada à conta (e-mail + senha): o app libera pela conta, sem chave.

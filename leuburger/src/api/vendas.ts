@@ -100,7 +100,7 @@ const esqVenda = z.object({
   entrega: z.object({ endereco: z.string().trim().max(200), taxa: z.number().int().min(0).max(100000) }).nullable().optional(),
 });
 
-async function vendaCompleta(c: C, id: string) {
+export async function vendaCompleta(c: C, id: string) {
   const db = c.env.BANCO, emp = c.get('empresa').id;
   const v = await db.prepare(`SELECT v.*, u.nome AS operador, cl.nome AS cliente, cl.telefone AS cliente_telefone, uc.nome AS cancelada_por_nome FROM vendas v
     LEFT JOIN usuarios u ON u.id = v.usuario_id LEFT JOIN clientes cl ON cl.id = v.cliente_id LEFT JOIN usuarios uc ON uc.id = v.cancelada_por
@@ -114,10 +114,17 @@ async function vendaCompleta(c: C, id: string) {
 vendas.post('/vendas', async (c) => {
   exigir(c, 'vender');
   const d = validar(esqVenda, await corpo(c));
+  const r = await registrarVenda(c, d);
+  return c.json({ ok: true, ...(r.repetida ? { repetida: true } : {}), venda: await vendaCompleta(c, r.id) }, r.repetida ? 200 : 201);
+});
+
+export type DadosVenda = z.infer<typeof esqVenda>;
+/** Registra a venda (caixa, pedido aceito do app): recalcula tudo com os preços do cadastro, baixa estoque e numera. */
+export async function registrarVenda(c: C, d: DadosVenda): Promise<{ id: string; repetida: boolean }> {
   const db = c.env.BANCO, emp = c.get('empresa'), u = c.get('usuario');
   // Mesmo pedido enviado de novo (clique duplo, internet que caiu e voltou): devolve a venda que já existe.
   const ja = await db.prepare('SELECT id FROM vendas WHERE empresa_id = ? AND chave = ?').bind(emp.id, d.chave).first<{ id: string }>();
-  if (ja) return c.json({ ok: true, repetida: true, venda: await vendaCompleta(c, ja.id) });
+  if (ja) return { id: ja.id, repetida: true };
   const cx = await caixaAberto(c);
   if (!cx) throw erro(409, 'caixa_fechado', 'Abra o caixa antes de vender.');
   if (d.clienteId && !(await db.prepare('SELECT 1 FROM clientes WHERE id = ? AND empresa_id = ?').bind(d.clienteId, emp.id).first())) throw erro(400, 'dados_invalidos', 'Cliente inválido.');
@@ -172,11 +179,11 @@ vendas.post('/vendas', async (c) => {
   } catch (e) {
     // Dois envios iguais ao mesmo tempo: o segundo bate na chave única e devolve a venda do primeiro.
     const outra = await db.prepare('SELECT id FROM vendas WHERE empresa_id = ? AND chave = ?').bind(emp.id, d.chave).first<{ id: string }>();
-    if (outra) return c.json({ ok: true, repetida: true, venda: await vendaCompleta(c, outra.id) });
+    if (outra) return { id: outra.id, repetida: true };
     throw e;
   }
-  return c.json({ ok: true, venda: await vendaCompleta(c, id) }, 201);
-});
+  return { id, repetida: false };
+}
 
 vendas.get('/vendas', async (c) => {
   exigir(c, 'verPedidos');

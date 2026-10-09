@@ -8,7 +8,9 @@ export default {
   async fetch(req: Request, env: Env, ctx: unknown): Promise<Response> {
     const url = new URL(req.url);
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) return app.fetch(req, env, ctx as never);
-    const r = await env.ASSETS!.fetch(req);
+    // App dos clientes: /pedir, /pedir/<loja> e /pedir/pedido/<código> abrem a página do app (os arquivos seguem normais).
+    const ehPaginaDoApp = url.pathname === '/pedir' || (url.pathname.startsWith('/pedir/') && !/\.[a-z0-9]+$/i.test(url.pathname));
+    const r = await env.ASSETS!.fetch(ehPaginaDoApp ? new Request(new URL('/pedir/', url), req) : req);
     // Página do app nunca fica velha no aparelho (os arquivos com hash no nome ficam guardados).
     if ((r.headers.get('Content-Type') || '').includes('text/html')) {
       const h = new Response(r.body, r);

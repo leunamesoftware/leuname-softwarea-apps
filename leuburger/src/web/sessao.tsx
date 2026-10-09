@@ -6,7 +6,7 @@ import { get, post, quandoPerderSessao } from './api';
 
 export interface Empresa {
   id: string; nome: string; cnpj: string | null; telefone: string | null; endereco: string | null; cidade: string | null; uf: string | null;
-  mensagem_cupom: string | null; formas_pagamento: string[]; desconto_max_caixa: number; largura_cupom: '58' | '80'; acesso_ate: string | null; taxa_entrega_padrao: number;
+  mensagem_cupom: string | null; formas_pagamento: string[]; desconto_max_caixa: number; largura_cupom: '58' | '80'; acesso_ate: string | null; taxa_entrega_padrao: number; no_app: boolean; aceitando: boolean; slug: string | null;
 }
 export interface Eu { usuario: { id: string; nome: string; login: string; papel: Papel; dono: boolean }; empresa: Empresa }
 

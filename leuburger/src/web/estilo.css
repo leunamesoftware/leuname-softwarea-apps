@@ -448,3 +448,8 @@ tr.clicavel { cursor: pointer; } tr.clicavel:hover td { background: #FFF8F4; }
 .passos li.feito .bola { background: var(--verde); border-color: var(--verde); color: #fff; }
 .passos li.atual .bola { background: var(--laranja); border-color: var(--laranja); box-shadow: 0 0 0 5px var(--laranja-claro); }
 .passos li small { color: var(--suave); font-weight: 600; }
+.app-pedidos { border-color: var(--laranja-borda); }
+.app-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.ped.novo { border: 2px solid var(--laranja); animation: pisca 1.6s ease-in-out 3; }
+@keyframes pisca { 50% { box-shadow: 0 0 0 6px var(--laranja-claro); } }
+.abre-fecha { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--texto); }

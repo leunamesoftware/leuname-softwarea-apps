@@ -97,7 +97,7 @@
         planos: { mensal: 39.9, unico: 200 }, parcelas: 6 },
       leuburger: { nome: 'LeuBurger PDV', url: 'https://leuburger.leunamesoftware.com.br',
         itens: ['🍔 Frente de caixa com tamanhos, adicionais e “sem cebola”', '🧾 Comprovante na impressora térmica e pelo WhatsApp', '📦 Estoque que baixa sozinho, caixa e relatórios de lucro'],
-        planos: { mensal: 29.9, unico: 149.9 }, parcelas: 6 },
+        planos: { mensal: 29.9 } }, // só assinatura mensal (inclui o app de pedidos LeuPede)
     };
     const busca = new URLSearchParams(location.search);
     const app = busca.get('app');

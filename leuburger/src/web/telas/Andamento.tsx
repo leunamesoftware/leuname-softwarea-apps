@@ -7,6 +7,7 @@ import { Carregando, Falha, Modal, msgErro, useAviso, useDados, Vazio } from '..
 import { Ic } from '../icones';
 import { Cabeca } from '../Layout';
 import { useSessao } from '../sessao';
+import { PedidosApp } from './PedidosApp';
 
 export interface PedidoAndamento {
   id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; total: number; troco: number; criado_em: string; pronto_em: string | null; saiu_em: string | null;
@@ -75,6 +76,7 @@ export function Andamento() {
   return (
     <>
       <Cabeca titulo="Acompanhar pedidos" sub="Cozinha, retirada e entregas. Atualiza sozinho." />
+      <PedidosApp aoAceitar={d.recarregar} />
       {!lista.length ? <div className="cartao"><Vazio icone="pedidos" titulo="Nenhum pedido em andamento" texto="Os pedidos aparecem aqui assim que a venda é finalizada no caixa." /></div> : (
         <div className="quadro">
           {colunas.map((col) => (

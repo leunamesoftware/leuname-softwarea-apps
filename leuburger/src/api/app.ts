@@ -5,6 +5,7 @@ import { auth, exigirSessao } from './auth';
 import { ErroApi, type Env, type Vars } from './base';
 import { cadastros } from './cadastros';
 import { gestao } from './gestao';
+import { appLoja, appPublico } from './online';
 import { vendas } from './vendas';
 
 export function criarApp() {
@@ -30,10 +31,12 @@ export function criarApp() {
   app.get('/saude', (c) => c.json({ ok: true }));
   app.route('/auth', auth);
   app.route('/', publico); // links do cliente e do motoboy (sem login)
+  app.route('/', appPublico); // app de pedidos dos clientes (sem login)
   app.use('*', exigirSessao);
   app.route('/', gestao);
   app.route('/', cadastros);
   app.route('/', vendas);
   app.route('/', andamento);
+  app.route('/', appLoja);
   return app;
 }

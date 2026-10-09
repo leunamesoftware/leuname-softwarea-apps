@@ -271,3 +271,77 @@ describe('cadastros, estoque e relatórios', () => {
     expect(r.status).not.toBe(403); // mesma origem passa (o teste não manda Origin)
   });
 });
+
+describe('LeuPede (app de pedidos dos clientes)', () => {
+  async function lojaNoApp() {
+    const { n, p } = await donoComCardapio();
+    await n.put('/empresa', { nome: 'Burger da Ana', cidade: 'Campinas', uf: 'SP', formas_pagamento: ['dinheiro', 'pix', 'debito', 'credito'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 500 });
+    const cfg = { slug: 'burger-da-ana', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'hamburgueria', descricao: 'Os melhores da cidade', tempo_entrega: '30-45 min', pedido_minimo: 1500, lat: -22.9, lng: -47.06, raio_km: 5 };
+    expect((await n.put('/loja-app', cfg)).status).toBe(200);
+    return { n, p, cfg };
+  }
+
+  it('cliente acha a loja perto, vê o cardápio sem custo e faz o pedido; a loja aceita e vira venda', async () => {
+    const { n, p } = await lojaNoApp();
+    const cli = A.navegador();
+    // Perto (≈1 km): aparece e entrega; longe (> 40 km): não aparece.
+    const perto = await cli.get('/publico/app/lojas?lat=-22.91&lng=-47.06');
+    expect(perto.corpo.lojas).toHaveLength(1);
+    expect(perto.corpo.lojas[0]).toMatchObject({ slug: 'burger-da-ana', entrega_aqui: true, taxa_entrega: 500 });
+    expect((await cli.get('/publico/app/lojas?lat=-23.55&lng=-46.63')).corpo.lojas).toHaveLength(0);
+    expect((await cli.get('/publico/app/lojas?cidade=campinas')).corpo.lojas).toHaveLength(1);
+    const card = await cli.get('/publico/app/loja/burger-da-ana');
+    expect(card.corpo.produtos.length).toBeGreaterThan(5);
+    expect(card.corpo.produtos[0].custo).toBeUndefined();
+    expect(card.corpo.produtos[0].receita).toBeUndefined();
+
+    const pedido = { chave: 'app-cliente-0001', nome: 'Maria', telefone: '(19) 99876-5432', tipo: 'entrega', endereco: 'Rua das Flores, 10', forma: 'dinheiro', trocoPara: 5000,
+      itens: [{ produtoId: p('X-Bacon').id, qtd: 1, adicionais: ['Bacon extra'] }] };
+    // Abaixo do mínimo (R$ 15): um refri só não passa.
+    expect((await cli.post('/publico/app/loja/burger-da-ana/pedido', { ...pedido, chave: 'app-min-0001', itens: [{ produtoId: p('Refrigerante Lata').id, qtd: 1 }] })).status).toBe(400);
+    const r = await cli.post('/publico/app/loja/burger-da-ana/pedido', pedido);
+    expect(r.status).toBe(201);
+    expect((await cli.post('/publico/app/loja/burger-da-ana/pedido', pedido)).corpo.token).toBe(r.corpo.token); // toque duplo
+    let acomp = await cli.get(`/publico/app/pedido/${r.corpo.token}`);
+    expect(acomp.corpo.pedido).toMatchObject({ situacao: 'aguardando', total: 2290 + 400 + 500, taxa_entrega: 500 });
+
+    // Loja: aceitar exige caixa aberto; depois vira venda com o cliente cadastrado e o troco para R$ 50.
+    const lista = await n.get('/pedidos-app');
+    const o = lista.corpo.pedidos[0];
+    expect((await n.post(`/pedidos-app/${o.id}/aceitar`)).status).toBe(409);
+    await n.post('/caixa/abrir', { fundo: 0 });
+    const ac = await n.post(`/pedidos-app/${o.id}/aceitar`);
+    expect(ac.status).toBe(200);
+    const venda = (await n.get(`/vendas/${ac.corpo.venda_id}`)).corpo.venda;
+    expect(venda).toMatchObject({ total: 3190, troco: 1810, tipo: 'entrega', endereco_entrega: 'Rua das Flores, 10', cliente: 'Maria', andamento: 'preparando' });
+    acomp = await cli.get(`/publico/app/pedido/${r.corpo.token}`);
+    expect(acomp.corpo.pedido).toMatchObject({ situacao: 'preparando', numero: venda.numero });
+    await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'a_caminho' });
+    expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.situacao).toBe('a_caminho');
+    // Aceitar de novo não duplica.
+    expect((await n.post(`/pedidos-app/${o.id}/aceitar`)).corpo.repetido).toBe(true);
+    expect((A.db.prepare('SELECT COUNT(*) AS n FROM vendas').get() as { n: number }).n).toBe(1);
+  });
+
+  it('recusar com motivo; loja fechada não recebe; outra loja não vê os pedidos; slug único', async () => {
+    const { n, p, cfg } = await lojaNoApp();
+    const cli = A.navegador();
+    const base = { nome: 'Jorge', telefone: '19988887777', tipo: 'balcao', forma: 'pix', itens: [{ produtoId: p('X-Tudo').id, qtd: 1 }] };
+    const r = await cli.post('/publico/app/loja/burger-da-ana/pedido', { ...base, chave: 'app-jorge-0001' });
+    const o = (await n.get('/pedidos-app')).corpo.pedidos[0];
+    expect((await n.post(`/pedidos-app/${o.id}/recusar`, { motivo: 'Acabou o pão' })).status).toBe(200);
+    expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido).toMatchObject({ situacao: 'recusado', motivo_recusa: 'Acabou o pão' });
+    await n.post('/loja-app/aceitando', { aceitando: false });
+    expect((await cli.post('/publico/app/loja/burger-da-ana/pedido', { ...base, chave: 'app-jorge-0002' })).status).toBe(409);
+
+    const beto = A.navegador();
+    await beto.post('/auth/entrar', { login: 'beto@burger.com', senha: 'senha-beto' });
+    expect((await beto.get('/pedidos-app')).corpo.pedidos).toHaveLength(0);
+    expect((await beto.post(`/pedidos-app/${o.id}/aceitar`)).status).toBe(404);
+    await beto.put('/empresa', { nome: 'Beto', cidade: 'Campinas', uf: 'SP', formas_pagamento: ['pix'], desconto_max_caixa: 0, largura_cupom: '80' });
+    expect((await beto.put('/loja-app', { ...cfg })).status).toBe(409);
+    // Loja sem produtos não aparece no app.
+    expect((await beto.put('/loja-app', { ...cfg, slug: 'beto-burger' })).status).toBe(200);
+    expect((await cli.get('/publico/app/loja/beto-burger')).status).toBe(404);
+  });
+});
