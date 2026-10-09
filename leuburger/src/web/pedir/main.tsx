@@ -38,7 +38,7 @@ interface Guardado {
   nome: string; telefone: string; endereco: string;
   local: { lat: number; lng: number } | null; cidade: string;
   lojas: { slug: string; nome: string; logo_id: string | null; tipo: string }[];
-  pedidos: { token: string; loja: string; slug: string; criado_em: string }[];
+  pedidos: { token: string; loja: string; slug: string; criado_em: string; fim?: boolean }[];
   favoritos: string[];
 }
 const CHAVE = 'leupede';
@@ -93,7 +93,7 @@ function useLojas(busca = '') {
 
 function Abas() {
   const { pathname } = useLocation();
-  const ativos = ler().pedidos.filter((p) => Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3).length;
+  const ativos = ler().pedidos.filter((p) => !p.fim && Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3).length;
   const item = (para: string, ic: string, nome: string, extra?: number) => (
     <Link className={pathname === para ? 'ativo' : ''} to={para}><span className="bolha"><Ic n={ic} />{extra ? <i>{extra}</i> : null}</span>{nome}</Link>
   );
@@ -194,12 +194,16 @@ function Buscar() {
 }
 
 // ---------- meus pedidos ----------
+/** Pedido encerrado (entregue, retirado, recusado ou cancelado) não conta mais como "em andamento" na aba Pedidos. */
+function marcarFim(token: string, situacao: string) {
+  if (['entregue', 'retirado', 'recusado', 'cancelado'].includes(situacao)) gravar((x) => ({ ...x, pedidos: x.pedidos.map((p) => (p.token === token ? { ...p, fim: true } : p)) }));
+}
 function MeusPedidos() {
   const g = ler();
   const [sit, setSit] = useState<Record<string, { situacao: string; total: number; numero: number | null }>>({});
   useEffect(() => {
     g.pedidos.slice(0, 15).forEach((p) => get<{ pedido: { situacao: string; total: number; numero: number | null } }>(`/publico/app/pedido/${p.token}`)
-      .then((r) => setSit((x) => ({ ...x, [p.token]: r.pedido }))).catch(() => {}));
+      .then((r) => { setSit((x) => ({ ...x, [p.token]: r.pedido })); marcarFim(p.token, r.pedido.situacao); }).catch(() => {}));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="pd com-abas">
@@ -569,7 +573,7 @@ function Pedido() {
   const [vez, setVez] = useState(0);
   useEffect(() => {
     let parar = false;
-    const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => { if (!parar) { setP(r.pedido); setErro(''); } }).catch((e) => setErro(msgErro(e)));
+    const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => { if (!parar) { setP(r.pedido); setErro(''); marcarFim(token, r.pedido.situacao); } }).catch((e) => setErro(msgErro(e)));
     carregar();
     const t = setInterval(() => { if (!document.hidden) carregar(); }, 10000);
     return () => { parar = true; clearInterval(t); };
@@ -600,7 +604,7 @@ function Pedido() {
           })() : <p className="mapa-eta"><small>Assim que o entregador abrir o app, você o vê no mapa.</small></p>}
         </section>}
         {!['recusado', 'cancelado'].includes(p.situacao) && <section className="cartao"><ol className="passos">
-          {passos.map((x, k) => <li key={k} className={`${k <= pos ? 'feito' : ''} ${k === pos ? 'atual' : ''}`}><span className="bola">{k <= pos ? <Ic n="check" t={16} /> : null}</span><b>{x.t}</b>{k <= pos && <small>{hora(x.h)}</small>}</li>)}
+          {passos.map((x, k) => <li key={k} className={`${k <= pos ? 'feito' : ''} ${k === pos && !final ? 'atual' : ''}`}><span className="bola">{k <= pos ? <Ic n="check" t={16} /> : null}</span><b>{x.t}</b>{k <= pos && <small>{hora(x.h)}</small>}</li>)}
         </ol></section>}
         {['entregue', 'retirado'].includes(p.situacao) && (p.avaliacao ? <section className="cartao" style={{ textAlign: 'center' }}><b>Sua avaliação</b><div className="estrelas-amarelas" style={{ fontSize: 26 }}>{'★'.repeat(p.avaliacao.nota)}{'☆'.repeat(5 - p.avaliacao.nota)}</div>{p.avaliacao.comentario && <p style={{ margin: 0, color: 'var(--suave)' }}>{p.avaliacao.comentario}</p>}</section>
           : <Avaliar token={token} aoAvaliar={() => setVez((x) => x + 1)} />)}
