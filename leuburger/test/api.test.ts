@@ -380,15 +380,15 @@ describe('Pedêê: lojista cadastra a loja pelo app', () => {
 });
 
 describe('Pedêê Entregador (app do motoboy)', () => {
-  it('motoboy se cadastra, a loja vincula pelo WhatsApp, escolhe quem entrega e ele marca saí/entreguei no app', async () => {
+  it('motoboy se cadastra, a loja vincula pelo e-mail, escolhe quem entrega e ele marca saí/entreguei no app', async () => {
     const { n, p } = await donoComCardapio();
     await n.post('/caixa/abrir', { fundo: 0 });
     const moto = A.navegador();
     // Loja tenta vincular antes do motoboy ter o app.
-    expect((await n.post('/entregadores', { telefone: '21977776666' })).status).toBe(404);
-    expect((await moto.post('/entregador/cadastrar', { nome: 'João Moto', telefone: '(21) 97777-6666', senha: 'moto123', veiculo: 'moto' })).status).toBe(201);
-    expect((await moto.get('/entregador/eu')).corpo.entregador).toMatchObject({ nome: 'João Moto', telefone: '21977776666', disponivel: true });
-    expect((await n.post('/entregadores', { telefone: '21977776666' })).corpo.nome).toBe('João Moto');
+    expect((await n.post('/entregadores', { email: 'joao@moto.com' })).status).toBe(404);
+    expect((await moto.post('/entregador/cadastrar', { nome: 'João Moto', email: ' Joao@Moto.com ', senha: 'moto123', veiculo: 'moto' })).status).toBe(201);
+    expect((await moto.get('/entregador/eu')).corpo.entregador).toMatchObject({ nome: 'João Moto', email: 'joao@moto.com', disponivel: true });
+    expect((await n.post('/entregadores', { email: 'JOAO@moto.com' })).corpo.nome).toBe('João Moto');
     const lista = (await n.get('/entregadores')).corpo.entregadores;
     expect(lista).toHaveLength(1);
     expect((await moto.get('/entregador/eu')).corpo.lojas.length).toBe(1);
@@ -408,7 +408,7 @@ describe('Pedêê Entregador (app do motoboy)', () => {
     await beto.post('/auth/entrar', { login: 'beto@burger.com', senha: 'senha-beto' });
     expect((await beto.post(`/vendas/${v.id}/entregador`, { entregador_id: lista[0].id })).status).toBe(404);
     expect((await A.navegador().get('/entregador/entregas')).status).toBe(401);
-    expect((await A.navegador().post('/entregador/entrar', { telefone: '21977776666', senha: 'errada' })).status).toBe(401);
-    expect((await A.navegador().post('/entregador/entrar', { telefone: '21977776666', senha: 'moto123' })).status).toBe(200);
+    expect((await A.navegador().post('/entregador/entrar', { email: 'joao@moto.com', senha: 'errada' })).status).toBe(401);
+    expect((await A.navegador().post('/entregador/entrar', { email: 'joao@moto.com', senha: 'moto123' })).status).toBe(200);
   });
 });

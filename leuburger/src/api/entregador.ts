@@ -1,5 +1,5 @@
 // Pedêê Entregador: conta própria do motoboy (app dele), separada das contas das lojas.
-// A loja vincula os motoboys dela pelo WhatsApp e escolhe quem leva cada entrega; o motoboy vê só as entregas dele.
+// A loja vincula os motoboys dela pelo e-mail e escolhe quem leva cada entrega; o motoboy vê só as entregas dele.
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { z } from 'zod';
@@ -8,8 +8,8 @@ import { agora, aleatorio, corpo, erro, hashSenha, iguais, novoId, sha256, type 
 import { exigir, validar } from './cadastros';
 
 const COOKIE = 'pe_sessao';
-const digitos = (s: unknown) => String(s ?? '').replace(/\D/g, '');
-interface Entregador { id: string; nome: string; telefone: string; veiculo: string; cidade: string | null; disponivel: number; ativo: number }
+const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
+interface Entregador { id: string; nome: string; email: string; veiculo: string; cidade: string | null; disponivel: number; ativo: number }
 
 async function abrirSessaoEntregador(c: C, id: string) {
   const token = aleatorio();
@@ -25,7 +25,7 @@ async function entregadorLogado(c: C): Promise<Entregador> {
   if (!e) throw erro(401, 'sem_sessao', 'Sua sessão terminou. Entre de novo.');
   return e;
 }
-const publico = (e: Entregador) => ({ id: e.id, nome: e.nome, telefone: e.telefone, veiculo: e.veiculo, cidade: e.cidade, disponivel: Boolean(e.disponivel) });
+const publico = (e: Entregador) => ({ id: e.id, nome: e.nome, email: e.email, veiculo: e.veiculo, cidade: e.cidade, disponivel: Boolean(e.disponivel) });
 
 // ---------- app do entregador ----------
 export const entregador = new Hono<{ Bindings: Env; Variables: Vars }>();
@@ -33,32 +33,32 @@ export const entregador = new Hono<{ Bindings: Env; Variables: Vars }>();
 entregador.post('/entregador/cadastrar', async (c) => {
   const d = validar(z.object({
     nome: z.string().trim().min(2, 'Digite o seu nome.').max(60),
-    telefone: z.string().refine((t) => digitos(t).length >= 10 && digitos(t).length <= 11, 'Digite o WhatsApp com DDD.'),
+    email: z.string().trim().toLowerCase().email('Digite um e-mail válido.').max(120),
     senha: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.').max(100),
-    veiculo: z.enum(['moto', 'bike', 'carro']).default('moto'),
+    veiculo: z.enum(['moto', 'bike']).default('moto'),
     cidade: z.string().trim().max(60).optional().nullable(),
   }), await corpo(c));
-  const tel = digitos(d.telefone), db = c.env.BANCO;
-  if (await db.prepare('SELECT 1 FROM entregadores WHERE telefone = ?').bind(tel).first()) throw erro(409, 'ja_cadastrado', 'Este WhatsApp já tem cadastro. Toque em Entrar.', { telefone: 'Já cadastrado.' });
+  const db = c.env.BANCO;
+  if (await db.prepare('SELECT 1 FROM entregadores WHERE email = ?').bind(d.email).first()) throw erro(409, 'ja_cadastrado', 'Este e-mail já tem cadastro. Toque em "Já tenho cadastro".', { email: 'Já cadastrado.' });
   const id = novoId(), sal = aleatorio(16);
-  await db.prepare('INSERT INTO entregadores (id, nome, telefone, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES (?,?,?,?,?,?,?,?)')
-    .bind(id, d.nome, tel, await hashSenha(d.senha, sal), sal, d.veiculo, d.cidade || null, agora()).run();
+  await db.prepare('INSERT INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES (?,?,?,?,?,?,?,?)')
+    .bind(id, d.nome, d.email, await hashSenha(d.senha, sal), sal, d.veiculo, d.cidade || null, agora()).run();
   await abrirSessaoEntregador(c, id);
   return c.json({ ok: true }, 201);
 });
 
 entregador.post('/entregador/entrar', async (c) => {
-  const d = await corpo<{ telefone?: string; senha?: string }>(c);
-  const tel = digitos(d.telefone), db = c.env.BANCO;
-  if (!tel || !d.senha) throw erro(400, 'dados_invalidos', 'Digite o WhatsApp e a senha.');
-  // Limite de tentativas: 8 a cada 10 minutos por número + rede.
-  const chave = `ent|${tel}|${c.req.header('CF-Connecting-IP') || 'local'}`;
+  const d = await corpo<{ email?: string; senha?: string }>(c);
+  const mail = emailDe(d.email), db = c.env.BANCO;
+  if (!mail || !d.senha) throw erro(400, 'dados_invalidos', 'Digite o e-mail e a senha.');
+  // Limite de tentativas: 8 a cada 10 minutos por e-mail + rede.
+  const chave = `ent|${mail}|${c.req.header('CF-Connecting-IP') || 'local'}`;
   const t = await db.prepare('SELECT qtd, desde FROM tentativas WHERE chave = ?').bind(chave).first<{ qtd: number; desde: string }>();
   const recente = t && Date.now() - new Date(t.desde).getTime() < 6e5;
   if (recente && t!.qtd >= 8) throw erro(429, 'muitas_tentativas', 'Muitas tentativas. Espere 10 minutos.');
   await db.prepare(recente ? 'UPDATE tentativas SET qtd = qtd + 1 WHERE chave = ?' : 'INSERT OR REPLACE INTO tentativas (chave, qtd, desde) VALUES (?, 1, ?)').bind(...(recente ? [chave] : [chave, agora()])).run();
-  const e = await db.prepare('SELECT id, senha_hash, senha_sal FROM entregadores WHERE telefone = ? AND ativo = 1').bind(tel).first<{ id: string; senha_hash: string; senha_sal: string }>();
-  if (!e || !iguais(await hashSenha(String(d.senha), e.senha_sal), e.senha_hash)) throw erro(401, 'login_invalido', 'WhatsApp ou senha não conferem.');
+  const e = await db.prepare('SELECT id, senha_hash, senha_sal FROM entregadores WHERE email = ? AND ativo = 1').bind(mail).first<{ id: string; senha_hash: string; senha_sal: string }>();
+  if (!e || !iguais(await hashSenha(String(d.senha), e.senha_sal), e.senha_hash)) throw erro(401, 'login_invalido', 'E-mail ou senha não conferem.');
   await abrirSessaoEntregador(c, e.id);
   return c.json({ ok: true });
 });
@@ -110,7 +110,7 @@ export const entregadoresDaLoja = new Hono<{ Bindings: Env; Variables: Vars }>()
 
 entregadoresDaLoja.get('/entregadores', async (c) => {
   exigir(c, 'vender');
-  const { results } = await c.env.BANCO.prepare(`SELECT e.id, e.nome, e.telefone, e.veiculo, e.disponivel,
+  const { results } = await c.env.BANCO.prepare(`SELECT e.id, e.nome, e.email, e.veiculo, e.disponivel,
       (SELECT COUNT(*) FROM vendas v WHERE v.entregador_id = e.id AND v.empresa_id = le.empresa_id AND v.status = 'concluida' AND v.andamento IN ('preparando','pronto','a_caminho')) AS em_rota
     FROM loja_entregadores le JOIN entregadores e ON e.id = le.entregador_id WHERE le.empresa_id = ? AND e.ativo = 1 ORDER BY e.nome`).bind(c.get('empresa').id).all();
   return c.json({ entregadores: results.map((e) => ({ ...e, disponivel: Boolean(e.disponivel) })) });
@@ -118,10 +118,10 @@ entregadoresDaLoja.get('/entregadores', async (c) => {
 
 entregadoresDaLoja.post('/entregadores', async (c) => {
   exigir(c, 'configuracoes');
-  const tel = digitos((await corpo<{ telefone?: string }>(c)).telefone);
-  if (tel.length < 10) throw erro(400, 'dados_invalidos', 'Digite o WhatsApp do motoboy com DDD.');
-  const e = await c.env.BANCO.prepare('SELECT id, nome FROM entregadores WHERE telefone = ? AND ativo = 1').bind(tel).first<{ id: string; nome: string }>();
-  if (!e) throw erro(404, 'motoboy_sem_app', 'Este motoboy ainda não tem o app. Peça para ele baixar o Pedêê Entregador e se cadastrar com este WhatsApp.');
+  const mail = emailDe((await corpo<{ email?: string }>(c)).email);
+  if (!mail.includes('@')) throw erro(400, 'dados_invalidos', 'Digite o e-mail do motoboy.');
+  const e = await c.env.BANCO.prepare('SELECT id, nome FROM entregadores WHERE email = ? AND ativo = 1').bind(mail).first<{ id: string; nome: string }>();
+  if (!e) throw erro(404, 'motoboy_sem_app', 'Este motoboy ainda não tem o app. Peça para ele baixar o Pedêê Entregador e se cadastrar com este e-mail.');
   await c.env.BANCO.prepare('INSERT OR IGNORE INTO loja_entregadores (empresa_id, entregador_id, criado_em) VALUES (?,?,?)').bind(c.get('empresa').id, e.id, agora()).run();
   return c.json({ ok: true, nome: e.nome });
 });

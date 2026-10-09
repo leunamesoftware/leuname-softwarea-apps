@@ -328,15 +328,15 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
 }
 
 // ---------- motoboys da loja ----------
-interface Moto { id: string; nome: string; telefone: string; veiculo: string; disponivel: boolean; em_rota: number }
-const VEICULO: Record<string, string> = { moto: '🛵', bike: '🚲', carro: '🚗' };
+interface Moto { id: string; nome: string; email: string; veiculo: string; disponivel: boolean; em_rota: number }
+const VEICULO: Record<string, string> = { moto: '🛵', bike: '🚲' };
 
 function EscolherMotoboy({ pedido, aoFechar, aoEscolher }: { pedido: { numero: number; entregador_id: string | null }; aoFechar: () => void; aoEscolher: (id: string | null) => void }) {
   const [lista, setLista] = useState<Moto[] | null>(null);
   useEffect(() => { get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch(() => setLista([])); }, []);
   return (
     <Modal titulo={`Quem leva o pedido #${pedido.numero}?`} aoFechar={aoFechar}>
-      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <p style={{ margin: 0 }}>Você ainda não tem motoboys. Abra a aba <b>Motoboys</b> e cadastre pelo WhatsApp deles (eles precisam ter o app <b>Pedêê Entregador</b>).</p> : (
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <p style={{ margin: 0 }}>Você ainda não tem motoboys. Abra a aba <b>Motoboys</b> e cadastre pelo e-mail deles (eles precisam ter o app <b>Pedêê Entregador</b>).</p> : (
         <div className="lista-config">{lista.map((m) => (
           <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) com ele` : ''}</small></span>
             <button className={`btn peq ${pedido.entregador_id === m.id ? '' : 'prim'}`} onClick={() => aoEscolher(m.id)}>{pedido.entregador_id === m.id ? 'Escolhido' : 'Escolher'}</button></div>
@@ -348,29 +348,28 @@ function EscolherMotoboy({ pedido, aoFechar, aoEscolher }: { pedido: { numero: n
 }
 
 function Motoboys() {
-  const [lista, setLista] = useState<Moto[] | null>(null), [tel, setTel] = useState(''), [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
+  const [lista, setLista] = useState<Moto[] | null>(null), [email, setEmail] = useState(''), [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
   const carregar = () => get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch((e) => setMsg(msgErro(e)));
   useEffect(() => { carregar(); const t = setInterval(carregar, 20000); return () => clearInterval(t); }, []);
   const adicionar = async () => {
     setOcupado(true); setMsg('');
-    try { const r = await post<{ nome: string }>('/entregadores', { telefone: tel }); setMsg(`${r.nome} agora é motoboy da sua loja.`); setTel(''); carregar(); } catch (e) { setMsg(msgErro(e)); } finally { setOcupado(false); }
+    try { const r = await post<{ nome: string }>('/entregadores', { email }); setMsg(`${r.nome} agora é motoboy da sua loja.`); setEmail(''); carregar(); } catch (e) { setMsg(msgErro(e)); } finally { setOcupado(false); }
   };
   const tirar = async (m: Moto) => { if (!confirm(`Tirar ${m.nome} dos motoboys da loja?`)) return; await del(`/entregadores/${m.id}`).catch(() => {}); carregar(); };
   return (
     <>
       <section className="cartao">
         <h2 className="cartao-tit">Seus motoboys</h2>
-        <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>O motoboy baixa o app <b>Pedêê Entregador</b> e se cadastra. Depois você coloca o WhatsApp dele aqui. Quando o pedido ficar pronto, você escolhe quem leva e a entrega aparece no app dele, com aviso.</p>
+        <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>O motoboy baixa o app <b>Pedêê Entregador</b> e se cadastra. Depois você coloca o e-mail dele aqui. Quando o pedido ficar pronto, você escolhe quem leva e a entrega aparece no app dele, com aviso.</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 8 }}>
-          <input value={tel} onChange={(e) => setTel(e.target.value)} inputMode="tel" placeholder="WhatsApp do motoboy" aria-label="WhatsApp do motoboy" />
-          <button className="btn prim" onClick={adicionar} disabled={ocupado || tel.replace(/\D/g, '').length < 10}><Ic n="mais" />Adicionar</button>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" placeholder="E-mail do motoboy" aria-label="E-mail do motoboy" />
+          <button className="btn prim" onClick={adicionar} disabled={ocupado || !email.includes('@')}><Ic n="mais" />Adicionar</button>
         </div>
         {msg && <p className="aviso" style={{ marginBottom: 0 }}>{msg}</p>}
       </section>
-      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>🛵</span><b>Nenhum motoboy ainda</b><span>Adicione pelo WhatsApp acima.</span></div> : (
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>🛵</span><b>Nenhum motoboy ainda</b><span>Adicione pelo e-mail acima.</span></div> : (
         <section className="cartao"><div className="lista-config">{lista.map((m) => (
           <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) agora` : ''}</small></span>
-            <a className="btn-ic" href={wa(m.telefone)} target="_blank" rel="noopener" aria-label={`WhatsApp de ${m.nome}`}><Ic n="whatsapp" /></a>
             <button className="btn-ic vermelho" onClick={() => tirar(m)} aria-label={`Tirar ${m.nome}`}><Ic n="lixeira" /></button></div>
         ))}</div></section>
       )}

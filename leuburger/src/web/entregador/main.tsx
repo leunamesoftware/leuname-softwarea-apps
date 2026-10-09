@@ -10,7 +10,7 @@ import '../estilo.css';
 import '../pedir/pedir.css';
 import './entregador.css';
 
-interface Eu { entregador: { nome: string; telefone: string; veiculo: string; disponivel: boolean }; lojas: { nome: string; cidade: string | null }[] }
+interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
   id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
   loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null;
@@ -41,14 +41,14 @@ const Topo = ({ children }: { children?: React.ReactNode }) => (
 
 function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
   const [aba, setAba] = useState<'cadastrar' | 'entrar'>('cadastrar');
-  const [f, setF] = useState({ nome: '', telefone: '', senha: '', veiculo: 'moto', cidade: '' });
+  const [f, setF] = useState({ nome: '', email: '', senha: '', veiculo: 'moto', cidade: '' });
   const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
   const muda = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF({ ...f, [k]: e.target.value }); setErro(''); };
   const enviar = async () => {
     setOcupado(true);
     try {
-      if (aba === 'entrar') await post('/entregador/entrar', { telefone: f.telefone, senha: f.senha });
-      else await post('/entregador/cadastrar', { nome: f.nome, telefone: f.telefone, senha: f.senha, veiculo: f.veiculo, cidade: f.cidade || null });
+      if (aba === 'entrar') await post('/entregador/entrar', { email: f.email, senha: f.senha });
+      else await post('/entregador/cadastrar', { nome: f.nome, email: f.email, senha: f.senha, veiculo: f.veiculo, cidade: f.cidade || null });
       aoEntrar();
     } catch (e) { setErro(e instanceof ErroApp && e.campos ? Object.values(e.campos)[0] || msgErro(e) : msgErro(e)); } finally { setOcupado(false); }
   };
@@ -59,7 +59,7 @@ function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
         <section className="cartao" style={{ textAlign: 'center' }}>
           <span style={{ fontSize: 48 }}>🛵</span>
           <h1 style={{ margin: '4px 0', fontSize: 22 }}>Entregue com o Pedêê</h1>
-          <p style={{ margin: 0, color: 'var(--suave)' }}>Cadastre-se e passe o seu WhatsApp para as lojas. As entregas chegam aqui, com aviso.</p>
+          <p style={{ margin: 0, color: 'var(--suave)' }}>Cadastre-se e passe o seu e-mail para as lojas. As entregas chegam aqui, com aviso.</p>
         </section>
         <div className="chips">
           <button className={`chip ${aba === 'cadastrar' ? 'sel' : ''}`} onClick={() => { setAba('cadastrar'); setErro(''); }}>Quero me cadastrar</button>
@@ -67,9 +67,9 @@ function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
         </div>
         <section className="cartao"><div className="campos">
           {aba === 'cadastrar' && <label className="campo largo">Seu nome<input value={f.nome} onChange={muda('nome')} autoComplete="name" maxLength={60} /></label>}
-          <label className="campo largo">WhatsApp<input value={f.telefone} onChange={muda('telefone')} inputMode="tel" autoComplete="tel" placeholder="(21) 99999-9999" /></label>
+          <label className="campo largo">E-mail<input type="email" value={f.email} onChange={muda('email')} inputMode="email" autoComplete="username" placeholder="seunome@email.com" /></label>
           {aba === 'cadastrar' && <>
-            <label className="campo">Entrega de<select value={f.veiculo} onChange={muda('veiculo')}><option value="moto">🛵 Moto</option><option value="bike">🚲 Bicicleta</option><option value="carro">🚗 Carro</option></select></label>
+            <label className="campo">Entrega de<select value={f.veiculo} onChange={muda('veiculo')}><option value="moto">🛵 Moto</option><option value="bike">🚲 Bicicleta</option></select></label>
             <label className="campo">Cidade<input value={f.cidade} onChange={muda('cidade')} maxLength={60} placeholder="Ex.: Duque de Caxias" /></label>
           </>}
           <label className="campo largo">Senha<input type="password" value={f.senha} onChange={muda('senha')} autoComplete={aba === 'entrar' ? 'current-password' : 'new-password'} placeholder={aba === 'cadastrar' ? 'Pelo menos 6 letras ou números' : ''} /></label>
@@ -108,7 +108,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
         {erro && <p className="aviso erro">{erro}</p>}
         <h2 className="pd-tit">Suas entregas agora</h2>
         {lista == null ? <div className="carregando"><div className="giro" /></div> : !ativas.length ? (
-          <div className="vazio"><span style={{ fontSize: 44 }}>🛵</span><b>Nenhuma entrega com você</b><span>{eu.lojas.length ? 'Quando a loja passar uma entrega para você, ela aparece aqui com aviso. Deixe o app aberto.' : 'Passe o seu WhatsApp para a loja te adicionar como motoboy dela.'}</span></div>
+          <div className="vazio"><span style={{ fontSize: 44 }}>🛵</span><b>Nenhuma entrega com você</b><span>{eu.lojas.length ? 'Quando a loja passar uma entrega para você, ela aparece aqui com aviso. Deixe o app aberto.' : 'Passe o seu e-mail para a loja te adicionar como motoboy dela.'}</span></div>
         ) : ativas.map((x) => {
           const dinheiro = (x.formas || '').includes('dinheiro');
           return (
@@ -140,7 +140,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
         ))}</>}
         <section className="cartao">
           <h2 className="cartao-tit">Lojas onde você entrega</h2>
-          {!eu.lojas.length ? <p style={{ margin: 0, color: 'var(--suave)' }}>Nenhuma ainda. Passe o seu WhatsApp (<b>{eu.entregador.telefone}</b>) para a loja te adicionar no app Pedêê Parceiro.</p>
+          {!eu.lojas.length ? <p style={{ margin: 0, color: 'var(--suave)' }}>Nenhuma ainda. Passe o seu e-mail (<b>{eu.entregador.email}</b>) para a loja te adicionar no app Pedêê Parceiro.</p>
             : <div className="lista-config">{eu.lojas.map((l) => <div key={l.nome}><span>🏪 {l.nome}{l.cidade ? ` · ${l.cidade}` : ''}</span></div>)}</div>}
         </section>
         <button className="btn bloco" onClick={async () => { await post('/entregador/sair').catch(() => {}); aoSair(); }}><Ic n="sair" />Sair</button>
