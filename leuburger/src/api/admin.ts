@@ -3,9 +3,10 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { z } from 'zod';
-import { agora, aleatorio, corpo, erro, sha256, type C, type Env, type Vars } from './base';
+import { agora, aleatorio, corpo, erro, sha256, type C, type Env, type Usuario, type Vars } from './base';
 import { validar } from './cadastros';
-import { enviarFoto } from './entregador';
+import { abrirSessao } from './auth';
+import { abrirSessaoEntregador, enviarFoto } from './entregador';
 
 const COOKIE = 'adm_sessao', LOJA = 'https://www.leunamesoftware.com.br';
 const dias = (n: number) => new Date(Date.now() - n * 864e5).toISOString();
@@ -121,4 +122,24 @@ admin.get('/admin/clientes', async (c) => {
   const { results } = await c.env.BANCO.prepare(`SELECT a.nome, a.email, a.telefone, a.criado_em,
       (SELECT COUNT(*) FROM pedidos_online o WHERE o.conta_id = a.id) AS pedidos FROM contas_cliente a ORDER BY a.criado_em DESC LIMIT 300`).all();
   return c.json({ clientes: results });
+});
+
+/** Central de testes: o dono entra, com um toque, na loja de teste e no entregador de teste (contas de demonstração). */
+export const LOGIN_LOJA_TESTE = '21900000001', EMAIL_ENTREGADOR_TESTE = 'motoboy@teste.pedee';
+admin.post('/admin/teste/:papel', async (c) => {
+  await exigirAdmin(c);
+  const db = c.env.BANCO, papel = c.req.param('papel');
+  if (papel === 'loja') {
+    const u = await db.prepare("SELECT u.* FROM usuarios u JOIN empresas e ON e.id = u.empresa_id WHERE u.login = ? AND u.ativo = 1 AND e.conta_email LIKE 'demo-%@leupede.demo'").bind(LOGIN_LOJA_TESTE).first<Usuario>();
+    if (!u) throw erro(404, 'sem_teste', 'A loja de teste não está carregada. Rode a publicação com as lojas de demonstração.');
+    await abrirSessao(c, u);
+    return c.json({ ok: true, url: '/parceiro/' });
+  }
+  if (papel === 'entregador') {
+    const e = await db.prepare('SELECT id FROM entregadores WHERE email = ? AND ativo = 1').bind(EMAIL_ENTREGADOR_TESTE).first<{ id: string }>();
+    if (!e) throw erro(404, 'sem_teste', 'O entregador de teste não está carregado.');
+    await abrirSessaoEntregador(c, e.id);
+    return c.json({ ok: true, url: '/entregador/' });
+  }
+  throw erro(400, 'papel_invalido', 'Escolha loja ou entregador.');
 });

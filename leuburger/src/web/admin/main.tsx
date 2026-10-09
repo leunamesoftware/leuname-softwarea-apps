@@ -7,7 +7,7 @@ import { msgErro } from '../comuns';
 import '../estilo.css';
 import './admin.css';
 
-type Aba = 'resumo' | 'lojas' | 'entregadores' | 'pedidos' | 'clientes';
+type Aba = 'testes' | 'resumo' | 'lojas' | 'entregadores' | 'pedidos' | 'clientes';
 type Linha = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const data = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '—');
 const dataHora = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
@@ -41,10 +41,10 @@ function Entrar({ aoEntrar }: { aoEntrar: () => void }) {
 }
 
 function Painel({ aoSair }: { aoSair: () => void }) {
-  const [aba, setAba] = useState<Aba>('resumo');
+  const [aba, setAba] = useState<Aba>('testes');
   const [carga, setCarga] = useState<{ aba: Aba; d: Linha } | null>(null), [erro, setErro] = useState(''), [busca, setBusca] = useState('');
   const carregar = async () => {
-    try { const d = await get(`/admin/${aba}`); setCarga({ aba, d }); setErro(''); }
+    try { const d = aba === 'testes' ? (await get('/admin/eu'), {}) : await get(`/admin/${aba}`); setCarga({ aba, d }); setErro(''); }
     catch (e) { if (e instanceof ErroApp && e.status === 401) aoSair(); else setErro(msgErro(e)); }
   };
   useEffect(() => { setBusca(''); carregar(); const t = setInterval(carregar, 30000); return () => clearInterval(t); }, [aba]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -52,7 +52,7 @@ function Painel({ aoSair }: { aoSair: () => void }) {
   const dados = carga?.aba === aba ? carga.d : null;
   const acao = async (url: string, corpo: unknown) => { try { await post(url, corpo); await carregar(); } catch (e) { setErro(msgErro(e)); } };
   const filtra = (l: Linha[]) => { const q = busca.trim().toLowerCase(); return q ? l.filter((x) => JSON.stringify(x).toLowerCase().includes(q)) : l; };
-  const MENU: [Aba, string, string][] = [['resumo', '📊', 'Resumo'], ['lojas', '🏪', 'Lojas'], ['entregadores', '🛵', 'Entregadores'], ['pedidos', '🧾', 'Pedidos'], ['clientes', '👥', 'Clientes']];
+  const MENU: [Aba, string, string][] = [['testes', '🧪', 'Central de testes'], ['resumo', '📊', 'Resumo'], ['lojas', '🏪', 'Lojas'], ['entregadores', '🛵', 'Entregadores'], ['pedidos', '🧾', 'Pedidos'], ['clientes', '👥', 'Clientes']];
   return (
     <div className="adm">
       <aside className="adm-lado">
@@ -61,10 +61,11 @@ function Painel({ aoSair }: { aoSair: () => void }) {
         <button className="adm-sair" onClick={async () => { await post('/admin/sair', {}).catch(() => {}); aoSair(); }}>Sair</button>
       </aside>
       <main className="adm-corpo">
-        <header className="adm-topo"><h1>{MENU.find((m) => m[0] === aba)![2]}</h1>{aba !== 'resumo' && <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar…" aria-label="Buscar" />}</header>
+        <header className="adm-topo"><h1>{MENU.find((m) => m[0] === aba)![2]}</h1>{!['resumo', 'testes'].includes(aba) && <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar…" aria-label="Buscar" />}</header>
         {erro && <p className="aviso erro">{erro}</p>}
         {!dados ? <div className="carregando"><div className="giro" /></div> : <>
           {aba === 'resumo' && <Resumo r={dados} />}
+          {aba === 'testes' && <Testes aoErro={setErro} />}
           {aba === 'lojas' && <table className="adm-tab"><thead><tr><th>Loja</th><th>Cidade</th><th>Pedidos 30d</th><th>Vendido 30d</th><th>Nota</th><th>Acesso até</th><th>No app</th><th /></tr></thead><tbody>
             {filtra(dados.lojas).map((l) => {
               const vencida = l.acesso_ate && new Date(l.acesso_ate) < new Date();
@@ -97,6 +98,31 @@ function Painel({ aoSair }: { aoSair: () => void }) {
         </>}
       </main>
     </div>
+  );
+}
+
+/** Abre cada app como ele é de verdade, já logado nas contas de teste: cliente, loja (Sabor Arte) e entregador. */
+function Testes({ aoErro }: { aoErro: (m: string) => void }) {
+  const abrir = async (papel: 'loja' | 'entregador' | 'cliente') => {
+    const janela = window.open('about:blank', '_blank');
+    try {
+      const url = papel === 'cliente' ? '/pedir/' : (await post<{ url: string }>(`/admin/teste/${papel}`, {})).url;
+      if (janela) janela.location.href = url; else location.href = url;
+    } catch (e) { janela?.close(); aoErro(msgErro(e)); }
+  };
+  const app = (papel: 'cliente' | 'loja' | 'entregador', icone: string, titulo: string, texto: string, link: string) => (
+    <div className="adm-teste"><img src={icone} alt="" /><div><b>{titulo}</b><span>{texto}</span><small>Link para instalar: <a href={link} target="_blank" rel="noopener">{location.origin + link}</a></small></div>
+      <button className="btn prim" onClick={() => abrir(papel)}>Abrir</button></div>
+  );
+  return (
+    <>
+      <p className="adm-nota" style={{ marginTop: 0 }}>Teste tudo daqui, um por vez ou em janelas lado a lado: faça o pedido como cliente, aceite na loja, mande para o entregador e acompanhe até a entrega.</p>
+      <div className="adm-testes">
+        {app('cliente', '/pedir-icone-192.png', '1. Cliente (quem compra)', 'Escolha Duque de Caxias e peça na loja “Sabor Arte (loja de teste)”.', '/pedir/')}
+        {app('loja', '/parceiro-icone-192.png', '2. Minha loja de teste (Sabor Arte)', 'Já entra logado na loja: aceite o pedido, marque Pronto e escolha o entregador.', '/parceiro/')}
+        {app('entregador', '/entregador-icone-192.png', '3. Entregador de teste', 'Já entra logado: Saí para entrega, “Simular trajeto” e Entreguei (com o código do cliente).', '/entregador/')}
+      </div>
+    </>
   );
 }
 

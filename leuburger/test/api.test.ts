@@ -581,6 +581,12 @@ describe('Painel do administrador do Pedêê', () => {
     expect((await adm.post(`/admin/entregadores/${ze.id}`, { ativo: false })).status).toBe(200);
     expect((await moto.get('/entregador/eu')).status).toBe(401);
     expect((await A.navegador().post('/entregador/entrar', { email: 'ze-admin@moto.com', senha: 'moto123' })).status).toBe(401);
+    // Central de testes: sem loja de demonstração não abre; o entregador de teste abre já logado.
+    expect((await adm.post('/admin/teste/loja', {})).status).toBe(404);
+    await A.navegador().post('/entregador/cadastrar', { nome: 'Carlos', email: 'motoboy@teste.pedee', senha: 'moto123', veiculo: 'moto' });
+    expect((await adm.post('/admin/teste/entregador', {})).corpo.url).toBe('/entregador/');
+    expect((await adm.get('/entregador/eu')).corpo.entregador.email).toBe('motoboy@teste.pedee');
+    expect((await intruso.post('/admin/teste/entregador', {})).status).toBe(401);
     await adm.post('/admin/sair', {});
     expect((await adm.get('/admin/resumo')).status).toBe(401);
   });

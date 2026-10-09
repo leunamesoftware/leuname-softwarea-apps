@@ -12,7 +12,7 @@ const COOKIE = 'pe_sessao';
 const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
 interface Entregador { id: string; nome: string; email: string; veiculo: string; cidade: string | null; disponivel: number; ativo: number; foto: string | null }
 
-async function abrirSessaoEntregador(c: C, id: string) {
+export async function abrirSessaoEntregador(c: C, id: string) {
   const token = aleatorio();
   await c.env.BANCO.prepare('INSERT INTO entregador_sessoes (token_hash, entregador_id, expira_em, criado_em) VALUES (?,?,?,?)')
     .bind(await sha256(token), id, new Date(Date.now() + 60 * 864e5).toISOString(), agora()).run();

@@ -39,3 +39,8 @@ body { background: #F4F2FA; }
   .adm-corpo { padding: 14px; overflow-x: auto; }
   .adm-tab { min-width: 720px; }
 }
+.adm-testes { display: grid; gap: 12px; }
+.adm-teste { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(31, 17, 71, .07); }
+.adm-teste img { width: 56px; height: 56px; border-radius: 14px; flex: none; }
+.adm-teste div { display: grid; gap: 2px; flex: 1; min-width: 0; } .adm-teste b { font-size: 17px; } .adm-teste span { color: var(--suave); font-size: 14px; }
+.adm-teste small { font-size: 12px; color: var(--suave); overflow-wrap: anywhere; } .adm-teste a { color: #5B21B6; }
