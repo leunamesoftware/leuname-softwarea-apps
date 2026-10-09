@@ -1,9 +1,22 @@
--- Apaga TODAS as lojas de demonstração  e seus dados.
+-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o motoboy de teste.
+DELETE FROM pagamentos WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
+DELETE FROM venda_itens WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM avaliacoes WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM pedidos_online WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM caixa_movimentos WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM caixas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM estoque_movimentos WHERE item_id IN (SELECT id FROM estoque_itens WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
+DELETE FROM estoque_itens WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM clientes WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM loja_entregadores WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM produtos WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM categorias WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM fotos WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
-DELETE FROM caixas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
+DELETE FROM sessoes WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo') OR usuario_id IN (SELECT id FROM usuarios WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
+DELETE FROM auditoria WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM usuarios WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');
 DELETE FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo';
+DELETE FROM entregador_sessoes WHERE entregador_id IN (SELECT id FROM entregadores WHERE email LIKE '%@teste.pedee');
+DELETE FROM loja_entregadores WHERE entregador_id IN (SELECT id FROM entregadores WHERE email LIKE '%@teste.pedee');
+DELETE FROM entregadores WHERE email LIKE '%@teste.pedee';

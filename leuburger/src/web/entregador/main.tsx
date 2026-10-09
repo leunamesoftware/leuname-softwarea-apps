@@ -13,7 +13,7 @@ import './entregador.css';
 interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
   id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
-  loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null;
+  loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null; loja_lat: number | null; loja_lng: number | null;
 }
 const dig = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
 const fone = (s: string | null | undefined) => { const n = dig(s); return n.length >= 10 && n.length <= 11 ? '55' + n : n; };
@@ -97,18 +97,32 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
     setOcupado(x.id);
     try { await post(`/entregador/entregas/${x.id}`, { andamento }); await carregar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(''); }
   };
+  /** Só para a conta de teste: anda sozinho da loja até o cliente (~90 s) para mostrar o mapa em tempo real. */
+  const simular = (x: Entrega) => {
+    const a = { lat: x.loja_lat ?? -22.7856, lng: x.loja_lng ?? -43.3117 };
+    const b = x.dest_lat != null ? { lat: x.dest_lat, lng: x.dest_lng as number } : { lat: a.lat + 0.008, lng: a.lng + 0.008 };
+    const total = 45; let i = 0; simulando.current = true; setSimPasso(1);
+    const t = setInterval(() => {
+      i++; const f = Math.min(1, i / total);
+      post('/entregador/posicao', { lat: a.lat + (b.lat - a.lat) * f, lng: a.lng + (b.lng - a.lng) * f }).catch(() => {});
+      setSimPasso(Math.round(f * 100));
+      if (f >= 1) { clearInterval(t); simulando.current = false; setSimPasso(0); }
+    }, 2000);
+  };
   const disponivel = async () => { await post('/entregador/disponivel', { disponivel: !eu.entregador.disponivel }).catch(() => {}); recarregar(); };
   const ativas = (lista || []).filter((x) => x.andamento !== 'entregue'), feitas = (lista || []).filter((x) => x.andamento === 'entregue');
   const ganho = feitas.length;
   // Enquanto tem entrega a caminho, manda a posição para o cliente ver no mapa.
   const emRota = ativas.some((x) => x.andamento === 'a_caminho');
   const [gps, setGps] = useState<'ok' | 'negado' | ''>('');
+  const simulando = useRef(false), [simPasso, setSimPasso] = useState(0);
+  const ehTeste = eu.entregador.email.endsWith('@teste.pedee');
   useEffect(() => {
     if (!emRota || !navigator.geolocation) return;
     let ultimo = 0;
     const id = navigator.geolocation.watchPosition((p) => {
       setGps('ok');
-      if (Date.now() - ultimo < 8000) return;
+      if (simulando.current || Date.now() - ultimo < 8000) return;
       ultimo = Date.now();
       post('/entregador/posicao', { lat: p.coords.latitude, lng: p.coords.longitude }).catch(() => {});
     }, (e) => { if (e.code === 1) setGps('negado'); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
@@ -150,6 +164,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
               {x.andamento !== 'a_caminho'
                 ? <button className="btn prim grande bloco" style={{ marginTop: 10 }} disabled={ocupado === x.id} onClick={() => marcar(x, 'a_caminho')}><Ic n="seta" />Saí para entrega</button>
                 : <button className="btn prim grande bloco ent-verde" style={{ marginTop: 10 }} disabled={ocupado === x.id} onClick={() => marcar(x, 'entregue')}><Ic n="check" />Entreguei</button>}
+              {ehTeste && x.andamento === 'a_caminho' && <button className="btn bloco" style={{ marginTop: 8 }} disabled={simPasso > 0} onClick={() => simular(x)}>{simPasso > 0 ? `🧪 Andando… ${simPasso}%` : '🧪 Simular trajeto (conta de teste)'}</button>}
             </article>
           );
         })}

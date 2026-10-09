@@ -2,7 +2,7 @@
 """Gera as lojas de demonstração de Xerém / Duque de Caxias (banner, logo, cardápio com fotos e avaliações)
 e grava no fim de demo/lojas-demo.sql (tudo INSERT OR IGNORE). Para apagar tudo: demo/remover-demo.sql.
 Uso (na pasta leuburger): python3 demo/gerar_lojas.py"""
-import io, os, uuid, random
+import base64, hashlib, io, os, secrets, uuid, random
 from PIL import Image, ImageDraw, ImageFont
 
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -82,7 +82,16 @@ LOJAS = [
  dict(slug='forno-de-lenha-pizzas', nome='Forno de Lenha Pizzas', tipo='pizzaria', desc='Pizzas de massa fina assadas no forno a lenha. Sabor de pizzaria de verdade.', cid='São João de Meriti', end='Av. Automóvel Clube, 700 - Centro', lat=-22.8039, lng=-43.3722, cor=((170, 25, 30), (240, 80, 40)), sigla='FL', capa='mini-pizza', taxa=700, tempo='40-55 min', min=3000,
   cats=[('Pizzas', 'combo', [('Mini Pizza Margherita', 'Molho de tomate, mussarela e manjericão.', 1800, 'mini-pizza'), ('Mini Pizza Calabresa', 'Calabresa fatiada e cebola.', 1900, 'mini-pizza'), ('Pão de Alho Recheado', 'Entrada: pão de alho com queijo.', 1500, 'pao-de-alho')]),
         ('Sobremesas', 'sobremesa', [('Pudim de Leite Condensado', 'Fatia generosa com calda de caramelo.', 1300, 'pudim-leite-condensado'), ('Quindim', 'Gema, coco e açúcar. Brilhante e cremoso.', 800, 'quindim')])]),
+
+ dict(slug='sabor-arte-teste', nome='Sabor Arte (loja de teste)', tipo='restaurante', desc='LOJA DE TESTE do dono: faça pedidos aqui e veja no painel e no mapa. Comida caseira e lanches.', cid='Duque de Caxias', end='Av. Presidente Vargas, 100 - Centro', lat=-22.7856, lng=-43.3117, cor=((24, 90, 140), (60, 160, 200)), sigla='SA', capa='lasanha-bolonhesa', taxa=500, tempo='30-45 min', min=1000, teste=True,
+  cats=[('Pratos', 'combo', [('Lasanha à Bolonhesa', 'Massa fresca, molho de carne e queijo gratinado.', 2890, 'lasanha-bolonhesa'), ('Escondidinho de Frango', 'Purê de mandioca com frango cremoso.', 2490, 'escondidinho-frango-mandioca'), ('Torta de Frango', 'Fatia generosa e suculenta.', 1800, 'torta-frango-liquidificador')]),
+        ('Lanches', 'hamburguer', [('Hambúrguer Artesanal', 'Blend 160 g, queijo e molho da casa.', 2790, 'hamburguer-artesanal'), ('Coxinha de Frango', 'Cremosa e crocante.', 700, 'coxinha-frango'), ('Pastel de Carne', 'Massa fininha, carne temperada.', 1100, 'pastel-carne')]),
+        ('Sobremesas', 'sobremesa', [('Pudim de Leite', 'Calda de caramelo.', 1300, 'pudim-leite-condensado'), ('Brownie', 'Casquinha crocante, miolo molhadinho.', 1400, 'brownie-chocolate')])]),
 ]
+
+def hash_senha(senha, sal):
+    # Mesmo cálculo do sistema (PBKDF2-SHA256, 100 mil voltas): no arquivo só vai o hash, nunca a senha.
+    return base64.b64encode(hashlib.pbkdf2_hmac('sha256', senha.encode(), sal.encode(), 100000, 32)).decode()
 
 def main():
     rnd = random.Random(7)
@@ -103,6 +112,15 @@ def main():
                     fotos_prod[pf] = uid('foto', eid, pf)
                     L.append(f"INSERT OR IGNORE INTO fotos (id, empresa_id, tipo, dados) VALUES ({q(fotos_prod[pf])}, {q(eid)}, 'image/webp', X'{webp(prod_foto(pf), 60).hex()}');")
                 L.append(f"INSERT OR IGNORE INTO produtos (id, empresa_id, categoria_id, nome, descricao, preco, custo, foto_id, opcoes, receita, criado_em) VALUES ({q(uid('prod', eid, pn))}, {q(eid)}, {q(cid)}, {q(pn)}, {q(pd)}, {preco}, {int(preco * 0.38)}, {q(fotos_prod[pf])}, '{{}}', '[]', {q(AGORA)});")
+        if lj.get('teste'):
+            senha_loja, senha_moto = secrets.token_urlsafe(6), secrets.token_urlsafe(6)
+            sal1, sal2 = secrets.token_hex(12), secrets.token_hex(12); mid = uid('moto', 'teste')
+            L.append(f"INSERT OR IGNORE INTO usuarios (id, empresa_id, nome, login, senha_hash, senha_sal, papel, dono, criado_em) VALUES ({q(uid('usr', eid))}, {q(eid)}, 'Dono da loja de teste', '21900000001', {q(hash_senha(senha_loja, sal1))}, {q(sal1)}, 'admin', 0, {q(AGORA)});")
+            L.append(f"INSERT OR IGNORE INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES ({q(mid)}, 'Carlos (motoboy de teste)', 'motoboy@teste.pedee', {q(hash_senha(senha_moto, sal2))}, {q(sal2)}, 'moto', 'Duque de Caxias', {q(AGORA)});")
+            L.append(f"INSERT OR IGNORE INTO loja_entregadores (empresa_id, entregador_id, criado_em) VALUES ({q(eid)}, {q(mid)}, {q(AGORA)});")
+            print('LOJISTA TESTE  -> WhatsApp: 21900000001  senha:', senha_loja)
+            print('MOTOBOY TESTE  -> e-mail: motoboy@teste.pedee  senha:', senha_moto)
+            continue
         # avaliações de mentira: pedidos antigos entregues + nota
         for i in range(rnd.randint(14, 48)):
             nota = rnd.choices([5, 4, 3], [62, 30, 8])[0]; pid = uid('ped', eid, str(i))
@@ -111,11 +129,20 @@ def main():
     base = ''
     open(SQL, 'w', encoding='utf-8').write(base + '\n'.join(L) + '\n')
     # remoção
-    emails = "SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'"
-    rem = ['-- Apaga TODAS as lojas de demonstração  e seus dados.']
-    for t in ('avaliacoes', 'pedidos_online', 'produtos', 'categorias', 'fotos', 'caixas', 'usuarios'):
-        rem.append(f"DELETE FROM {t} WHERE empresa_id IN ({emails});")
-    rem.append("DELETE FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo';")
+    E = "(SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo')"
+    V = f"(SELECT id FROM vendas WHERE empresa_id IN {E})"
+    rem = ['-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o motoboy de teste.',
+           f"DELETE FROM pagamentos WHERE venda_id IN {V};", f"DELETE FROM venda_itens WHERE venda_id IN {V};",
+           f"DELETE FROM avaliacoes WHERE empresa_id IN {E};", f"DELETE FROM pedidos_online WHERE empresa_id IN {E};",
+           f"DELETE FROM vendas WHERE empresa_id IN {E};", f"DELETE FROM caixa_movimentos WHERE empresa_id IN {E};", f"DELETE FROM caixas WHERE empresa_id IN {E};",
+           f"DELETE FROM estoque_movimentos WHERE item_id IN (SELECT id FROM estoque_itens WHERE empresa_id IN {E});", f"DELETE FROM estoque_itens WHERE empresa_id IN {E};",
+           f"DELETE FROM clientes WHERE empresa_id IN {E};", f"DELETE FROM loja_entregadores WHERE empresa_id IN {E};",
+           f"DELETE FROM produtos WHERE empresa_id IN {E};", f"DELETE FROM categorias WHERE empresa_id IN {E};", f"DELETE FROM fotos WHERE empresa_id IN {E};",
+           f"DELETE FROM sessoes WHERE empresa_id IN {E} OR usuario_id IN (SELECT id FROM usuarios WHERE empresa_id IN {E});", f"DELETE FROM auditoria WHERE empresa_id IN {E};", f"DELETE FROM usuarios WHERE empresa_id IN {E};",
+           "DELETE FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo';",
+           "DELETE FROM entregador_sessoes WHERE entregador_id IN (SELECT id FROM entregadores WHERE email LIKE '%@teste.pedee');",
+           "DELETE FROM loja_entregadores WHERE entregador_id IN (SELECT id FROM entregadores WHERE email LIKE '%@teste.pedee');",
+           "DELETE FROM entregadores WHERE email LIKE '%@teste.pedee';"]
     open(os.path.join(os.path.dirname(__file__), 'remover-demo.sql'), 'w').write('\n'.join(rem) + '\n')
     print('lojas:', len(LOJAS), 'tamanho SQL:', os.path.getsize(SQL) // 1024, 'KB')
 main()
