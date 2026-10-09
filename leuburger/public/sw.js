@@ -1,6 +1,6 @@
 // LeuBurger PDV instalado: rede primeiro (sempre a versão nova); sem internet abre a última tela guardada.
 // A API nunca é guardada aqui (vendas e estoque precisam do servidor).
-const VERSAO = 'leuburger-v11';
+const VERSAO = 'leuburger-v12';
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VERSAO).then((c) => c.addAll(['/', '/icone-192.png'])).catch(() => {}).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== VERSAO).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {

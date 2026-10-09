@@ -545,3 +545,43 @@ describe('Conta do cliente no Pedêê', () => {
     expect((await cel2.get('/publico/conta/eu')).status).toBe(401);
   });
 });
+
+describe('Painel do administrador do Pedêê', () => {
+  it('só o dono entra (senha da Área do Dono); vê tudo, tira loja do app, dá dias e desativa entregador', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.put('/empresa', { nome: 'Loja Admin', cidade: 'Niterói', uf: 'RJ', formas_pagamento: ['pix'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 0 });
+    await n.put('/loja-app', { slug: 'loja-admin', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'lanches', descricao: 'x', tempo_entrega: '30 min', pedido_minimo: 0, lat: -22.9, lng: -43.1, raio_km: 8 });
+    await A.navegador().post('/publico/app/loja/loja-admin/pedido', { chave: 'admin-cliente-01', nome: 'Rita', telefone: '21999990000', tipo: 'balcao', forma: 'pix', itens: [{ produtoId: p('X-Bacon').id, qtd: 1 }] });
+    const moto = A.navegador();
+    await moto.post('/entregador/cadastrar', { nome: 'Zé', email: 'ze-admin@moto.com', senha: 'moto123', veiculo: 'bike' });
+
+    const intruso = A.navegador();
+    expect((await intruso.get('/admin/resumo')).status).toBe(401);
+    expect((await intruso.post('/admin/entrar', { email: 'outro@x.com', senha: 'senha-da-area-do-dono' })).status).toBe(401);
+    expect((await intruso.post('/admin/entrar', { email: 'dono@leuname.com', senha: 'errada' })).status).toBe(401);
+    // Login de loja não abre o painel do administrador.
+    expect((await n.get('/admin/lojas')).status).toBe(401);
+
+    const adm = A.navegador();
+    expect((await adm.post('/admin/entrar', { email: 'Dono@Leuname.com', senha: 'senha-da-area-do-dono' })).status).toBe(200);
+    const r = (await adm.get('/admin/resumo')).corpo;
+    expect(r.hoje.pedidos).toBeGreaterThanOrEqual(1);
+    expect(r.entregadores.total).toBeGreaterThanOrEqual(1);
+    const loja = (await adm.get('/admin/lojas')).corpo.lojas.find((l: { slug: string }) => l.slug === 'loja-admin');
+    expect(loja).toMatchObject({ pedidos_30d: 1, no_app: 1 });
+    // Tira do app: some para o cliente.
+    expect((await adm.post(`/admin/lojas/${loja.id}`, { no_app: false })).status).toBe(200);
+    expect((await A.navegador().get('/publico/app/lojas?cidade=niteroi')).corpo.lojas.some((l: { slug: string }) => l.slug === 'loja-admin')).toBe(false);
+    expect((await adm.post(`/admin/lojas/${loja.id}`, { no_app: true, mais_dias: 30 })).status).toBe(200);
+    const depois = (await adm.get('/admin/lojas')).corpo.lojas.find((l: { slug: string }) => l.slug === 'loja-admin');
+    expect(new Date(depois.acesso_ate).getTime()).toBeGreaterThan(Date.now() + 29 * 864e5);
+    expect((await adm.get('/admin/pedidos')).corpo.pedidos[0]).toMatchObject({ loja: 'Loja Admin', nome: 'Rita' });
+    // Desativar o entregador derruba a sessão dele.
+    const ze = (await adm.get('/admin/entregadores')).corpo.entregadores.find((e: { email: string }) => e.email === 'ze-admin@moto.com');
+    expect((await adm.post(`/admin/entregadores/${ze.id}`, { ativo: false })).status).toBe(200);
+    expect((await moto.get('/entregador/eu')).status).toBe(401);
+    expect((await A.navegador().post('/entregador/entrar', { email: 'ze-admin@moto.com', senha: 'moto123' })).status).toBe(401);
+    await adm.post('/admin/sair', {});
+    expect((await adm.get('/admin/resumo')).status).toBe(401);
+  });
+});

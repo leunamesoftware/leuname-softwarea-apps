@@ -77,3 +77,8 @@
     App dos clientes Pedêê (marca do dono; constante NOME_APP em src/web/pedir/main.tsx e src/api/online.ts):
     https://leuburger.leunamesoftware.com.br/pedir/ (link de cada loja: /pedir/<slug>). Pedido do app cai em Acompanhar
     para aceitar/recusar; aceitar vira venda. Só plano mensal (vitalício fora de venda: foraDeVenda em planos.js).
+21. Pedêê (worker leuburger): 3 apps separados + painel do dono. Cliente /pedir/ (conta com código de 6 números no e-mail,
+    sem senha; ou visitante), Lojista /parceiro/, Entregador /entregador/ (selfie na câmera, código de entrega do cliente,
+    conversa sem telefone, ganhos/km). Painel do administrador: https://leuburger.leunamesoftware.com.br/admin/
+    (só DONO_EMAIL + senha da Área do Dono; atalho roxo na Área do Dono). Lojas de demonstração: demo/gerar_lojas.py
+    (workflow leuburger-publicar com demo=sim|trocar|remover).

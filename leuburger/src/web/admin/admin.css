@@ -1,0 +1,41 @@
+/* Pedêê Admin: feito para o computador (menu ao lado), mas abre também no celular. */
+body { background: #F4F2FA; }
+.adm-entrar { min-height: 100dvh; display: grid; place-items: center; padding: 16px; background: linear-gradient(135deg, #2E1065, #5B21B6); }
+.adm-entrar form { width: min(380px, 100%); display: grid; gap: 12px; text-align: center; }
+.adm-entrar img { justify-self: center; border-radius: 16px; } .adm-entrar h1 { margin: 0; } .adm-entrar p { margin: 0; color: var(--suave); }
+.adm-entrar .campo { text-align: left; }
+.adm { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100dvh; }
+.adm-lado { background: #1F1147; color: #fff; padding: 18px 12px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 0; height: 100dvh; }
+.adm-marca { display: flex; align-items: center; gap: 10px; padding: 0 6px; } .adm-marca img { width: 40px; height: 40px; border-radius: 10px; } .adm-marca b { font-size: 18px; }
+.adm-lado nav { display: grid; gap: 4px; }
+.adm-lado nav button, .adm-sair { display: flex; align-items: center; gap: 10px; border: 0; border-radius: 10px; padding: 11px 12px; background: none; color: #DDD6FE; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.adm-lado nav button.ativo, .adm-lado nav button:hover { background: #5B21B6; color: #fff; }
+.adm-sair { margin-top: auto; color: #FCA5A5; }
+.adm-corpo { padding: 22px 26px; min-width: 0; }
+.adm-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.adm-topo h1 { margin: 0; font-size: 26px; } .adm-topo input { max-width: 280px; }
+.adm-sub { font-size: 16px; color: var(--suave); margin: 18px 0 10px; }
+.adm-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.adm-card { background: #fff; border-radius: 16px; padding: 16px 18px; display: grid; gap: 4px; box-shadow: 0 2px 10px rgba(31, 17, 71, .07); }
+.adm-card small { color: var(--suave); font-weight: 700; } .adm-card b { font-size: 32px; color: #2E1065; } .adm-card span { color: var(--suave); font-size: 14px; }
+.adm-nota { color: var(--suave); font-size: 13px; margin-top: 16px; }
+.adm-tab { width: 100%; border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(31, 17, 71, .07); font-size: 14px; }
+.adm-tab th { text-align: left; background: #EDE9FE; color: #3B0764; padding: 10px 12px; font-size: 13px; white-space: nowrap; }
+.adm-tab td { padding: 10px 12px; border-top: 1px solid #F1EEF8; vertical-align: middle; }
+.adm-tab td small { display: block; color: var(--suave); font-size: 12px; }
+.adm-tab tr:hover td { background: #FAF8FF; }
+.adm-acoes { white-space: nowrap; text-align: right; } .adm-acoes .btn + .btn { margin-left: 6px; }
+.adm-perigo { color: #B91C1C !important; border-color: #FCA5A5 !important; }
+.adm-ruim { color: #B91C1C; font-weight: 700; }
+.adm-selo { margin-left: 6px; font-size: 11px; background: #FEF3C7; color: #92400E; border-radius: 99px; padding: 2px 8px; font-weight: 700; }
+.adm-pessoa { display: flex; align-items: center; gap: 10px; } .adm-pessoa div { display: grid; }
+.adm-pessoa img, .adm-pessoa > span { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; display: grid; place-items: center; background: #F3F4F6; }
+@media (max-width: 800px) {
+  .adm { grid-template-columns: 1fr; }
+  .adm-lado { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px; gap: 8px; }
+  .adm-lado nav { display: flex; overflow-x: auto; flex: 1 1 100%; order: 3; }
+  .adm-lado nav button { white-space: nowrap; }
+  .adm-sair { margin: 0 0 0 auto; }
+  .adm-corpo { padding: 14px; overflow-x: auto; }
+  .adm-tab { min-width: 720px; }
+}

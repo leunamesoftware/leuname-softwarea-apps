@@ -38,6 +38,10 @@ export function lojaFalsa(contas: Record<string, { senha: string; nome: string; 
       const url = new URL(req.url);
       if (url.hostname === 'interno.pedee' && url.pathname === '/interno/codigo-pedee') { codigosEnviados.push((await req.json()) as { para: string; codigo: string }); return Response.json({ ok: true }); }
       const sessao = /ln_sessao=([^;]+)/.exec(req.headers.get('Cookie') || '')?.[1];
+      if (url.pathname === '/api/dono/entrar') {
+        const d = (await req.clone().json()) as { email: string; senha: string };
+        if (d.email === 'dono@leuname.com' && d.senha === 'senha-da-area-do-dono') return Response.json({ ok: true });
+      }
       if (url.pathname === '/api/conta/entrar' || url.pathname === '/api/dono/entrar') {
         const d = (await req.json()) as { email: string; senha: string };
         const c = contas[d.email];

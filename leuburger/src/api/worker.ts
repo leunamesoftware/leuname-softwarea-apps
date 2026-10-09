@@ -9,7 +9,7 @@ export default {
     const url = new URL(req.url);
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) return app.fetch(req, env, ctx as never);
     // Apps Pedêê (cliente, lojista e entregador): qualquer endereço dentro deles abre a página do app.
-    const appPedee = /^\/(pedir|parceiro|entregador)(\/|$)/.exec(url.pathname)?.[1];
+    const appPedee = /^\/(pedir|parceiro|entregador|admin)(\/|$)/.exec(url.pathname)?.[1];
     const ehPaginaDoApp = Boolean(appPedee) && !/\.[a-z0-9]+$/i.test(url.pathname);
     const r = await env.ASSETS!.fetch(ehPaginaDoApp ? new Request(new URL(`/${appPedee}/`, url), req) : req);
     // Página do app nunca fica velha no aparelho (os arquivos com hash no nome ficam guardados).
