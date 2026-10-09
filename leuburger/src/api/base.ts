@@ -23,7 +23,7 @@ export interface Usuario { id: string; empresa_id: string; nome: string; login: 
 export interface Empresa {
   id: string; conta_email: string; nome: string; cnpj: string | null; telefone: string | null; endereco: string | null;
   cidade: string | null; uf: string | null; mensagem_cupom: string | null; formas_pagamento: string;
-  desconto_max_caixa: number; largura_cupom: string; acesso_ate: string | null; proximo_numero: number; criado_em: string;
+  desconto_max_caixa: number; largura_cupom: string; taxa_entrega_padrao?: number; acesso_ate: string | null; proximo_numero: number; criado_em: string;
 }
 export type Vars = { usuario: Usuario; empresa: Empresa };
 export type C = Context<{ Bindings: Env; Variables: Vars }>;

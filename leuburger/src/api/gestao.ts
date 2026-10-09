@@ -15,19 +15,22 @@ gestao.get('/eu', (c) => {
   return c.json({
     usuario: { id: u.id, nome: u.nome, login: u.login, papel: u.papel, dono: Boolean(u.dono) },
     empresa: { id: e.id, nome: e.nome, cnpj: e.cnpj, telefone: e.telefone, endereco: e.endereco, cidade: e.cidade, uf: e.uf, mensagem_cupom: e.mensagem_cupom,
-      formas_pagamento: JSON.parse(e.formas_pagamento), desconto_max_caixa: e.desconto_max_caixa, largura_cupom: e.largura_cupom, acesso_ate: e.acesso_ate, criado_em: e.criado_em },
+      formas_pagamento: JSON.parse(e.formas_pagamento), desconto_max_caixa: e.desconto_max_caixa, taxa_entrega_padrao: e.taxa_entrega_padrao ?? 0, largura_cupom: e.largura_cupom, acesso_ate: e.acesso_ate, criado_em: e.criado_em },
   });
 });
 
 // ---------- painel e relatórios ----------
 async function resumo(c: C, ini: string, fim: string) {
   const db = c.env.BANCO, emp = c.get('empresa').id;
-  const v = await db.prepare(`SELECT COUNT(*) AS pedidos, COALESCE(SUM(total),0) AS faturamento, COALESCE(SUM(desconto),0) AS descontos FROM vendas
-    WHERE empresa_id = ? AND status = 'concluida' AND criado_em >= ? AND criado_em < ?`).bind(emp, ini, fim).first<{ pedidos: number; faturamento: number; descontos: number }>();
+  const v = await db.prepare(`SELECT COUNT(*) AS pedidos, COALESCE(SUM(total),0) AS faturamento, COALESCE(SUM(desconto),0) AS descontos, COALESCE(SUM(taxa_entrega),0) AS taxas, COALESCE(SUM(tipo = 'entrega'),0) AS entregas FROM vendas
+    WHERE empresa_id = ? AND status = 'concluida' AND criado_em >= ? AND criado_em < ?`).bind(emp, ini, fim).first<{ pedidos: number; faturamento: number; descontos: number; taxas: number; entregas: number }>();
   const it = await db.prepare(`SELECT COALESCE(SUM(i.qtd),0) AS itens, COALESCE(SUM(i.custo_unit * i.qtd),0) AS custo FROM venda_itens i JOIN vendas v ON v.id = i.venda_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.criado_em < ?`).bind(emp, ini, fim).first<{ itens: number; custo: number }>();
   const pedidos = v?.pedidos || 0, faturamento = v?.faturamento || 0;
-  return { pedidos, faturamento, itens: it?.itens || 0, custo: it?.custo || 0, lucro: faturamento - (it?.custo || 0), ticketMedio: pedidos ? Math.round(faturamento / pedidos) : 0, descontos: v?.descontos || 0 };
+  // A taxa de entrega costuma ir para o motoboy: entra no faturamento, mas não conta como lucro.
+  const taxas = v?.taxas || 0;
+  return { pedidos, faturamento, itens: it?.itens || 0, custo: it?.custo || 0, lucro: faturamento - taxas - (it?.custo || 0), ticketMedio: pedidos ? Math.round(faturamento / pedidos) : 0,
+    descontos: v?.descontos || 0, taxas, entregas: v?.entregas || 0 };
 }
 const pctVar = (agora: number, antes: number) => (antes ? Math.round(((agora - antes) / antes) * 1000) / 10 : null);
 
@@ -88,14 +91,15 @@ const esqEmpresa = z.object({
   formas_pagamento: z.array(z.enum(Object.keys(FORMAS) as [keyof typeof FORMAS, ...(keyof typeof FORMAS)[]])).min(1, 'Deixe pelo menos uma forma de pagamento ligada.'),
   desconto_max_caixa: z.number().int().min(0).max(100),
   largura_cupom: z.enum(['58', '80']),
+  taxa_entrega_padrao: z.number().int().min(0).max(100000).optional(),
 });
 gestao.put('/empresa', async (c) => {
   exigir(c, 'configuracoes');
   const d = validar(esqEmpresa, await corpo(c));
   const n = (x?: string | null) => (x && x.trim()) || null;
   await c.env.BANCO.batch([
-    c.env.BANCO.prepare('UPDATE empresas SET nome=?, cnpj=?, telefone=?, endereco=?, cidade=?, uf=?, mensagem_cupom=?, formas_pagamento=?, desconto_max_caixa=?, largura_cupom=? WHERE id=?')
-      .bind(d.nome, n(d.cnpj), n(d.telefone), n(d.endereco), n(d.cidade), n(d.uf)?.toUpperCase() ?? null, n(d.mensagem_cupom), JSON.stringify(d.formas_pagamento), d.desconto_max_caixa, d.largura_cupom, c.get('empresa').id),
+    c.env.BANCO.prepare('UPDATE empresas SET nome=?, cnpj=?, telefone=?, endereco=?, cidade=?, uf=?, mensagem_cupom=?, formas_pagamento=?, desconto_max_caixa=?, largura_cupom=?, taxa_entrega_padrao=? WHERE id=?')
+      .bind(d.nome, n(d.cnpj), n(d.telefone), n(d.endereco), n(d.cidade), n(d.uf)?.toUpperCase() ?? null, n(d.mensagem_cupom), JSON.stringify(d.formas_pagamento), d.desconto_max_caixa, d.largura_cupom, d.taxa_entrega_padrao ?? c.get('empresa').taxa_entrega_padrao ?? 0, c.get('empresa').id),
     auditar(c, 'configuracoes', { nome: d.nome }),
   ]);
   return c.json({ ok: true });

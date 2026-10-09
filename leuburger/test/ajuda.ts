@@ -1,5 +1,5 @@
 // Ambiente de teste: banco SQLite em memória com a mesma interface do D1 e uma loja LeuApps falsa.
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { criarApp } from '../src/api/app';
 import type { D1, D1Prepared, Env } from '../src/api/base';
@@ -55,7 +55,7 @@ export function lojaFalsa(contas: Record<string, { senha: string; nome: string; 
 export function ambiente(contas: Parameters<typeof lojaFalsa>[0]) {
   const db = new DatabaseSync(':memory:');
   db.exec('PRAGMA foreign_keys = ON');
-  db.exec(readFileSync(new URL('../migracoes/0001_inicio.sql', import.meta.url), 'utf8'));
+  for (const m of readdirSync(new URL('../migracoes/', import.meta.url)).filter((f) => f.endsWith('.sql')).sort()) db.exec(readFileSync(new URL('../migracoes/' + m, import.meta.url), 'utf8'));
   const env: Env = { BANCO: d1(db), CONTAS: lojaFalsa(contas), DONO_EMAIL: 'dono@leuname.com' };
   const app = criarApp();
   /** Um navegador: guarda os cookies entre os pedidos. */

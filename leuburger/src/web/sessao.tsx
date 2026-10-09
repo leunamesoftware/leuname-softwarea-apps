@@ -6,7 +6,7 @@ import { get, post, quandoPerderSessao } from './api';
 
 export interface Empresa {
   id: string; nome: string; cnpj: string | null; telefone: string | null; endereco: string | null; cidade: string | null; uf: string | null;
-  mensagem_cupom: string | null; formas_pagamento: string[]; desconto_max_caixa: number; largura_cupom: '58' | '80'; acesso_ate: string | null;
+  mensagem_cupom: string | null; formas_pagamento: string[]; desconto_max_caixa: number; largura_cupom: '58' | '80'; acesso_ate: string | null; taxa_entrega_padrao: number;
 }
 export interface Eu { usuario: { id: string; nome: string; login: string; papel: Papel; dono: boolean }; empresa: Empresa }
 
@@ -44,7 +44,7 @@ export function ProvedorSessao({ children }: { children: ReactNode }) {
 
 // ---------- pedido em andamento (fica guardado no aparelho até finalizar) ----------
 export interface ItemCarrinho extends EscolhaItem { chaveItem: string }
-export interface Pedido { itens: ItemCarrinho[]; observacao: string; desconto: { tipo: 'valor' | 'pct'; valor: number } | null; clienteId: string | null; chave: string }
+export interface Pedido { itens: ItemCarrinho[]; observacao: string; desconto: { tipo: 'valor' | 'pct'; valor: number } | null; clienteId: string | null; chave: string; entrega?: { endereco: string; taxa: number } | null }
 const GUARDA = 'leuburger_pedido';
 const novaChave = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 export const pedidoVazio = (): Pedido => ({ itens: [], observacao: '', desconto: null, clienteId: null, chave: novaChave() });

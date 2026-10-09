@@ -7,7 +7,7 @@ import { Ic } from '../icones';
 import { Cabeca } from '../Layout';
 
 interface Dados {
-  atual: { pedidos: number; faturamento: number; itens: number; custo: number; lucro: number; ticketMedio: number; descontos: number };
+  atual: { pedidos: number; faturamento: number; itens: number; custo: number; lucro: number; ticketMedio: number; descontos: number; taxas: number; entregas: number };
   variacao: { faturamento: number | null; pedidos: number | null; ticketMedio: number | null; itens: number | null };
   porDia: { dia: string; total: number; pedidos: number }[];
   porForma: { forma: string; valor: number }[];
@@ -114,6 +114,7 @@ function Conteudo({ x, de, ate, comparar }: { x: Dados; de: string; ate: string;
         <div className="cartao" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <span>Descontos dados: <b className="num">{brl(a.descontos)}</b></span>
           <span>Custo dos produtos: <b className="num">{brl(a.custo)}</b></span>
+          {a.entregas > 0 && <span>Entregas: <b className="num">{a.entregas}</b> (taxas {brl(a.taxas)}, fora do lucro)</span>}
           <span>Vendas canceladas: <b className="num">{x.canceladas.n}</b>{x.canceladas.n > 0 && <> ({brl(x.canceladas.total)})</>}</span>
         </div>
       </>}

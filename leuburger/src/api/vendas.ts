@@ -97,6 +97,7 @@ const esqVenda = z.object({
   pagamentos: z.array(z.object({ forma: z.string(), valor: z.number() })).min(1, 'Escolha a forma de pagamento.').max(6),
   clienteId: z.string().nullable().optional(),
   observacao: z.string().max(200).optional(),
+  entrega: z.object({ endereco: z.string().trim().max(200), taxa: z.number().int().min(0).max(100000) }).nullable().optional(),
 });
 
 async function vendaCompleta(c: C, id: string) {
@@ -134,7 +135,8 @@ vendas.post('/vendas', async (c) => {
       const pp: ProdutoPreco = { id: p.id, nome: p.nome, preco: p.preco, custo: p.custo, opcoes: JSON.parse(p.opcoes || '{}') };
       return { ...calcularItem(pp, { ...e, tamanho: e.tamanho ?? null }), categoria: p.categoria };
     });
-    t = totais(itens, d.desconto ?? null);
+    if (d.entrega && d.entrega.endereco.length < 5) throw new ErroPedido('Digite o endereço da entrega.');
+    t = totais(itens, d.desconto ?? null, d.entrega?.taxa || 0);
     troco = conferirPagamentos(t.total, d.pagamentos.map((p) => ({ forma: p.forma, valor: Math.round(p.valor) }))).troco;
   } catch (e) {
     if (e instanceof ErroPedido) throw erro(400, 'pedido_invalido', e.message);
@@ -152,9 +154,10 @@ vendas.post('/vendas', async (c) => {
   const baixa = baixaEstoque(itens, receitas);
   const lote: D1Prepared[] = [
     // Número sequencial da lanchonete, tirado e somado na mesma transação.
-    db.prepare(`INSERT INTO vendas (id, empresa_id, numero, chave, caixa_id, usuario_id, cliente_id, observacao, subtotal, desconto, total, troco, criado_em)
-      VALUES (?, ?, (SELECT proximo_numero FROM empresas WHERE id = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .bind(id, emp.id, emp.id, d.chave, cx.id, u.id, d.clienteId || null, (d.observacao || '').trim() || null, t.subtotal, t.desconto, t.total, troco, quando),
+    db.prepare(`INSERT INTO vendas (id, empresa_id, numero, chave, caixa_id, usuario_id, cliente_id, observacao, subtotal, desconto, total, troco, tipo, endereco_entrega, taxa_entrega, criado_em)
+      VALUES (?, ?, (SELECT proximo_numero FROM empresas WHERE id = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .bind(id, emp.id, emp.id, d.chave, cx.id, u.id, d.clienteId || null, (d.observacao || '').trim() || null, t.subtotal, t.desconto, t.total, troco,
+        d.entrega ? 'entrega' : 'balcao', d.entrega?.endereco || null, t.taxaEntrega, quando),
     db.prepare('UPDATE empresas SET proximo_numero = proximo_numero + 1 WHERE id = ?').bind(emp.id),
     ...itens.map((i) => db.prepare('INSERT INTO venda_itens (id, venda_id, produto_id, nome, categoria, qtd, preco_unit, custo_unit, detalhes, total) VALUES (?,?,?,?,?,?,?,?,?,?)')
       .bind(novoId(), id, i.produtoId, i.nome, i.categoria, i.qtd, i.precoUnit, i.custoUnit, JSON.stringify(i.detalhes), i.total)),
@@ -185,7 +188,7 @@ vendas.get('/vendas', async (c) => {
   const vals: unknown[] = [c.get('empresa').id, ini, fim];
   if (q.status === 'concluida' || q.status === 'cancelada') { filtros.push('v.status = ?'); vals.push(q.status); }
   if (q.busca) { filtros.push("(CAST(v.numero AS TEXT) LIKE ? OR cl.nome LIKE ?)"); vals.push(`%${q.busca}%`, `%${q.busca}%`); }
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.total, v.status, v.criado_em, u.nome AS operador, cl.nome AS cliente,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.total, v.status, v.tipo, v.criado_em, u.nome AS operador, cl.nome AS cliente,
       (SELECT SUM(qtd) FROM venda_itens WHERE venda_id = v.id) AS itens,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas
     FROM vendas v LEFT JOIN usuarios u ON u.id = v.usuario_id LEFT JOIN clientes cl ON cl.id = v.cliente_id

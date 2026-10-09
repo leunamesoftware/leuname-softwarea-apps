@@ -24,8 +24,9 @@ export function calcularPedido(pedido: Pedido, produtos: Produto[]) {
     if (!p || !p.ativo) { invalidos.push(i); continue; }
     try { linhas.push({ ...calcularItem(p, i), chaveItem: i.chaveItem, produto: p }); } catch { invalidos.push(i); }
   }
-  let t = { subtotal: 0, desconto: 0, total: 0 };
-  try { t = totais(linhas, pedido.desconto); } catch { t = totais(linhas); }
+  const taxa = pedido.entrega?.taxa || 0;
+  let t = { subtotal: 0, desconto: 0, taxaEntrega: 0, total: 0 };
+  try { t = totais(linhas, pedido.desconto, taxa); } catch { t = totais(linhas, null, taxa > 0 && taxa <= 100000 ? taxa : 0); }
   return { linhas, invalidos, ...t, qtdItens: linhas.reduce((s, l) => s + l.qtd, 0) };
 }
 /** Texto curto das escolhas (ex.: "Queijo extra, Bacon extra · Sem cebola"). */

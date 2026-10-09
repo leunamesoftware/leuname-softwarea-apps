@@ -83,7 +83,8 @@ export function calcularItem(p: ProdutoPreco, e: EscolhaItem): ItemCalculado {
 export interface Desconto { tipo: 'valor' | 'pct'; valor: number } // valor em centavos ou % (0–100)
 
 /** Subtotal, desconto e total. O desconto nunca passa do subtotal nem fica negativo. */
-export function totais(itens: { total: number }[], desconto?: Desconto | null) {
+/** Total do pedido. O desconto vale só sobre os produtos; a taxa de entrega soma no fim. */
+export function totais(itens: { total: number }[], desconto?: Desconto | null, taxaEntrega = 0) {
   const subtotal = itens.reduce((s, i) => s + i.total, 0);
   let d = 0;
   if (desconto && desconto.valor > 0) {
@@ -94,7 +95,9 @@ export function totais(itens: { total: number }[], desconto?: Desconto | null) {
   }
   if (d < 0) throw new ErroPedido('Desconto não pode ser negativo.');
   d = Math.min(d, subtotal);
-  return { subtotal, desconto: d, total: subtotal - d };
+  const taxa = Math.round(taxaEntrega || 0);
+  if (taxa < 0 || taxa > 100000) throw new ErroPedido('Taxa de entrega inválida.');
+  return { subtotal, desconto: d, taxaEntrega: taxa, total: subtotal - d + taxa };
 }
 
 /** Percentual do desconto sobre o subtotal (para conferir o limite do operador). */

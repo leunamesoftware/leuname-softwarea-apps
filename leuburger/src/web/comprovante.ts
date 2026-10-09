@@ -5,7 +5,7 @@ import type { Empresa } from './sessao';
 
 export interface VendaCompleta {
   id: string; numero: number; subtotal: number; desconto: number; total: number; troco: number; status: string; criado_em: string;
-  operador: string | null; cliente: string | null; cliente_telefone?: string | null; observacao: string | null; motivo_cancelamento?: string | null; cancelada_em?: string | null; cancelada_por_nome?: string | null;
+  operador: string | null; cliente: string | null; cliente_telefone?: string | null; tipo?: string; endereco_entrega?: string | null; taxa_entrega?: number; observacao: string | null; motivo_cancelamento?: string | null; cancelada_em?: string | null; cancelada_por_nome?: string | null;
   itens: { id: string; nome: string; foto_id?: string | null; icone?: string | null; qtd: number; preco_unit: number; total: number; produto_id: string | null; detalhes: { tamanho?: string; adicionais?: { nome: string; preco: number }[]; retirar?: string[]; observacao?: string } }[];
   pagamentos: { forma: string; valor: number }[];
 }
@@ -18,15 +18,15 @@ export function imprimirComprovante(v: VendaCompleta, e: Empresa) {
   el.innerHTML = `<div class="cupom l${e.largura_cupom === '58' ? 58 : 80}">
     <div class="c b">${esc(e.nome)}</div>${e.cnpj ? `<div class="c">CNPJ ${esc(e.cnpj)}</div>` : ''}${e.endereco ? `<div class="c">${esc(e.endereco)}${e.cidade ? ' - ' + esc(e.cidade) : ''}</div>` : ''}${e.telefone ? `<div class="c">${esc(e.telefone)}</div>` : ''}
     <hr><div class="c b">COMPROVANTE DE VENDA</div><div class="c">NÃO É DOCUMENTO FISCAL</div><hr>
-    <div>Pedido #${v.numero} · ${dataHora(v.criado_em)}</div>${v.cliente ? `<div>Cliente: ${esc(v.cliente)}</div>` : ''}<hr>
+    <div>Pedido #${v.numero} · ${dataHora(v.criado_em)}</div>${v.tipo === 'entrega' ? `<hr><div class="c b">*** ENTREGA ***</div>${v.cliente ? `<div class="b">${esc(v.cliente)}</div>` : ''}${v.cliente_telefone ? `<div>Tel.: ${esc(v.cliente_telefone)}</div>` : ''}<div class="b">${esc(v.endereco_entrega)}</div>` : v.cliente ? `<div>Cliente: ${esc(v.cliente)}</div>` : ''}<hr>
     <table style="width:100%">${linhas}</table><hr>
-    <table style="width:100%"><tr><td>Subtotal</td><td class="d">${brl(v.subtotal)}</td></tr>${v.desconto ? `<tr><td>Desconto</td><td class="d">-${brl(v.desconto)}</td></tr>` : ''}
+    <table style="width:100%"><tr><td>Subtotal</td><td class="d">${brl(v.subtotal)}</td></tr>${v.desconto ? `<tr><td>Desconto</td><td class="d">-${brl(v.desconto)}</td></tr>` : ''}${v.taxa_entrega ? `<tr><td>Taxa de entrega</td><td class="d">${brl(v.taxa_entrega)}</td></tr>` : ''}
     <tr class="b"><td>TOTAL</td><td class="d">${brl(v.total)}</td></tr>
     ${v.pagamentos.map((p) => `<tr><td>${FORMAS[p.forma as keyof typeof FORMAS] || p.forma}</td><td class="d">${brl(p.valor)}</td></tr>`).join('')}
     ${v.troco ? `<tr><td>Troco</td><td class="d">${brl(v.troco)}</td></tr>` : ''}</table>
     ${v.observacao ? `<hr><div>Obs.: ${esc(v.observacao)}</div>` : ''}
     ${v.status === 'cancelada' ? '<hr><div class="c b">*** VENDA CANCELADA ***</div>' : ''}
-    <hr><div class="c">${esc(e.mensagem_cupom || 'Obrigado pela preferência!')}</div>${v.operador ? `<div class="c">Atendido por ${esc(v.operador)}</div>` : ''}<div class="c" style="font-size:10px">LeuBurger PDV · LeuName Softwares</div></div>`;
+    <hr><div class="c">${esc(e.mensagem_cupom || 'Obrigado pela preferência!')}</div>${v.operador ? `<div class="c">Atendido por ${esc(v.operador)}</div>` : ''}</div>`;
   const estilo = document.createElement('style');
   estilo.textContent = `@page { size: ${e.largura_cupom === '58' ? 58 : 80}mm auto; margin: 0; }`;
   document.head.appendChild(estilo);
@@ -34,9 +34,11 @@ export function imprimirComprovante(v: VendaCompleta, e: Empresa) {
 }
 
 export function textoWhatsApp(v: VendaCompleta, e: Empresa) {
-  return [`*${e.nome}*`, `Pedido #${v.numero} · ${dataHora(v.criado_em)}`, '',
+  const linhas: (string | false)[] = [`*${e.nome}*`, `Pedido #${v.numero} · ${dataHora(v.criado_em)}`, '',
     ...v.itens.map((i) => `${i.qtd}x ${i.nome}${detalhesItem(i.detalhes) ? ` (${detalhesItem(i.detalhes)})` : ''} — ${brl(i.total)}`), '',
-    v.desconto ? `Desconto: -${brl(v.desconto)}` : '', `*Total: ${brl(v.total)}*`,
-    `Pagamento: ${v.pagamentos.map((p) => FORMAS[p.forma as keyof typeof FORMAS] || p.forma).join(' + ')}`, v.troco ? `Troco: ${brl(v.troco)}` : '', '',
-    e.mensagem_cupom || 'Obrigado pela preferência!', '_Comprovante não fiscal_'].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
+    v.desconto > 0 && `Desconto: -${brl(v.desconto)}`, Boolean(v.taxa_entrega) && `Taxa de entrega: ${brl(v.taxa_entrega!)}`, `*Total: ${brl(v.total)}*`,
+    `Pagamento: ${v.pagamentos.map((p) => FORMAS[p.forma as keyof typeof FORMAS] || p.forma).join(' + ')}`, v.troco > 0 && `Troco: ${brl(v.troco)}`,
+    v.tipo === 'entrega' && `Entrega: ${v.endereco_entrega}`, '',
+    e.mensagem_cupom || 'Obrigado pela preferência!', '_Comprovante não fiscal_'];
+  return linhas.filter((l): l is string => l !== false).join('\n');
 }

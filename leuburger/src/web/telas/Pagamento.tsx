@@ -15,7 +15,7 @@ const reaisTexto = (c: number) => (c / 100).toFixed(2).replace('.', ',');
 
 export function Pagamento() {
   const cardapio = useDados(carregarCardapio);
-  const clientes = useDados(() => get<{ clientes: { id: string; nome: string; telefone: string | null }[] }>('/clientes'));
+  const clientes = useDados(() => get<{ clientes: { id: string; nome: string; telefone: string | null; endereco: string | null }[] }>('/clientes'));
   const { pedido, mudar, zerar } = usePedido();
   const { eu } = useSessao();
   const nav = useNavigate();
@@ -27,6 +27,19 @@ export function Pagamento() {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
   const [novoCliente, setNovoCliente] = useState(false);
+  const [taxaTexto, setTaxaTexto] = useState(() => (pedido.entrega ? reaisTexto(pedido.entrega.taxa) : ''));
+  const enderecoDoCliente = (id: string | null) => (clientes.dados?.clientes || []).find((c) => c.id === id)?.endereco || '';
+  const ligarEntrega = (sim: boolean) => {
+    if (!sim) return mudar((p) => ({ ...p, entrega: null }));
+    const taxa = eu?.empresa.taxa_entrega_padrao || 0;
+    setTaxaTexto(taxa ? reaisTexto(taxa) : '');
+    mudar((p) => ({ ...p, entrega: { endereco: enderecoDoCliente(p.clienteId), taxa } }));
+  };
+  const mudarTaxa = (t: string) => {
+    setTaxaTexto(t);
+    const v = t.trim() ? lerValor(t) : 0;
+    if (!Number.isNaN(v) && v >= 0) mudar((p) => ({ ...p, entrega: { endereco: p.entrega?.endereco || '', taxa: v } }));
+  };
   const enviandoRef = useRef(false);
   const campo = useRef<HTMLInputElement>(null);
   const r = useMemo(() => (cardapio.dados ? calcularPedido(pedido, cardapio.dados.produtos) : null), [pedido, cardapio.dados]);
@@ -67,11 +80,13 @@ export function Pagamento() {
   async function finalizar() {
     if (enviandoRef.current) return; // clique duplo não manda duas vezes
     if (!situacao.ok) return setErro(situacao.msg);
+    if (pedido.entrega && pedido.entrega.endereco.trim().length < 5) return setErro('Digite o endereço da entrega.');
     enviandoRef.current = true; setEnviando(true); setErro('');
     try {
       const d = await post<{ venda: VendaCompleta }>('/vendas', {
         chave: pedido.chave, itens: pedido.itens.map(({ chaveItem: _c, ...i }) => i), desconto: pedido.desconto, pagamentos,
         clienteId: pedido.clienteId, observacao: pedido.observacao,
+        entrega: pedido.entrega ? { endereco: pedido.entrega.endereco.trim(), taxa: pedido.entrega.taxa } : null,
       });
       zerar();
       nav(`/caixa/venda/${d.venda.id}`, { replace: true, state: { venda: d.venda } });
@@ -96,18 +111,29 @@ export function Pagamento() {
           <div style={{ display: 'grid', gap: 8, marginTop: 14 }}>
             <div className="linha-valor"><span>Subtotal</span><b className="num">{brl(r.subtotal)}</b></div>
             <div className="linha-valor"><span>Desconto</span><b className="num">{r.desconto ? '− ' : ''}{brl(r.desconto)}</b></div>
+            {pedido.entrega && <div className="linha-valor"><span>Taxa de entrega</span><b className="num">{brl(r.taxaEntrega)}</b></div>}
             <div className="total laranja"><span>Total</span><b className="num">{brl(total)}</b></div>
           </div>
           <label className="campo" style={{ marginTop: 14 }}>Cliente (opcional)
             <span style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 8 }}>
-              <select value={pedido.clienteId || ''} onChange={(e) => mudar((p) => ({ ...p, clienteId: e.target.value || null }))}>
+              <select value={pedido.clienteId || ''} onChange={(e) => { const id = e.target.value || null; mudar((p) => ({ ...p, clienteId: id, entrega: p.entrega && !p.entrega.endereco ? { ...p.entrega, endereco: enderecoDoCliente(id) } : p.entrega })); }}>
                 <option value="">Sem cliente</option>
                 {(clientes.dados?.clientes || []).map((c) => <option key={c.id} value={c.id}>{c.nome}{c.telefone ? ` · ${c.telefone}` : ''}</option>)}
               </select>
               <button type="button" className="btn" onClick={() => setNovoCliente(true)}><Ic n="mais" t={18} />Novo</button>
             </span>
           </label>
-          {novoCliente && <FormCliente cliente={null} aoFechar={() => setNovoCliente(false)} aoSalvar={(id) => { setNovoCliente(false); mudar((p) => ({ ...p, clienteId: id })); clientes.recarregar(); }} />}
+          <div className="chips" role="radiogroup" aria-label="Tipo do pedido" style={{ marginTop: 14 }}>
+            <button role="radio" aria-checked={!pedido.entrega} className={`chip ${!pedido.entrega ? 'sel' : ''}`} onClick={() => ligarEntrega(false)}><Ic n="loja" t={18} />Balcão / retirada</button>
+            <button role="radio" aria-checked={Boolean(pedido.entrega)} className={`chip ${pedido.entrega ? 'sel' : ''}`} onClick={() => ligarEntrega(true)}><Ic n="seta" t={18} />Entrega</button>
+          </div>
+          {pedido.entrega && <div className="campos" style={{ marginTop: 10 }}>
+            <label className="campo largo">Endereço da entrega (sai no comprovante)
+              <input value={pedido.entrega.endereco} onChange={(e) => { const end = e.target.value.slice(0, 200); mudar((p) => ({ ...p, entrega: { taxa: p.entrega?.taxa || 0, endereco: end } })); setErro(''); }} placeholder="Rua, número, bairro e ponto de referência" />
+            </label>
+            <label className="campo">Taxa de entrega (R$)<input value={taxaTexto} onChange={(e) => mudarTaxa(e.target.value.replace(/[^\d,.]/g, ''))} inputMode="decimal" placeholder="0,00" /></label>
+          </div>}
+          {novoCliente && <FormCliente cliente={null} aoFechar={() => setNovoCliente(false)} aoSalvar={(id, endereco) => { setNovoCliente(false); mudar((p) => ({ ...p, clienteId: id, entrega: p.entrega && !p.entrega.endereco ? { ...p.entrega, endereco: endereco || '' } : p.entrega })); clientes.recarregar(); }} />}
         </section>
         <section className="cartao">
           <h2 className="cartao-tit">Forma de pagamento</h2>
@@ -185,6 +211,7 @@ export function VendaConcluida() {
           <div style={{ display: 'grid', gap: 8, marginTop: 14 }}>
             <div className="linha-valor"><span>Subtotal</span><b className="num">{brl(v.subtotal)}</b></div>
             <div className="linha-valor"><span>Desconto</span><b className="num">{v.desconto ? '− ' : ''}{brl(v.desconto)}</b></div>
+            {Boolean(v.taxa_entrega) && <div className="linha-valor"><span>Taxa de entrega</span><b className="num">{brl(v.taxa_entrega!)}</b></div>}
             <div className="total laranja"><span>Total pago</span><b className="num">{brl(v.total)}</b></div>
           </div>
         </section>
@@ -197,6 +224,7 @@ export function VendaConcluida() {
               <div className="linha-valor"><span>Troco</span><b className="num" style={{ color: 'var(--verde)', fontSize: 20 }}>{brl(v.troco)}</b></div>
             </div></div>
           </div>
+          {v.tipo === 'entrega' && <div className="cartao"><b>🛵 Entrega</b><div>{v.cliente ? `${v.cliente} · ` : ''}{v.endereco_entrega}</div></div>}
           <div className="recebido"><Ic n="check" t={30} /><div><b>Pagamento registrado!</b><div>O pedido foi salvo no sistema.</div></div></div>
           <button className="btn prim grande bloco" onClick={() => imprimirComprovante(v, e)}><Ic n="impressora" />Imprimir comprovante <small style={{ fontWeight: 500 }}>(não fiscal)</small></button>
           <a className="btn cinza grande bloco" href={`https://wa.me/${fone}?text=${encodeURIComponent(textoWhatsApp(v, e))}`} target="_blank" rel="noopener"><Ic n="compartilhar" />Compartilhar por WhatsApp</a>

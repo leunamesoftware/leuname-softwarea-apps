@@ -59,7 +59,7 @@ export function Clientes() {
   );
 }
 
-export function FormCliente({ cliente, aoFechar, aoSalvar }: { cliente: Cliente | null; aoFechar: () => void; aoSalvar: (id: string) => void }) {
+export function FormCliente({ cliente, aoFechar, aoSalvar }: { cliente: Cliente | null; aoFechar: () => void; aoSalvar: (id: string, endereco?: string | null) => void }) {
   const aviso = useAviso();
   const c = cliente;
   const [f, setF] = useState({ nome: c?.nome || '', telefone: c?.telefone || '', cpf: c?.cpf || '', endereco: c?.endereco || '', observacao: c?.observacao || '' });
@@ -76,7 +76,7 @@ export function FormCliente({ cliente, aoFechar, aoSalvar }: { cliente: Cliente 
     try {
       let id = c?.id || '';
       if (c) await put(`/clientes/${c.id}`, dados); else id = (await post<{ id: string }>('/clientes', dados)).id;
-      aviso(c ? 'Cliente salvo.' : 'Cliente cadastrado.'); aoSalvar(id);
+      aviso(c ? 'Cliente salvo.' : 'Cliente cadastrado.'); aoSalvar(id, dados.endereco);
     } catch (err: any) { setErros(err?.campos || {}); aviso(msgErro(err), 'erro'); } finally { setOcupado(false); } // eslint-disable-line @typescript-eslint/no-explicit-any
   };
   const wa = linkWhatsApp(f.telefone);

@@ -31,7 +31,11 @@ describe('item do pedido', () => {
 
 describe('totais e desconto', () => {
   const itens = [{ total: 2990 }, { total: 2980 }, { total: 700 }];
-  it('total das telas: R$ 66,70', () => expect(totais(itens)).toEqual({ subtotal: 6670, desconto: 0, total: 6670 }));
+  it('total das telas: R$ 66,70 (e com R$ 5 de entrega)', () => {
+    expect(totais(itens)).toEqual({ subtotal: 6670, desconto: 0, taxaEntrega: 0, total: 6670 });
+    expect(totais(itens, null, 500).total).toBe(7170);
+    expect(() => totais(itens, null, -1)).toThrow();
+  });
   it('desconto em reais e em %', () => {
     expect(totais(itens, { tipo: 'valor', valor: 670 }).total).toBe(6000);
     expect(totais(itens, { tipo: 'pct', valor: 10 }).desconto).toBe(667);

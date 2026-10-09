@@ -115,6 +115,24 @@ describe('venda', () => {
     expect((await n.get('/caixa')).corpo.resumo.dinheiroEsperado).toBe(10000);
   });
 
+  it('entrega: endereço e taxa no pedido; taxa soma no total mas não no lucro', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.post('/caixa/abrir', { fundo: 0 });
+    const base = { itens: [{ produtoId: p('X-Burger').id, qtd: 1 }], pagamentos: [{ forma: 'pix', valor: 2390 }] };
+    expect((await n.post('/vendas', { ...base, chave: 'entrega-sem-end', entrega: { endereco: '', taxa: 500 } })).status).toBe(400);
+    const r = await n.post('/vendas', { ...base, chave: 'entrega-0001', desconto: { tipo: 'pct', valor: 100 }, entrega: { endereco: 'Rua das Flores, 120 - Centro', taxa: 500 },
+      pagamentos: [{ forma: 'pix', valor: 500 }] });
+    expect(r.status).toBe(201);
+    // Desconto de 100% vale só nos produtos: o cliente paga a taxa.
+    expect(r.corpo.venda).toMatchObject({ subtotal: 1890, desconto: 1890, taxa_entrega: 500, total: 500, tipo: 'entrega', endereco_entrega: 'Rua das Flores, 120 - Centro' });
+    const v = await n.post('/vendas', { ...base, chave: 'entrega-0002', entrega: { endereco: 'Av. Brasil, 55', taxa: 500 } });
+    expect(v.corpo.venda.total).toBe(2390);
+    const hoje = new Date().toISOString().slice(0, 10);
+    const rel = await n.get(`/relatorios?de=${hoje}&ate=${hoje}&fuso=0`);
+    expect(rel.corpo.atual).toMatchObject({ faturamento: 2890, taxas: 1000, entregas: 2 });
+    expect(rel.corpo.atual.lucro).toBe(2890 - 1000 - 2 * 700);
+  });
+
   it('o servidor ignora preço vindo do navegador e recusa pedidos errados', async () => {
     const { n, p } = await donoComCardapio();
     await n.post('/caixa/abrir', { fundo: 0 });

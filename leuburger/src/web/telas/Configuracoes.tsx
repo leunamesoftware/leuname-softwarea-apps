@@ -1,7 +1,7 @@
 // Configurações: dados da lanchonete, usuários e permissões, pagamento, impressão e cópia de segurança.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FORMAS, type Forma } from '../../regras/pedido';
+import { FORMAS, lerValor, type Forma } from '../../regras/pedido';
 import { PAPEIS, type Papel } from '../../regras/permissoes';
 import { dataCurta, dataHora, get, post, put } from '../api';
 import { Carregando, Falha, Modal, msgErro, useAviso, useDados, Vazio } from '../comuns';
@@ -20,7 +20,7 @@ function useSalvarEmpresa() {
   const aviso = useAviso();
   return async (mudancas: Partial<Empresa>) => {
     const e = { ...eu!.empresa, ...mudancas };
-    await put('/empresa', { nome: e.nome, cnpj: e.cnpj, telefone: e.telefone, endereco: e.endereco, cidade: e.cidade, uf: e.uf, mensagem_cupom: e.mensagem_cupom, formas_pagamento: e.formas_pagamento, desconto_max_caixa: e.desconto_max_caixa, largura_cupom: e.largura_cupom });
+    await put('/empresa', { nome: e.nome, cnpj: e.cnpj, telefone: e.telefone, endereco: e.endereco, cidade: e.cidade, uf: e.uf, mensagem_cupom: e.mensagem_cupom, formas_pagamento: e.formas_pagamento, desconto_max_caixa: e.desconto_max_caixa, largura_cupom: e.largura_cupom, taxa_entrega_padrao: e.taxa_entrega_padrao || 0 });
     await recarregar(); aviso('Configurações salvas.');
   };
 }
@@ -173,13 +173,16 @@ function PagamentoCaixa() {
   const e = eu!.empresa;
   const [formas, setFormas] = useState<Forma[]>(e.formas_pagamento as Forma[]);
   const [desc, setDesc] = useState(String(e.desconto_max_caixa));
+  const [taxa, setTaxa] = useState(e.taxa_entrega_padrao ? (e.taxa_entrega_padrao / 100).toFixed(2).replace('.', ',') : '');
   const [ocupado, setOcupado] = useState(false);
   const salvar = async () => {
     const n = Number(desc);
     if (!formas.length) return aviso('Deixe pelo menos uma forma de pagamento ligada.', 'erro');
     if (!Number.isInteger(n) || n < 0 || n > 100) return aviso('Desconto máximo: de 0 a 100%.', 'erro');
+    const t = taxa.trim() ? lerValor(taxa) : 0;
+    if (Number.isNaN(t) || t < 0 || t > 100000) return aviso('Taxa de entrega inválida.', 'erro');
     setOcupado(true);
-    try { await salvarEmpresa({ formas_pagamento: (Object.keys(FORMAS) as Forma[]).filter((f) => formas.includes(f)), desconto_max_caixa: n }); } catch (err) { aviso(msgErro(err), 'erro'); } finally { setOcupado(false); }
+    try { await salvarEmpresa({ formas_pagamento: (Object.keys(FORMAS) as Forma[]).filter((f) => formas.includes(f)), desconto_max_caixa: n, taxa_entrega_padrao: t }); } catch (err) { aviso(msgErro(err), 'erro'); } finally { setOcupado(false); }
   };
   return (
     <div className="inicio-meio">
@@ -191,6 +194,8 @@ function PagamentoCaixa() {
       <section className="cartao"><h2 className="cartao-tit">Descontos</h2>
         <label className="campo">Desconto máximo que o caixa pode dar (%)<input value={desc} onChange={(x) => setDesc(x.target.value.replace(/\D/g, ''))} inputMode="numeric" maxLength={3} /></label>
         <p style={{ color: 'var(--suave)', fontSize: 14 }}>Administrador e gerente podem dar qualquer desconto. Use 0 para o caixa não dar desconto.</p>
+        <label className="campo" style={{ marginTop: 8 }}>Taxa de entrega padrão (R$)<input value={taxa} onChange={(x) => setTaxa(x.target.value.replace(/[^\d,.]/g, ''))} inputMode="decimal" placeholder="0,00" /></label>
+        <p style={{ color: 'var(--suave)', fontSize: 14 }}>Já vem preenchida quando o pedido é para entrega; dá para mudar em cada pedido.</p>
       </section>
       <div><button className="btn prim" onClick={salvar} disabled={ocupado}>{ocupado ? 'Salvando…' : 'Salvar'}</button></div>
     </div>
