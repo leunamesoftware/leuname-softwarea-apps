@@ -510,7 +510,7 @@
   },
   {
     "id": "leuburger",
-    "nome": "Pedêê Parceiro",
+    "nome": "Pedêê para Parceiros",
     "categoria": "Para lojistas",
     "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o motoboy. 30 dias grátis.",
     "icone": "/img/pedee-parceiro-192.webp",
@@ -562,7 +562,12 @@
       "titulo": "Pedêê Parceiro",
       "frase": "Venda mais, sem comissão",
       "textoNaImagem": true
-    }
+    },
+    "capturas": [
+      "/img/telas/leuburger-1.webp",
+      "/img/telas/leuburger-2.webp",
+      "/img/telas/leuburger-3.webp"
+    ]
   },
   {
     "id": "pedee",
@@ -591,11 +596,16 @@
     ],
     "secoes": [
       "Comer e beber"
+    ],
+    "capturas": [
+      "/img/telas/pedee-1.webp",
+      "/img/telas/pedee-2.webp",
+      "/img/telas/pedee-3.webp"
     ]
   },
   {
     "id": "pedee-entregador",
-    "nome": "Pedêê Entregador",
+    "nome": "Pedêê para Entregadores",
     "categoria": "Para entregadores",
     "resumo": "Receba as entregas das lojas parceiras, veja o endereço no mapa e marque cada etapa.",
     "icone": "/img/pedee-entregador-192.webp",
@@ -620,6 +630,10 @@
     ],
     "secoes": [
       "Negócios"
+    ],
+    "capturas": [
+      "/img/telas/pedee-entregador-1.webp",
+      "/img/telas/pedee-entregador-2.webp"
     ]
   }
 ]
