@@ -237,6 +237,8 @@ function Perfil() {
   const [salvo, setSalvo] = useState(false), [local, setLocal] = useState(false);
   const favs = g.lojas.filter((l) => g.favoritos.includes(l.slug));
   const [conta, setConta] = useState<'' | 'entrar' | 'criar'>('');
+  // O botão Salvar só aparece quando algo foi mudado.
+  const mudou = f.nome !== g.nome || f.telefone !== g.telefone || f.endereco !== g.endereco;
   const salvar = async () => {
     gravar((x) => ({ ...x, ...f, conta: x.conta ? { ...x.conta, nome: f.nome, telefone: f.telefone, endereco: f.endereco } : x.conta }));
     if (ler().conta) await put('/publico/conta/eu', { nome: f.nome, telefone: f.telefone, endereco: f.endereco || null }).catch(() => {});
@@ -259,11 +261,11 @@ function Perfil() {
           <h2 className="cartao-tit">Seus dados</h2>
           <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>{g.conta ? 'Ficam na sua conta e já vêm preenchidos no pedido.' : 'Ficam só neste celular e já vêm preenchidos no pedido.'}</p>
           <div className="campos">
-            <label className="campo">Nome<input value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} autoComplete="name" /></label>
-            <label className="campo">WhatsApp<input value={f.telefone} onChange={(e) => setF({ ...f, telefone: e.target.value })} inputMode="tel" autoComplete="tel" /></label>
+            <label className="campo largo">Nome<input value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} autoComplete="name" /></label>
+            <label className="campo largo">WhatsApp<input value={f.telefone} onChange={(e) => setF({ ...f, telefone: e.target.value })} inputMode="tel" autoComplete="tel" /></label>
             <label className="campo largo">Endereço de entrega<input value={f.endereco} onChange={(e) => setF({ ...f, endereco: e.target.value })} autoComplete="street-address" placeholder="Rua, número, bairro e referência" /></label>
           </div>
-          <button className="btn prim bloco" style={{ marginTop: 12 }} onClick={salvar}>{salvo ? '✓ Salvo' : 'Salvar'}</button>
+          {mudou ? <button className="btn prim bloco" style={{ marginTop: 12 }} onClick={salvar}>Salvar alterações</button> : salvo && <p className="aviso" style={{ margin: '12px 0 0' }}>✓ Salvo</p>}
         </section>
         <section className="cartao">
           <h2 className="cartao-tit">Local <button className="link" onClick={() => setLocal(true)}>Mudar</button></h2>

@@ -186,3 +186,6 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-cod6 input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; font-size: 16px; }
 .pd-cod6 span { height: 58px; border: 2px solid #D1D5DB; border-radius: 10px; display: grid; place-items: center; font-size: 26px; font-weight: 900; }
 .pd-cod6 span.atual { border-color: #111; }
+.pd-conta b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pd-corpo { overflow-x: clip; }
+.pd .campos input { min-width: 0; }
