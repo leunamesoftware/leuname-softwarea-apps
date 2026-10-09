@@ -1,9 +1,9 @@
 // Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { CIDADES_RJ } from '../cidades-rj';
-import { faltam, useRelogio } from '../tempo';
+import { alo, faltam, useRelogio } from '../tempo';
 import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
-import { StrictMode, useEffect, useMemo, useState } from 'react';
+import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { brl, calcularItem, FORMAS, lerValor, type EscolhaItem, type Forma, type Opcoes } from '../../regras/pedido';
@@ -563,6 +563,11 @@ interface Acomp {
   avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; cancelado_pelo_cliente: boolean;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
+const AVISO: Record<string, string> = {
+  preparando: '👨‍🍳 A loja aceitou! Seu pedido já está sendo preparado.', pronto: '✅ Seu pedido está pronto!', a_caminho: '🛵 O entregador saiu com o seu pedido!',
+  entregue: '😋 Pedido entregue. Bom apetite!', retirado: '😋 Pedido retirado. Bom apetite!', recusado: 'A loja não pôde aceitar o pedido.', cancelado: 'O pedido foi cancelado.',
+};
+const PISTA: Record<string, number> = { aguardando: 6, preparando: 28, pronto: 52, a_caminho: 70, entregue: 94, retirado: 94 };
 const TITULO: Record<string, string> = {
   aguardando: 'Esperando a loja aceitar…', preparando: 'Pedido aceito! Em preparo 👨‍🍳', pronto: 'Pedido pronto!', a_caminho: 'Saiu para entrega! 🛵',
   entregue: 'Pedido entregue. Bom apetite! 😋', retirado: 'Pedido retirado. Bom apetite! 😋', recusado: 'A loja não pôde aceitar', cancelado: 'Pedido cancelado',
@@ -571,12 +576,19 @@ const TITULO: Record<string, string> = {
 function Pedido() {
   const { token = '' } = useParams();
   const [p, setP] = useState<Acomp | null>(null), [erro, setErro] = useState('');
-  const [vez, setVez] = useState(0);
+  const [vez, setVez] = useState(0), [aviso, setAviso] = useState('');
+  const antes = useRef<string | null>(null);
   useEffect(() => {
     let parar = false;
-    const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => { if (!parar) { setP(r.pedido); setErro(''); marcarFim(token, r.pedido.situacao); } }).catch((e) => setErro(msgErro(e)));
+    const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => {
+      if (parar) return;
+      const nova = r.pedido.situacao;
+      if (antes.current && antes.current !== nova && AVISO[nova]) { setAviso(AVISO[nova]); alo(); setTimeout(() => setAviso(''), 9000); }
+      antes.current = nova;
+      setP(r.pedido); setErro(''); marcarFim(token, nova);
+    }).catch((e) => setErro(msgErro(e)));
     carregar();
-    const t = setInterval(() => { if (!document.hidden) carregar(); }, 10000);
+    const t = setInterval(() => { if (!document.hidden) carregar(); }, 6000);
     return () => { parar = true; clearInterval(t); };
   }, [token, vez]);
   useRelogio(Boolean(p?.cancelar_ate));
@@ -598,9 +610,11 @@ function Pedido() {
     <div className="pd">
       <TopoVoltar titulo={p.loja} />
       <main className="pd-corpo">
+        {aviso && <div className="pd-alo" role="status">{aviso}</div>}
         <section className="cartao" style={{ textAlign: 'center' }}>
           <small style={{ color: 'var(--suave)' }}>{p.numero ? `Pedido #${p.numero}` : 'Seu pedido'} · {p.loja}</small>
-          <h1 style={{ margin: '6px 0 0', fontSize: 24 }}>{TITULO[p.situacao] || p.situacao}</h1>
+          <h1 style={{ margin: '6px 0 0', fontSize: 24 }} className={final ? '' : 'pd-viva'}>{TITULO[p.situacao] || p.situacao}</h1>
+          {p.situacao in PISTA && <div className={`pd-pista ${p.situacao}`}><i style={{ width: `${PISTA[p.situacao]}%` }} /><span style={{ left: `${PISTA[p.situacao]}%` }}>{p.situacao === 'a_caminho' ? '🛵' : p.situacao === 'preparando' ? '👨‍🍳' : p.situacao === 'pronto' ? '🛍️' : p.situacao === 'aguardando' ? '⏳' : '🎉'}</span></div>}
           {p.situacao === 'recusado' && p.motivo_recusa && <p className="aviso erro" style={{ marginBottom: 0 }}>Motivo: {p.motivo_recusa}</p>}
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
@@ -617,7 +631,7 @@ function Pedido() {
           })() : <p className="mapa-eta"><small>Assim que o entregador abrir o app, você o vê no mapa.</small></p>}
         </section>}
         {!['recusado', 'cancelado'].includes(p.situacao) && <section className="cartao"><ol className="passos">
-          {passos.map((x, k) => <li key={k} className={`${k <= pos ? 'feito' : ''} ${k === pos && !final ? 'atual' : ''}`}><span className="bola">{k <= pos ? <Ic n="check" t={16} /> : null}</span><b>{x.t}</b>{k <= pos && <small>{hora(x.h)}</small>}</li>)}
+          {passos.map((x, k) => <li key={k} className={`${k <= pos ? 'feito' : ''} ${k === pos && !final ? 'atual' : ''}`}><span className="bola">{k <= pos ? <Ic n="check" t={16} /> : null}</span><b>{x.t}</b>{k === pos && !final ? <small className="piscando">agora…</small> : k <= pos && <small>{hora(x.h)}</small>}</li>)}
         </ol></section>}
         {['entregue', 'retirado'].includes(p.situacao) && (p.avaliacao ? <section className="cartao" style={{ textAlign: 'center' }}><b>Sua avaliação</b><div className="estrelas-amarelas" style={{ fontSize: 26 }}>{'★'.repeat(p.avaliacao.nota)}{'☆'.repeat(5 - p.avaliacao.nota)}</div>{p.avaliacao.comentario && <p style={{ margin: 0, color: 'var(--suave)' }}>{p.avaliacao.comentario}</p>}</section>
           : <Avaliar token={token} aoAvaliar={() => setVez((x) => x + 1)} />)}
