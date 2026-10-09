@@ -316,6 +316,15 @@ describe('LeuPede (app de pedidos dos clientes)', () => {
     expect(acomp.corpo.pedido).toMatchObject({ situacao: 'preparando', numero: venda.numero });
     await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'a_caminho' });
     expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.situacao).toBe('a_caminho');
+    // Avaliação: só depois de entregue, uma vez; aparece na loja.
+    expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 5 })).status).toBe(409);
+    await n.post(`/vendas/${venda.id}/andamento`, { andamento: 'entregue' });
+    expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 6 })).status).toBe(400);
+    expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 4, comentario: 'Chegou quentinho' })).status).toBe(200);
+    expect((await cli.post(`/publico/app/pedido/${r.corpo.token}/avaliar`, { nota: 1 })).status).toBe(409);
+    expect((await cli.get(`/publico/app/pedido/${r.corpo.token}`)).corpo.pedido.avaliacao).toMatchObject({ nota: 4 });
+    expect((await cli.get('/publico/app/lojas?cidade=campinas')).corpo.lojas[0]).toMatchObject({ nota: 4, avaliacoes: 1 });
+    expect((await cli.get('/publico/app/loja/burger-da-ana/avaliacoes')).corpo.avaliacoes[0]).toMatchObject({ nota: 4, comentario: 'Chegou quentinho', nome: 'Maria' });
     // Aceitar de novo não duplica.
     expect((await n.post(`/pedidos-app/${o.id}/aceitar`)).corpo.repetido).toBe(true);
     expect((A.db.prepare('SELECT COUNT(*) AS n FROM vendas').get() as { n: number }).n).toBe(1);

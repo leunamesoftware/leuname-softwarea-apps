@@ -17,9 +17,11 @@ export const TIPOS_LOJA = { lanches: 'Lanches', hamburgueria: 'Hamburgueria', re
 type Loja = Empresa & {
   slug: string; no_app: number; aceitando: number; tipo_loja: string; descricao: string | null; logo_id: string | null; capa_id: string | null; tempo_entrega: string | null;
   pedido_minimo: number; faz_entrega: number; faz_retirada: number; lat: number | null; lng: number | null; raio_km: number; taxa_entrega_padrao: number;
+  nota_media?: number | null; nota_total?: number;
 };
 
 /** Loja com acesso em dia (assinatura, teste ou vitalício) e ligada no app. */
+const NOTAS = "(SELECT ROUND(AVG(a.nota), 1) FROM avaliacoes a WHERE a.empresa_id = e.id) AS nota_media, (SELECT COUNT(*) FROM avaliacoes a WHERE a.empresa_id = e.id) AS nota_total";
 const LOJA_ATIVA = "e.no_app = 1 AND e.slug IS NOT NULL AND (e.acesso_ate IS NULL OR e.acesso_ate > ?) AND EXISTS (SELECT 1 FROM produtos p WHERE p.empresa_id = e.id AND p.ativo = 1)";
 const limiteAcesso = () => new Date(Date.now() - 864e5).toISOString();
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -37,13 +39,14 @@ const cartaoLoja = (e: Loja, distancia: number | null) => ({
   logo_id: e.logo_id, capa_id: e.capa_id, cidade: e.cidade, uf: e.uf, aceitando: Boolean(e.aceitando), tempo_entrega: e.tempo_entrega,
   taxa_entrega: e.taxa_entrega_padrao || 0, pedido_minimo: e.pedido_minimo || 0, faz_entrega: Boolean(e.faz_entrega), faz_retirada: Boolean(e.faz_retirada),
   distancia: distancia == null ? null : Math.round(distancia * 10) / 10,
+  nota: e.nota_media ?? null, avaliacoes: e.nota_total || 0,
   // Fora do raio de entrega da loja: o cliente ainda vê, mas só pode retirar.
   entrega_aqui: Boolean(e.faz_entrega) && (distancia == null || distancia <= (e.raio_km || 8)),
 });
 
 async function lojaPorSlug(c: C, slug: string) {
   if (!/^[a-z0-9-]{3,40}$/.test(slug)) throw erro(404, 'loja_nao_encontrada', 'Loja não encontrada.');
-  const e = await c.env.BANCO.prepare(`SELECT e.* FROM empresas e WHERE e.slug = ? AND ${LOJA_ATIVA}`).bind(slug, limiteAcesso()).first<Loja>();
+  const e = await c.env.BANCO.prepare(`SELECT e.*, ${NOTAS} FROM empresas e WHERE e.slug = ? AND ${LOJA_ATIVA}`).bind(slug, limiteAcesso()).first<Loja>();
   if (!e) throw erro(404, 'loja_nao_encontrada', 'Esta loja não está no app no momento.');
   return e;
 }
@@ -77,7 +80,7 @@ export const appPublico = new Hono<{ Bindings: Env; Variables: Vars }>();
 appPublico.get('/publico/app/lojas', async (c) => {
   const q = c.req.query(), lat = Number(q.lat), lng = Number(q.lng);
   const temLocal = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && !(lat === 0 && lng === 0);
-  const { results } = await c.env.BANCO.prepare(`SELECT e.* FROM empresas e WHERE ${LOJA_ATIVA} LIMIT 2000`).bind(limiteAcesso()).all<Loja>();
+  const { results } = await c.env.BANCO.prepare(`SELECT e.*, ${NOTAS} FROM empresas e WHERE ${LOJA_ATIVA} LIMIT 2000`).bind(limiteAcesso()).all<Loja>();
   const cidade = semAcento(String(q.cidade || '')), busca = semAcento(String(q.busca || ''));
   let lojas = results.map((e) => ({ e, d: temLocal && e.lat != null && e.lng != null ? distanciaKm({ lat, lng }, { lat: e.lat, lng: e.lng }) : null }));
   if (temLocal) lojas = lojas.filter(({ e, d }) => (d != null ? d <= 40 : cidade && semAcento(e.cidade || '') === cidade));
@@ -171,15 +174,40 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador
-    FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+    FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
   return c.json({ pedido: {
     loja: o.loja, slug: o.slug, loja_telefone: o.loja_telefone, numero: o.numero || null, situacao, motivo_recusa: o.motivo_recusa, tipo: o.tipo, endereco: o.endereco,
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
+    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null,
   } });
+});
+
+/** Cliente avalia o pedido depois de receber (1 a 5 estrelas). Uma avaliação por pedido; só de pedido entregue ou retirado. */
+appPublico.post('/publico/app/pedido/:token/avaliar', async (c) => {
+  const d = validar(z.object({ nota: z.number().int().min(1, 'Escolha de 1 a 5 estrelas.').max(5), comentario: z.string().trim().max(300).optional().nullable() }), await corpo(c));
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const db = c.env.BANCO;
+  const o = await db.prepare(`SELECT o.id, o.empresa_id, o.nome, v.andamento, v.status AS venda_status FROM pedidos_online o LEFT JOIN vendas v ON v.id = o.venda_id WHERE o.token = ?`)
+    .bind(token).first<{ id: string; empresa_id: string; nome: string; andamento: string | null; venda_status: string | null }>();
+  if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  if (o.venda_status !== 'concluida' || !['entregue', 'retirado'].includes(String(o.andamento))) throw erro(409, 'ainda_nao', 'Dá para avaliar depois de receber o pedido.');
+  try {
+    await db.prepare('INSERT INTO avaliacoes (id, empresa_id, pedido_id, nota, comentario, nome, criado_em) VALUES (?,?,?,?,?,?,?)')
+      .bind(novoId(), o.empresa_id, o.id, d.nota, d.comentario || null, o.nome.split(' ')[0], agora()).run();
+  } catch { throw erro(409, 'ja_avaliado', 'Este pedido já foi avaliado. Obrigado!'); }
+  return c.json({ ok: true });
+});
+
+/** Últimas avaliações da loja (para o cliente ver antes de pedir). */
+appPublico.get('/publico/app/loja/:slug/avaliacoes', async (c) => {
+  const e = await lojaPorSlug(c, c.req.param('slug'));
+  const { results } = await c.env.BANCO.prepare('SELECT nota, comentario, nome, criado_em FROM avaliacoes WHERE empresa_id = ? ORDER BY criado_em DESC LIMIT 30').bind(e.id).all();
+  return c.json({ nota: e.nota_media ?? null, total: e.nota_total || 0, avaliacoes: results });
 });
 
 // ---------- loja (com login) ----------
