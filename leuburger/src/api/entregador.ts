@@ -89,7 +89,8 @@ entregador.get('/entregador/entregas', async (c) => {
   const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.finalizado_em, v.endereco_entrega, v.observacao,
       em.nome AS loja, em.endereco AS loja_endereco, em.telefone AS loja_telefone, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
-      (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas
+      (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
+      (SELECT dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng
     FROM vendas v JOIN empresas em ON em.id = v.empresa_id LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.entregador_id = ? AND v.status = 'concluida' AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em > ?)
     ORDER BY v.criado_em DESC LIMIT 50`).bind(e.id, new Date(Date.now() - 12 * 3600e3).toISOString()).all();

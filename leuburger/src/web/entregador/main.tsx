@@ -13,7 +13,7 @@ import './entregador.css';
 interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
   id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
-  loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null;
+  loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null;
 }
 const dig = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
 const fone = (s: string | null | undefined) => { const n = dig(s); return n.length >= 10 && n.length <= 11 ? '55' + n : n; };
@@ -139,7 +139,8 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
                 {dinheiro && x.troco > 0 && <em>Levar troco: {brl(x.troco)}</em>}
               </div>
               <div className="dupla">
-                <a className="btn" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.endereco_entrega)}`} target="_blank" rel="noopener"><Ic n="seta" />Mapa</a>
+                <a className="btn prim" href={x.dest_lat != null ? `https://waze.com/ul?ll=${x.dest_lat},${x.dest_lng}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(x.endereco_entrega)}&navigate=yes`} target="_blank" rel="noopener"><Ic n="seta" />Waze</a>
+                <a className="btn" href={x.dest_lat != null ? `https://www.google.com/maps/dir/?api=1&destination=${x.dest_lat},${x.dest_lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.endereco_entrega)}`} target="_blank" rel="noopener"><Ic n="seta" />Google Maps</a>
                 {x.cliente_telefone ? <a className="btn" href={`tel:${dig(x.cliente_telefone)}`}><Ic n="usuario" />Ligar</a> : <span />}
               </div>
               <div className="dupla" style={{ marginTop: 8 }}>
