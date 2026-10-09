@@ -83,7 +83,7 @@ function Painel({ aoSair }: { aoSair: () => void }) {
             {filtra(dados.entregadores).map((e) => <tr key={e.id}>
               <td className="adm-pessoa">{e.tem_foto ? <img src={`/api/admin/entregadores/${e.id}/foto`} alt="" /> : <span>🙂</span>}<div><b>{e.nome}</b><small>{e.email}{e.cidade ? ` · ${e.cidade}` : ''}</small></div></td>
               <td>{e.veiculo === 'bike' ? '🚲 Bicicleta' : '🛵 Moto'}</td><td>{e.lojas || '—'}</td><td>{e.entregas_30d}</td><td>{data(e.criado_em)}</td>
-              <td>{!e.ativo ? '⛔ Desativado' : e.disponivel ? '🟢 Disponível' : '⚪ Parado'}</td>
+              <td>{!e.ativo ? '⛔ Desativado' : e.disponivel ? '🟢 Disponível' : '🌙 Volto breve'}</td>
               <td className="adm-acoes"><button className={`btn peq ${e.ativo ? 'adm-perigo' : ''}`} onClick={() => { if (!e.ativo || confirm(`Desativar ${e.nome}? Ele sai do app na hora.`)) acao(`/admin/entregadores/${e.id}`, { ativo: !e.ativo }); }}>{e.ativo ? 'Desativar' : 'Reativar'}</button></td>
             </tr>)}</tbody></table>}
           {aba === 'pedidos' && <table className="adm-tab"><thead><tr><th>Quando</th><th>Loja</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Situação</th><th>Entregador</th></tr></thead><tbody>

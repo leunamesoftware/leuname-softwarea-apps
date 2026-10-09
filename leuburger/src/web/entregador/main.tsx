@@ -175,10 +175,10 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           <Mapa dados={{ loja: foco?.loja_lat != null ? { lat: foco.loja_lat, lng: foco.loja_lng as number } : null, destino: foco?.dest_lat != null ? { lat: foco.dest_lat, lng: foco.dest_lng as number } : null, entregador: eu0 }} altura={300} />
           <div className="ent-flutua">
             {avatar}
-            <button className={`ent-disp2 ${eu.entregador.disponivel ? 'sim' : ''}`} onClick={disponivel}>{eu.entregador.disponivel ? '🟢 Disponível' : '⚪ Parado'}</button>
+            <button className={`ent-disp2 ${eu.entregador.disponivel ? 'sim' : ''}`} onClick={disponivel}>{eu.entregador.disponivel ? '🟢 Disponível' : '🌙 Volto breve'}</button>
             <a className="ent-sos" href="tel:190" onClick={(e) => { if (!confirm('Ligar para a polícia (190)?')) e.preventDefault(); }}>⚠️ SOS</a>
           </div>
-          {!ativas.length && <div className="ent-busca">{eu.entregador.disponivel ? '🔎 Esperando as lojas passarem entregas para você' : 'Você está parado. Toque em “Parado” para ficar disponível.'}</div>}
+          {!ativas.length && <div className="ent-busca">{eu.entregador.disponivel ? '🔎 Esperando as lojas passarem entregas para você' : 'Você está em “Volto breve”. Quando quiser receber entregas, toque no botão e fique Disponível.'}</div>}
         </div>
         <main className="pd-corpo">
           <button className="ent-ganho" onClick={alternarValor} aria-label={verValor ? 'Esconder valores' : 'Mostrar valores'}>

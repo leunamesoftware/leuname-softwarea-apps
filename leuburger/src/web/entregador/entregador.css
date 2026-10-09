@@ -19,8 +19,9 @@
 .ent-avatar.grande { width: 120px; height: 120px; border-width: 4px; }
 .ent-disp2 { flex: 1; border: 0; border-radius: 99px; padding: 10px 14px; font: inherit; font-weight: 900; font-size: 16px; background: #E5E7EB; color: #374151; }
 .ent-disp2.sim { background: #16A34A; color: #fff; }
+.ent-disp2:not(.sim) { background: #FEF3C7; color: #92400E; }
 .ent-sos { flex: none; text-decoration: none; font-weight: 900; color: #DC2626; background: #FEF2F2; border-radius: 99px; padding: 9px 12px; }
-.ent-busca { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 500; background: #F0FDF4; color: #166534; font-weight: 700; padding: 10px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.ent-busca { position: absolute; left: 10px; right: 10px; bottom: 44px; z-index: 500; background: #F0FDF4; color: #166534; font-weight: 700; padding: 10px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
 .ent-ganho { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px; background: #fff; border: 0; border-radius: 99px; padding: 14px 20px; box-shadow: 0 8px 22px rgba(0,0,0,.14); font: inherit; cursor: pointer; margin-top: -34px; position: relative; z-index: 600; }
 .ent-ganho b { font-size: 28px; text-align: center; } .ent-ganho > span:last-of-type { font-size: 22px; }
 .ent-ganho small { grid-column: 1 / -1; text-align: center; color: var(--suave); font-weight: 600; }
