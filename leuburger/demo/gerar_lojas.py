@@ -116,7 +116,7 @@ def main():
             senha_loja, senha_moto = secrets.token_urlsafe(6), secrets.token_urlsafe(6)
             sal1, sal2 = secrets.token_hex(12), secrets.token_hex(12); mid = uid('moto', 'teste')
             L.append(f"INSERT OR IGNORE INTO usuarios (id, empresa_id, nome, login, senha_hash, senha_sal, papel, dono, criado_em) VALUES ({q(uid('usr', eid))}, {q(eid)}, 'Dono da loja de teste', '21900000001', {q(hash_senha(senha_loja, sal1))}, {q(sal1)}, 'admin', 0, {q(AGORA)});")
-            L.append(f"INSERT OR IGNORE INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES ({q(mid)}, 'Carlos (motoboy de teste)', 'motoboy@teste.pedee', {q(hash_senha(senha_moto, sal2))}, {q(sal2)}, 'moto', 'Duque de Caxias', {q(AGORA)});")
+            L.append(f"INSERT OR IGNORE INTO entregadores (id, nome, email, senha_hash, senha_sal, veiculo, cidade, criado_em) VALUES ({q(mid)}, 'Carlos (entregador de teste)', 'motoboy@teste.pedee', {q(hash_senha(senha_moto, sal2))}, {q(sal2)}, 'moto', 'Duque de Caxias', {q(AGORA)});")
             L.append(f"INSERT OR IGNORE INTO loja_entregadores (empresa_id, entregador_id, criado_em) VALUES ({q(eid)}, {q(mid)}, {q(AGORA)});")
             print('LOJISTA TESTE  -> WhatsApp: 21900000001  senha:', senha_loja)
             print('MOTOBOY TESTE  -> e-mail: motoboy@teste.pedee  senha:', senha_moto)
@@ -131,7 +131,7 @@ def main():
     # remoção
     E = "(SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo')"
     V = f"(SELECT id FROM vendas WHERE empresa_id IN {E})"
-    rem = ['-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o motoboy de teste.',
+    rem = ['-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o entregador de teste.',
            f"DELETE FROM pagamentos WHERE venda_id IN {V};", f"DELETE FROM venda_itens WHERE venda_id IN {V};",
            f"DELETE FROM avaliacoes WHERE empresa_id IN {E};", f"DELETE FROM pedidos_online WHERE empresa_id IN {E};",
            f"DELETE FROM vendas WHERE empresa_id IN {E};", f"DELETE FROM caixa_movimentos WHERE empresa_id IN {E};", f"DELETE FROM caixas WHERE empresa_id IN {E};",

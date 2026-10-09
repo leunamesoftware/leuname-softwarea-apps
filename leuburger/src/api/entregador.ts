@@ -1,5 +1,5 @@
-// Pedêê Entregador: conta própria do motoboy (app dele), separada das contas das lojas.
-// A loja vincula os motoboys dela pelo e-mail e escolhe quem leva cada entrega; o motoboy vê só as entregas dele.
+// Pedêê Entregador: conta própria do entregador (app dele), separada das contas das lojas.
+// A loja vincula os entregadores dela pelo e-mail e escolhe quem leva cada entrega; o entregador vê só as entregas dele.
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { z } from 'zod';
@@ -83,7 +83,7 @@ entregador.post('/entregador/disponivel', async (c) => {
   return c.json({ ok: true });
 });
 
-/** Entregas do motoboy: as que estão com ele agora e as entregues nas últimas 12 horas. */
+/** Entregas do entregador: as que estão com ele agora e as entregues nas últimas 12 horas. */
 entregador.get('/entregador/entregas', async (c) => {
   const e = await entregadorLogado(c);
   const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.finalizado_em, v.endereco_entrega, v.observacao,
@@ -97,7 +97,7 @@ entregador.get('/entregador/entregas', async (c) => {
   return c.json({ entregas: results });
 });
 
-/** O app do motoboy manda a posição dele; vale para as entregas dele que estão a caminho. */
+/** O app do entregador manda a posição dele; vale para as entregas dele que estão a caminho. */
 entregador.post('/entregador/posicao', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }), await corpo(c));
@@ -115,7 +115,7 @@ entregador.post('/entregador/entregas/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-// ---------- loja: motoboys da loja ----------
+// ---------- loja: entregadores da loja ----------
 export const entregadoresDaLoja = new Hono<{ Bindings: Env; Variables: Vars }>();
 
 entregadoresDaLoja.get('/entregadores', async (c) => {
@@ -129,9 +129,9 @@ entregadoresDaLoja.get('/entregadores', async (c) => {
 entregadoresDaLoja.post('/entregadores', async (c) => {
   exigir(c, 'configuracoes');
   const mail = emailDe((await corpo<{ email?: string }>(c)).email);
-  if (!mail.includes('@')) throw erro(400, 'dados_invalidos', 'Digite o e-mail do motoboy.');
+  if (!mail.includes('@')) throw erro(400, 'dados_invalidos', 'Digite o e-mail do entregador.');
   const e = await c.env.BANCO.prepare('SELECT id, nome FROM entregadores WHERE email = ? AND ativo = 1').bind(mail).first<{ id: string; nome: string }>();
-  if (!e) throw erro(404, 'motoboy_sem_app', 'Este motoboy ainda não tem o app. Peça para ele baixar o Pedêê Entregador e se cadastrar com este e-mail.');
+  if (!e) throw erro(404, 'entregador_sem_app', 'Este entregador ainda não tem o app. Peça para ele baixar o Pedêê Entregador e se cadastrar com este e-mail.');
   await c.env.BANCO.prepare('INSERT OR IGNORE INTO loja_entregadores (empresa_id, entregador_id, criado_em) VALUES (?,?,?)').bind(c.get('empresa').id, e.id, agora()).run();
   return c.json({ ok: true, nome: e.nome });
 });
@@ -142,7 +142,7 @@ entregadoresDaLoja.delete('/entregadores/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-/** A loja escolhe quem leva a entrega (só motoboys vinculados a ela). */
+/** A loja escolhe quem leva a entrega (só entregadores vinculados a ela). */
 entregadoresDaLoja.post('/vendas/:id/entregador', async (c) => {
   exigir(c, 'vender');
   const d = validar(z.object({ entregador_id: z.string().nullable() }), await corpo(c));
@@ -153,7 +153,7 @@ entregadoresDaLoja.post('/vendas/:id/entregador', async (c) => {
   let nome: string | null = null;
   if (d.entregador_id) {
     const e = await db.prepare('SELECT e.nome FROM loja_entregadores le JOIN entregadores e ON e.id = le.entregador_id WHERE le.empresa_id = ? AND e.id = ? AND e.ativo = 1').bind(emp, d.entregador_id).first<{ nome: string }>();
-    if (!e) throw erro(400, 'motoboy_invalido', 'Este motoboy não está na sua lista.');
+    if (!e) throw erro(400, 'entregador_invalido', 'Este entregador não está na sua lista.');
     nome = e.nome;
   }
   await db.prepare('UPDATE vendas SET entregador_id = ?, entregador = ? WHERE id = ?').bind(d.entregador_id, nome, v.id).run();

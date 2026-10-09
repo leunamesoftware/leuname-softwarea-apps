@@ -73,7 +73,7 @@
     https://leuburger.leunamesoftware.com.br. Dono da lanchonete entra com a conta LeuApps; funcionários com login próprio
     (Configurações → Usuários). Testes: `npm test` em `leuburger/`. Publicar: workflow `leuburger-publicar.yml` (Leunamesite).
     Preço: R$ 29,90/mês ou R$ 149,90 vitalício (planos.js), 7 dias grátis. Acompanhar pedidos (/acompanhar): link do cliente
-    /p/<token_cliente> (só vê) e do motoboy /m/<token_entregador> (marca saí/entreguei), sem login.
+    /p/<token_cliente> (só vê) e do entregador /m/<token_entregador> (marca saí/entreguei), sem login.
     App dos clientes Pedêê (marca do dono; constante NOME_APP em src/web/pedir/main.tsx e src/api/online.ts):
     https://leuburger.leunamesoftware.com.br/pedir/ (link de cada loja: /pedir/<slug>). Pedido do app cai em Acompanhar
     para aceitar/recusar; aceitar vira venda. Só plano mensal (vitalício fora de venda: foraDeVenda em planos.js).

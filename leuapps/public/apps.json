@@ -512,7 +512,7 @@
     "id": "leuburger",
     "nome": "Pedêê para Parceiros",
     "categoria": "Para lojistas",
-    "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o motoboy. 30 dias grátis.",
+    "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o entregador. 30 dias grátis.",
     "icone": "/img/pedee-parceiro-192.webp",
     "url": "https://leuburger.leunamesoftware.com.br/parceiro/",
     "preco": "30 dias grátis · R$ 29,90/mês",
@@ -522,7 +522,7 @@
         "nome": "Mensal",
         "tipo": "mensal",
         "preco": "R$ 29,90/mês",
-        "detalhe": "Pedidos do app Pedêê, cardápio, motoboys e painel completo (caixa e estoque) · cartão de crédito, renova sozinho · cancele quando quiser",
+        "detalhe": "Pedidos do app Pedêê, cardápio, entregadores e painel completo (caixa e estoque) · cartão de crédito, renova sozinho · cancele quando quiser",
         "url": "/loja/comprar?app=leuburger&plano=mensal",
         "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
       }
@@ -540,11 +540,11 @@
       "url": "https://leuburger.leunamesoftware.com.br/parceiro/",
       "id": "https://leuburger.leunamesoftware.com.br/parceiro/"
     },
-    "descricao": "App do lojista do Pedêê. Cadastre sua loja pelo WhatsApp, monte o cardápio, receba os pedidos com aviso sonoro, aceite, avise que está pronto e escolha o motoboy da sua loja. Sem comissão: R$ 29,90 por mês, com o primeiro mês grátis. Inclui o painel completo com caixa e estoque.",
+    "descricao": "App do lojista do Pedêê. Cadastre sua loja pelo WhatsApp, monte o cardápio, receba os pedidos com aviso sonoro, aceite, avise que está pronto e escolha o entregador da sua loja. Sem comissão: R$ 29,90 por mês, com o primeiro mês grátis. Inclui o painel completo com caixa e estoque.",
     "recursos": [
       "📲 Pedidos chegando com aviso sonoro",
       "🍔 Cardápio com fotos, preços e adicionais",
-      "🏍️ Escolha o motoboy de cada entrega",
+      "🏍️ Escolha o entregador de cada entrega",
       "💸 Sem comissão por pedido"
     ],
     "tags": [
@@ -618,7 +618,7 @@
       "url": "https://leuburger.leunamesoftware.com.br/entregador/",
       "id": "https://leuburger.leunamesoftware.com.br/entregador/"
     },
-    "descricao": "App do motoboy. Crie a conta com seu WhatsApp, fique disponível e receba as entregas das lojas que te adicionaram, com endereço, mapa, forma de pagamento e troco.",
+    "descricao": "App do entregador. Crie a conta com seu WhatsApp, fique disponível e receba as entregas das lojas que te adicionaram, com endereço, mapa, forma de pagamento e troco.",
     "recursos": [
       "🔔 Aviso sonoro de nova entrega",
       "📍 Endereço e mapa com um toque",

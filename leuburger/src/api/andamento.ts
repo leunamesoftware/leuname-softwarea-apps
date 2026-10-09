@@ -1,6 +1,6 @@
-// Andamento dos pedidos: painel da loja, link do motoboy e página de acompanhamento do cliente.
-// Os links do cliente e do motoboy não pedem login: valem pelo código longo e secreto de cada pedido
-// (o do cliente só mostra; o do motoboy só marca "saí" e "entreguei").
+// Andamento dos pedidos: painel da loja, link do entregador e página de acompanhamento do cliente.
+// Os links do cliente e do entregador não pedem login: valem pelo código longo e secreto de cada pedido
+// (o do cliente só mostra; o do entregador só marca "saí" e "entreguei").
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { agora, corpo, erro, type C, type Env, type Vars } from './base';
@@ -70,7 +70,7 @@ publico.get('/publico/pedido/:token', async (c) => {
   return c.json({ pedido: comum(v, itens) });
 });
 
-/** Página do motoboy: endereço, contato e quanto receber. */
+/** Página do entregador: endereço, contato e quanto receber. */
 publico.get('/publico/entrega/:token', async (c) => {
   const { v, itens } = await pedidoDoToken(c, 'token_entregador', c.req.param('token'));
   const { results: pag } = await c.env.BANCO.prepare('SELECT forma, valor FROM pagamentos WHERE venda_id = ?').bind(v.id).all();

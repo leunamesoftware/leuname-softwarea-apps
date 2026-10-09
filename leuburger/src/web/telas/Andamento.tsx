@@ -1,5 +1,5 @@
 // Acompanhar: painel dos pedidos do dia (em preparo → pronto/a caminho → finalizado).
-// O motoboy marca "saí" e "entreguei" pelo link dele; o painel se atualiza sozinho e avisa.
+// O entregador marca "saí" e "entreguei" pelo link dele; o painel se atualiza sozinho e avisa.
 import { useEffect, useRef, useState } from 'react';
 import { brl } from '../../regras/pedido';
 import { get, post } from '../api';
@@ -18,7 +18,7 @@ export const NOME_ANDAMENTO: Record<string, string> = { preparando: 'Em preparo'
 const FINAIS = ['entregue', 'retirado'];
 
 export const linkCliente = (token: string) => `${location.origin}/p/${token}`;
-export const linkMotoboy = (token: string) => `${location.origin}/m/${token}`;
+export const linkEntregador = (token: string) => `${location.origin}/m/${token}`;
 export function wa(tel: string | null | undefined, texto: string) {
   const n = (tel || '').replace(/\D/g, '');
   return `https://wa.me/${n.length >= 10 ? (n.length <= 11 ? '55' + n : n) : ''}?text=${encodeURIComponent(texto)}`;
@@ -38,12 +38,12 @@ export function Andamento() {
   const { eu } = useSessao();
   const aviso = useAviso();
   const d = useDados(() => get<{ pedidos: PedidoAndamento[] }>('/andamento'));
-  const [motoboy, setMotoboy] = useState<PedidoAndamento | null>(null);
+  const [entregador, setEntregador] = useState<PedidoAndamento | null>(null);
   const [, tique] = useState(0);
   const antes = useRef<Map<string, string> | null>(null);
   const meus = useRef(new Set<string>());
 
-  // Atualiza sozinho a cada 15 s e avisa quando o motoboy muda algo.
+  // Atualiza sozinho a cada 15 s e avisa quando o entregador muda algo.
   useEffect(() => { const t = setInterval(() => { d.recarregar(); tique((x) => x + 1); }, 15000); return () => clearInterval(t); }, [d.recarregar]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!d.dados) return;
@@ -99,15 +99,15 @@ export function Andamento() {
                     {p.tipo === 'entrega' && <div className="ped-end"><Ic n="inicio" t={16} />{p.endereco_entrega}</div>}
                     <div className="ped-status">
                       <span className={`selo st-${p.andamento}`}>{NOME_ANDAMENTO[p.andamento]}</span>
-                      {p.entregador && <small>Motoboy: {p.entregador}</small>}
+                      {p.entregador && <small>Entregador: {p.entregador}</small>}
                       <b className="num">{brl(p.total)}</b>
                     </div>
                     <div className="ped-acoes">
                       {p.andamento === 'preparando' && <button className="btn prim" onClick={() => mudar(p, 'pronto')}><Ic n="check" />Pronto</button>}
                       {p.andamento === 'pronto' && p.tipo === 'balcao' && <button className="btn prim" onClick={() => mudar(p, 'retirado')}><Ic n="check" />Cliente retirou</button>}
-                      {p.andamento === 'pronto' && p.tipo === 'entrega' && <button className="btn prim" onClick={() => setMotoboy(p)}><Ic n="seta" />Mandar ao motoboy</button>}
+                      {p.andamento === 'pronto' && p.tipo === 'entrega' && <button className="btn prim" onClick={() => setEntregador(p)}><Ic n="seta" />Mandar ao entregador</button>}
                       {p.andamento === 'a_caminho' && <button className="btn prim" onClick={() => mudar(p, 'entregue')}><Ic n="check" />Entregue</button>}
-                      {p.tipo === 'entrega' && ['preparando', 'a_caminho'].includes(p.andamento) && <button className="btn" onClick={() => setMotoboy(p)}><Ic n="seta" />Motoboy</button>}
+                      {p.tipo === 'entrega' && ['preparando', 'a_caminho'].includes(p.andamento) && <button className="btn" onClick={() => setEntregador(p)}><Ic n="seta" />Entregador</button>}
                       <a className="btn" href={wa(p.cliente_telefone, mensagemCliente(p, loja))} target="_blank" rel="noopener"><Ic n="whatsapp" />Avisar cliente</a>
                     </div>
                   </article>
@@ -117,27 +117,27 @@ export function Andamento() {
           ))}
         </div>
       )}
-      {motoboy && <MandarMotoboy pedido={motoboy} aoFechar={() => setMotoboy(null)} aoSaiu={(nome) => { mudar(motoboy, 'a_caminho', nome || null); setMotoboy(null); }} />}
+      {entregador && <MandarEntregador pedido={entregador} aoFechar={() => setEntregador(null)} aoSaiu={(nome) => { mudar(entregador, 'a_caminho', nome || null); setEntregador(null); }} />}
     </>
   );
 }
 
-function MandarMotoboy({ pedido: p, aoFechar, aoSaiu }: { pedido: PedidoAndamento; aoFechar: () => void; aoSaiu: (nome: string) => void }) {
+function MandarEntregador({ pedido: p, aoFechar, aoSaiu }: { pedido: PedidoAndamento; aoFechar: () => void; aoSaiu: (nome: string) => void }) {
   const aviso = useAviso();
-  const [nome, setNome] = useState(() => p.entregador || (() => { try { return localStorage.getItem('leuburger_motoboy') || ''; } catch { return ''; } })());
-  const [tel, setTel] = useState(() => { try { return localStorage.getItem('leuburger_motoboy_tel') || ''; } catch { return ''; } });
-  const guardar = () => { try { localStorage.setItem('leuburger_motoboy', nome.trim()); localStorage.setItem('leuburger_motoboy_tel', tel.trim()); } catch { /* sem armazenamento */ } };
-  const texto = `🛵 Entrega do pedido #${p.numero}\n${p.cliente ? p.cliente + '\n' : ''}${p.endereco_entrega}\n\nAbra para ver tudo e marcar quando sair e quando entregar:\n${linkMotoboy(p.token_entregador)}`;
-  const copiar = async () => { try { await navigator.clipboard.writeText(linkMotoboy(p.token_entregador)); aviso('Link do motoboy copiado.'); } catch { aviso('Não deu para copiar. Use o WhatsApp.', 'erro'); } };
+  const [nome, setNome] = useState(() => p.entregador || (() => { try { return localStorage.getItem('leuburger_entregador') || ''; } catch { return ''; } })());
+  const [tel, setTel] = useState(() => { try { return localStorage.getItem('leuburger_entregador_tel') || ''; } catch { return ''; } });
+  const guardar = () => { try { localStorage.setItem('leuburger_entregador', nome.trim()); localStorage.setItem('leuburger_entregador_tel', tel.trim()); } catch { /* sem armazenamento */ } };
+  const texto = `🛵 Entrega do pedido #${p.numero}\n${p.cliente ? p.cliente + '\n' : ''}${p.endereco_entrega}\n\nAbra para ver tudo e marcar quando sair e quando entregar:\n${linkEntregador(p.token_entregador)}`;
+  const copiar = async () => { try { await navigator.clipboard.writeText(linkEntregador(p.token_entregador)); aviso('Link do entregador copiado.'); } catch { aviso('Não deu para copiar. Use o WhatsApp.', 'erro'); } };
   return (
-    <Modal titulo={`Motoboy · pedido #${p.numero}`} aoFechar={aoFechar} pe={<>
+    <Modal titulo={`Entregador · pedido #${p.numero}`} aoFechar={aoFechar} pe={<>
       <button className="btn" onClick={copiar}>Copiar link</button>
       {p.andamento !== 'a_caminho' && <button className="btn prim" onClick={() => { guardar(); aoSaiu(nome.trim()); }}><Ic n="seta" />Saiu para entrega</button>}
     </>}>
-      <p style={{ marginTop: 0 }}>Mande o link para o motoboy. Pelo celular dele, ele vê o endereço (com mapa), o telefone do cliente e o troco, e marca <b>Saí para entrega</b> e <b>Entreguei</b>. O painel atualiza sozinho.</p>
+      <p style={{ marginTop: 0 }}>Mande o link para o entregador. Pelo celular dele, ele vê o endereço (com mapa), o telefone do cliente e o troco, e marca <b>Saí para entrega</b> e <b>Entreguei</b>. O painel atualiza sozinho.</p>
       <div className="campos">
-        <label className="campo">Nome do motoboy (opcional)<input value={nome} onChange={(e) => setNome(e.target.value.slice(0, 40))} placeholder="Ex.: João" /></label>
-        <label className="campo">WhatsApp do motoboy (opcional)<input value={tel} onChange={(e) => setTel(e.target.value)} inputMode="tel" placeholder="(11) 98765-4321" /></label>
+        <label className="campo">Nome do entregador (opcional)<input value={nome} onChange={(e) => setNome(e.target.value.slice(0, 40))} placeholder="Ex.: João" /></label>
+        <label className="campo">WhatsApp do entregador (opcional)<input value={tel} onChange={(e) => setTel(e.target.value)} inputMode="tel" placeholder="(11) 98765-4321" /></label>
       </div>
       <a className="btn prim bloco grande" style={{ marginTop: 14 }} href={wa(tel, texto)} target="_blank" rel="noopener" onClick={guardar}><Ic n="whatsapp" />Enviar link pelo WhatsApp</a>
     </Modal>

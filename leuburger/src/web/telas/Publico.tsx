@@ -1,4 +1,4 @@
-// Páginas sem login: acompanhamento do cliente (/p/código) e entrega do motoboy (/m/código).
+// Páginas sem login: acompanhamento do cliente (/p/código) e entrega do entregador (/m/código).
 import { useEffect, useState } from 'react';
 import { brl, FORMAS, type Forma } from '../../regras/pedido';
 import { get, post } from '../api';
@@ -68,7 +68,7 @@ export function AcompanharPedido({ token }: { token: string }) {
   );
 }
 
-export function PaginaMotoboy({ token }: { token: string }) {
+export function PaginaEntregador({ token }: { token: string }) {
   const { p, erro, carregar } = usePublico<Entrega>(`/publico/entrega/${encodeURIComponent(token)}`);
   const [ocupado, setOcupado] = useState(false);
   const [msg, setMsg] = useState('');

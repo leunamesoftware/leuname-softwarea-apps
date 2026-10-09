@@ -1,4 +1,4 @@
-// Mapa real (OpenStreetMap + Leaflet, grátis): loja, casa do cliente e o motoboy se mexendo.
+// Mapa real (OpenStreetMap + Leaflet, grátis): loja, casa do cliente e o entregador se mexendo.
 import { useEffect, useRef } from 'react';
 import type * as Leaflet from 'leaflet';
 

@@ -1,5 +1,5 @@
 // Pedêê Parceiro (app do lojista): cadastra a loja e cuida de tudo num painel simples
-// (Pedidos, Cardápio, Motoboys e Minha loja). O caixa completo continua disponível para quem quiser.
+// (Pedidos, Cardápio, Entregadores e Minha loja). O caixa completo continua disponível para quem quiser.
 import { CIDADES_RJ } from '../cidades-rj';
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
@@ -89,7 +89,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
 }
 
 // ---------- painel ----------
-type Aba = 'pedidos' | 'cardapio' | 'motoboys' | 'loja';
+type Aba = 'pedidos' | 'cardapio' | 'entregadores' | 'loja';
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('pedidos');
   const [novos, setNovos] = useState(0);
@@ -101,11 +101,11 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       <main className="pd-corpo" style={{ paddingBottom: 90 }}>
         {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} />}
         {aba === 'cardapio' && <Cardapio />}
-        {aba === 'motoboys' && <Motoboys />}
+        {aba === 'entregadores' && <Entregadores />}
         {aba === 'loja' && <MinhaLoja e={e} recarregar={recarregar} aoSair={aoSair} />}
       </main>
       <nav className="pd-abas-lojista">
-        {([['pedidos', 'pedidos', 'Pedidos'], ['cardapio', 'produtos', 'Cardápio'], ['motoboys', 'seta', 'Motoboys'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
+        {([['pedidos', 'pedidos', 'Pedidos'], ['cardapio', 'produtos', 'Cardápio'], ['entregadores', 'seta', 'Entregadores'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
           <button key={v} className={aba === v ? 'ativo' : ''} onClick={() => setAba(v)}><span className="bolha"><Ic n={ic} />{v === 'pedidos' && novos > 0 && <i>{novos}</i>}</span>{n}</button>
         ))}
       </nav>
@@ -176,12 +176,12 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           <div className="ped-acoes">
             {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'pronto')}><Ic n="check" />Pronto</button>}
             {p.andamento === 'pronto' && p.tipo === 'balcao' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'retirado')}><Ic n="check" />Cliente retirou</button>}
-            {/* Entrega pronta sem motoboy: o caminho principal é escolher o motoboy (a entrega aparece no app dele). */}
-            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" onClick={() => setEscolher(p)}><Ic n="seta" />🛵 Escolher motoboy</button>}
+            {/* Entrega pronta sem entregador: o caminho principal é escolher o entregador (a entrega aparece no app dele). */}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" onClick={() => setEscolher(p)}><Ic n="seta" />🛵 Escolher entregador</button>}
             {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn" disabled={ocupado === p.id} onClick={() => andar(p, 'a_caminho')}>Eu mesmo levo</button>}
             {p.andamento === 'pronto' && p.tipo === 'entrega' && p.entregador_id && <span className="selo">Enviado para {p.entregador?.split(' ')[0]} · esperando sair</span>}
-            {p.tipo === 'entrega' && p.andamento === 'preparando' && <button className="btn" onClick={() => setEscolher(p)}><Ic n="seta" />{p.entregador ? `Motoboy: ${p.entregador.split(' ')[0]}` : '🛵 Escolher motoboy'}</button>}
-            {p.tipo === 'entrega' && p.andamento === 'pronto' && p.entregador_id && <button className="btn" onClick={() => setEscolher(p)}>Trocar motoboy</button>}
+            {p.tipo === 'entrega' && p.andamento === 'preparando' && <button className="btn" onClick={() => setEscolher(p)}><Ic n="seta" />{p.entregador ? `Entregador: ${p.entregador.split(' ')[0]}` : '🛵 Escolher entregador'}</button>}
+            {p.tipo === 'entrega' && p.andamento === 'pronto' && p.entregador_id && <button className="btn" onClick={() => setEscolher(p)}>Trocar entregador</button>}
             {p.andamento === 'a_caminho' && p.entregador && <span className="selo">🛵 Com {p.entregador.split(' ')[0]}</span>}
             {p.andamento === 'a_caminho' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'entregue')}><Ic n="check" />Entregue</button>}
             {p.cliente_telefone && <a className="btn" href={wa(p.cliente_telefone)} target="_blank" rel="noopener" aria-label="WhatsApp do cliente"><Ic n="usuario" /></a>}
@@ -191,7 +191,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
       {feitos.length > 0 && <><h2 className="pd-tit">Finalizados (últimas 3 horas)</h2>{feitos.map((p) => (
         <div key={p.id} className="linha-valor" style={{ padding: '6px 0', borderBottom: '1px solid var(--linha)' }}><span>#{p.numero} · {p.cliente || 'Cliente'} · {p.andamento === 'entregue' ? 'entregue' : 'retirado'}</span><b className="num">{brl(p.total)}</b></div>
       ))}</>}
-      {escolher && <EscolherMotoboy pedido={escolher} aoFechar={() => setEscolher(null)} aoEscolher={async (id) => { const v = escolher; setEscolher(null); await agir(v.id, () => post(`/vendas/${v.id}/entregador`, { entregador_id: id })); }} />}
+      {escolher && <EscolherEntregador pedido={escolher} aoFechar={() => setEscolher(null)} aoEscolher={async (id) => { const v = escolher; setEscolher(null); await agir(v.id, () => post(`/vendas/${v.id}/entregador`, { entregador_id: id })); }} />}
       {recusar && <Modal titulo="Recusar pedido" aoFechar={() => setRecusar(null)}>
         <p style={{ marginTop: 0 }}>Escolha o motivo. O cliente vê na tela do pedido.</p>
         <div className="chips" style={{ flexWrap: 'wrap' }}>{['Acabou um item do pedido', 'Fora da área de entrega', 'Loja muito cheia agora', 'Já vamos fechar'].map((m) => (
@@ -332,47 +332,47 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
   );
 }
 
-// ---------- motoboys da loja ----------
+// ---------- entregadores da loja ----------
 interface Moto { id: string; nome: string; email: string; veiculo: string; disponivel: boolean; em_rota: number }
 const VEICULO: Record<string, string> = { moto: '🛵', bike: '🚲' };
 
-function EscolherMotoboy({ pedido, aoFechar, aoEscolher }: { pedido: { numero: number; entregador_id: string | null }; aoFechar: () => void; aoEscolher: (id: string | null) => void }) {
+function EscolherEntregador({ pedido, aoFechar, aoEscolher }: { pedido: { numero: number; entregador_id: string | null }; aoFechar: () => void; aoEscolher: (id: string | null) => void }) {
   const [lista, setLista] = useState<Moto[] | null>(null);
   useEffect(() => { get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch(() => setLista([])); }, []);
   return (
     <Modal titulo={`Quem leva o pedido #${pedido.numero}?`} aoFechar={aoFechar}>
-      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <p style={{ margin: 0 }}>Você ainda não tem motoboys. Abra a aba <b>Motoboys</b> e cadastre pelo e-mail deles (eles precisam ter o app <b>Pedêê Entregador</b>).</p> : (
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <p style={{ margin: 0 }}>Você ainda não tem entregadores. Abra a aba <b>Entregadores</b> e cadastre pelo e-mail deles (eles precisam ter o app <b>Pedêê Entregador</b>).</p> : (
         <div className="lista-config">{lista.map((m) => (
           <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) com ele` : ''}</small></span>
             <button className={`btn peq ${pedido.entregador_id === m.id ? '' : 'prim'}`} onClick={() => aoEscolher(m.id)}>{pedido.entregador_id === m.id ? 'Escolhido' : 'Escolher'}</button></div>
         ))}</div>
       )}
-      {pedido.entregador_id && <button className="btn bloco" style={{ marginTop: 12 }} onClick={() => aoEscolher(null)}>Tirar o motoboy deste pedido</button>}
+      {pedido.entregador_id && <button className="btn bloco" style={{ marginTop: 12 }} onClick={() => aoEscolher(null)}>Tirar o entregador deste pedido</button>}
     </Modal>
   );
 }
 
-function Motoboys() {
+function Entregadores() {
   const [lista, setLista] = useState<Moto[] | null>(null), [email, setEmail] = useState(''), [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
   const carregar = () => get<{ entregadores: Moto[] }>('/entregadores').then((r) => setLista(r.entregadores)).catch((e) => setMsg(msgErro(e)));
   useEffect(() => { carregar(); const t = setInterval(carregar, 20000); return () => clearInterval(t); }, []);
   const adicionar = async () => {
     setOcupado(true); setMsg('');
-    try { const r = await post<{ nome: string }>('/entregadores', { email }); setMsg(`${r.nome} agora é motoboy da sua loja.`); setEmail(''); carregar(); } catch (e) { setMsg(msgErro(e)); } finally { setOcupado(false); }
+    try { const r = await post<{ nome: string }>('/entregadores', { email }); setMsg(`${r.nome} agora é entregador da sua loja.`); setEmail(''); carregar(); } catch (e) { setMsg(msgErro(e)); } finally { setOcupado(false); }
   };
-  const tirar = async (m: Moto) => { if (!confirm(`Tirar ${m.nome} dos motoboys da loja?`)) return; await del(`/entregadores/${m.id}`).catch(() => {}); carregar(); };
+  const tirar = async (m: Moto) => { if (!confirm(`Tirar ${m.nome} dos entregadores da loja?`)) return; await del(`/entregadores/${m.id}`).catch(() => {}); carregar(); };
   return (
     <>
       <section className="cartao">
-        <h2 className="cartao-tit">Seus motoboys</h2>
-        <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>O motoboy baixa o app <b>Pedêê Entregador</b> e se cadastra. Depois você coloca o e-mail dele aqui. Quando o pedido ficar pronto, você escolhe quem leva e a entrega aparece no app dele, com aviso.</p>
+        <h2 className="cartao-tit">Seus entregadores</h2>
+        <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>O entregador baixa o app <b>Pedêê Entregador</b> e se cadastra. Depois você coloca o e-mail dele aqui. Quando o pedido ficar pronto, você escolhe quem leva e a entrega aparece no app dele, com aviso.</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 8 }}>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" placeholder="E-mail do motoboy" aria-label="E-mail do motoboy" />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" placeholder="E-mail do entregador" aria-label="E-mail do entregador" />
           <button className="btn prim" onClick={adicionar} disabled={ocupado || !email.includes('@')}><Ic n="mais" />Adicionar</button>
         </div>
         {msg && <p className="aviso" style={{ marginBottom: 0 }}>{msg}</p>}
       </section>
-      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>🛵</span><b>Nenhum motoboy ainda</b><span>Adicione pelo e-mail acima.</span></div> : (
+      {!lista ? <div className="carregando"><div className="giro" /></div> : !lista.length ? <div className="vazio"><span style={{ fontSize: 40 }}>🛵</span><b>Nenhum entregador ainda</b><span>Adicione pelo e-mail acima.</span></div> : (
         <section className="cartao"><div className="lista-config">{lista.map((m) => (
           <div key={m.id}><span>{VEICULO[m.veiculo] || '🛵'} {m.nome}<small style={{ display: 'block', color: m.disponivel ? 'var(--verde)' : 'var(--suave)', fontWeight: 600 }}>{m.disponivel ? 'Disponível' : 'Indisponível'}{m.em_rota ? ` · ${m.em_rota} entrega(s) agora` : ''}</small></span>
             <button className="btn-ic vermelho" onClick={() => tirar(m)} aria-label={`Tirar ${m.nome}`}><Ic n="lixeira" /></button></div>

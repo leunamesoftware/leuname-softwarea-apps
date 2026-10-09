@@ -1,7 +1,7 @@
 {
   "name": "Pedêê Parceiro",
   "short_name": "Pedêê Parceiro",
-  "description": "App do lojista Pedêê: receba os pedidos, monte o cardápio e chame seus motoboys.",
+  "description": "App do lojista Pedêê: receba os pedidos, monte o cardápio e chame seus entregadores.",
   "id": "/parceiro/",
   "start_url": "/parceiro/",
   "scope": "/parceiro/",

@@ -23,7 +23,7 @@ interface LojaCartao {
 interface LojaCompleta extends LojaCartao { telefone: string | null; endereco: string | null; formas: Forma[] }
 interface Produto { id: string; categoria_id: string; nome: string; descricao: string | null; preco: number; foto_id: string | null; categoria_icone: string | null; opcoes: Opcoes }
 interface Categoria { id: string; nome: string; icone: string }
-/** Procura o endereço no mapa (OpenStreetMap, grátis) para o motoboy aparecer perto da casa do cliente; se falhar, o pedido segue normal. */
+/** Procura o endereço no mapa (OpenStreetMap, grátis) para o entregador aparecer perto da casa do cliente; se falhar, o pedido segue normal. */
 async function procurarEndereco(q: string): Promise<{ lat: number; lng: number } | null> {
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(q)}`, { signal: AbortSignal.timeout(4000) });

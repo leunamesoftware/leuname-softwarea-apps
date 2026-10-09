@@ -17,7 +17,7 @@ import { Inicio } from './telas/Inicio';
 import { Pagamento, VendaConcluida } from './telas/Pagamento';
 import { Pedidos } from './telas/Pedidos';
 import { Produtos } from './telas/Produtos';
-import { AcompanharPedido, PaginaMotoboy } from './telas/Publico';
+import { AcompanharPedido, PaginaEntregador } from './telas/Publico';
 import { Relatorios } from './telas/Relatorios';
 import './estilo.css';
 
@@ -54,11 +54,11 @@ function App() {
   );
 }
 
-// Links do cliente (/p/código) e do motoboy (/m/código): sem login e sem o menu do app.
+// Links do cliente (/p/código) e do entregador (/m/código): sem login e sem o menu do app.
 const publico = /^\/(p|m)\/([A-Za-z0-9_-]{20,64})\/?$/.exec(location.pathname);
 
 createRoot(document.getElementById('raiz')!).render(publico ? (
-  <StrictMode>{publico[1] === 'p' ? <AcompanharPedido token={publico[2]} /> : <PaginaMotoboy token={publico[2]} />}</StrictMode>
+  <StrictMode>{publico[1] === 'p' ? <AcompanharPedido token={publico[2]} /> : <PaginaEntregador token={publico[2]} />}</StrictMode>
 ) : (
   <StrictMode>
     <BrowserRouter>

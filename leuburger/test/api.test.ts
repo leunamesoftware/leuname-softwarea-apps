@@ -133,7 +133,7 @@ describe('venda', () => {
     expect(rel.corpo.atual.lucro).toBe(2890 - 1000 - 2 * 700);
   });
 
-  it('andamento: painel da loja, link do motoboy (marca saída e entrega) e link do cliente (só vê)', async () => {
+  it('andamento: painel da loja, link do entregador (marca saída e entrega) e link do cliente (só vê)', async () => {
     const { n, p } = await donoComCardapio();
     await n.post('/caixa/abrir', { fundo: 0 });
     const r = await n.post('/vendas', { chave: 'andamento-01', itens: [{ produtoId: p('X-Burger').id, qtd: 1 }], pagamentos: [{ forma: 'dinheiro', valor: 5000 }], entrega: { endereco: 'Rua A, 10', taxa: 500 } });
@@ -147,7 +147,7 @@ describe('venda', () => {
     expect((await n.post(`/vendas/${v.id}/andamento`, { andamento: 'pronto', entregador: 'João' })).status).toBe(200);
     expect((await n.post(`/vendas/${v.id}/andamento`, { andamento: 'retirado' })).status).toBe(400);
 
-    // Motoboy, sem login.
+    // Entregador, sem login.
     const moto = A.navegador();
     const m = await moto.get(`/publico/entrega/${v.token_entregador}`);
     expect(m.corpo.pedido).toMatchObject({ endereco: 'Rua A, 10', total: 2390, troco: 2610, entregador: 'João' });
@@ -379,12 +379,12 @@ describe('Pedêê: lojista cadastra a loja pelo app', () => {
   });
 });
 
-describe('Pedêê Entregador (app do motoboy)', () => {
-  it('motoboy se cadastra, a loja vincula pelo e-mail, escolhe quem entrega e ele marca saí/entreguei no app', async () => {
+describe('Pedêê Entregador (app do entregador)', () => {
+  it('entregador se cadastra, a loja vincula pelo e-mail, escolhe quem entrega e ele marca saí/entreguei no app', async () => {
     const { n, p } = await donoComCardapio();
     await n.post('/caixa/abrir', { fundo: 0 });
     const moto = A.navegador();
-    // Loja tenta vincular antes do motoboy ter o app.
+    // Loja tenta vincular antes do entregador ter o app.
     expect((await n.post('/entregadores', { email: 'joao@moto.com' })).status).toBe(404);
     expect((await moto.post('/entregador/cadastrar', { nome: 'João Moto', email: ' Joao@Moto.com ', senha: 'moto123', veiculo: 'moto' })).status).toBe(201);
     expect((await moto.get('/entregador/eu')).corpo.entregador).toMatchObject({ nome: 'João Moto', email: 'joao@moto.com', disponivel: true });
@@ -394,7 +394,7 @@ describe('Pedêê Entregador (app do motoboy)', () => {
     expect((await moto.get('/entregador/eu')).corpo.lojas.length).toBe(1);
 
     const v = (await n.post('/vendas', { chave: 'moto-0001', itens: [{ produtoId: p('X-Burger').id, qtd: 1 }], pagamentos: [{ forma: 'dinheiro', valor: 5000 }], entrega: { endereco: 'Rua B, 20', taxa: 500 } })).corpo.venda;
-    // Sem estar com ele, o motoboy não vê nem mexe.
+    // Sem estar com ele, o entregador não vê nem mexe.
     expect((await moto.get('/entregador/entregas')).corpo.entregas).toHaveLength(0);
     expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'a_caminho' })).status).toBe(404);
     expect((await n.post(`/vendas/${v.id}/entregador`, { entregador_id: lista[0].id })).status).toBe(200);
@@ -403,7 +403,7 @@ describe('Pedêê Entregador (app do motoboy)', () => {
     expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'a_caminho' })).status).toBe(200);
     expect((await n.get('/andamento')).corpo.pedidos.find((x: { id: string }) => x.id === v.id)).toMatchObject({ andamento: 'a_caminho', entregador: 'João Moto' });
     expect((await moto.post(`/entregador/entregas/${v.id}`, { andamento: 'entregue' })).status).toBe(200);
-    // Outra loja não pode usar o motoboy sem vincular; sem login do entregador não entra.
+    // Outra loja não pode usar o entregador sem vincular; sem login do entregador não entra.
     const beto = A.navegador();
     await beto.post('/auth/entrar', { login: 'beto@burger.com', senha: 'senha-beto' });
     expect((await beto.post(`/vendas/${v.id}/entregador`, { entregador_id: lista[0].id })).status).toBe(404);
@@ -414,7 +414,7 @@ describe('Pedêê Entregador (app do motoboy)', () => {
 });
 
 describe('Mapa ao vivo da entrega', () => {
-  it('cliente manda a localização no pedido; enquanto o motoboy está a caminho o cliente vê a posição dele', async () => {
+  it('cliente manda a localização no pedido; enquanto o entregador está a caminho o cliente vê a posição dele', async () => {
     const { n, p } = await donoComCardapio();
     await n.put('/empresa', { nome: 'Burger Mapa', cidade: 'Petrópolis', uf: 'RJ', formas_pagamento: ['pix'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 500 });
     const cfgR = await n.put('/loja-app', { slug: 'burger-mapa', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'hamburgueria', descricao: 'Teste', tempo_entrega: '30 min', pedido_minimo: 0, lat: -22.5046, lng: -43.1823, raio_km: 8 }); expect(cfgR.status, JSON.stringify(cfgR.corpo)).toBe(200);

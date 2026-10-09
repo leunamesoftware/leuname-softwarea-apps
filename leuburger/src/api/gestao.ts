@@ -27,7 +27,7 @@ async function resumo(c: C, ini: string, fim: string) {
   const it = await db.prepare(`SELECT COALESCE(SUM(i.qtd),0) AS itens, COALESCE(SUM(i.custo_unit * i.qtd),0) AS custo FROM venda_itens i JOIN vendas v ON v.id = i.venda_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.criado_em < ?`).bind(emp, ini, fim).first<{ itens: number; custo: number }>();
   const pedidos = v?.pedidos || 0, faturamento = v?.faturamento || 0;
-  // A taxa de entrega costuma ir para o motoboy: entra no faturamento, mas não conta como lucro.
+  // A taxa de entrega costuma ir para o entregador: entra no faturamento, mas não conta como lucro.
   const taxas = v?.taxas || 0;
   return { pedidos, faturamento, itens: it?.itens || 0, custo: it?.custo || 0, lucro: faturamento - taxas - (it?.custo || 0), ticketMedio: pedidos ? Math.round(faturamento / pedidos) : 0,
     descontos: v?.descontos || 0, taxas, entregas: v?.entregas || 0 };

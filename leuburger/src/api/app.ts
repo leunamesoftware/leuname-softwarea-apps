@@ -31,7 +31,7 @@ export function criarApp() {
 
   app.get('/saude', (c) => c.json({ ok: true }));
   app.route('/auth', auth);
-  app.route('/', publico); // links do cliente e do motoboy (sem login)
+  app.route('/', publico); // links do cliente e do entregador (sem login)
   app.route('/', appPublico); // app de pedidos dos clientes (sem login)
   app.route('/', entregador); // app do entregador (sessão própria)
   app.use('*', exigirSessao);

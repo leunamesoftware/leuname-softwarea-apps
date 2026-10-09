@@ -1,4 +1,4 @@
-// Pedêê Entregador: o app do motoboy. Cadastro e login próprios; recebe as entregas que as lojas passam para ele,
+// Pedêê Entregador: o app do entregador. Cadastro e login próprios; recebe as entregas que as lojas passam para ele,
 // com aviso, e marca "saí para entrega" e "entreguei". Cada um no seu quadrado: não vê nada além das entregas dele.
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -140,7 +140,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           : <p className="aviso" style={{ margin: 0 }}>📍 O cliente está vendo você no mapa. Deixe este app aberto durante a entrega.</p>)}
         <h2 className="pd-tit">Suas entregas agora</h2>
         {lista == null ? <div className="carregando"><div className="giro" /></div> : !ativas.length ? (
-          <div className="vazio"><span style={{ fontSize: 44 }}>🛵</span><b>Nenhuma entrega com você</b><span>{eu.lojas.length ? 'Quando a loja passar uma entrega para você, ela aparece aqui com aviso. Deixe o app aberto.' : 'Passe o seu e-mail para a loja te adicionar como motoboy dela.'}</span></div>
+          <div className="vazio"><span style={{ fontSize: 44 }}>🛵</span><b>Nenhuma entrega com você</b><span>{eu.lojas.length ? 'Quando a loja passar uma entrega para você, ela aparece aqui com aviso. Deixe o app aberto.' : 'Passe o seu e-mail para a loja te adicionar como entregador dela.'}</span></div>
         ) : ativas.map((x) => {
           const dinheiro = (x.formas || '').includes('dinheiro');
           return (

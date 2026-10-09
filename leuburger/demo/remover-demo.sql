@@ -1,4 +1,4 @@
--- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o motoboy de teste.
+-- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o entregador de teste.
 DELETE FROM pagamentos WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM venda_itens WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM avaliacoes WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo');

@@ -184,7 +184,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
     avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null,
-    // Mapa ao vivo: só enquanto o motoboy está a caminho.
+    // Mapa ao vivo: só enquanto o entregador está a caminho.
     mapa: situacao === 'a_caminho' && o.tipo === 'entrega' ? {
       loja: o.loja_lat != null ? { lat: o.loja_lat, lng: o.loja_lng } : null,
       destino: o.dest_lat != null ? { lat: o.dest_lat, lng: o.dest_lng } : null,
