@@ -116,6 +116,7 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
           <option value="leuburger">LeuBurger PDV · vitalício</option>
           <option value="leuburger_mensal">LeuBurger PDV · 1 mês</option>
           <option value="mercagestao">MercaGestão · vitalício</option>
+          <option value="mercagestao_mensal">MercaGestão · 1 mês</option>
           <option value="construgestao">ConstruGestão · vitalício</option>
           <option value="construgestao_mensal">ConstruGestão · 1 mês</option>
           <option value="gestacell">Gestacell · vitalício</option>
@@ -124,8 +125,8 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
           <option value="radar">Radar Preventivo · vitalício</option>
           <option value="radar_anual">Radar Preventivo · 1 ano</option>
           <option value="radar_mensal">Radar Preventivo · 1 mês</option>
-          <option value="anual">Quanto Cobrar Pro · 1 ano</option>
-          <option value="mensal">Quanto Cobrar Pro · 1 mês</option>
+          <option value="anual">Quanto Cobrar 👑 Pro · 1 ano</option>
+          <option value="mensal">Quanto Cobrar 👑 Pro · 1 mês</option>
           <option value="basico">Quanto Cobrar Básico · vitalício</option>
         </select>
         <button type="submit" style="grid-column:1/-1">✅ Liberar e mandar o e-mail</button>
@@ -233,7 +234,7 @@ document.getElementById('form-brinde').addEventListener('submit', async (e) => {
     body: JSON.stringify({ email, dias: document.getElementById('b-dias').value }) }).catch(() => null);
   if (!r) return bMsg('Sem internet. Tente de novo.');
   if (!r.ok) return bMsg((await r.json().catch(() => ({}))).erro === 'email' ? 'Confira o e-mail.' : 'Não deu para salvar agora.');
-  e.target.reset(); bMsg(`Pronto! ${email} já tem o Pro de presente.`, true); carregarBrindes();
+  e.target.reset(); bMsg(`Pronto! ${email} já tem o 👑 Pro de presente.`, true); carregarBrindes();
 });
 document.getElementById('b-lista').addEventListener('click', async (e) => {
   const b = e.target.closest('[data-tirar]'); if (!b || !confirm(`Tirar o presente de ${b.dataset.tirar}?`)) return;

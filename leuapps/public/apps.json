@@ -436,11 +436,19 @@
     "resumo": "Caixa com leitor de código de barras, cupom, NFC-e, estoque, validade e fiado.",
     "icone": "/img/mercagestao-192.webp",
     "url": "https://mercagestao.leunamesoftware.com.br",
-    "preco": "7 dias grátis · R$ 200 uma vez só",
+    "preco": "7 dias grátis · R$ 39,90/mês ou R$ 200 uma vez só",
     "exigeCompra": true,
     "teste": 7,
     "versao": "1.0",
     "planos": [
+      {
+        "nome": "Mensal",
+        "tipo": "mensal",
+        "preco": "R$ 39,90/mês",
+        "detalhe": "Cartão de crédito, renova sozinho · atualizações incluídas · cancele quando quiser",
+        "url": "/loja/comprar?app=mercagestao&plano=mensal",
+        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
+      },
       {
         "nome": "Vitalício",
         "tipo": "unico",
@@ -451,6 +459,11 @@
       }
     ],
     "opcoes": [
+      [
+        "Mensal",
+        "R$ 39,90",
+        "por mês, com atualizações, cancele quando quiser"
+      ],
       [
         "Vitalício",
         "R$ 200",
@@ -512,7 +525,8 @@
         "tipo": "mensal",
         "preco": "R$ 29,90/mês",
         "detalhe": "Cartão de crédito, renova sozinho · cancele quando quiser",
-        "url": "/loja/comprar?app=leuburger&plano=mensal"
+        "url": "/loja/comprar?app=leuburger&plano=mensal",
+        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
       },
       {
         "nome": "Vitalício",

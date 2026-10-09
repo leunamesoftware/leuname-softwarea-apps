@@ -22,6 +22,7 @@ export const PLANOS = {
   construgestao: { app: 'construgestao', licenca: 'construgestao', preco: 49.9, parcelas: 3, titulo: 'ConstruGestão — pagamento único (para sempre)' },
   construgestao_mensal: { app: 'construgestao', licenca: 'construgestao', preco: 19.9, dias: 33, assinatura: true, titulo: 'ConstruGestão — plano mensal' },
   mercagestao: { app: 'mercagestao', licenca: 'mercagestao', preco: 200, parcelas: 6, titulo: 'MercaGestão — pagamento único (para sempre)' },
+  mercagestao_mensal: { app: 'mercagestao', licenca: 'mercagestao', preco: 39.9, dias: 33, assinatura: true, titulo: 'MercaGestão — plano mensal' },
   leuburger: { app: 'leuburger', licenca: 'leuburger', preco: 149.9, parcelas: 6, titulo: 'LeuBurger PDV — pagamento único (para sempre)' },
   leuburger_mensal: { app: 'leuburger', licenca: 'leuburger', preco: 29.9, dias: 33, assinatura: true, titulo: 'LeuBurger PDV — plano mensal' },
 };
