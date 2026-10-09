@@ -3,6 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    // Celular com "Versão para computador" ligada no Chrome: a página é desenhada em ~980 px e tudo fica miúdo.
+    // Aqui a loja aumenta o zoom para caber na largura real do celular (fica igual ao modo normal).
+    (function () {
+      function ajustar() {
+        try {
+          var real = screen.width, larg = window.innerWidth / (parseFloat(document.documentElement.style.zoom) || 1);
+          var miudo = navigator.maxTouchPoints > 0 && real <= 600 && larg >= real * 1.5;
+          document.documentElement.style.zoom = miudo ? (larg / real).toFixed(3) : '';
+        } catch (e) {}
+      }
+      ajustar(); addEventListener('resize', ajustar);
+    })();
+  </script>
   <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0B0E1E" media="(prefers-color-scheme: dark)">
   <title>LeuApps — aplicativos LeuName Softwares</title>
