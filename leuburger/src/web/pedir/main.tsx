@@ -1,7 +1,7 @@
 // Pedêê: o app dos clientes. Um app só, com as lanchonetes e restaurantes perto do cliente.
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { CIDADES_RJ } from '../cidades-rj';
-import { CULINARIAS, DESTAQUE } from '../culinarias';
+import { CULINARIAS, DESTAQUE, SEGMENTOS } from '../culinarias';
 import { alo, faltam, useRelogio } from '../tempo';
 import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
@@ -109,6 +109,7 @@ function Inicio() {
   const nav = useNavigate();
   const { g, setG, lojas, erro } = useLojas();
   const [tipo, setTipo] = useState('');
+  const [ordem, setOrdem] = useState<'' | 'nota' | 'perto' | 'taxa'>(''), [gratis, setGratis] = useState(false);
   const [escolherLocal, setEscolherLocal] = useState(false);
 
   // Abriu o app instalado logo depois de instalar pelo link de uma loja: vai direto para ela.
@@ -120,9 +121,11 @@ function Inicio() {
   }, [nav]);
   useEffect(() => { if (!g.local && !g.cidade) setEscolherLocal(true); }, [g.local, g.cidade]);
 
-  const lista = (lojas || []).filter((l) => !tipo || l.tipo === tipo);
+  const base = (lojas || []).filter((l) => !tipo || l.tipo === tipo);
+  const lista = base.filter((l) => !gratis || (l.faz_entrega && !l.taxa_entrega)).sort((a, b) => ordem === 'nota' ? (b.nota || 0) - (a.nota || 0) : ordem === 'perto' ? (a.distancia ?? 999) - (b.distancia ?? 999) : ordem === 'taxa' ? a.taxa_entrega - b.taxa_entrega : 0);
   const destaques = [...lista].filter((l) => l.aceitando).sort((a, b) => (b.nota || 0) - (a.nota || 0) || b.avaliacoes - a.avaliacoes).slice(0, 8);
   const temTipo = new Set((lojas || []).map((l) => l.tipo));
+  const famosos = [...(lojas || [])].filter((l) => l.avaliacoes > 0).sort((a, b) => (b.avaliacoes * (b.nota || 0)) - (a.avaliacoes * (a.nota || 0))).slice(0, 10);
   const andamento = g.pedidos.filter((p) => Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3);
   return (
     <div className="pd com-abas">
@@ -132,6 +135,11 @@ function Inicio() {
         <Link className="entrada pd-busca" to="/buscar"><Ic n="busca" /><span>Buscar restaurantes, pratos…</span></Link>
       </header>
       <main className="pd-corpo">
+        <div className="pd-segmentos">
+          {SEGMENTOS.map((x) => <Link key={x.id} to={`/culinaria/${x.id}`}><span>{x.emoji}</span>{x.nome}</Link>)}
+          <Link to="/culinarias"><span className="pd-seg-mais">▦</span>Ver mais</Link>
+        </div>
+        <Carrossel />
         <div className="pd-cats-icones" role="group" aria-label="Categorias">
           {CATS_INICIO.map(([t, n, e]) => (
             <button key={t} className={`${tipo === t ? 'sel' : ''} ${lojas && !temTipo.has(t) ? 'apagada' : ''}`} onClick={() => setTipo(tipo === t ? '' : t)}><span>{e}</span>{n}</button>
@@ -139,7 +147,6 @@ function Inicio() {
           <Link to="/culinarias" className="pd-cat-todas"><span>➕</span>Ver todas</Link>
         </div>
         {andamento.length > 0 && <div className="pd-faixa">{andamento.map((p) => <Link key={p.token} className="pd-pedido" to={`/pedido/${p.token}`}><Ic n="sacola" /><span><b>{p.loja}</b><small>Acompanhar pedido</small></span><Ic n="direita" /></Link>)}</div>}
-        {!tipo && <div className="pd-banner"><div><b>Os melhores sabores perto de você</b><span>Peça e acompanhe a entrega em tempo real</span></div><img src="/img/hamburguer.webp" alt="" /></div>}
         {erro ? <p className="aviso erro">{erro}</p> : lojas == null ? <div className="carregando"><div className="giro" /></div> : !lista.length ? (
           <div className="vazio"><span style={{ fontSize: 40 }}>{tipo ? EMOJI[tipo] : '🍽️'}</span><b>{tipo ? 'Nenhuma loja desse tipo por aqui ainda' : 'Nenhuma loja por aqui ainda'}</b>
             <span>{tipo ? 'Veja as outras categorias.' : `Estamos chegando! Peça para a sua lanchonete preferida entrar no ${NOME_APP}.`}</span>
@@ -156,6 +163,14 @@ function Inicio() {
               </Link>
             ))}</div>
           </section>}
+          {!tipo && famosos.length > 2 && <section>
+            <h2 className="pd-tit">Famosos na sua região<small className="pd-sub">As lojas mais bem avaliadas</small></h2>
+            <div className="pd-famosos">{famosos.map((l) => <Link key={l.slug} to={`/${l.slug}`}><Logo l={l} t={72} /><span>{l.nome}</span></Link>)}</div>
+          </section>}
+          <div className="pd-chips">
+            <select className="chip" value={ordem} onChange={(e) => setOrdem(e.target.value as typeof ordem)} aria-label="Ordenar"><option value="">Ordenar</option><option value="nota">Melhor avaliadas</option><option value="perto">Mais perto</option><option value="taxa">Menor taxa de entrega</option></select>
+            <button className={`chip ${gratis ? 'sel' : ''}`} onClick={() => setGratis(!gratis)}>Entrega grátis</button>
+          </div>
           <h2 className="pd-tit">{g.local ? 'Todas as lojas perto de você' : `Todas as lojas em ${g.cidade}`}</h2>
           <div className="pd-lojas">{lista.map((l) => <CartaoLoja key={l.slug} l={l} />)}</div>
         </>}
@@ -237,6 +252,28 @@ function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
   );
 }
 
+const BANNERS: { img: string; ir: string | null; alt: string }[] = [
+  { img: 'fome', ir: null, alt: 'Bateu a fome? Pedêê!' }, { img: 'pizza', ir: '/culinaria/pizzarias', alt: 'Pizza quentinha' }, { img: 'acai', ir: '/culinaria/acaiterias', alt: 'Açaí e sorvetes' },
+  { img: 'salgados', ir: '/culinaria/lanchonetes', alt: 'Salgados fresquinhos' }, { img: 'mapa', ir: null, alt: 'Acompanhe no mapa' }, { img: 'pagamento', ir: null, alt: 'Pague na entrega' },
+];
+/** Banners que passam sozinhos (e com o dedo), com as bolinhas embaixo. */
+function Carrossel() {
+  const nav = useNavigate();
+  const faixa = useRef<HTMLDivElement>(null), [atual, setAtual] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => { const f = faixa.current; if (!f) return; const prox = (atual + 1) % BANNERS.length; f.scrollTo({ left: prox * f.clientWidth * 0.88, behavior: 'smooth' }); }, 4500);
+    return () => clearInterval(t);
+  }, [atual]);
+  return (
+    <div className="pd-carrossel">
+      <div ref={faixa} className="pd-car-faixa" onScroll={(e) => { const f = e.currentTarget; setAtual(Math.round(f.scrollLeft / (f.clientWidth * 0.88))); }}>
+        {BANNERS.map((b) => <button key={b.img} onClick={() => b.ir && nav(b.ir)} aria-label={b.alt}><img src={`/img/banners/${b.img}.webp`} alt={b.alt} width={480} height={225} /></button>)}
+      </div>
+      <div className="pd-car-pontos">{BANNERS.map((b, k) => <i key={b.img} className={k === atual ? 'sel' : ''} />)}</div>
+    </div>
+  );
+}
+
 /** Todas as culinárias (lista como a do iFood). */
 function Culinarias() {
   return (
@@ -254,8 +291,9 @@ function Culinarias() {
 function Culinaria() {
   const { tipo = '' } = useParams();
   const { lojas, erro } = useLojas('');
-  const info = CULINARIAS.find((c) => c[0] === tipo);
-  const lista = (lojas || []).filter((l) => (tipo === 'gratis' ? l.faz_entrega && !l.taxa_entrega : l.tipo === tipo)).sort((a, b) => ((b.nota || 0) - (a.nota || 0)) || (b.avaliacoes - a.avaliacoes));
+  const grupo = SEGMENTOS.find((x) => x.id === tipo);
+  const info = grupo ? ['', grupo.nome, grupo.emoji] as const : CULINARIAS.find((c) => c[0] === tipo);
+  const lista = (lojas || []).filter((l) => (tipo === 'gratis' ? l.faz_entrega && !l.taxa_entrega : grupo ? grupo.tipos.includes(l.tipo) : l.tipo === tipo)).sort((a, b) => ((b.nota || 0) - (a.nota || 0)) || (b.avaliacoes - a.avaliacoes));
   return (
     <div className="pd">
       <TopoVoltar titulo={tipo === 'gratis' ? 'Entrega grátis' : info ? `${info[2]} ${info[1]}` : 'Lojas'} />

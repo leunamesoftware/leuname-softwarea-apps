@@ -18,7 +18,7 @@ export const TIPOS_LOJA = {
   acai: 'Açaí', arabe: 'Árabe', bebidas: 'Bebidas', brasileira: 'Brasileira', cafeteria: 'Cafeterias', carnes: 'Carnes', sucos: 'Casa de Sucos', chinesa: 'Chinesa',
   congelados: 'Congelados', cozinha_rapida: 'Cozinha Rápida', doces: 'Doces & Bolos', espetinhos: 'Espetinhos', frangos: 'Frangos', frutos_mar: 'Frutos do Mar',
   hamburgueria: 'Hamburgueria', hotdog: 'Hot Dog', internacional: 'Internacional', italiana: 'Italiana', japonesa: 'Comida japonesa', lanches: 'Lanches',
-  marmitaria: 'Marmitaria', mexicana: 'Mexicana', pastelaria: 'Pastelaria', peixes: 'Peixes', pizzaria: 'Pizzaria', poke: 'Poke', regional: 'Regional',
+  marmitaria: 'Marmitaria', mexicana: 'Mexicana', padaria: 'Padaria', pastelaria: 'Pastelaria', peixes: 'Peixes', pizzaria: 'Pizzaria', poke: 'Poke', regional: 'Regional',
   restaurante: 'Restaurante', salgados: 'Salgados', saudavel: 'Saudável', sopas: 'Sopas & Caldos', sorvetes: 'Sorvetes', tapioca: 'Tapioca', variada: 'Variada',
 } as const;
 

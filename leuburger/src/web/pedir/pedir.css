@@ -187,7 +187,7 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-cod6 span { height: 58px; border: 2px solid #D1D5DB; border-radius: 10px; display: grid; place-items: center; font-size: 26px; font-weight: 900; }
 .pd-cod6 span.atual { border-color: #111; }
 .pd-conta b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pd-corpo { overflow-x: clip; }
+.pd-corpo { overflow-x: clip; grid-template-columns: minmax(0, 1fr); }
 .pd .campos input { min-width: 0; }
 
 /* Culinárias, sugestões e populares (estilo iFood) */
@@ -207,3 +207,26 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-culinarias a { display: flex; align-items: center; gap: 16px; padding: 10px 2px; border-bottom: 1px solid var(--linha); text-decoration: none; color: var(--texto); }
 .pd-culinarias a span { width: 56px; height: 56px; border-radius: 50%; background: #F3F4F6; display: grid; place-items: center; font-size: 30px; flex: none; }
 .pd-culinarias a b { flex: 1; font-size: 17px; }
+
+/* Atalhos grandes (segmentos), carrossel de banners e famosos */
+.pd-segmentos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px 6px; }
+.pd-segmentos a { display: grid; justify-items: center; gap: 4px; text-decoration: none; color: var(--texto); font-size: 12px; font-weight: 700; text-align: center; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pd-segmentos span { width: 62px; height: 62px; border-radius: 20px; background: #F3F4F6; display: grid; place-items: center; font-size: 34px; }
+.pd-seg-mais { font-size: 28px !important; color: #6B7280; }
+.pd-carrossel { margin: 4px -16px 0; }
+.pd-car-faixa { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 16px; scrollbar-width: none; }
+.pd-car-faixa::-webkit-scrollbar { display: none; }
+.pd-car-faixa button { flex: none; width: 88%; scroll-snap-align: center; border: 0; padding: 0; background: none; border-radius: 18px; overflow: hidden; cursor: pointer; }
+.pd-car-faixa img { width: 100%; height: auto; display: block; aspect-ratio: 960 / 450; }
+.pd-car-pontos { display: flex; justify-content: center; gap: 6px; margin-top: 8px; }
+.pd-car-pontos i { width: 6px; height: 6px; border-radius: 50%; background: #D1D5DB; }
+.pd-car-pontos i.sel { background: #111; }
+@media (min-width: 700px) { .pd-car-faixa button { width: 48%; } }
+.pd-sub { display: block; font-size: 14px; color: var(--suave); font-weight: 500; }
+.pd-famosos { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.pd-famosos::-webkit-scrollbar { display: none; }
+.pd-famosos a { flex: none; width: 82px; display: grid; justify-items: center; gap: 6px; text-decoration: none; color: var(--texto); font-size: 13px; font-weight: 600; text-align: center; }
+.pd-famosos a .logo-loja { border-radius: 50% !important; }
+.pd-famosos span { width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pd-segmentos a { font-size: 10.5px; letter-spacing: -.2px; }
+.pd-chips select.chip { width: auto; flex: none; padding-right: 28px; }
