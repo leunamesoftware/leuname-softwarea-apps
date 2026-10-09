@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ambiente } from './ajuda';
+import { codigosEnviados } from './ajuda';
 
 const CONTAS = {
   'ana@lanche.com': { senha: 'senha-ana', nome: 'Ana', acesso: 'vitalicio' as const },
@@ -506,5 +507,41 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
       expect((await cli.post(`/publico/app/pedido/${t3}/cancelar`, {})).status).toBe(409);
       expect((await n.post(`/vendas/${venda3}/andamento`, { andamento: 'pronto' })).status).toBe(200);
     } finally { A.env.JANELA_CANCELAR_MIN = '0'; }
+  });
+});
+
+describe('Conta do cliente no Pedêê', () => {
+  it('entra com código no e-mail (sem senha); conta nova pede nome e celular; pedidos aparecem em outro celular', async () => {
+    const { n, p } = await donoComCardapio();
+    await n.put('/empresa', { nome: 'Burger Conta', cidade: 'Petrópolis', uf: 'RJ', formas_pagamento: ['pix'], desconto_max_caixa: 10, largura_cupom: '80', taxa_entrega_padrao: 0 });
+    await n.put('/loja-app', { slug: 'burger-conta', no_app: true, aceitando: true, faz_entrega: true, faz_retirada: true, tipo_loja: 'hamburgueria', descricao: 'Teste', tempo_entrega: '30 min', pedido_minimo: 0, lat: -22.5, lng: -43.18, raio_km: 8 });
+    const cel1 = A.navegador();
+    expect((await cel1.get('/publico/conta/eu')).status).toBe(401);
+    const r1 = await cel1.post('/publico/conta/codigo', { email: ' Rita@Mail.com ' });
+    expect(r1.corpo).toMatchObject({ ok: true, novo: true });
+    const cod1 = codigosEnviados.filter((x) => x.para === 'rita@mail.com').at(-1)!.codigo;
+    expect(cod1).toMatch(/^\d{6}$/);
+    // Reenviar antes de 1 minuto: não deixa.
+    expect((await cel1.post('/publico/conta/codigo', { email: 'rita@mail.com' })).status).toBe(429);
+    expect((await cel1.post('/publico/conta/confirmar', { email: 'rita@mail.com', codigo: cod1 === '000000' ? '111111' : '000000' })).corpo.erro).toBe('codigo_errado');
+    expect((await cel1.post('/publico/conta/confirmar', { email: 'rita@mail.com', codigo: cod1 })).corpo).toMatchObject({ ok: true, falta: 'dados' });
+    expect((await cel1.post('/publico/conta/confirmar', { email: 'rita@mail.com', codigo: cod1, nome: 'Rita Souza', telefone: '(24) 99999-0000' })).corpo.conta).toMatchObject({ nome: 'Rita Souza', email: 'rita@mail.com' });
+    // O código não vale de novo.
+    expect((await A.navegador().post('/publico/conta/confirmar', { email: 'rita@mail.com', codigo: cod1 })).status).toBe(400);
+    const ped = await cel1.post('/publico/app/loja/burger-conta/pedido', { chave: 'conta-cliente-01', nome: 'Rita', telefone: '24999990000', tipo: 'balcao', forma: 'pix', itens: [{ produtoId: p('X-Bacon').id, qtd: 1 }] });
+    expect(ped.status).toBe(201);
+    // Outro celular: conta já existe, entra só com o código.
+    const cel2 = A.navegador();
+    A.db.exec("UPDATE conta_cliente_codigos SET ultimo_envio = '2000-01-01T00:00:00.000Z'");
+    expect((await cel2.post('/publico/conta/codigo', { email: 'rita@mail.com' })).corpo.novo).toBe(false);
+    const cod2 = codigosEnviados.filter((x) => x.para === 'rita@mail.com').at(-1)!.codigo;
+    expect((await cel2.post('/publico/conta/confirmar', { email: 'rita@mail.com', codigo: cod2 })).corpo.conta).toMatchObject({ nome: 'Rita Souza' });
+    const lista = (await cel2.get('/publico/conta/pedidos')).corpo.pedidos;
+    expect(lista).toHaveLength(1);
+    expect(lista[0]).toMatchObject({ token: ped.corpo.token, slug: 'burger-conta' });
+    expect((await cel2.put('/publico/conta/eu', { nome: 'Rita S.', telefone: '24999990000', endereco: 'Rua A, 1' })).status).toBe(200);
+    expect((await cel1.get('/publico/conta/eu')).corpo.conta).toMatchObject({ nome: 'Rita S.', endereco: 'Rua A, 1' });
+    await cel2.post('/publico/conta/sair', {});
+    expect((await cel2.get('/publico/conta/eu')).status).toBe(401);
   });
 });

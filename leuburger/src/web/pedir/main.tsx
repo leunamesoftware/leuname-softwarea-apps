@@ -7,7 +7,7 @@ import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { brl, calcularItem, FORMAS, lerValor, type EscolhaItem, type Forma, type Opcoes } from '../../regras/pedido';
-import { get, post } from '../api';
+import { ErroApp, get, post, put } from '../api';
 import { Modal, msgErro } from '../comuns';
 import { Ic } from '../icones';
 import '../estilo.css';
@@ -35,7 +35,9 @@ async function procurarEndereco(q: string): Promise<{ lat: number; lng: number }
 interface ItemCarrinho extends EscolhaItem { chave: string }
 
 // ---------- guardado no aparelho ----------
+interface Conta { nome: string; email: string; telefone: string; endereco: string | null }
 interface Guardado {
+  conta?: Conta | null; entrada?: 'conta' | 'visitante';
   nome: string; telefone: string; endereco: string;
   local: { lat: number; lng: number } | null; cidade: string;
   lojas: { slug: string; nome: string; logo_id: string | null; tipo: string }[];
@@ -234,14 +236,28 @@ function Perfil() {
   const [f, setF] = useState({ nome: g.nome, telefone: g.telefone, endereco: g.endereco });
   const [salvo, setSalvo] = useState(false), [local, setLocal] = useState(false);
   const favs = g.lojas.filter((l) => g.favoritos.includes(l.slug));
-  const salvar = () => { gravar((x) => ({ ...x, ...f })); setGEstado(ler()); setSalvo(true); setTimeout(() => setSalvo(false), 2000); };
+  const [conta, setConta] = useState<'' | 'entrar' | 'criar'>('');
+  const salvar = async () => {
+    gravar((x) => ({ ...x, ...f, conta: x.conta ? { ...x.conta, nome: f.nome, telefone: f.telefone, endereco: f.endereco } : x.conta }));
+    if (ler().conta) await put('/publico/conta/eu', { nome: f.nome, telefone: f.telefone, endereco: f.endereco || null }).catch(() => {});
+    setGEstado(ler()); setSalvo(true); setTimeout(() => setSalvo(false), 2000);
+  };
   return (
     <div className="pd com-abas">
       <header className="pd-cab"><div className="pd-cab-linha"><span className="pd-logo-texto">Perfil</span></div></header>
       <main className="pd-corpo">
+        {g.conta ? <section className="cartao pd-conta">
+          <span className="pd-conta-av">{g.conta.nome.slice(0, 1).toUpperCase()}</span>
+          <div><b>{g.conta.nome}</b><small>{g.conta.email}</small></div>
+          <button className="btn peq" onClick={async () => { await post('/publico/conta/sair', {}).catch(() => {}); gravar((x) => ({ ...x, conta: null, entrada: undefined })); location.href = '/pedir/'; }}>Sair</button>
+        </section> : <section className="cartao" style={{ textAlign: 'center' }}>
+          <p style={{ margin: '0 0 10px' }}>Entre na sua conta para ver seus pedidos em qualquer celular.</p>
+          <button className="btn prim bloco" onClick={() => setConta('entrar')}>Entrar ou criar conta</button>
+        </section>}
+        {conta && <EntrarConta modo={conta} aoFechar={() => setConta('')} aoEntrar={() => { setConta(''); setGEstado(ler()); const n = ler(); setF({ nome: n.nome, telefone: n.telefone, endereco: n.endereco }); }} />}
         <section className="cartao">
           <h2 className="cartao-tit">Seus dados</h2>
-          <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>Ficam só neste celular e já vêm preenchidos no pedido.</p>
+          <p style={{ margin: '0 0 10px', color: 'var(--suave)', fontSize: 14 }}>{g.conta ? 'Ficam na sua conta e já vêm preenchidos no pedido.' : 'Ficam só neste celular e já vêm preenchidos no pedido.'}</p>
           <div className="campos">
             <label className="campo">Nome<input value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} autoComplete="name" /></label>
             <label className="campo">WhatsApp<input value={f.telefone} onChange={(e) => setF({ ...f, telefone: e.target.value })} inputMode="tel" autoComplete="tel" /></label>
@@ -667,7 +683,93 @@ function Pedido() {
   );
 }
 
+/** Depois de entrar: guarda a conta e preenche os dados do pedido. */
+function aoEntrarNaConta(c: Conta) {
+  gravar((g) => ({ ...g, conta: c, entrada: 'conta', nome: c.nome, telefone: c.telefone, endereco: c.endereco || g.endereco }));
+}
+/** Junta os pedidos da conta (feitos em outro celular) com os deste celular. */
+async function juntarPedidosDaConta() {
+  try {
+    const r = await get<{ pedidos: { token: string; loja: string; slug: string; criado_em: string }[] }>('/publico/conta/pedidos');
+    gravar((g) => { const tem = new Set(g.pedidos.map((p) => p.token)); return { ...g, pedidos: [...g.pedidos, ...r.pedidos.filter((p) => !tem.has(p.token))].sort((a, b) => b.criado_em.localeCompare(a.criado_em)).slice(0, 30) }; });
+  } catch (e) { if (e instanceof ErroApp && e.status === 401) gravar((g) => ({ ...g, conta: null })); }
+}
+
+/** Tela de entrada (como a do iFood): já tenho conta, criar conta ou continuar como visitante. */
+function BoasVindas({ aoFim }: { aoFim: () => void }) {
+  const [modo, setModo] = useState<'' | 'entrar' | 'criar'>('');
+  return (
+    <div className="pd-entrada">
+      <div className="pd-entrada-img"><img src="/img/pedee-entrada.webp" alt="" /><span className="pd-entrada-logo">Pedêê</span><p>Bateu a fome? Pedêê!</p></div>
+      <div className="pd-entrada-folha">
+        <button className="btn prim grande bloco" onClick={() => setModo('entrar')}>Já tenho uma conta</button>
+        <button className="btn grande bloco pd-contorno" onClick={() => setModo('criar')}>Criar nova conta</button>
+        <button className="link pd-visitante" onClick={() => { gravar((g) => ({ ...g, entrada: 'visitante' })); aoFim(); }}>Continuar como visitante</button>
+      </div>
+      {modo && <EntrarConta modo={modo} aoFechar={() => setModo('')} aoEntrar={() => { setModo(''); aoFim(); }} />}
+    </div>
+  );
+}
+
+/** Entrar ou criar conta como no iFood: e-mail → código de 6 números que chega no e-mail → (conta nova) nome e celular. */
+function EntrarConta({ modo, aoFechar, aoEntrar }: { modo: 'entrar' | 'criar'; aoFechar: () => void; aoEntrar: () => void }) {
+  const g = ler();
+  const [passo, setPasso] = useState<'email' | 'codigo' | 'dados'>('email');
+  const [f, setF] = useState({ email: '', codigo: '', nome: g.nome, telefone: g.telefone });
+  const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false), [reenviar, setReenviar] = useState(0);
+  useEffect(() => { if (reenviar <= 0) return; const t = setTimeout(() => setReenviar(reenviar - 1), 1000); return () => clearTimeout(t); }, [reenviar]);
+  const falhou = (e: unknown) => setErro(e instanceof ErroApp && e.campos ? Object.values(e.campos)[0] || msgErro(e) : msgErro(e));
+  const pedirCodigo = async () => {
+    setOcupado(true); setErro('');
+    try { await post('/publico/conta/codigo', { email: f.email }); setPasso('codigo'); setReenviar(60); setF((x) => ({ ...x, codigo: '' })); } catch (e) { falhou(e); } finally { setOcupado(false); }
+  };
+  const confirmar = async (dados?: boolean) => {
+    setOcupado(true); setErro('');
+    try {
+      const r = await post<{ conta?: Conta; falta?: string }>('/publico/conta/confirmar', { email: f.email, codigo: f.codigo, ...(dados ? { nome: f.nome, telefone: f.telefone } : {}) });
+      if (r.falta) { setPasso('dados'); return; }
+      aoEntrarNaConta(r.conta!); await juntarPedidosDaConta(); aoEntrar();
+    } catch (e) { falhou(e); } finally { setOcupado(false); }
+  };
+  const digitos = f.codigo.padEnd(6, ' ').split('');
+  return (
+    <Modal titulo={passo === 'dados' ? 'Falta pouco' : modo === 'entrar' ? 'Entrar na sua conta' : 'Criar sua conta'} aoFechar={aoFechar}>
+      {passo === 'email' && <>
+        <p style={{ marginTop: 0 }}>Digite o seu e-mail. Vamos mandar um <b>código de 6 números</b> para entrar (não precisa de senha).</p>
+        <input type="email" value={f.email} onChange={(e) => { setF({ ...f, email: e.target.value }); setErro(''); }} inputMode="email" autoComplete="email" placeholder="seunome@email.com" aria-label="E-mail" autoFocus onKeyDown={(e) => { if (e.key === 'Enter') pedirCodigo(); }} />
+        {erro && <p className="aviso erro">{erro}</p>}
+        <button className="btn prim grande bloco" style={{ marginTop: 12 }} onClick={pedirCodigo} disabled={ocupado || !f.email.includes('@')}>{ocupado ? 'Mandando…' : 'Receber código'}</button>
+      </>}
+      {passo === 'codigo' && <>
+        <p style={{ marginTop: 0 }}>Digite o código de 6 números que enviamos para <b>{f.email.trim().toLowerCase()}</b>. Olhe também a caixa de spam.</p>
+        <label className="pd-cod6">
+          <input value={f.codigo} onChange={(e) => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); setF({ ...f, codigo: v }); setErro(''); }} inputMode="numeric" autoComplete="one-time-code" autoFocus aria-label="Código de 6 números" />
+          {digitos.map((d, k) => <span key={k} className={k === f.codigo.length ? 'atual' : ''}>{d.trim()}</span>)}
+        </label>
+        {erro && <p className="aviso erro">{erro}</p>}
+        <p style={{ color: 'var(--suave)', fontWeight: 700 }}>{reenviar > 0 ? `Para reenviar o código, espere 0:${String(reenviar).padStart(2, '0')}` : <button className="link" onClick={pedirCodigo} disabled={ocupado}>Reenviar código</button>}</p>
+        <button className="btn prim grande bloco" onClick={() => confirmar()} disabled={ocupado || f.codigo.length !== 6}>{ocupado ? 'Conferindo…' : 'Continuar'}</button>
+        <button className="link bloco" style={{ marginTop: 10 }} onClick={() => { setPasso('email'); setErro(''); }}>Trocar e-mail</button>
+      </>}
+      {passo === 'dados' && <>
+        <p style={{ marginTop: 0 }}>E-mail confirmado! Agora diga como a loja vai te chamar.</p>
+        <div className="campos">
+          <label className="campo largo">Seu nome<input value={f.nome} onChange={(e) => setF({ ...f, nome: e.target.value })} autoComplete="name" maxLength={60} autoFocus /></label>
+          <label className="campo largo">Celular (a loja usa para falar do pedido)<input value={f.telefone} onChange={(e) => setF({ ...f, telefone: e.target.value })} inputMode="tel" autoComplete="tel" placeholder="(21) 99999-9999" /></label>
+        </div>
+        {erro && <p className="aviso erro">{erro}</p>}
+        <button className="btn prim grande bloco" style={{ marginTop: 12 }} onClick={() => confirmar(true)} disabled={ocupado}>{ocupado ? 'Criando…' : 'Criar minha conta'}</button>
+      </>}
+    </Modal>
+  );
+}
+
 function App() {
+  const loc = useLocation();
+  const [entrou, setEntrou] = useState(() => Boolean(ler().entrada));
+  useEffect(() => { if (ler().conta) juntarPedidosDaConta(); }, []);
+  // Primeira vez no app (na tela inicial): mostra a entrada estilo iFood. Links diretos (loja, pedido) abrem direto.
+  if (!entrou && loc.pathname === '/') return <BoasVindas aoFim={() => setEntrou(true)} />;
   return (
     <Routes>
       <Route path="/" element={<Inicio />} />

@@ -168,3 +168,21 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-chat p.eu { justify-self: end; background: #FFEDD5; } .pd-chat p.ele { justify-self: start; background: #F3F4F6; }
 .pd-rapidas { display: flex; flex-wrap: wrap; gap: 6px; } .pd-rapidas .chip { font-size: 13px; }
 .pd-chat-enviar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+
+/* Entrada do app (estilo iFood): foto grande, logo e as três opções */
+.pd-entrada { min-height: 100dvh; display: grid; grid-template-rows: 1fr auto; background: #111; }
+.pd-entrada-img { position: relative; overflow: hidden; min-height: 52dvh; }
+.pd-entrada-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pd-entrada-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 40%, rgba(0,0,0,.55)); }
+.pd-entrada-logo { position: absolute; left: 22px; bottom: 54px; z-index: 1; font-size: 52px; font-weight: 900; font-style: italic; color: #fff; text-shadow: 0 3px 14px rgba(0,0,0,.4); }
+.pd-entrada-img p { position: absolute; left: 24px; bottom: 30px; z-index: 1; margin: 0; color: #fff; font-weight: 800; font-size: 18px; }
+.pd-entrada-folha { background: #fff; border-radius: 24px 24px 0 0; margin-top: -22px; position: relative; z-index: 2; padding: 26px 18px 30px; display: grid; gap: 12px; }
+.pd-contorno { background: #fff !important; color: var(--laranja) !important; border: 2px solid var(--laranja) !important; }
+.pd-visitante { justify-self: center; font-weight: 800; color: var(--laranja); font-size: 17px; margin-top: 6px; }
+.pd-conta { display: flex; align-items: center; gap: 12px; }
+.pd-conta div { display: grid; flex: 1; min-width: 0; } .pd-conta small { color: var(--suave); overflow: hidden; text-overflow: ellipsis; }
+.pd-conta-av { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 24px; color: #fff; background: linear-gradient(135deg, #FF7A00, #E8160C); flex: none; }
+.pd-cod6 { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 6px 0 10px; }
+.pd-cod6 input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; font-size: 16px; }
+.pd-cod6 span { height: 58px; border: 2px solid #D1D5DB; border-radius: 10px; display: grid; place-items: center; font-size: 26px; font-weight: 900; }
+.pd-cod6 span.atual { border-color: #111; }

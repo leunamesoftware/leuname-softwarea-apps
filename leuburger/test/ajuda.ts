@@ -30,10 +30,13 @@ function d1(db: DatabaseSync): D1 {
 }
 
 /** Contas da loja: email → { senha, app }. app: 'vitalicio' | 'teste' | null. */
+/** E-mails de código que o app mandou (para o teste ler o código). */
+export const codigosEnviados: { para: string; codigo: string }[] = [];
 export function lojaFalsa(contas: Record<string, { senha: string; nome: string; acesso: 'vitalicio' | 'teste' | null }>) {
   return {
     async fetch(req: Request) {
       const url = new URL(req.url);
+      if (url.hostname === 'interno.pedee' && url.pathname === '/interno/codigo-pedee') { codigosEnviados.push((await req.json()) as { para: string; codigo: string }); return Response.json({ ok: true }); }
       const sessao = /ln_sessao=([^;]+)/.exec(req.headers.get('Cookie') || '')?.[1];
       if (url.pathname === '/api/conta/entrar' || url.pathname === '/api/dono/entrar') {
         const d = (await req.json()) as { email: string; senha: string };

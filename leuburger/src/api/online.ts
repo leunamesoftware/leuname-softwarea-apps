@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
+import { contaLogada } from './contaCliente';
 import { enviarFoto } from './entregador';
 import { agora, aleatorio, auditar, corpo, erro, janelaCancelarMs, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
@@ -160,10 +161,10 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
   if (d.forma === 'dinheiro' && d.trocoPara && d.trocoPara < p.total) throw erro(400, 'dados_invalidos', 'O troco precisa ser para um valor maior que o total.', { trocoPara: 'Valor menor que o total.' });
   const id = novoId(), token = aleatorio(18);
   try {
-    await db.prepare(`INSERT INTO pedidos_online (id, empresa_id, token, chave, nome, telefone, tipo, endereco, forma, troco_para, observacao, itens, resumo, subtotal, taxa_entrega, total, ip, criado_em, dest_lat, dest_lng)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, e.id, token, d.chave, d.nome, d.telefone, d.tipo, d.tipo === 'entrega' ? d.endereco : null, d.forma,
+    await db.prepare(`INSERT INTO pedidos_online (id, empresa_id, token, chave, nome, telefone, tipo, endereco, forma, troco_para, observacao, itens, resumo, subtotal, taxa_entrega, total, ip, criado_em, dest_lat, dest_lng, conta_id)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, e.id, token, d.chave, d.nome, d.telefone, d.tipo, d.tipo === 'entrega' ? d.endereco : null, d.forma,
       d.forma === 'dinheiro' && d.trocoPara ? d.trocoPara : null, d.observacao || null, JSON.stringify(d.itens),
-      JSON.stringify(p.itens.map((i) => ({ nome: i.nome, qtd: i.qtd, total: i.total, detalhes: i.detalhes }))), p.subtotal, p.taxaEntrega, p.total, ip, agora(), d.tipo === 'entrega' ? d.lat ?? null : null, d.tipo === 'entrega' ? d.lng ?? null : null).run();
+      JSON.stringify(p.itens.map((i) => ({ nome: i.nome, qtd: i.qtd, total: i.total, detalhes: i.detalhes }))), p.subtotal, p.taxaEntrega, p.total, ip, agora(), d.tipo === 'entrega' ? d.lat ?? null : null, d.tipo === 'entrega' ? d.lng ?? null : null, (await contaLogada(c))?.id ?? null).run();
   } catch (err) {
     const outro = await db.prepare('SELECT token FROM pedidos_online WHERE empresa_id = ? AND chave = ?').bind(e.id, d.chave).first<{ token: string }>();
     if (outro) return c.json({ ok: true, token: outro.token, repetido: true });

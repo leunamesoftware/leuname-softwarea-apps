@@ -4,6 +4,7 @@ import { andamento, publico } from './andamento';
 import { auth, exigirSessao } from './auth';
 import { ErroApi, type Env, type Vars } from './base';
 import { cadastros } from './cadastros';
+import { contaCliente } from './contaCliente';
 import { entregador, entregadoresDaLoja } from './entregador';
 import { gestao } from './gestao';
 import { appLoja, appPublico } from './online';
@@ -32,6 +33,7 @@ export function criarApp() {
   app.get('/saude', (c) => c.json({ ok: true }));
   app.route('/auth', auth);
   app.route('/', publico); // links do cliente e do entregador (sem login)
+  app.route('/', contaCliente); // conta do cliente do app (opcional)
   app.route('/', appPublico); // app de pedidos dos clientes (sem login)
   app.route('/', entregador); // app do entregador (sessão própria)
   app.use('*', exigirSessao);

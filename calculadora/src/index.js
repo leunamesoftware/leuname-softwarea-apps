@@ -87,6 +87,17 @@ export default {
       return Response.redirect(url.origin + '/app/', 302);
     }
     try {
+      // Código de entrada do app Pedêê: só chega pela ligação interna (o endereço "interno.pedee" não existe na internet).
+      // Manda sempre o mesmo modelo de e-mail, só com o código: ninguém consegue usar isto para mandar outra coisa.
+      if (url.hostname === 'interno.pedee' && pathname === '/interno/codigo-pedee' && m === 'POST') {
+        const d = await corpo(req);
+        const para = String(d?.para || '').trim().toLowerCase(), codigo = String(d?.codigo || '');
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para) || !/^\d{6}$/.test(codigo)) return json({ erro: 'dados_invalidos' }, 400);
+        const texto = `Seu código para entrar no Pedêê: ${codigo}\n\nEle vale por 10 minutos. Se não foi você, ignore este e-mail.\n\nPedêê · LeuName Softwares`;
+        const html = `<div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;padding:24px;text-align:center"><div style="font-size:30px;font-weight:900;font-style:italic;color:#F2400F">Pedêê</div><p style="font-size:16px;color:#111">Seu código para entrar:</p><div style="font-size:38px;font-weight:900;letter-spacing:10px;color:#111;margin:12px 0">${codigo}</div><p style="color:#666;font-size:14px">Vale por 10 minutos. Se não foi você, ignore este e-mail.</p></div>`;
+        const r = await enviarEmail(env, { para, titulo: `${codigo} é o seu código do Pedêê`, texto, html });
+        return r.ok ? json({ ok: true }) : json({ erro: 'email_nao_saiu' }, 502);
+      }
       if ((pathname === '/baixar' || pathname === '/baixar/') && (m === 'GET' || m === 'HEAD')) {
         const apk = env.DOWNLOADS && (m === 'HEAD' ? await env.DOWNLOADS.head('quantocobrar.apk') : await env.DOWNLOADS.get('quantocobrar.apk'));
         if (!apk) return new Response('Download indisponível no momento.', { status: 404 });
