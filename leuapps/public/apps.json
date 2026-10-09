@@ -494,5 +494,85 @@
       "frase": "Seu mercado no controle",
       "textoNaImagem": true
     }
+  },
+  {
+    "id": "leuburger",
+    "nome": "LeuBurger PDV",
+    "categoria": "Lanchonete e hamburgueria",
+    "resumo": "Frente de caixa para lanchonete: adicionais, comprovante, estoque, caixa e relatórios.",
+    "icone": "/img/leuburger-192.webp",
+    "url": "https://leuburger.leunamesoftware.com.br",
+    "preco": "7 dias grátis · R$ 29,90/mês ou R$ 149,90 uma vez só",
+    "exigeCompra": true,
+    "teste": 7,
+    "versao": "1.0",
+    "planos": [
+      {
+        "nome": "Mensal",
+        "tipo": "mensal",
+        "preco": "R$ 29,90/mês",
+        "detalhe": "Cartão de crédito, renova sozinho · cancele quando quiser",
+        "url": "/loja/comprar?app=leuburger&plano=mensal"
+      },
+      {
+        "nome": "Vitalício",
+        "tipo": "unico",
+        "preco": "R$ 149,90",
+        "detalhe": "Paga uma vez, é seu para sempre · caixa, pedidos, estoque, clientes e relatórios · Pix ou cartão em até 6x",
+        "url": "/loja/comprar?app=leuburger&plano=unico",
+        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
+      }
+    ],
+    "opcoes": [
+      [
+        "Mensal",
+        "R$ 29,90",
+        "por mês, cancele quando quiser"
+      ],
+      [
+        "Vitalício",
+        "R$ 149,90",
+        "paga uma vez só, sem mensalidade"
+      ]
+    ],
+    "instalar": "https://leuburger.leunamesoftware.com.br/",
+    "abrirFrame": "https://leuburger.leunamesoftware.com.br/",
+    "instalarDireto": {
+      "url": "https://leuburger.leunamesoftware.com.br/",
+      "id": "https://leuburger.leunamesoftware.com.br/"
+    },
+    "capturas": [
+      "/img/telas/leuburger-1.webp",
+      "/img/telas/leuburger-2.webp",
+      "/img/telas/leuburger-3.webp",
+      "/img/telas/leuburger-4.webp",
+      "/img/telas/leuburger-5.webp",
+      "/img/telas/leuburger-6.webp"
+    ],
+    "descricao": "Sistema de caixa (PDV) para lanchonete, hamburgueria, pastelaria e açaí. Monte o pedido com tamanhos, adicionais e “sem cebola”, receba em dinheiro (com troco), Pix ou cartão, divida o pagamento e imprima o comprovante na térmica ou mande pelo WhatsApp. O estoque baixa sozinho a cada venda, o caixa fecha com conferência e os relatórios mostram o lucro. Cada funcionário tem o próprio login. Funciona no computador, tablet e celular.",
+    "recursos": [
+      "🍔 Pedido com tamanhos, adicionais e observações",
+      "💵 Dinheiro com troco, Pix, débito e crédito",
+      "🧾 Comprovante na térmica (58 ou 80 mm) e WhatsApp",
+      "📦 Estoque que baixa sozinho e avisa o que comprar",
+      "📊 Caixa com sangria, fechamento e relatórios de lucro",
+      "👥 Funcionários com login e permissões"
+    ],
+    "tags": [
+      "Empresa",
+      "Lanchonete"
+    ],
+    "secoes": [
+      "Negócios",
+      "Comer e beber",
+      "Finanças",
+      "Ferramentas de negócios"
+    ],
+    "destaque": {
+      "imagem": "/img/destaques/leuburger.webp",
+      "titulo": "LeuBurger PDV",
+      "frase": "Sua lanchonete no controle",
+      "textoNaImagem": true
+    }
   }
 ]

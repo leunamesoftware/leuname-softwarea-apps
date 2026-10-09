@@ -22,6 +22,8 @@ export const PLANOS = {
   construgestao: { app: 'construgestao', licenca: 'construgestao', preco: 49.9, parcelas: 3, titulo: 'ConstruGestão — pagamento único (para sempre)' },
   construgestao_mensal: { app: 'construgestao', licenca: 'construgestao', preco: 19.9, dias: 33, assinatura: true, titulo: 'ConstruGestão — plano mensal' },
   mercagestao: { app: 'mercagestao', licenca: 'mercagestao', preco: 200, parcelas: 6, titulo: 'MercaGestão — pagamento único (para sempre)' },
+  leuburger: { app: 'leuburger', licenca: 'leuburger', preco: 149.9, parcelas: 6, titulo: 'LeuBurger PDV — pagamento único (para sempre)' },
+  leuburger_mensal: { app: 'leuburger', licenca: 'leuburger', preco: 29.9, dias: 33, assinatura: true, titulo: 'LeuBurger PDV — plano mensal' },
 };
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';
 const PLANOS_RECEITAS = Object.keys(PLANOS).filter((k) => PLANOS[k].app === 'quantocobrar');
@@ -99,7 +101,7 @@ async function licencaDoDono(env, appId) {
 }
 
 // Teste grátis dos outros apps (um por conta em cada app). O Quanto Cobrar tem o teste dele (2 dias).
-export const TESTE_DIAS = { gestacell: 7, radar: 7, construgestao: 7, mercagestao: 7 };
+export const TESTE_DIAS = { gestacell: 7, radar: 7, construgestao: 7, mercagestao: 7, leuburger: 7 };
 const fimDoTeste = (inicio, app) => new Date(new Date(inicio).getTime() + TESTE_DIAS[app] * 864e5).toISOString();
 
 /** Testes que a conta já começou: { gestacell: { inicio, expiraEm, acabou } }. */

@@ -11,6 +11,7 @@ export const LINKS = {
   radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1', cor: '#1F6FEB' },
   construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1', cor: '#EA580C' },
   mercagestao: { nome: 'MercaGestão', url: 'https://mercagestao.leunamesoftware.com.br/?instalar=1', cor: '#15803D' },
+  leuburger: { nome: 'LeuBurger PDV', url: 'https://leuburger.leunamesoftware.com.br/?instalar=1', cor: '#F45B13' },
   quantocobrar: { nome: 'Quanto Cobrar', url: 'https://quantocobrar.leunamesoftware.com.br/app/?instalar=1', cor: '#E8590C' },
 };
 

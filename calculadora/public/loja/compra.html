@@ -23,7 +23,7 @@
   </main>
   <script>
     // url: o link de instalar (celular e computador). É o mesmo que vai no e-mail da compra.
-    const APPS = { gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1' }, construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1' }, mercagestao: { nome: 'MercaGestão', url: 'https://mercagestao.leunamesoftware.com.br/?instalar=1' } };
+    const APPS = { gestacell: { nome: 'Gestacell', url: 'https://gestacell.leunamesoftware.com.br/?instalar=1' }, radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br/?instalar=1' }, construgestao: { nome: 'ConstruGestão', url: 'https://construgestao.leunamesoftware.com.br/?instalar=1' }, mercagestao: { nome: 'MercaGestão', url: 'https://mercagestao.leunamesoftware.com.br/?instalar=1' }, leuburger: { nome: 'LeuBurger PDV', url: 'https://leuburger.leunamesoftware.com.br/?instalar=1' } };
     const q = new URLSearchParams(location.search);
     let guardado = ''; try { guardado = JSON.parse(localStorage.getItem('loja.pedido') || '""'); } catch {}
     const pedido = q.get('p') || guardado || '';

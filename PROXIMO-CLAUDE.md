@@ -40,6 +40,7 @@ Situação de 8 de outubro de 2026, escrita pelo Claude que montou a venda sem a
 | Radar Preventivo | radar.leunamesoftware.com.br | Leunamesite `RADAR-PREVENTIVO/` (React + Worker) | completo; falta a trava de aparelhos (seção 5) |
 | ConstruGestão | construgestao.leunamesoftware.com.br | Leunamesite `CONSTRUGESTAO/frontend/index.html` | funciona, mas tem partes escondidas que faltam fazer (seção 5) |
 | MercaGestão | mercagestao.leunamesoftware.com.br | `leuapps/public/mercagestao/` (app.js + nucleo.js testado em `leuapps/test/mercagestao.test.mjs`) | completo; NFC-e pelo emissor Focus NFe ainda sem teste com conta real (seção 5) |
+| LeuBurger PDV | leuburger.leunamesoftware.com.br | `leuburger/` (React + Hono + D1 próprio; 31 testes em `leuburger/test/`) | completo; sem nota fiscal nem integração com maquininha/delivery (v1) |
 
 Cursos: `leuapps/public/cursos.json`, com 4 cursos. Campos: `id`, `nome`, `nomeCurto`, `resumo`, `icone`, `destaque`,
 `categorias`, `preco`, `nivel`, `app`, `aulas[{parte,titulo,minutos,texto}]`, `unidade`, `certificado`.

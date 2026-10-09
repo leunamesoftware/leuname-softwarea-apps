@@ -69,3 +69,7 @@
     `leuapps-android.yml` (repositório Leunamesite, branch padrão) → www.leunamesoftware.com.br/baixar/leuapps.apk;
     o mesmo workflow gera o Gestacell da loja (/baixar/gestacell.apk). Cada app no apps.json tem `android`
     {pacote, apk, versao}: subir `versao` faz aparecer "Atualizar" na loja.
+20. LeuBurger PDV (`leuburger/`, React + Hono no Worker `leuburger`, D1 `leuburger`): caixa de lanchonete em
+    https://leuburger.leunamesoftware.com.br. Dono da lanchonete entra com a conta LeuApps; funcionários com login próprio
+    (Configurações → Usuários). Testes: `npm test` em `leuburger/`. Publicar: workflow `leuburger-publicar.yml` (Leunamesite).
+    Preço: R$ 29,90/mês ou R$ 149,90 vitalício (planos.js), 7 dias grátis.

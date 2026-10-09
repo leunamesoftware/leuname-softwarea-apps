@@ -95,6 +95,9 @@
       mercagestao: { nome: 'MercaGestão', url: 'https://mercagestao.leunamesoftware.com.br',
         itens: ['🛒 Caixa com leitor de código de barras (de mão ou câmera do celular) e balança', '🧾 Cupom na impressora térmica e NFC-e', '📦 Estoque, validade, fiado e relatórios do mercado'],
         planos: { unico: 200 }, parcelas: 6 }, // só pagamento único
+      leuburger: { nome: 'LeuBurger PDV', url: 'https://leuburger.leunamesoftware.com.br',
+        itens: ['🍔 Frente de caixa com tamanhos, adicionais e “sem cebola”', '🧾 Comprovante na impressora térmica e pelo WhatsApp', '📦 Estoque que baixa sozinho, caixa e relatórios de lucro'],
+        planos: { mensal: 29.9, unico: 149.9 }, parcelas: 6 },
     };
     const busca = new URLSearchParams(location.search);
     const app = busca.get('app');

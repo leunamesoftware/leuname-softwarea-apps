@@ -1,0 +1,28 @@
+# LeuBurger PDV na Cloudflare: um Worker serve o app (React, em dist/) e a API (/api/*), com banco D1.
+name = "leuburger"
+main = "src/api/worker.ts"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "BANCO"
+database_name = "leuburger"
+database_id = "a4310c0e-2ab2-43e3-ba29-7ac0da9be3b7"
+migrations_dir = "migracoes"
+
+# Servidor de contas da loja LeuApps: o dono entra com a mesma conta de todos os apps.
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
+
+[vars]
+DONO_EMAIL = "leunamesoftware@gmail.com"
+
+[[routes]]
+pattern = "leuburger.leunamesoftware.com.br"
+custom_domain = true
