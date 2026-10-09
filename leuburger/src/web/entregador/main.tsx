@@ -40,7 +40,7 @@ const Topo = ({ children }: { children?: React.ReactNode }) => (
 );
 
 function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
-  const [aba, setAba] = useState<'cadastrar' | 'entrar'>('cadastrar');
+  const [aba, setAba] = useState<'cadastrar' | 'entrar'>(() => { try { return localStorage.getItem('entregador_ja_entrou') ? 'entrar' : 'cadastrar'; } catch { return 'cadastrar'; } });
   const [f, setF] = useState({ nome: '', email: '', senha: '', veiculo: 'moto', cidade: '' });
   const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
   const muda = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF({ ...f, [k]: e.target.value }); setErro(''); };
@@ -49,6 +49,7 @@ function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
     try {
       if (aba === 'entrar') await post('/entregador/entrar', { email: f.email, senha: f.senha });
       else await post('/entregador/cadastrar', { nome: f.nome, email: f.email, senha: f.senha, veiculo: f.veiculo, cidade: f.cidade || null });
+      try { localStorage.setItem('entregador_ja_entrou', '1'); } catch { /* sem armazenamento */ }
       aoEntrar();
     } catch (e) { setErro(e instanceof ErroApp && e.campos ? Object.values(e.campos)[0] || msgErro(e) : msgErro(e)); } finally { setOcupado(false); }
   };

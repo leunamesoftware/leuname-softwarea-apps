@@ -35,7 +35,7 @@ function TopoLoja({ titulo, children }: { titulo: string; children?: React.React
 
 // ---------- entrar ou cadastrar ----------
 function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
-  const [aba, setAba] = useState<'cadastrar' | 'entrar'>('cadastrar');
+  const [aba, setAba] = useState<'cadastrar' | 'entrar'>(() => { try { return localStorage.getItem('parceiro_ja_entrou') ? 'entrar' : 'cadastrar'; } catch { return 'cadastrar'; } });
   const [f, setF] = useState({ loja: '', tipo_loja: 'lanches', nome: '', whatsapp: '', cidade: '', uf: 'RJ', endereco: '', senha: '', login: '' });
   const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false), [ver, setVer] = useState(false);
   const muda = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF({ ...f, [k]: e.target.value }); setErro(''); };
@@ -43,11 +43,11 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
     const login = f.login.includes('@') ? f.login.trim() : dig(f.login);
     if (!login || !f.senha) return setErro('Digite o WhatsApp e a senha.');
     setOcupado(true);
-    try { await post('/auth/entrar', { login, senha: f.senha }); aoEntrar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
+    try { await post('/auth/entrar', { login, senha: f.senha }); try { localStorage.setItem('parceiro_ja_entrou', '1'); } catch { /* sem armazenamento */ } aoEntrar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
   };
   const cadastrar = async () => {
     setOcupado(true);
-    try { await post('/publico/app/cadastrar-loja', { loja: f.loja, tipo_loja: f.tipo_loja, nome: f.nome, whatsapp: f.whatsapp, cidade: f.cidade, uf: f.uf, endereco: f.endereco, senha: f.senha }); aoEntrar(); }
+    try { await post('/publico/app/cadastrar-loja', { loja: f.loja, tipo_loja: f.tipo_loja, nome: f.nome, whatsapp: f.whatsapp, cidade: f.cidade, uf: f.uf, endereco: f.endereco, senha: f.senha }); try { localStorage.setItem('parceiro_ja_entrou', '1'); } catch { /* sem armazenamento */ } aoEntrar(); }
     catch (e) { setErro(e instanceof ErroApp && e.campos ? Object.values(e.campos)[0] || msgErro(e) : msgErro(e)); } finally { setOcupado(false); }
   };
   const campoSenha = <label className="campo largo">Senha<span className="entrada"><input type={ver ? 'text' : 'password'} value={f.senha} onChange={muda('senha')} autoComplete={aba === 'entrar' ? 'current-password' : 'new-password'} placeholder={aba === 'cadastrar' ? 'Pelo menos 6 letras ou números' : ''} />
@@ -176,10 +176,14 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           <div className="ped-acoes">
             {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'pronto')}><Ic n="check" />Pronto</button>}
             {p.andamento === 'pronto' && p.tipo === 'balcao' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'retirado')}><Ic n="check" />Cliente retirou</button>}
-            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'a_caminho')}><Ic n="seta" />Saiu para entrega</button>}
-            {p.andamento === 'pronto' && p.tipo === 'entrega' && p.entregador_id && <span className="selo">Esperando {p.entregador?.split(' ')[0]} sair</span>}
+            {/* Entrega pronta sem motoboy: o caminho principal é escolher o motoboy (a entrega aparece no app dele). */}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn prim" onClick={() => setEscolher(p)}><Ic n="seta" />🛵 Escolher motoboy</button>}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && !p.entregador_id && <button className="btn" disabled={ocupado === p.id} onClick={() => andar(p, 'a_caminho')}>Eu mesmo levo</button>}
+            {p.andamento === 'pronto' && p.tipo === 'entrega' && p.entregador_id && <span className="selo">Enviado para {p.entregador?.split(' ')[0]} · esperando sair</span>}
+            {p.tipo === 'entrega' && p.andamento === 'preparando' && <button className="btn" onClick={() => setEscolher(p)}><Ic n="seta" />{p.entregador ? `Motoboy: ${p.entregador.split(' ')[0]}` : '🛵 Escolher motoboy'}</button>}
+            {p.tipo === 'entrega' && p.andamento === 'pronto' && p.entregador_id && <button className="btn" onClick={() => setEscolher(p)}>Trocar motoboy</button>}
+            {p.andamento === 'a_caminho' && p.entregador && <span className="selo">🛵 Com {p.entregador.split(' ')[0]}</span>}
             {p.andamento === 'a_caminho' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'entregue')}><Ic n="check" />Entregue</button>}
-            {p.tipo === 'entrega' && p.andamento !== 'a_caminho' && <button className="btn" onClick={() => setEscolher(p)}><Ic n="seta" />{p.entregador ? `Motoboy: ${p.entregador.split(' ')[0]}` : 'Escolher motoboy'}</button>}
             {p.cliente_telefone && <a className="btn" href={wa(p.cliente_telefone)} target="_blank" rel="noopener" aria-label="WhatsApp do cliente"><Ic n="usuario" /></a>}
           </div>
         </article>
