@@ -125,7 +125,7 @@ function Inicio() {
   const lista = base.filter((l) => !gratis || (l.faz_entrega && !l.taxa_entrega)).sort((a, b) => ordem === 'nota' ? (b.nota || 0) - (a.nota || 0) : ordem === 'perto' ? (a.distancia ?? 999) - (b.distancia ?? 999) : ordem === 'taxa' ? a.taxa_entrega - b.taxa_entrega : 0);
   const destaques = [...lista].filter((l) => l.aceitando).sort((a, b) => (b.nota || 0) - (a.nota || 0) || b.avaliacoes - a.avaliacoes).slice(0, 8);
   const temTipo = new Set((lojas || []).map((l) => l.tipo));
-  const famosos = [...(lojas || [])].filter((l) => l.avaliacoes > 0).sort((a, b) => (b.avaliacoes * (b.nota || 0)) - (a.avaliacoes * (a.nota || 0))).slice(0, 10);
+  const famosos = [...(lojas || [])].sort((a, b) => (b.avaliacoes * (b.nota || 0)) - (a.avaliacoes * (a.nota || 0))).slice(0, 10);
   const andamento = g.pedidos.filter((p) => Date.now() - new Date(p.criado_em).getTime() < 3 * 3600e3);
   return (
     <div className="pd com-abas">
@@ -152,20 +152,21 @@ function Inicio() {
             <span>{tipo ? 'Veja as outras categorias.' : `Estamos chegando! Peça para a sua lanchonete preferida entrar no ${NOME_APP}.`}</span>
             {tipo ? <button className="btn" onClick={() => setTipo('')}>Ver todas</button> : <button className="btn" onClick={() => setEscolherLocal(true)}>Mudar o local</button>}</div>
         ) : <>
+          {!tipo && <FaixaSugestoes lojas={lojas} />}
+          {!tipo && famosos.length > 0 && <section>
+            <h2 className="pd-tit">Famosos no Pedêê<small className="pd-sub">As lojas mais pedidas da região</small></h2>
+            <div className="pd-famosos">{famosos.map((l) => <Link key={l.slug} to={`/${l.slug}`}><Logo l={l} t={72} /><span>{l.nome}</span></Link>)}</div>
+          </section>}
           {destaques.length > 0 && <section>
-            <h2 className="pd-tit pd-tit-linha">{tipo ? CATS.find((c) => c[0] === tipo)?.[1] : 'Lojas em destaque'}</h2>
+            <h2 className="pd-tit pd-tit-linha">{tipo ? CATS.find((c) => c[0] === tipo)?.[1] : 'Mais bem avaliados'}</h2>
             <div className="pd-faixa pd-destaques">{destaques.map((l) => (
               <Link key={l.slug} className="pd-dest" to={`/${l.slug}`}>
-                <div className="pd-dest-img"><Capa l={l} /><Logo l={l} t={42} /></div>
+                <div className="pd-dest-img"><Capa l={l} /><Logo l={l} t={42} />{l.nota ? <span className="pd-dest-nota">★ {l.nota.toLocaleString('pt-BR')}</span> : null}</div>
                 <b>{l.nome}</b>
                 <small><Estrelas nota={l.nota} total={l.avaliacoes} /> · {l.tipo_nome}</small>
                 <small>{l.tempo_entrega ? `${l.tempo_entrega} · ` : ''}{entregaTexto(l)}</small>
               </Link>
             ))}</div>
-          </section>}
-          {!tipo && famosos.length > 2 && <section>
-            <h2 className="pd-tit">Famosos na sua região<small className="pd-sub">As lojas mais bem avaliadas</small></h2>
-            <div className="pd-famosos">{famosos.map((l) => <Link key={l.slug} to={`/${l.slug}`}><Logo l={l} t={72} /><span>{l.nome}</span></Link>)}</div>
           </section>}
           <div className="pd-chips">
             <select className="chip" value={ordem} onChange={(e) => setOrdem(e.target.value as typeof ordem)} aria-label="Ordenar"><option value="">Ordenar</option><option value="nota">Melhor avaliadas</option><option value="perto">Mais perto</option><option value="taxa">Menor taxa de entrega</option></select>
@@ -214,16 +215,10 @@ function Buscar() {
   );
 }
 
-/** Culinárias, “Sugestões para você” e “Populares na sua região” (como no iFood), montados com as lojas do local escolhido. */
-function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
+/** Cartões altos coloridos (“Entrega grátis”, “Melhores da região em…”), como os do iFood. Só com o que é verdade nas lojas do local. */
+function FaixaSugestoes({ lojas, titulo }: { lojas: LojaCartao[] | null; titulo?: string }) {
   const nav = useNavigate();
-  const tipos = useMemo(() => {
-    const n = new Map<string, number>(); (lojas || []).forEach((l) => n.set(l.tipo, (n.get(l.tipo) || 0) + 1));
-    return CULINARIAS.filter(([t]) => n.has(t)).sort((a, b) => n.get(b[0])! - n.get(a[0])!);
-  }, [lojas]);
-  const [chip, setChip] = useState('');
-  const atual = chip || tipos[0]?.[0] || '';
-  const populares = (lojas || []).filter((l) => l.tipo === atual).sort((a, b) => (b.avaliacoes - a.avaliacoes) || ((b.nota || 0) - (a.nota || 0)));
+  const tipos = CULINARIAS.filter(([t]) => (lojas || []).some((l) => l.tipo === t));
   const CORES = ['#E8160C', '#2563EB', '#7C3AED', '#059669', '#EA580C', '#DB2777'];
   const sugestoes: { titulo: string; sub: string; img: string | null; ir: string }[] = [];
   tipos.forEach(([t, n]) => {
@@ -232,17 +227,34 @@ function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
   });
   const gratis = (lojas || []).filter((l) => l.faz_entrega && !l.taxa_entrega);
   if (gratis.length) sugestoes.unshift({ titulo: 'Entrega grátis', sub: `${gratis.length} ${gratis.length === 1 ? 'loja' : 'lojas'} sem taxa`, img: foto(gratis.find((l) => l.capa_id)?.capa_id) || '/img/combo.webp', ir: '/culinaria/gratis' });
+  if (!sugestoes.length) return null;
+  return (
+    <>
+      {titulo && <h2 className="pd-tit">{titulo}</h2>}
+      <div className="pd-sugestoes">{sugestoes.slice(0, 8).map((x, k) => (
+        <button key={x.ir} className="pd-sug" style={{ background: CORES[k % CORES.length] }} onClick={() => nav(x.ir)}>
+          <b>{x.titulo}</b><span>{x.sub}</span>{x.img && <img src={x.img} alt="" loading="lazy" />}
+        </button>
+      ))}</div>
+    </>
+  );
+}
+
+/** Culinárias, “Sugestões para você” e “Populares na sua região” (como no iFood), montados com as lojas do local escolhido. */
+function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
+  const tipos = useMemo(() => {
+    const n = new Map<string, number>(); (lojas || []).forEach((l) => n.set(l.tipo, (n.get(l.tipo) || 0) + 1));
+    return CULINARIAS.filter(([t]) => n.has(t)).sort((a, b) => n.get(b[0])! - n.get(a[0])!);
+  }, [lojas]);
+  const [chip, setChip] = useState('');
+  const atual = chip || tipos[0]?.[0] || '';
+  const populares = (lojas || []).filter((l) => l.tipo === atual).sort((a, b) => (b.avaliacoes - a.avaliacoes) || ((b.nota || 0) - (a.nota || 0)));
   return (
     <>
       <div className="pd-tit-linha"><h2 className="pd-tit">Culinárias</h2><Link className="link" to="/culinarias">Ver todas</Link></div>
       <div className="pd-cats-icones">{CATS_INICIO.map(([t, n, e]) => <Link key={t} to={`/culinaria/${t}`} className="pd-cat-link"><span>{e}</span>{n}</Link>)}</div>
       {lojas == null ? <div className="carregando"><div className="giro" /></div> : <>
-        {sugestoes.length > 0 && <><h2 className="pd-tit">Sugestões para você</h2>
-          <div className="pd-sugestoes">{sugestoes.slice(0, 8).map((x, k) => (
-            <button key={x.ir} className="pd-sug" style={{ background: CORES[k % CORES.length] }} onClick={() => nav(x.ir)}>
-              <b>{x.titulo}</b><span>{x.sub}</span>{x.img && <img src={x.img} alt="" loading="lazy" />}
-            </button>
-          ))}</div></>}
+        <FaixaSugestoes lojas={lojas} titulo="Sugestões para você" />
         {tipos.length > 0 && <><h2 className="pd-tit">Populares na sua região</h2>
           <div className="pd-chips">{tipos.map(([t, n]) => <button key={t} className={`chip ${atual === t ? 'sel' : ''}`} onClick={() => setChip(t)}>{n}</button>)}</div>
           <div className="pd-lojas">{populares.slice(0, 10).map((l) => <CartaoLoja key={l.slug} l={l} />)}</div></>}
