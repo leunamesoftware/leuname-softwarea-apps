@@ -1,332 +1,364 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>LeuName Softwares — Apps e soluções digitais para o seu negócio</title>
-  <meta name="description" content="Aplicativos para loja de celular, mercado, material de construção, delivery e receitas. Logos, sites e banners sob encomenda. Teste grátis e suporte no WhatsApp.">
-  <meta name="theme-color" content="#0B1B3A">
-  <link rel="icon" href="/img/leuapps-192.png">
-  <meta property="og:title" content="LeuName Softwares">
-  <meta property="og:description" content="Apps e soluções digitais para o seu negócio.">
-  <meta property="og:image" content="https://www.leunamesoftware.com.br/img/destaques/gestacell-v5.webp">
-  <script>
-    // Endereços antigos da loja (www.leunamesoftware.com.br/#app, ?origem=app…) continuam abrindo a loja de apps.
-    (function () {
-      var h = location.hash.slice(1), doSite = /^(aplicativos|servicos|sobre|contato|cat-[a-z-]+)?$/.test(h);
-      if (!doSite || location.search) location.replace('/apps' + location.search + location.hash);
-    })();
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-  <style>
-    :root {
-      --marinho: #0B1B3A; --marinho2: #13285A; --texto: #16182B; --suave: #5B6075; --linha: #E6E8F0;
-      --fundo: #FFFFFF; --fundo2: #F5F6FA; --cartao: #FFFFFF;
-      --laranja: #F2581F; --roxo: #7B3AED; --grad: linear-gradient(90deg, #F2581F, #7B3AED);
-      --verde: #1FAF5A; --raio: 18px; --sombra: 0 10px 30px rgba(15, 23, 60, .08);
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
-    body { margin: 0; font: 500 16px/1.55 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--texto); background: var(--fundo); -webkit-font-smoothing: antialiased; }
-    img { max-width: 100%; display: block; }
-    a { color: inherit; text-decoration: none; }
-    .c { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 16px; }
-    :focus-visible { outline: 3px solid #3B82F6; outline-offset: 2px; border-radius: 8px; }
-
-    /* Cabeçalho */
-    .topo { position: sticky; top: 0; z-index: 30; background: var(--marinho); color: #fff; padding-top: env(safe-area-inset-top); box-shadow: 0 2px 16px rgba(0,0,0,.18); }
-    .topo .c { display: flex; align-items: center; gap: 16px; height: 64px; }
-    .marca { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .3px; line-height: 1.05; }
-    .marca img { width: 38px; height: 38px; border-radius: 10px; }
-    .marca small { display: block; font-size: 10px; letter-spacing: 3px; font-weight: 700; color: #9FB3E8; }
-    .menu { display: flex; gap: 4px; margin-left: auto; }
-    .menu a { padding: 9px 12px; border-radius: 10px; font-weight: 600; font-size: 15px; color: #DCE4FA; }
-    .menu a:hover { background: rgba(255,255,255,.08); color: #fff; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px; font: inherit; font-weight: 700; border: 0; cursor: pointer; white-space: nowrap; }
-    .btn-grad { background: var(--grad); color: #fff; box-shadow: 0 6px 18px rgba(123, 58, 237, .28); }
-    .btn-claro { background: #fff; color: var(--marinho); }
-    .btn-linha { background: transparent; color: var(--texto); border: 1.5px solid var(--linha); }
-    .btn-zap { background: var(--verde); color: #fff; }
-    .topo .btn { min-height: 40px; padding: 0 16px; font-size: 14px; }
-    .hamb { display: none; margin-left: auto; width: 44px; height: 44px; border: 0; border-radius: 12px; background: rgba(255,255,255,.08); color: #fff; cursor: pointer; }
-    .gaveta { display: none; }
-    @media (max-width: 860px) {
-      .menu, .topo .btn-grad { display: none; }
-      .hamb { display: grid; place-items: center; }
-      .gaveta.aberta { display: grid; gap: 4px; padding: 8px 16px 16px; background: var(--marinho); border-top: 1px solid rgba(255,255,255,.08); }
-      .gaveta a { padding: 12px; border-radius: 12px; font-weight: 600; color: #DCE4FA; }
-      .gaveta .btn { margin-top: 6px; }
-    }
-
-    /* Banners */
-    .hero { background: linear-gradient(180deg, var(--marinho) 0, var(--marinho) 55%, var(--fundo) 55%); padding: 20px 0 8px; }
-    .carrossel { position: relative; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 40px rgba(11, 27, 58, .28); background: var(--marinho2); aspect-ratio: 1600 / 744; }
-    .slides { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-    .slides::-webkit-scrollbar { display: none; }
-    .slides a { flex: 0 0 100%; scroll-snap-align: start; height: 100%; }
-    .slides img { width: 100%; height: 100%; object-fit: cover; }
-    .seta { position: absolute; top: 50%; translate: 0 -50%; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); color: var(--marinho); cursor: pointer; display: grid; place-items: center; box-shadow: var(--sombra); }
-    .seta.esq { left: 12px; } .seta.dir { right: 12px; }
-    .pontos { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
-    .pontos button { width: 9px; height: 9px; padding: 0; border-radius: 99px; border: 0; background: #CBD2E3; cursor: pointer; transition: width .2s; }
-    .pontos button[aria-current="true"] { width: 26px; background: var(--roxo); }
-    @media (max-width: 600px) { .seta { display: none; } .carrossel { border-radius: 16px; } }
-
-    .chamada { text-align: center; padding: 34px 0 10px; }
-    .chamada h1 { margin: 0 auto 10px; max-width: 760px; font-size: clamp(26px, 4.4vw, 42px); line-height: 1.15; font-weight: 800; letter-spacing: -.5px; }
-    .chamada h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .chamada p { margin: 0 auto 20px; max-width: 620px; color: var(--suave); font-size: 17px; }
-    .chamada .acoes { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-    /* Categorias */
-    .cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 26px 0 8px; }
-    .cat { display: grid; gap: 10px; justify-items: center; text-align: center; padding: 18px 10px; border-radius: var(--raio); background: var(--fundo2); font-weight: 700; font-size: 14px; line-height: 1.25; transition: transform .15s, box-shadow .15s; }
-    .cat:hover { transform: translateY(-2px); box-shadow: var(--sombra); background: #fff; }
-    .cat i { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-style: normal; font-size: 26px; }
-    @media (max-width: 760px) { .cats { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 420px) { .cats { grid-template-columns: repeat(2, 1fr); } }
-
-    /* Seções */
-    .secao { padding: 44px 0 8px; }
-    .sec-topo { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-    .sec-topo h2 { margin: 0; font-size: clamp(22px, 3vw, 30px); line-height: 1.2; letter-spacing: -.3px; }
-    .sec-topo p { margin: 4px 0 0; color: var(--suave); }
-    .etiqueta { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--roxo); margin-bottom: 4px; }
-    .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    @media (max-width: 400px) { .grade { grid-template-columns: 1fr; } }
-
-    .app { display: flex; flex-direction: column; background: var(--cartao); border: 1px solid var(--linha); border-radius: var(--raio); overflow: hidden; transition: box-shadow .15s, transform .15s; }
-    .app:hover { box-shadow: var(--sombra); transform: translateY(-2px); }
-    .app-capa { aspect-ratio: 1600 / 744; background: var(--fundo2); }
-    .app-capa img { width: 100%; height: 100%; object-fit: cover; }
-    .app-corpo { display: grid; gap: 10px; padding: 16px; flex: 1; }
-    .app-cab { display: flex; gap: 12px; align-items: center; }
-    .app-cab img { width: 56px; height: 56px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-    .app-cab h3 { margin: 0; font-size: 18px; line-height: 1.2; }
-    .app-cab span { color: var(--suave); font-size: 13px; font-weight: 600; }
-    .app p { margin: 0; color: var(--suave); font-size: 15px; }
-    .preco { justify-self: start; font-size: 13px; font-weight: 700; color: #1C7A45; background: #E8F7EE; padding: 4px 10px; border-radius: 99px; }
-    .app-acoes { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; }
-    .app-acoes .btn { flex: 1; min-height: 44px; padding: 0 12px; font-size: 15px; }
-
-    .serv { display: grid; background: #fff; border: 1px solid var(--linha); border-radius: var(--raio); overflow: hidden; }
-    .serv img { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; }
-    .serv div { display: grid; gap: 8px; padding: 16px; }
-    .serv h3 { margin: 0; font-size: 18px; }
-    .serv p { margin: 0; color: var(--suave); font-size: 15px; }
-
-    .faixa-serv { background: var(--fundo2); margin-top: 44px; padding-bottom: 44px; }
-
-    .confianca { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .conf { display: flex; gap: 12px; align-items: flex-start; padding: 18px; border-radius: var(--raio); background: var(--fundo2); }
-    .conf i { flex: 0 0 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-style: normal; font-size: 22px; background: #fff; }
-    .conf b { display: block; }
-    .conf span { color: var(--suave); font-size: 14px; }
-    @media (max-width: 900px) { .confianca { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 520px) { .confianca { grid-template-columns: 1fr; } }
-
-    .sobre { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: center; }
-    .sobre p { color: var(--suave); margin: 0 0 12px; }
-    .sobre-img { border-radius: 22px; overflow: hidden; box-shadow: var(--sombra); }
-    @media (max-width: 820px) { .sobre { grid-template-columns: 1fr; } }
-
-    .contato { margin: 52px 0 0; background: var(--marinho); color: #fff; border-radius: 26px; padding: 34px 24px; display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; background-image: radial-gradient(circle at 90% 10%, rgba(123,58,237,.45), transparent 45%), radial-gradient(circle at 0% 100%, rgba(242,88,31,.35), transparent 45%); }
-    .contato h2 { margin: 0 0 6px; font-size: clamp(22px, 3vw, 30px); }
-    .contato p { margin: 0; color: #C9D3EE; }
-    .contato .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
-    @media (max-width: 760px) { .contato { grid-template-columns: 1fr; } }
-
-    /* Rodapé */
-    .rodape { margin-top: 56px; background: #081329; color: #C2CBE3; padding: 44px 0 calc(24px + env(safe-area-inset-bottom)); font-size: 15px; }
-    .rod-grade { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 28px; }
-    .rodape h4 { margin: 0 0 12px; color: #fff; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
-    .rodape ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-    .rodape a:hover { color: #fff; }
-    .rodape .marca { color: #fff; margin-bottom: 12px; }
-    .rod-fim { border-top: 1px solid rgba(255,255,255,.08); margin-top: 32px; padding-top: 18px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #8E9AB9; }
-    @media (max-width: 860px) { .rod-grade { grid-template-columns: 1fr 1fr; } .rod-grade > :first-child { grid-column: 1 / -1; } }
-
-    .zap-flutua { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 40; width: 56px; height: 56px; border-radius: 50%; background: var(--verde); color: #fff; display: grid; place-items: center; box-shadow: 0 8px 22px rgba(31,175,90,.45); }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .app, .cat, .pontos button { transition: none; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a2647">
+<title>LeuName Softwares — Apps, PDV, sites e logos para o seu negócio</title>
+<meta name="description" content="PDV e sistemas para loja de celular, mercado e material de construção, delivery Pedêê, receitas com preço certo, sites prontos, logos e banners. Teste grátis e suporte no WhatsApp.">
+<link rel="icon" href="/img/leuapps-192.png">
+<meta property="og:title" content="LeuName Softwares">
+<meta property="og:description" content="Apps, PDV, sites e logos para o seu negócio.">
+<meta property="og:image" content="https://www.leunamesoftware.com.br/img/destaques/gestacell-v5.webp">
+<script>
+  // Endereços antigos da loja (www…/#app, ?origem=app…) continuam abrindo a loja de apps.
+  (function () {
+    var q = new URLSearchParams(location.search), doSite = !location.hash && [...q.keys()].every(function (k) { return k === 'cat' || k === 'q'; });
+    if (!doSite) location.replace('/apps' + location.search + location.hash);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site/style.css">
+<style>
+  /* Ajustes para os produtos da LeuName (banners com texto na imagem, botões Instalar/Detalhes). */
+  .banner-wrap { padding-top: 16px; }
+  .banner-wrap .promo-banner { max-width: 1040px; margin: 0 auto; }
+  @media (min-width: 1024px) { .cat-grid { grid-template-columns: repeat(7, 1fr); } }
+  .promo-banner { background: transparent; border-radius: 20px; overflow: hidden; box-shadow: 0 14px 34px rgba(10, 38, 71, .22); }
+  .promo-slide { min-height: 0; aspect-ratio: 1600 / 744; background-color: var(--navy-900); }
+  @media (max-width: 639px) { .promo-slide { min-height: 0; } .promo-banner { border-radius: 14px; } .promo-arrow { display: none; } }
+  .product-carousel .product-card { width: 82vw; max-width: 340px; }
+  @media (min-width: 640px) { .product-carousel .product-card { width: 300px; } }
+  .product-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .pv-banner { aspect-ratio: 1600 / 744; }
+  .pv-icone { aspect-ratio: 1600 / 744; display: grid; place-items: center; background: linear-gradient(135deg, #fff1e8, #ffe0cc); }
+  .pv-icone img { width: 34%; max-width: 110px; height: auto; border-radius: 22%; box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+  .product-card-name { min-height: 0; -webkit-line-clamp: 1; font-size: 16px; }
+  .pc-cat { font-size: 12.5px; font-weight: 600; color: var(--ink-400); }
+  .pc-resumo { margin: 0; font-size: 13.5px; color: var(--ink-600); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.45em * 2); }
+  .product-card-price { font-size: 17px; }
+  .pc-teste { position: absolute; left: 10px; top: 10px; background: var(--green); color: #fff; font: 700 11.5px/1 var(--font-head); padding: 6px 10px; border-radius: 999px; }
+  .pc-acoes { display: flex; gap: 8px; margin-top: auto; padding-top: 6px; }
+  .pc-acoes .btn { flex: 1; padding: 11px 10px; font-size: 14px; text-align: center; }
+  .pc-acoes .btn-outline-block { flex: 1; padding: 10px; }
+  .btn-zap { background: #1FAF5A; color: #fff; }
+  .btn-zap:hover { background: #17924a; }
+  .cat-card { text-decoration: none; }
+  .crumbs { font-size: 13.5px; color: var(--ink-600); margin-bottom: 10px; }
+  .crumbs a { color: var(--blue-600); font-weight: 600; }
+  .vazio-cat { padding: 28px; text-align: center; color: var(--ink-600); background: #fff; border-radius: 16px; }
+  .footer-socials a { width: auto; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 600; gap: 6px; }
+  .ms-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font-size: 13px; font-weight: 600; }
+</style>
 </head>
 <body>
-  <header class="topo">
-    <div class="c">
-      <a class="marca" href="/" aria-label="LeuName Softwares, início"><img src="/img/leuapps-192.webp" alt="" width="38" height="38"><span>LEUNAME<small>SOFTWARES</small></span></a>
-      <nav class="menu" aria-label="Menu principal">
-        <a href="#aplicativos">Aplicativos</a><a href="#servicos">Serviços</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a>
-      </nav>
-      <a class="btn btn-grad" href="/apps">Loja de apps</a>
-      <button class="hamb" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="gaveta"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-    </div>
-    <nav class="gaveta" id="gaveta" aria-label="Menu">
-      <a href="#aplicativos">Aplicativos</a><a href="#servicos">Serviços</a><a href="#sobre">Sobre</a><a href="#contato">Contato</a>
-      <a class="btn btn-grad" href="/apps">Loja de apps</a>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero" aria-label="Destaques">
-      <div class="c">
-        <div class="carrossel">
-          <div class="slides" id="slides"></div>
-          <button class="seta esq" type="button" data-passo="-1" aria-label="Banner anterior"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
-          <button class="seta dir" type="button" data-passo="1" aria-label="Próximo banner"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-        </div>
-        <div class="pontos" id="pontos"></div>
+<a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+<header class="site-header" id="siteHeader">
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <p class="topbar-msg">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c3 1 5 4 5 8 0 3-1.5 6-5 11-3.5-5-5-8-5-11 0-4 2-7 5-8Z"/><circle cx="12" cy="9" r="2"/></svg>
+        <span>Apps e soluções digitais para o seu negócio.</span>
+      </p>
+      <ul class="topbar-badges">
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg> Compra segura</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 22V7"/></svg> Teste grátis</li>
+        <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg> Suporte no WhatsApp</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mainbar">
+    <div class="container mainbar-inner">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="categoryNav"><span></span><span></span><span></span></button>
+      <a href="/" class="brand" aria-label="LeuName Softwares — Início">
+        <img class="brand-mark" src="/site/logo-mark.webp" alt="" width="48" height="48">
+        <span class="brand-text"><span class="brand-word">LEUNAME</span><span class="brand-sub">SOFTWARES</span></span>
+      </a>
+      <form class="searchbar" role="search" action="/" method="get">
+        <label class="sr-only" for="siteSearch">O que você está procurando?</label>
+        <input id="siteSearch" name="q" type="search" placeholder="O que você está procurando?" autocomplete="off">
+        <button type="submit" aria-label="Buscar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      </form>
+      <div class="mainbar-actions">
+        <a href="/apps#meus-apps" class="action-link">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+          <span class="action-text"><small>Entrar</small>Meus apps</span>
+        </a>
+        <a href="/apps" class="action-link">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span class="action-text"><small>Todos os</small>Apps</span>
+        </a>
+      </div>
+    </div>
+    <form class="searchbar searchbar-mobile" role="search" action="/" method="get">
+      <label class="sr-only" for="siteSearchMobile">O que você está procurando?</label>
+      <input id="siteSearchMobile" name="q" type="search" placeholder="O que você está procurando?" autocomplete="off">
+      <button type="submit" aria-label="Buscar"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    </form>
+  </div>
+
+  <nav class="categorybar" id="categoryNav" aria-label="Categorias">
+    <div class="container categorybar-inner">
+      <button class="all-cats" type="button" onclick="location.href='/?cat=todos'">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Todas as categorias
+      </button>
+      <ul class="cat-links" id="catLinks"></ul>
+    </div>
+  </nav>
+  <div class="mobile-cat-scroll" id="catScroll"></div>
+</header>
+
+<div class="nav-overlay" id="navOverlay"></div>
+
+<main id="main">
+  <div id="inicio">
+    <div class="container banner-wrap">
+      <section class="promo-banner" aria-label="Destaques">
+        <div class="promo-track" id="promoTrack"></div>
+        <div class="promo-dots" id="promoDots" role="group" aria-label="Banners"></div>
+        <button class="promo-arrow promo-arrow-prev" type="button" aria-label="Anterior"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
+        <button class="promo-arrow promo-arrow-next" type="button" aria-label="Próximo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><h2 class="section-title">Explore por categoria</h2></div>
+        <div class="cat-grid" id="catGrid"></div>
       </div>
     </section>
 
-    <div class="c">
-      <section class="chamada">
-        <h1>Apps e soluções digitais <span>para o seu negócio</span></h1>
-        <p>Sistemas para vender mais e organizar a sua empresa, no celular e no computador. Teste grátis, sem cartão.</p>
-        <div class="acoes"><a class="btn btn-grad" href="#aplicativos">Ver aplicativos</a><a class="btn btn-linha" href="#servicos">Logo, site e banners</a></div>
-      </section>
+    <div id="fileiras"></div>
 
-      <nav class="cats" id="cats" aria-label="Categorias"></nav>
+  </div>
 
-      <div id="aplicativos"></div>
-      <div id="grupos"></div>
+  <section class="section" id="lista" hidden>
+    <div class="container">
+      <p class="crumbs"><a href="/">Início</a> › <span id="listaCaminho"></span></p>
+      <div class="section-head"><div><h1 class="section-title" id="listaTitulo"></h1><p class="section-sub" id="listaSub"></p></div></div>
+      <div class="product-grid" id="listaGrade"></div>
     </div>
+  </section>
 
-    <section class="faixa-serv" id="servicos">
-      <div class="c secao">
-        <div class="sec-topo"><div><span class="etiqueta">Sob encomenda</span><h2>Logo, site e banners</h2><p>Sua marca com cara profissional. Orçamento grátis pelo WhatsApp.</p></div></div>
-        <div class="grade" id="lista-servicos"></div>
+  <section class="trust-strip">
+    <div class="container trust-grid">
+      <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><h4>Compra segura</h4><p>Pix e cartão pelo Mercado Pago</p></div></div>
+      <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 22V7"/></svg></span><div><h4>Teste grátis</h4><p>Use antes de pagar, sem cartão</p></div></div>
+      <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19v1a3 3 0 0 1-3 3h-3"/></svg></span><div><h4>Suporte de verdade</h4><p>Fale com a gente no WhatsApp</p></div></div>
+      <div class="trust-item"><span class="trust-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M10 18h4"/></svg></span><div><h4>Celular e computador</h4><p>Instala direto, sem Play Store</p></div></div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <div class="container newsletter-inner">
+      <div>
+        <h3>Siga o nosso canal no WhatsApp</h3>
+        <p>Receitas com preço certo, dicas de venda e as novidades da LeuName Softwares.</p>
       </div>
-    </section>
-
-    <div class="c">
-      <section class="secao" aria-label="Por que a LeuName">
-        <div class="confianca">
-          <div class="conf"><i aria-hidden="true">🔒</i><div><b>Pagamento seguro</b><span>Pix e cartão pelo Mercado Pago</span></div></div>
-          <div class="conf"><i aria-hidden="true">🎁</i><div><b>Teste grátis</b><span>Use antes de pagar, sem cartão</span></div></div>
-          <div class="conf"><i aria-hidden="true">💬</i><div><b>Suporte de verdade</b><span>Fale com a gente no WhatsApp</span></div></div>
-          <div class="conf"><i aria-hidden="true">🇧🇷</i><div><b>Empresa brasileira</b><span>Feito para o comércio do Brasil</span></div></div>
-        </div>
-      </section>
-
-      <section class="secao" id="sobre">
-        <div class="sobre">
-          <div>
-            <span class="etiqueta">Sobre nós</span>
-            <h2 style="margin:0 0 12px;font-size:clamp(22px,3vw,30px);line-height:1.2">LeuName Softwares</h2>
-            <p>Criamos aplicativos simples e completos para quem tem um negócio: loja de celular, mercado, material de construção, lanchonete e quem vende comida em casa.</p>
-            <p>Tudo funciona no celular e no computador, com atualizações automáticas e suporte direto com quem fez o sistema. Também criamos logomarcas, sites e banners sob encomenda.</p>
-            <a class="btn btn-grad" href="#aplicativos" style="margin-top:6px">Conhecer os apps</a>
-          </div>
-          <div class="sobre-img"><img src="/img/destaques/servico-templates-v4.webp" alt="Exemplo de site criado pela LeuName Softwares" loading="lazy"></div>
-        </div>
-      </section>
-
-      <section class="contato" id="contato">
-        <div><h2>Fale com a gente</h2><p>Tire dúvidas, peça um orçamento ou ajuda com o seu app. Respondemos pelo WhatsApp.</p></div>
-        <div class="acoes"><a class="btn btn-zap" id="zap-contato" href="#" target="_blank" rel="noopener">WhatsApp</a><a class="btn btn-claro" href="https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y" target="_blank" rel="noopener">Canal de receitas</a></div>
-      </section>
+      <div><a class="btn btn-zap" href="https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y" target="_blank" rel="noopener">Seguir o canal</a></div>
     </div>
-  </main>
+  </section>
+</main>
 
-  <footer class="rodape">
-    <div class="c">
-      <div class="rod-grade">
-        <div>
-          <a class="marca" href="/"><img src="/img/leuapps-192.webp" alt="" width="38" height="38"><span>LEUNAME<small>SOFTWARES</small></span></a>
-          <p style="margin:0 0 12px;max-width:340px">Apps e soluções digitais para o seu negócio vender mais e se organizar.</p>
-          <p style="margin:0" id="zap-rodape"></p>
-        </div>
-        <div><h4>Aplicativos</h4><ul id="rod-apps"></ul></div>
-        <div><h4>Serviços</h4><ul id="rod-servicos"></ul></div>
-        <div><h4>Empresa</h4><ul>
-          <li><a href="/apps">Loja de apps</a></li><li><a href="#sobre">Sobre nós</a></li><li><a href="#contato">Contato</a></li>
-          <li><a href="/privacidade.html">Política de privacidade</a></li><li><a href="/reembolso.html">Política de reembolso</a></li>
-        </ul></div>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col footer-col-brand">
+      <div class="footer-brand"><img src="/site/logo-mark.webp" alt="" width="38" height="38"><span class="footer-brand-text">LEUNAME SOFTWARES</span></div>
+      <p>Apps, PDV, sites, logos e banners para o seu negócio vender mais e se organizar.</p>
+      <div class="footer-socials">
+        <a id="zapRodape" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
+        <a href="https://whatsapp.com/channel/0029Vb8MlEi2phHVVGNFfB1Y" target="_blank" rel="noopener">Canal</a>
       </div>
-      <div class="rod-fim"><span>© <span id="ano"></span> LeuName Softwares. Todos os direitos reservados.</span><span>Pagamentos pelo Mercado Pago</span></div>
     </div>
-  </footer>
+    <div class="footer-col"><h5>Links rápidos</h5><ul>
+      <li><a href="/">Início</a></li><li><a href="/?cat=todos">Todos os produtos</a></li><li><a href="/apps">Loja de apps</a></li><li><a href="/apps#meus-apps">Meus apps</a></li>
+    </ul></div>
+    <div class="footer-col"><h5>Categorias</h5><ul id="rodCats"></ul></div>
+    <div class="footer-col"><h5>Ajuda</h5><ul>
+      <li><a href="/privacidade.html">Política de privacidade</a></li><li><a href="/reembolso.html">Política de reembolso</a></li><li><a href="/loja/esqueci">Esqueci a senha</a></li>
+    </ul></div>
+    <div class="footer-col"><h5>Contato</h5><ul>
+      <li><a id="zapContato" href="#" target="_blank" rel="noopener">WhatsApp (24) 99872-1557</a></li>
+      <li>Atendimento 100% online</li>
+    </ul></div>
+  </div>
+  <div class="container footer-trust">
+    <div class="footer-badges-group footer-ssl-seal">
+      <span class="pay-badge pay-badge-ssl"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg> Site Seguro · SSL</span>
+    </div>
+    <div class="footer-trust-box">
+      <span class="footer-trust-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4.5 6v6c0 4.5 3.2 7.9 7.5 9 4.3-1.1 7.5-4.5 7.5-9V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg> Pagamento 100% seguro</span>
+      <div class="footer-payment-icons">
+        <span class="pay-badge pay-badge-mp"><img src="/site/mercadopago-icon.png" alt="" width="20" height="14"> Mercado Pago</span>
+        <span class="pay-badge pay-badge-pix">Pix</span>
+        <span class="pay-badge pay-badge-visa">VISA</span>
+        <span class="pay-badge pay-badge-mastercard"><svg viewBox="0 0 24 14" width="20" height="12"><circle cx="9" cy="7" r="6.2" fill="#EB001B"/><circle cx="15" cy="7" r="6.2" fill="#F79E1B" opacity=".85"/></svg> Mastercard</span>
+        <span class="pay-badge pay-badge-elo">ELO</span>
+        <span class="pay-badge pay-badge-hipercard">Hipercard</span>
+      </div>
+    </div>
+    <div class="footer-badges-group"><span class="ms-pill">Em breve na Microsoft Store</span></div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© <span id="ano"></span> LeuName Softwares. Todos os direitos reservados.</p>
+    <p>Construindo hoje um amanhã melhor.</p>
+  </div>
+</footer>
 
-  <a class="zap-flutua" id="zap-flutua" href="#" target="_blank" rel="noopener" aria-label="Falar no WhatsApp"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.6-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.8 11.9 11.9 0 004.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 001.8-1.3 2.3 2.3 0 00.2-1.3c0-.1-.2-.2-.4-.3z"/></svg></a>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  $('ano').textContent = new Date().getFullYear();
+  var ZAP = '5524998721557';
+  var zap = function (assunto) { return 'https://wa.me/' + ZAP + '?text=' + encodeURIComponent('Olá, LeuName Softwares! Vim pelo site e quero saber sobre ' + assunto + '.'); };
+  $('zapRodape').href = $('zapContato').href = zap('os apps e serviços');
 
-  <script>
-    // Categorias do site. App novo no apps.json sem grupo aqui entra sozinho em "Outros apps".
-    const GRUPOS = [
-      { id: 'lojas', nome: 'PDV e gestão de lojas', frase: 'Caixa, vendas, estoque, clientes e financeiro do seu comércio.', ic: '🏪', cor: '#E3ECFF', apps: ['gestacell', 'mercagestao', 'construgestao'] },
-      { id: 'delivery', nome: 'Delivery Pedêê', frase: 'Peça, venda e entregue. Sem comissão por pedido para a loja.', ic: '🛵', cor: '#FFE9DF', apps: ['leuburger', 'pedee', 'pedee-entregador'] },
-      { id: 'receitas', nome: 'Receitas e preços', frase: 'Saiba quanto cobrar e venda com lucro.', ic: '🧁', cor: '#FFF1D6', apps: ['quantocobrar'] },
-      { id: 'documentos', nome: 'Documentos e prazos', frase: 'Avisos antes de vencer contas, documentos e prazos.', ic: '📅', cor: '#E2F6EC', apps: ['radar'] },
-    ];
-    const $ = (id) => document.getElementById(id);
-    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    $('ano').textContent = new Date().getFullYear();
+  var IC = {
+    pdv: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg>',
+    delivery: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-2-7h-3M13 10h4l2 4"/></svg>',
+    receitas: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10c0-3 2.5-6 6-6s6 3 6 6"/><path d="M4 10h16l-1.2 9a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 10Z"/></svg>',
+    documentos: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
+    sites: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg>',
+    design: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.6-1.4 1.4-1.4H16a4 4 0 0 0 4-4c0-5-3.6-9-8-9Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>',
+    cursos: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-13Z"/></svg>'
+  };
+  // Categorias do site. App novo no apps.json fora daqui aparece em "Todas as categorias" e na busca.
+  var CATS = [
+    { slug: 'pdv', nome: 'PDV e gestão de lojas', curto: 'PDV', cor: 'blue', frase: 'Caixa, vendas, estoque, clientes e financeiro do seu comércio.', apps: ['gestacell', 'mercagestao', 'construgestao', 'leuburger'] },
+    { slug: 'delivery', nome: 'Delivery Pedêê', curto: 'Delivery', cor: 'pink', frase: 'Peça, venda e entregue pelo app. Sem comissão por pedido para a loja.', apps: ['pedee', 'leuburger', 'pedee-entregador'] },
+    { slug: 'receitas', nome: 'Receitas e preços', curto: 'Receitas', cor: 'amber', frase: 'Saiba quanto cobrar e venda com lucro.', apps: ['quantocobrar'] },
+    { slug: 'documentos', nome: 'Documentos e prazos', curto: 'Prazos', cor: 'green', frase: 'Avisos antes de vencer contas, documentos e prazos.', apps: ['radar'] },
+    { slug: 'sites', nome: 'Sites prontos', curto: 'Sites', cor: 'green', frase: 'Site profissional para a sua loja ou empresa.', servicos: ['templates'] },
+    { slug: 'design', nome: 'Logos e banners', curto: 'Design', cor: 'purple', frase: 'Sua marca com cara profissional.', servicos: ['logomarcas', 'banners'] },
+    { slug: 'cursos', nome: 'Cursos grátis', curto: 'Cursos', cor: 'gray', frase: 'Aprenda a cobrar o preço certo e a vender mais.', cursos: true }
+  ];
 
-    const hamb = document.querySelector('.hamb'), gaveta = $('gaveta');
-    hamb.addEventListener('click', () => { const ab = gaveta.classList.toggle('aberta'); hamb.setAttribute('aria-expanded', ab); });
-    gaveta.addEventListener('click', (e) => { if (e.target.closest('a')) { gaveta.classList.remove('aberta'); hamb.setAttribute('aria-expanded', 'false'); } });
+  // Menu do celular (mesmo do site antigo).
+  var toggle = $('menuToggle'), nav = $('categoryNav'), overlay = $('navOverlay');
+  function fechar() { nav.classList.remove('is-open'); overlay.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }
+  toggle.addEventListener('click', function () { if (nav.classList.contains('is-open')) return fechar(); nav.classList.add('is-open'); overlay.classList.add('is-open'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; });
+  overlay.addEventListener('click', fechar);
+  addEventListener('resize', function () { if (innerWidth >= 1024) fechar(); });
 
-    // Botões do app: Instalar abre a página de instalar do próprio app (no Chrome, ícone na tela). Detalhes e planos ficam na loja.
-    function botoes(a) {
-      const instalar = a.instalar ? `<a class="btn btn-grad" href="/instalar/${esc(a.id)}">Instalar</a>` : a.url ? `<a class="btn btn-grad" href="${esc(a.url)}">Abrir</a>` : '';
-      return `${instalar}<a class="btn btn-linha" href="/apps#${esc(a.id)}">${a.planos ? 'Planos e detalhes' : 'Detalhes'}</a>`;
+  $('catLinks').innerHTML = CATS.map(function (c) { return '<li><a href="/?cat=' + c.slug + '"><span class="cat-ic cat-ic-' + c.cor + '">' + IC[c.slug] + '</span>' + esc(c.nome) + '</a></li>'; }).join('');
+  $('catScroll').innerHTML = CATS.map(function (c) { return '<button type="button" onclick="location.href=\'/?cat=' + c.slug + '\'"><span class="cat-ic cat-ic-' + c.cor + '">' + IC[c.slug] + '</span>' + esc(c.curto) + '</button>'; }).join('');
+  $('rodCats').innerHTML = CATS.map(function (c) { return '<li><a href="/?cat=' + c.slug + '">' + esc(c.nome) + '</a></li>'; }).join('');
+
+  // Cartões: app (Instalar + Detalhes), serviço (orçamento no WhatsApp), curso (abre na loja).
+  function partesPreco(p) { var s = String(p || '').split(' · '); return /grátis/i.test(s[0]) && s.length > 1 ? { teste: s[0], preco: s.slice(1).join(' · ') } : { teste: '', preco: p || '' }; }
+  function cartaoApp(a) {
+    var pr = partesPreco(a.preco), det = '/apps#' + a.id;
+    var midia = a.destaque ? '<div class="prod-visual prod-visual-photo pv-banner"><img src="' + esc(a.destaque.imagem) + '" alt="" loading="lazy"></div>'
+      : '<div class="pv-icone"><img src="' + esc(a.icone) + '" alt="" loading="lazy"></div>';
+    var instalar = a.instalar ? '<a class="btn btn-primary" href="/instalar/' + esc(a.id) + '">Instalar</a>' : a.url ? '<a class="btn btn-primary" href="' + esc(a.url) + '">Abrir</a>' : '';
+    return '<div class="product-card"><a class="product-card-media" href="' + det + '" tabindex="-1" aria-hidden="true">' + midia + (pr.teste ? '<span class="pc-teste">' + esc(pr.teste) + '</span>' : '') + '</a>'
+      + '<div class="product-card-body"><a class="product-card-name" href="' + det + '">' + esc(a.nome) + '</a><span class="pc-cat">' + esc(a.categoria) + '</span>'
+      + '<p class="pc-resumo">' + esc(a.resumo) + '</p><p class="product-card-price">' + esc(pr.preco) + '</p>'
+      + '<div class="pc-acoes">' + instalar + '<a class="btn-outline-block" href="' + det + '">' + (a.planos ? 'Planos' : 'Detalhes') + '</a></div></div></div>';
+  }
+  function cartaoServico(s) {
+    return '<div class="product-card"><a class="product-card-media" href="' + zap(s.nome.toLowerCase()) + '" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><div class="prod-visual prod-visual-photo pv-banner"><img src="' + esc(s.imagens[0]) + '" alt="" loading="lazy"></div><span class="pc-teste">Orçamento grátis</span></a>'
+      + '<div class="product-card-body"><span class="product-card-name">' + esc(s.nome) + '</span><span class="pc-cat">Sob encomenda</span><p class="pc-resumo">' + esc(s.resumo) + '</p>'
+      + '<div class="pc-acoes"><a class="btn btn-zap" href="' + zap(s.nome.toLowerCase()) + '" target="_blank" rel="noopener">Pedir orçamento</a></div></div></div>';
+  }
+  function cartaoCurso(c) {
+    var link = '/apps#curso/' + c.id;
+    return '<div class="product-card"><a class="product-card-media" href="' + link + '" tabindex="-1" aria-hidden="true"><div class="pv-icone"><img src="' + esc(c.icone) + '" alt="" loading="lazy"></div></a>'
+      + '<div class="product-card-body"><a class="product-card-name" href="' + link + '">' + esc(c.nomeCurto || c.nome) + '</a><span class="pc-cat">Curso</span><p class="pc-resumo">' + esc(c.resumo) + '</p>'
+      + '<p class="product-card-price">' + esc(c.preco) + '</p><div class="pc-acoes"><a class="btn btn-primary" href="' + link + '">Começar</a></div></div></div>';
+  }
+
+  function itensDa(c, d) {
+    if (c.apps) return c.apps.map(function (id) { return d.apps.find(function (a) { return a.id === id; }); }).filter(Boolean).map(cartaoApp);
+    if (c.servicos) return d.serv.filter(function (s) { return c.servicos.indexOf(s.id) >= 0; }).map(cartaoServico);
+    if (c.cursos) return d.cursos.map(cartaoCurso);
+    return [];
+  }
+
+  function fileira(c, d) {
+    var itens = itensDa(c, d); if (!itens.length) return '';
+    var id = 'fil-' + c.slug;
+    return '<section class="section" style="padding-top:0;"><div class="container"><div class="section-head"><div><h2 class="section-title">' + esc(c.nome) + '</h2><p class="section-sub">' + esc(c.frase) + '</p></div><a class="section-link" href="/?cat=' + c.slug + '">Ver todos →</a></div>'
+      + '<div class="carousel-wrap"><button class="carousel-arrow carousel-arrow-prev" type="button" data-prev="' + id + '" aria-label="Anteriores"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg></button>'
+      + '<div class="product-carousel" id="' + id + '">' + itens.join('') + '</div>'
+      + '<button class="carousel-arrow carousel-arrow-next" type="button" data-next="' + id + '" aria-label="Mais"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg></button></div></div></section>';
+  }
+
+  function setas() {
+    document.querySelectorAll('.carousel-wrap').forEach(function (w) {
+      var t = w.querySelector('.product-carousel'), p = w.querySelector('.carousel-arrow-prev'), n = w.querySelector('.carousel-arrow-next');
+      var upd = function () { var m = t.scrollWidth - t.clientWidth; p.disabled = t.scrollLeft <= 4; n.disabled = m <= 4 || t.scrollLeft >= m - 4; };
+      var passo = function (dir) { var c = t.querySelector('.product-card'); t.scrollBy({ left: dir * (c ? c.getBoundingClientRect().width + 16 : t.clientWidth * .8), behavior: 'smooth' }); };
+      p.addEventListener('click', function () { passo(-1); }); n.addEventListener('click', function () { passo(1); });
+      t.addEventListener('scroll', upd, { passive: true }); upd(); addEventListener('load', upd);
+    });
+  }
+
+  function banners(d) {
+    var itens = d.apps.filter(function (a) { return a.destaque; }).map(function (a) { return { img: a.destaque.imagem, alt: a.destaque.frase, href: '/apps#' + a.id }; })
+      .concat(d.serv.filter(function (s) { return s.destaque; }).map(function (s) { return { img: s.destaque.imagem, alt: s.destaque.frase, href: zap(s.nome.toLowerCase()), fora: true }; }));
+    var track = $('promoTrack'), dots = $('promoDots');
+    track.innerHTML = itens.map(function (b, i) { return '<a class="promo-slide" href="' + esc(b.href) + '"' + (b.fora ? ' target="_blank" rel="noopener"' : '') + ' aria-label="' + esc(b.alt) + '" style="background-image:url(\'' + esc(b.img) + '\')"></a>'; }).join('');
+    dots.innerHTML = itens.map(function (_, i) { return '<button class="promo-dot' + (i ? '' : ' is-active') + '" type="button" aria-label="Banner ' + (i + 1) + '" aria-current="' + !i + '"></button>'; }).join('');
+    var atual = 0, timer, pontos = dots.querySelectorAll('.promo-dot');
+    var marcar = function (i) { atual = i; pontos.forEach(function (d, k) { d.classList.toggle('is-active', k === i); d.setAttribute('aria-current', k === i); }); };
+    var ir = function (i) { var n = (i + itens.length) % itens.length; track.scrollTo({ left: track.clientWidth * n, behavior: 'smooth' }); marcar(n); };
+    var rel = function () { clearTimeout(timer); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) timer = setTimeout(function () { ir(atual + 1); rel(); }, 5000); };
+    pontos.forEach(function (d, i) { d.addEventListener('click', function () { ir(i); rel(); }); });
+    document.querySelector('.promo-arrow-next').onclick = function () { ir(atual + 1); rel(); };
+    document.querySelector('.promo-arrow-prev').onclick = function () { ir(atual - 1); rel(); };
+    var st; track.addEventListener('scroll', function () { clearTimeout(st); st = setTimeout(function () { var i = Math.round(track.scrollLeft / track.clientWidth); if (i !== atual) marcar(i); }, 120); }, { passive: true });
+    track.addEventListener('touchstart', function () { clearTimeout(timer); }, { passive: true }); track.addEventListener('touchend', rel);
+    addEventListener('resize', function () { track.scrollTo({ left: track.clientWidth * atual }); });
+    rel();
+  }
+
+  function lista(titulo, sub, caminho, itens) {
+    $('inicio').hidden = true; $('lista').hidden = false;
+    $('listaTitulo').textContent = titulo; $('listaSub').textContent = sub; $('listaCaminho').textContent = caminho;
+    $('listaGrade').innerHTML = itens.join('') || '<p class="vazio-cat">Nada encontrado. Tente outra palavra ou <a href="' + zap('um produto') + '" target="_blank" rel="noopener">fale com a gente</a>.</p>';
+    document.title = titulo + ' — LeuName Softwares';
+  }
+
+  Promise.all([
+    fetch('/apps.json').then(function (r) { return r.json(); }),
+    fetch('/servicos.json').then(function (r) { return r.json(); }).catch(function () { return { itens: [] }; }),
+    fetch('/cursos.json').then(function (r) { return r.json(); }).catch(function () { return []; })
+  ]).then(function (r) {
+    var d = { apps: r[0].filter(function (a) { return !a.emBreve; }), serv: r[1].itens || [], cursos: (Array.isArray(r[2]) ? r[2] : r[2].itens || []).filter(function (c) { return !c.emBreve; }) };
+    if (r[1].whatsapp) ZAP = r[1].whatsapp;
+    var q = new URLSearchParams(location.search), cat = q.get('cat'), busca = (q.get('q') || '').trim();
+    $('catGrid').innerHTML = CATS.map(function (c) { return '<a class="cat-card" href="/?cat=' + c.slug + '"><span class="cat-ic cat-ic-' + c.cor + '">' + IC[c.slug] + '</span><span class="cat-card-name">' + esc(c.nome) + '</span><span class="cat-card-link">Ver produtos →</span></a>'; }).join('');
+
+    if (busca) {
+      $('siteSearch').value = $('siteSearchMobile').value = busca;
+      var t = busca.toLowerCase(), tem = function (s) { return s.toLowerCase().indexOf(t) >= 0; };
+      lista('Resultados para "' + busca + '"', '', 'Busca',
+        d.apps.filter(function (a) { return tem([a.nome, a.categoria, a.resumo, a.descricao, (a.tags || []).join(' ')].join(' ')); }).map(cartaoApp)
+          .concat(d.serv.filter(function (s) { return tem(s.nome + ' ' + s.resumo); }).map(cartaoServico))
+          .concat(d.cursos.filter(function (c) { return tem(c.nome + ' ' + c.resumo); }).map(cartaoCurso)));
+    } else if (cat === 'todos') {
+      lista('Todos os produtos', 'Apps, sites, logos, banners e cursos da LeuName Softwares.', 'Todas as categorias',
+        d.apps.map(cartaoApp).concat(d.serv.map(cartaoServico), d.cursos.map(cartaoCurso)));
+    } else if (cat) {
+      var c = CATS.find(function (x) { return x.slug === cat; });
+      if (c) lista(c.nome, c.frase, c.nome, itensDa(c, d)); else location.replace('/');
+    } else {
+      banners(d);
+      $('fileiras').innerHTML = CATS.map(function (c) { return fileira(c, d); }).join('');
+      setas();
     }
-    const cartaoApp = (a) => `<article class="app">
-        ${a.destaque ? `<a class="app-capa" href="/apps#${esc(a.id)}" tabindex="-1" aria-hidden="true"><img src="${esc(a.destaque.imagem)}" alt="" loading="lazy"></a>` : ''}
-        <div class="app-corpo">
-          <div class="app-cab"><img src="${esc(a.icone)}" alt="" width="56" height="56" loading="lazy"><div><h3>${esc(a.nome)}</h3><span>${esc(a.categoria)}</span></div></div>
-          <p>${esc(a.resumo)}</p>
-          ${a.preco ? `<span class="preco">${esc(a.preco)}</span>` : ''}
-          <div class="app-acoes">${botoes(a)}</div>
-        </div></article>`;
-
-    function banners(apps, serv, zap) {
-      const itens = [
-        ...apps.filter((a) => a.destaque).map((a) => ({ img: a.destaque.imagem, alt: a.destaque.frase, href: `/apps#${a.id}` })),
-        ...serv.filter((s) => s.destaque).map((s) => ({ img: s.destaque.imagem, alt: s.destaque.frase, href: zap(s.nome) })),
-      ];
-      $('slides').innerHTML = itens.map((b, i) => `<a href="${esc(b.href)}"${b.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><img src="${esc(b.img)}" alt="${esc(b.alt)}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}></a>`).join('');
-      $('pontos').innerHTML = itens.map((_, i) => `<button type="button" aria-label="Banner ${i + 1}" aria-current="${!i}"></button>`).join('');
-      const sl = $('slides'), total = itens.length;
-      const atual = () => Math.round(sl.scrollLeft / sl.clientWidth);
-      const ir = (i) => sl.scrollTo({ left: ((i + total) % total) * sl.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-      sl.addEventListener('scroll', () => { const i = atual(); [...$('pontos').children].forEach((p, k) => p.setAttribute('aria-current', k === i)); }, { passive: true });
-      $('pontos').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { ir([...$('pontos').children].indexOf(b)); parar(); } });
-      document.querySelectorAll('[data-passo]').forEach((b) => b.addEventListener('click', () => { ir(atual() + Number(b.dataset.passo)); parar(); }));
-      let timer = setInterval(() => { if (!document.hidden) ir(atual() + 1); }, 5000);
-      const parar = () => { clearInterval(timer); timer = null; };
-      sl.addEventListener('pointerdown', parar, { once: true });
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) parar();
-    }
-
-    Promise.all([fetch('/apps.json').then((r) => r.json()), fetch('/servicos.json').then((r) => r.json()).catch(() => ({ itens: [] }))]).then(([lista, servicos]) => {
-      const apps = lista.filter((a) => !a.emBreve);
-      const numero = servicos.whatsapp || '5524998721557';
-      const zap = (assunto) => `https://wa.me/${numero}?text=${encodeURIComponent(`Olá, LeuName Softwares! Vim pelo site e quero saber sobre ${assunto}.`)}`;
-      ['zap-contato', 'zap-flutua'].forEach((id) => { $(id).href = zap('os apps e serviços'); });
-      $('zap-rodape').innerHTML = `WhatsApp: <a href="${zap('os apps e serviços')}" target="_blank" rel="noopener">${esc(servicos.whatsappTexto || '(24) 99872-1557')}</a>`;
-
-      const usados = new Set(GRUPOS.flatMap((g) => g.apps));
-      const outros = apps.filter((a) => !usados.has(a.id));
-      const grupos = [...GRUPOS, ...(outros.length ? [{ id: 'outros', nome: 'Outros apps', frase: 'Mais soluções da LeuName.', ic: '✨', cor: '#EFE7FF', apps: outros.map((a) => a.id) }] : [])]
-        .map((g) => ({ ...g, lista: g.apps.map((id) => apps.find((a) => a.id === id)).filter(Boolean) })).filter((g) => g.lista.length);
-
-      $('cats').innerHTML = grupos.map((g) => `<a class="cat" href="#cat-${g.id}"><i style="background:${g.cor}" aria-hidden="true">${g.ic}</i>${esc(g.nome)}</a>`).join('')
-        + `<a class="cat" href="#servicos"><i style="background:#F3E8FF" aria-hidden="true">🎨</i>Logo, site e banners</a>`;
-      $('grupos').innerHTML = grupos.map((g) => `<section class="secao" id="cat-${g.id}">
-          <div class="sec-topo"><div><span class="etiqueta">${g.ic} Aplicativos</span><h2>${esc(g.nome)}</h2><p>${esc(g.frase)}</p></div></div>
-          <div class="grade">${g.lista.map(cartaoApp).join('')}</div></section>`).join('');
-
-      const serv = servicos.itens || [];
-      $('lista-servicos').innerHTML = serv.map((s) => `<article class="serv"><img src="${esc(s.imagens[0])}" alt="Exemplo de ${esc(s.nome)}" loading="lazy">
-          <div><h3>${esc(s.icone)} ${esc(s.nome)}</h3><p>${esc(s.resumo)}</p><a class="btn btn-zap" href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">Pedir orçamento grátis</a></div></article>`).join('');
-
-      $('rod-apps').innerHTML = apps.map((a) => `<li><a href="/apps#${esc(a.id)}">${esc(a.nome)}</a></li>`).join('');
-      $('rod-servicos').innerHTML = serv.map((s) => `<li><a href="${zap(s.nome.toLowerCase())}" target="_blank" rel="noopener">${esc(s.nome)}</a></li>`).join('');
-
-      banners(apps, serv, zap);
-      if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
-    }).catch(() => { $('grupos').innerHTML = '<p style="text-align:center;color:var(--suave);padding:40px 0">Sem internet agora. Tente de novo em instantes.</p>'; });
-  </script>
+  }).catch(function () { $('fileiras').innerHTML = '<p class="vazio-cat container">Sem internet agora. Tente de novo em instantes.</p>'; });
+})();
+</script>
+<a class="whatsapp-float" id="zapFlutua" href="https://wa.me/5524998721557?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20LeuName%20Softwares." target="_blank" rel="noopener" aria-label="Falar no WhatsApp"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.03c-.24.68-1.39 1.3-1.92 1.34-.49.05-1.030.24-3.44-.72-2.9-1.15-4.77-4.12-4.92-4.31-.15-.2-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.58-.36.77-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.81 2 .88 2.14.07.15.12.32.02.52-.1.2-.15.32-.29.5-.15.18-.31.4-.44.53-.15.15-.3.31-.13.6.17.29.77 1.27 1.65 2.06 1.14 1.02 2.1 1.33 2.39 1.48.29.15.46.13.63-.08.17-.2.72-.84.92-1.13.19-.29.39-.24.65-.14.27.1 1.71.81 2 .96.29.15.48.22.55.34.07.13.07.75-.17 1.43Z"/></svg></a>
 </body>
 </html>
