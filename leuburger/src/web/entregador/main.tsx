@@ -4,6 +4,7 @@ import { Selfie } from '../selfie';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { brl, FORMAS, type Forma } from '../../regras/pedido';
+import { RAPIDAS_ENTREGADOR } from '../../regras/mensagens';
 import { ErroApp, get, post } from '../api';
 import { Modal, msgErro } from '../comuns';
 import { Mapa } from '../mapa';
@@ -15,11 +16,9 @@ import './entregador.css';
 interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean; tem_foto: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
   id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
-  loja: string; loja_endereco: string | null; loja_telefone: string | null; cliente: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null; loja_lat: number | null; loja_lng: number | null; km: number | null;
-  mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[];
+  loja: string; loja_endereco: string | null; cliente: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null; loja_lat: number | null; loja_lng: number | null; km: number | null;
+  mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; conversa_loja: { de: 'entregador' | 'loja'; texto: string; criado_em: string }[];
 }
-const dig = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
-const fone = (s: string | null | undefined) => { const n = dig(s); return n.length >= 10 && n.length <= 11 ? '55' + n : n; };
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 function plim() {
   try {
@@ -87,7 +86,6 @@ function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
 
 interface Feita { id: string; numero: number; quando: string; saiu_em: string | null; loja: string; endereco: string; ganho: number; km: number | null; criado_em?: string }
 type Aba = 'inicio' | 'financeiro' | 'ajuda' | 'perfil';
-const RAPIDAS = ['📍 Estou chegando', '🚪 Estou aqui na frente', '❓ Não encontrei o endereço', '🔔 Toquei e ninguém atendeu'];
 const dia = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 const kmTxt = (km: number | null) => (km == null ? '' : `${km.toFixed(1).replace('.', ',')} km`);
 const inicioSemana = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; };
@@ -102,7 +100,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
     try {
       const [r, h] = await Promise.all([get<{ entregas: Entrega[] }>('/entregador/entregas'), get<{ entregas: Feita[] }>('/entregador/resumo')]);
       const ativas = r.entregas.filter((x) => x.andamento !== 'entregue');
-      const nMsgs = ativas.reduce((t, x) => t + x.mensagens.filter((m) => m.de === 'cliente').length, 0);
+      const nMsgs = ativas.reduce((t, x) => t + x.mensagens.filter((m) => m.de === 'cliente').length + x.conversa_loja.filter((m) => m.de === 'loja').length, 0);
       if ((vistos.current && ativas.some((x) => !vistos.current!.has(x.id))) || (msgsVistas.current != null && nMsgs > msgsVistas.current)) plim();
       vistos.current = new Set(ativas.map((x) => x.id)); msgsVistas.current = nMsgs;
       setLista(r.entregas); setFeitas(h.entregas); setErro('');
@@ -133,7 +131,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
   const ativas = (lista || []).filter((x) => x.andamento !== 'entregue');
   // Enquanto tem entrega a caminho, manda a posição para o cliente ver no mapa.
   const emRota = ativas.some((x) => x.andamento === 'a_caminho');
-  const [gps, setGps] = useState<'ok' | 'negado' | ''>('');
+  const [gps, setGps] = useState<'ok' | 'negado' | ''>(''), [tentarGps, setTentarGps] = useState(0);
   useEffect(() => {
     if (!emRota || !navigator.geolocation) return;
     let ultimo = 0;
@@ -145,8 +143,12 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       ultimo = Date.now();
       post('/entregador/posicao', { lat: p.coords.latitude, lng: p.coords.longitude }).catch(() => {});
     }, (e) => { if (e.code === 1) setGps('negado'); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
-    return () => navigator.geolocation.clearWatch(id);
-  }, [emRota]);
+    // Quando a pessoa libera a localização nas configurações do navegador, volta a mandar sozinho.
+    let perm: PermissionStatus | null = null;
+    navigator.permissions?.query({ name: 'geolocation' }).then((x) => { perm = x; x.onchange = () => { if (x.state === 'granted') { setGps(''); setTentarGps((n) => n + 1); } }; }).catch(() => {});
+    return () => { navigator.geolocation.clearWatch(id); if (perm) perm.onchange = null; };
+  }, [emRota, tentarGps]);
+  const pedirGps = () => navigator.geolocation?.getCurrentPosition(() => { setGps(''); setTentarGps((n) => n + 1); }, (e) => { if (e.code === 1) setGps('negado'); }, { timeout: 15000 });
 
   const hoje = new Date().toDateString();
   const deHoje = feitas.filter((f) => new Date(f.quando).toDateString() === hoje);
@@ -187,7 +189,11 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           </button>
           {erro && <p className="aviso erro">{erro}</p>}
           {emRota && (gps === 'negado'
-            ? <p className="aviso erro">Ligue a localização do celular para o cliente te ver no mapa.</p>
+            ? <div className="aviso erro" style={{ margin: 0 }}>
+                <b>O navegador bloqueou a sua localização para o Pedêê.</b> Mesmo com o GPS do celular ligado, é preciso permitir aqui:
+                toque no <b>cadeado</b> (ou nos 3 pontinhos) ao lado do endereço do site → <b>Permissões</b> → <b>Localização</b> → <b>Permitir</b>.
+                <button className="btn peq" style={{ marginTop: 8 }} onClick={pedirGps}>📍 Tentar de novo</button>
+              </div>
             : <p className="aviso" style={{ margin: 0 }}>📍 O cliente está vendo você no mapa. Deixe este app aberto durante a entrega.</p>)}
           <h2 className="pd-tit">Entregas agora</h2>
           {lista == null ? <div className="carregando"><div className="giro" /></div> : !ativas.length ? (
@@ -209,11 +215,11 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
                   <a className="btn" href={x.dest_lat != null ? `https://www.google.com/maps/dir/?api=1&destination=${x.dest_lat},${x.dest_lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.endereco_entrega)}`} target="_blank" rel="noopener"><Ic n="seta" />Google Maps</a>
                 </div>
                 <div className="ent-chat">
-                  <b>💬 Falar com {x.cliente?.split(' ')[0] || 'o cliente'}</b>
+                  <b>💬 Avisar {x.cliente?.split(' ')[0] || 'o cliente'}</b><small className="ent-chat-dica">Só mensagens prontas. Precisa de mais? Fale com a loja.</small>
                   {x.mensagens.map((m, k) => <p key={k} className={m.de === 'entregador' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}
-                  <div className="ent-rapidas">{RAPIDAS.map((t) => <button key={t} className="chip" onClick={() => mandar(x, t)}>{t}</button>)}</div>
-                  {x.loja_telefone && <a className="btn peq" href={`https://wa.me/${fone(x.loja_telefone)}`} target="_blank" rel="noopener"><Ic n="loja" />Falar com a loja</a>}
+                  <div className="ent-rapidas">{RAPIDAS_ENTREGADOR.map((t) => <button key={t} className="chip" onClick={() => mandar(x, t)}>{t}</button>)}</div>
                 </div>
+                <ConversaLoja x={x} aoEnviar={carregar} />
                 {x.andamento !== 'a_caminho'
                   ? <button className="btn prim grande bloco" style={{ marginTop: 6 }} disabled={ocupado === x.id} onClick={() => marcar(x, 'a_caminho')}><Ic n="seta" />Saí para entrega</button>
                   : <button className="btn prim grande bloco ent-verde" style={{ marginTop: 6 }} disabled={ocupado === x.id} onClick={() => setCodigoDe(x)}><Ic n="check" />Entreguei</button>}
@@ -262,12 +268,35 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 }
 
 /** O cliente passa o código de 4 números que aparece no app dele; sem o código certo não fecha a entrega. */
+/** Conversa livre com a loja (sem telefone). */
+function ConversaLoja({ x, aoEnviar }: { x: Entrega; aoEnviar: () => Promise<void> }) {
+  const [aberta, setAberta] = useState(false), [texto, setTexto] = useState(''), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
+  const daLoja = x.conversa_loja.filter((m) => m.de === 'loja').length;
+  const [vistas, setVistas] = useState(daLoja);
+  const novas = aberta ? 0 : daLoja - vistas;
+  const enviar = async () => {
+    if (!texto.trim()) return;
+    setOcupado(true);
+    try { await post(`/entregador/entregas/${x.id}/loja`, { texto: texto.trim() }); setTexto(''); setErro(''); await aoEnviar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
+  };
+  if (!aberta) return <button className="btn bloco ent-loja-bt" onClick={() => { setAberta(true); setVistas(daLoja); }}><Ic n="loja" />Conversar com a loja{novas > 0 && <span className="selo">{novas}</span>}</button>;
+  return (
+    <div className="ent-chat ent-chat-loja">
+      <b>🏪 Conversa com {x.loja}</b><button className="link" style={{ float: 'right' }} onClick={() => { setAberta(false); setVistas(daLoja); }}>Fechar</button>
+      {!x.conversa_loja.length && <small className="ent-chat-dica">Combine com a loja aqui (ex.: atraso, endereço, troco). O número de ninguém aparece.</small>}
+      {x.conversa_loja.map((m, k) => <p key={k} className={m.de === 'entregador' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}
+      {erro && <p className="aviso erro">{erro}</p>}
+      <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={300} placeholder="Mensagem para a loja" aria-label="Mensagem para a loja" onKeyDown={(e) => { if (e.key === 'Enter') enviar(); }} /><button className="btn prim" onClick={enviar} disabled={!texto.trim() || ocupado}>Enviar</button></div>
+    </div>
+  );
+}
+
 function CodigoEntrega({ x, aoFechar, aoConfirmar }: { x: Entrega; aoFechar: () => void; aoConfirmar: (codigo: string) => Promise<string> }) {
   const [cod, setCod] = useState(''), [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
   const enviar = async () => { setOcupado(true); const m = await aoConfirmar(cod); setOcupado(false); if (m) setMsg(m); };
   return (
     <Modal titulo={`Entregar pedido #${x.numero}`} aoFechar={aoFechar}>
-      <p style={{ marginTop: 0 }}>Peça a <b>{x.cliente?.split(' ')[0] || 'o cliente'}</b> o <b>código de entrega</b>. Ele aparece no app do cliente, na tela do pedido.</p>
+      <p style={{ marginTop: 0 }}>Peça a <b>{x.cliente?.split(' ')[0] || 'o cliente'}</b> o <b>código de entrega</b>. Ele aparece no app do cliente, na tela do pedido. Você não vê o código: o sistema confere sozinho e, se estiver errado, a entrega não fecha.</p>
       <input className="ent-codigo" value={cod} onChange={(e) => { setCod(e.target.value.replace(/\D/g, '').slice(0, 4)); setMsg(''); }} inputMode="numeric" autoFocus placeholder="0000" aria-label="Código de entrega" />
       {msg && <p className="aviso erro">{msg}</p>}
       <button className="btn prim grande bloco ent-verde" style={{ marginTop: 10 }} disabled={cod.length !== 4 || ocupado} onClick={enviar}><Ic n="check" />{ocupado ? 'Conferindo…' : 'Confirmar entrega'}</button>
@@ -278,7 +307,7 @@ function CodigoEntrega({ x, aoFechar, aoConfirmar }: { x: Entrega; aoFechar: () 
 const PERGUNTAS: [string, string, string][] = [
   ['Pedidos', 'Estou disponível e não recebo entregas', 'As entregas vêm das lojas que te adicionaram. Passe o seu e-mail (aba Perfil) para a loja; ela coloca você em “Entregadores” e escolhe você no pedido. Deixe o app aberto e fique como “Disponível”.'],
   ['Pedidos', 'Como entrego o pedido?', 'Toque em “Saí para entrega” quando pegar o pedido na loja. No cliente, peça o código de entrega (4 números que aparecem no app dele) e toque em “Entreguei”. Sem o código certo a entrega não fecha.'],
-  ['Pedidos', 'O cliente não responde / não encontro o endereço', 'Use as mensagens rápidas no pedido (“Estou aqui na frente”, “Não encontrei o endereço”). O cliente recebe no app dele. Se não resolver, fale com a loja pelo botão “Falar com a loja”.'],
+  ['Pedidos', 'O cliente não responde / não encontro o endereço', 'Use os avisos prontos no pedido (“Cheguei, estou na frente”, “Não encontrei o endereço”). O cliente recebe no app dele. Se não resolver, toque em “Conversar com a loja” e escreva o que precisar.'],
   ['Cadastro', 'Quero trocar minha foto ou meu veículo', 'A foto é tirada pela câmera, para o cliente saber quem está levando. Para trocar a foto ou mudar de moto para bicicleta, fale com o suporte.'],
   ['Ganhos', 'Como recebo pelas entregas?', 'Por enquanto o valor de cada entrega (a taxa de entrega) é combinado e pago direto pela loja. Em Financeiro você vê quanto fez no dia, na semana e em cada entrega.'],
   ['Segurança', 'Sofri um acidente ou estou em perigo', 'Em perigo: toque em SOS (liga 190). Acidente com ferido: ligue 192 (SAMU). Depois avise a loja.'],

@@ -116,7 +116,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 
 // ---------- pedidos ----------
 interface Novo { cancelar_ate: string | null; cancelado_em: string | null; nome_cliente?: string; id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface EmAndamento { conversa_entregador?: { de: 'loja' | 'entregador'; texto: string; criado_em: string }[]; app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -127,18 +127,46 @@ function plim() {
   } catch { /* sem som */ }
 }
 
+/** Conversa da loja com o entregador do pedido (livre, sem telefone). */
+function ConversaEntregador({ p, aoEnviar }: { p: EmAndamento; aoEnviar: () => Promise<void> }) {
+  const msgs = p.conversa_entregador || [];
+  const dele = msgs.filter((m) => m.de === 'entregador').length;
+  const [aberta, setAberta] = useState(false), [vistas, setVistas] = useState(dele), [texto, setTexto] = useState(''), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
+  const novas = aberta ? 0 : dele - vistas;
+  const enviar = async () => {
+    if (!texto.trim()) return;
+    setOcupado(true);
+    try { await post(`/vendas/${p.id}/mensagem-entregador`, { texto: texto.trim() }); setTexto(''); setErro(''); await aoEnviar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
+  };
+  const nome = p.entregador?.split(' ')[0] || 'entregador';
+  if (!aberta) return <button className={`btn bloco peq ${novas > 0 ? 'prim' : ''}`} style={{ marginTop: 8 }} onClick={() => { setAberta(true); setVistas(dele); }}>💬 Conversar com {nome}{novas > 0 && ` (${novas} nova${novas > 1 ? 's' : ''})`}</button>;
+  return (
+    <div className="ent-chat ent-chat-loja" style={{ marginTop: 8 }}>
+      <b>💬 Conversa com {nome}</b><button className="link" style={{ float: 'right' }} onClick={() => { setAberta(false); setVistas(dele); }}>Fechar</button>
+      {!msgs.length && <small className="ent-chat-dica">Fale com o entregador por aqui. O número de ninguém aparece.</small>}
+      {msgs.map((m, k) => <p key={k} className={m.de === 'loja' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}
+      {erro && <p className="aviso erro">{erro}</p>}
+      <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={300} placeholder={`Mensagem para ${nome}`} aria-label="Mensagem para o entregador" onKeyDown={(e) => { if (e.key === 'Enter') enviar(); }} /><button className="btn prim" onClick={enviar} disabled={!texto.trim() || ocupado}>Enviar</button></div>
+    </div>
+  );
+}
+
 function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) {
   const [novos, setNovos] = useState<Novo[]>([]), [lista, setLista] = useState<EmAndamento[]>([]);
   const [carregou, setCarregou] = useState(false), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
   const [recusar, setRecusar] = useState<Novo | null>(null), [cancelados, setCancelados] = useState<Novo[]>([]);
   const [escolher, setEscolher] = useState<EmAndamento | null>(null);
-  const vistos = useRef<Set<string> | null>(null);
+  const vistos = useRef<Set<string> | null>(null), msgsVistas = useRef<number | null>(null);
   const carregar = async () => {
     try {
       const [a, b] = await Promise.all([get<{ pedidos: (Novo & { status: string })[] }>('/pedidos-app'), get<{ pedidos: EmAndamento[] }>('/andamento')]);
       const n = a.pedidos.filter((p) => p.status === 'aguardando');
       if (vistos.current && n.some((p) => !vistos.current!.has(p.id))) plim();
       vistos.current = new Set(n.map((p) => p.id));
+      // Mensagem nova do entregador também toca o aviso.
+      const nm = b.pedidos.reduce((t, p) => t + (p.conversa_entregador || []).filter((m) => m.de === 'entregador').length, 0);
+      if (msgsVistas.current != null && nm > msgsVistas.current) plim();
+      msgsVistas.current = nm;
       setCancelados(a.pedidos.filter((p) => p.cancelado_em && Date.now() - new Date(p.cancelado_em).getTime() < 2 * 3600e3));
       setNovos(n); setLista(b.pedidos); aoContar(n.length); setErro(''); setCarregou(true);
     } catch (e) { setErro(msgErro(e)); }
@@ -196,6 +224,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
             {p.andamento === 'a_caminho' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'entregue')}><Ic n="check" />Entregue</button>}
             {p.cliente_telefone && <a className="btn" href={wa(p.cliente_telefone)} target="_blank" rel="noopener" aria-label="WhatsApp do cliente"><Ic n="usuario" /></a>}
           </div>
+          {p.entregador_id && <ConversaEntregador p={p} aoEnviar={carregar} />}
         </article>
       ))}
       {feitos.length > 0 && <><h2 className="pd-tit">Finalizados (últimas 3 horas)</h2>{feitos.map((p) => (

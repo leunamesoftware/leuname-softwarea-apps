@@ -4,6 +4,7 @@
 // O cliente nunca vê custo, receita, estoque nem dados de outras lojas; cada loja só vê os pedidos dela.
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { contaLogada } from './contaCliente';
 import { enviarFoto } from './entregador';
@@ -222,12 +223,12 @@ appPublico.get('/publico/app/pedido/:token/entregador-foto', async (c) => {
 appPublico.post('/publico/app/pedido/:token/mensagem', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(200) }), await corpo(c));
+  const d = validar(z.object({ texto: z.enum(RAPIDAS_CLIENTE, { message: 'Escolha uma das mensagens prontas.' }) }), await corpo(c));
   const db = c.env.BANCO;
   const v = await db.prepare("SELECT v.id FROM pedidos_online o JOIN vendas v ON v.id = o.venda_id WHERE o.token = ? AND v.entregador_id IS NOT NULL AND v.status = 'concluida' AND v.andamento NOT IN ('entregue','retirado')").bind(token).first<{ id: string }>();
   if (!v) throw erro(409, 'sem_conversa', 'A conversa abre quando um entregador pega o seu pedido.');
-  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ?').bind(v.id, 'cliente').first<{ n: number }>();
-  if ((n?.n ?? 0) >= 30) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ? AND texto = ?').bind(v.id, 'cliente', d.texto).first<{ n: number }>();
+  if ((n?.n ?? 0) >= vezesPermitidas(d.texto)) throw erro(429, 'muitas_mensagens', 'Você já mandou esse aviso. Se precisar, fale com a loja.');
   await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'cliente',?,?)").bind(novoId(), v.id, d.texto, agora()).run();
   return c.json({ ok: true });
 });

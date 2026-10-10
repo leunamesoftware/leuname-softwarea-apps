@@ -3,7 +3,7 @@
 // (o do cliente só mostra; o do entregador só marca "saí" e "entreguei").
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { agora, corpo, erro, janelaCancelarMs, type C, type Env, type Vars } from './base';
+import { agora, corpo, erro, janelaCancelarMs, novoId, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 
 export const ANDAMENTOS = ['preparando', 'pronto', 'a_caminho', 'entregue', 'retirado'] as const;
@@ -56,10 +56,25 @@ andamento.get('/andamento', async (c) => {
       AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em >= ?)
     ORDER BY v.criado_em`).bind(c.get('empresa').id, desde, recentes).all();
   const prazo = janelaCancelarMs(c.env);
+  const comEntregador = results.filter((r) => r.entregador_id).map((r) => String(r.id));
+  const { results: msgs } = comEntregador.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_loja WHERE venda_id IN (${comEntregador.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...comEntregador).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
   return c.json({ pedidos: results.map((r) => {
     const ate = r.app_criado_em ? new Date(String(r.app_criado_em)).getTime() + prazo : 0;
-    return { ...r, app_cancelar_ate: ate > Date.now() && r.andamento === 'preparando' ? new Date(ate).toISOString() : null };
+    return { ...r, app_cancelar_ate: ate > Date.now() && r.andamento === 'preparando' ? new Date(ate).toISOString() : null, conversa_entregador: msgs.filter((m) => m.venda_id === r.id).slice(-40) };
   }) });
+});
+
+/** Loja conversa com o entregador da entrega (livre, sem telefone). */
+andamento.post('/vendas/:id/mensagem-entregador', async (c) => {
+  exigir(c, 'vender');
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
+  const db = c.env.BANCO;
+  const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND empresa_id = ? AND status = 'concluida' AND entregador_id IS NOT NULL").bind(c.req.param('id'), c.get('empresa').id).first<{ id: string }>();
+  if (!v) throw erro(404, 'nao_encontrado', 'Este pedido não tem entregador do app.');
+  const n = await db.prepare("SELECT COUNT(*) AS n FROM mensagens_loja WHERE venda_id = ? AND de = 'loja'").bind(v.id).first<{ n: number }>();
+  if ((n?.n ?? 0) >= 150) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  await db.prepare("INSERT INTO mensagens_loja (id, venda_id, de, texto, criado_em) VALUES (?,?,'loja',?,?)").bind(novoId(), v.id, d.texto, agora()).run();
+  return c.json({ ok: true });
 });
 
 andamento.post('/vendas/:id/andamento', async (c) => {

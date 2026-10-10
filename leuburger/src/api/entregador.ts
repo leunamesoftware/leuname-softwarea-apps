@@ -7,6 +7,7 @@ import { mudarAndamento } from './andamento';
 import { distanciaKm } from './online';
 import { agora, aleatorio, corpo, erro, hashSenha, iguais, novoId, sha256, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
+import { RAPIDAS_ENTREGADOR, vezesPermitidas } from '../regras/mensagens';
 
 const COOKIE = 'pe_sessao';
 const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
@@ -100,16 +101,29 @@ entregador.get('/entregador/foto', async (c) => {
   return enviarFoto(e.foto);
 });
 
-/** Mensagem do entregador para o cliente (o telefone do cliente não aparece para o entregador). */
+/** Aviso do entregador para o cliente: só as mensagens prontas (ninguém vê o telefone do outro). */
 entregador.post('/entregador/entregas/:id/mensagem', async (c) => {
   const e = await entregadorLogado(c);
-  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(200) }), await corpo(c));
+  const d = validar(z.object({ texto: z.enum(RAPIDAS_ENTREGADOR, { message: 'Escolha uma das mensagens prontas.' }) }), await corpo(c));
   const db = c.env.BANCO, id = c.req.param('id');
   const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida' AND andamento NOT IN ('entregue','retirado')").bind(id, e.id).first();
   if (!v) throw erro(404, 'nao_encontrado', 'Esta entrega não está com você.');
-  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ?').bind(id, 'entregador').first<{ n: number }>();
-  if ((n?.n ?? 0) >= 30) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ? AND texto = ?').bind(id, 'entregador', d.texto).first<{ n: number }>();
+  if ((n?.n ?? 0) >= vezesPermitidas(d.texto)) throw erro(429, 'muitas_mensagens', 'Você já mandou esse aviso. Se precisar, fale com a loja.');
   await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'entregador',?,?)").bind(novoId(), id, d.texto, agora()).run();
+  return c.json({ ok: true });
+});
+
+/** Conversa livre do entregador com a loja da entrega (sem telefone). */
+entregador.post('/entregador/entregas/:id/loja', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
+  const db = c.env.BANCO, id = c.req.param('id');
+  const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida'").bind(id, e.id).first();
+  if (!v) throw erro(404, 'nao_encontrado', 'Esta entrega não está com você.');
+  const n = await db.prepare("SELECT COUNT(*) AS n FROM mensagens_loja WHERE venda_id = ? AND de = 'entregador'").bind(id).first<{ n: number }>();
+  if ((n?.n ?? 0) >= 150) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  await db.prepare("INSERT INTO mensagens_loja (id, venda_id, de, texto, criado_em) VALUES (?,?,'entregador',?,?)").bind(novoId(), id, d.texto, agora()).run();
   return c.json({ ok: true });
 });
 
@@ -145,7 +159,7 @@ entregador.post('/entregador/disponivel', async (c) => {
 entregador.get('/entregador/entregas', async (c) => {
   const e = await entregadorLogado(c);
   const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.finalizado_em, v.endereco_entrega, v.observacao,
-      em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, em.telefone AS loja_telefone, cl.nome AS cliente,
+      em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, cl.nome AS cliente,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
       (SELECT dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng
@@ -154,7 +168,9 @@ entregador.get('/entregador/entregas', async (c) => {
     ORDER BY v.criado_em DESC LIMIT 50`).bind(e.id, new Date(Date.now() - 12 * 3600e3).toISOString()).all();
   const ids = results.map((r) => String(r.id));
   const { results: msgs } = ids.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_entrega WHERE venda_id IN (${ids.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...ids).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
-  return c.json({ entregas: results.map((r) => ({ ...r, km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: Number(r.loja_lat), lng: Number(r.loja_lng) }, { lat: Number(r.dest_lat), lng: Number(r.dest_lng) }) * 10) / 10 : null, mensagens: msgs.filter((m) => m.venda_id === r.id).slice(-12) })) });
+  const { results: daLoja } = ids.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_loja WHERE venda_id IN (${ids.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...ids).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
+  return c.json({ entregas: results.map((r) => ({ ...r, km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: Number(r.loja_lat), lng: Number(r.loja_lng) }, { lat: Number(r.dest_lat), lng: Number(r.dest_lng) }) * 10) / 10 : null,
+    mensagens: msgs.filter((m) => m.venda_id === r.id).slice(-12), conversa_loja: daLoja.filter((m) => m.venda_id === r.id).slice(-40) })) });
 });
 
 /** O app do entregador manda a posição dele; vale para as entregas dele que estão a caminho. */

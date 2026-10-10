@@ -1,3 +1,4 @@
+import { RAPIDAS_CLIENTE, RAPIDAS_ENTREGADOR } from '../src/regras/mensagens';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ambiente } from './ajuda';
 import { codigosEnviados } from './ajuda';
@@ -447,12 +448,23 @@ describe('Mapa ao vivo da entrega', () => {
     // Entregar exige o código que só o cliente vê; e a conversa não mostra telefone a ninguém.
     const pd = (await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido;
     expect(pd.codigo_entrega).toMatch(/^\d{4}$/);
-    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: 'Estou aqui na frente' })).status).toBe(200);
-    expect((await cli.post(`/publico/app/pedido/${token}/mensagem`, { texto: 'Já estou descendo' })).status).toBe(200);
-    expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mensagens.map((m: { texto: string }) => m.texto)).toEqual(['Estou aqui na frente', 'Já estou descendo']);
+    // Entregador e cliente: só avisos prontos (texto livre é recusado; o imprevisto vai uma vez só).
+    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: 'me passa seu zap' })).status).toBe(400);
+    expect((await cli.post(`/publico/app/pedido/${token}/mensagem`, { texto: 'vou te pegar' })).status).toBe(400);
+    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: RAPIDAS_ENTREGADOR[2] })).status).toBe(200);
+    expect((await cli.post(`/publico/app/pedido/${token}/mensagem`, { texto: RAPIDAS_CLIENTE[1] })).status).toBe(200);
+    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: RAPIDAS_ENTREGADOR[4] })).status).toBe(200);
+    expect((await moto.post(`/entregador/entregas/${vendaId}/mensagem`, { texto: RAPIDAS_ENTREGADOR[4] })).status).toBe(429);
+    expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mensagens.map((m: { texto: string }) => m.texto)).toEqual([RAPIDAS_ENTREGADOR[2], RAPIDAS_CLIENTE[1], RAPIDAS_ENTREGADOR[4]]);
+    // Entregador e loja: conversa livre, sem telefone.
+    expect((await moto.post(`/entregador/entregas/${vendaId}/loja`, { texto: 'Pneu furou, chego em 10 min' })).status).toBe(200);
+    expect((await n.post(`/vendas/${vendaId}/mensagem-entregador`, { texto: 'Ok, aviso o cliente' })).status).toBe(200);
+    expect((await n.get('/andamento')).corpo.pedidos.find((x: { id: string }) => x.id === vendaId).conversa_entregador.map((m: { de: string }) => m.de)).toEqual(['entregador', 'loja']);
     const naRua = (await moto.get('/entregador/entregas')).corpo.entregas[0];
     expect(naRua.cliente_telefone).toBeUndefined();
-    expect(naRua.mensagens).toHaveLength(2);
+    expect(naRua.loja_telefone).toBeUndefined();
+    expect(naRua.mensagens).toHaveLength(3);
+    expect(naRua.conversa_loja.map((m: { texto: string }) => m.texto)).toEqual(['Pneu furou, chego em 10 min', 'Ok, aviso o cliente']);
     expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue' })).status).toBe(400);
     expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue', codigo: pd.codigo_entrega === '0000' ? '1111' : '0000' })).corpo.erro).toBe('codigo_errado');
     expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue', codigo: pd.codigo_entrega })).status).toBe(200);

@@ -377,3 +377,13 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-folha .r > span:nth-child(2) { display: grid; } .pd-folha .r small { color: var(--suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pd-folha .btn { margin-top: 12px; }
 .pd-folha .link.bloco { display: block; width: 100%; text-align: center; padding: 14px; color: var(--laranja); font-weight: 700; }
+
+/* ---------- conversas (entregador ↔ loja; usadas no app do entregador e no do lojista) ---------- */
+.ent-chat { display: grid; gap: 6px; padding: 10px; border-radius: 12px; background: #F9FAFB; }
+.ent-chat p { margin: 0; padding: 8px 10px; border-radius: 12px; max-width: 85%; display: grid; }
+.ent-chat p small { font-size: 11px; opacity: .7; }
+.ent-chat p.eu { justify-self: end; background: #DCFCE7; } .ent-chat p.ele { justify-self: start; background: #fff; border: 1px solid #E5E7EB; }
+.ent-chat-dica { color: var(--suave); font-size: 12.5px; }
+.ent-chat-loja { background: #EFF6FF; }
+.ent-loja-bt { margin-top: 6px; }
+.ent-loja-bt .selo { background: var(--laranja); color: #fff; margin-left: 6px; }

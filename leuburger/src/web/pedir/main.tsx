@@ -7,6 +7,7 @@ import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { RAPIDAS_CLIENTE } from '../../regras/mensagens';
 import { brl, calcularItem, FORMAS, lerValor, type EscolhaItem, type Forma, type Opcoes } from '../../regras/pedido';
 import { ErroApp, get, post, put } from '../api';
 import { Modal, msgErro } from '../comuns';
@@ -885,8 +886,7 @@ function Pedido() {
   const [p, setP] = useState<Acomp | null>(null), [erro, setErro] = useState('');
   const [vez, setVez] = useState(0), [aviso, setAviso] = useState('');
   const antes = useRef<string | null>(null), msgs = useRef<number | null>(null);
-  const [texto, setTexto] = useState('');
-  const responder = async (t: string) => { if (!t.trim()) return; try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/mensagem`, { texto: t.trim() }); setTexto(''); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); } };
+  const responder = async (t: string) => { try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/mensagem`, { texto: t }); setErro(''); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); } };
   useEffect(() => {
     let parar = false;
     const carregar = () => get<{ pedido: Acomp }>(`/publico/app/pedido/${encodeURIComponent(token)}`).then((r) => {
@@ -944,8 +944,8 @@ function Pedido() {
         {p.pode_conversar && <section className="cartao pd-entregador">
           <div className="pd-ent-topo">{p.entregador_foto ? <img src={p.entregador_foto} alt="" /> : <span className="pd-ent-sem">🛵</span>}<div><small>Seu entregador</small><b>{p.entregador || 'Entregador'}</b></div></div>
           {p.mensagens.length > 0 && <div className="pd-chat">{p.mensagens.map((m, k) => <p key={k} className={m.de === 'cliente' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}</div>}
-          <div className="pd-rapidas">{['👍 Já estou descendo', '🏢 Pode deixar na portaria', '⏳ Estou aguardando'].map((t) => <button key={t} className="chip" onClick={() => responder(t)}>{t}</button>)}</div>
-          <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={200} placeholder="Mensagem para o entregador" aria-label="Mensagem para o entregador" onKeyDown={(e) => { if (e.key === 'Enter') responder(texto); }} /><button className="btn prim" onClick={() => responder(texto)} disabled={!texto.trim()}>Enviar</button></div>
+          <small style={{ color: 'var(--suave)', display: 'block', margin: '8px 0 6px' }}>Avise o entregador com um toque. Para outros assuntos, fale com a loja.</small>
+          <div className="pd-rapidas">{RAPIDAS_CLIENTE.map((t) => <button key={t} className="chip" onClick={() => responder(t)}>{t}</button>)}</div>
         </section>}
         {p.mapa && <section className="cartao">
           <Mapa dados={p.mapa} />
