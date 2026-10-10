@@ -1483,7 +1483,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         if (meus.includes(id) && (a.abrirWww || a.abrirFrame)) return instalarDentro(a, true);
         verVersao(a); mostrar(); mostrarDetalhe(); return avisar(`✓ ${a.nome} atualizado!`);
       }
-      // 1) App LeuApps para Android: baixa e instala de verdade (o Android confirma e põe o ícone na tela).
+      // 1) Celular: abre no Chrome a página de instalar do próprio app (/instalar/<id>), a mesma do link do WhatsApp.
+      //    Lá o Chrome mostra o botão Instalar e o ícone vai para a tela do celular. Sem APK e sem Play Store.
+      if (a.instalar && celular) return irParaInstalar(id);
+      // 2) App LeuApps para Android (app sem página de instalar): baixa e instala de verdade (o Android confirma e põe o ícone na tela).
       if (N && a.android) {
         if (!N.podeInstalar()) {
           pendente = id;
@@ -1496,9 +1499,6 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) Celular: abre a página de instalar do próprio app (/instalar/<id>), a mesma do link do WhatsApp.
-      //    Lá o Chrome mostra o botão Instalar e o ícone vai para a tela do celular.
-      if (a.instalar && celular) return irParaInstalar(id);
       // 3) Apps do www com a loja aberta no Chrome: o Instalar põe o app direto na tela do celular (ícone próprio,
       //    abre lá fora), só com a confirmação do Chrome. Sem permissão e sem Play Store.
       if (a.abrirWww && !N && !janelaApp() && 'onbeforeinstallprompt' in window) {
@@ -1543,11 +1543,13 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // Página de instalar do app no navegador de verdade.
     // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
-    // Janela da LeuApps instalada: ?de=leuapps (se o Chrome não liberar o botão ali, a tela ensina ⋮ → Abrir no Chrome).
+    // LeuApps instalada no Android: intent:// abre o Chrome de verdade (na janelinha do app o Chrome não instala).
+    // iPhone instalado: ?de=leuapps (a tela ensina o caminho).
     function irParaInstalar(id) {
-      const caminho = `/instalar/${id}`;
-      location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(location.origin + caminho)}`
-        : janelaApp() ? `${caminho}?de=leuapps` : caminho;
+      const caminho = `/instalar/${id}`, completo = location.origin + caminho;
+      if (N) location.href = `googlechrome://navigate?url=${encodeURIComponent(completo)}`;
+      else if (android && janelaApp()) location.href = `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(completo)};end`;
+      else location.href = janelaApp() ? `${caminho}?de=leuapps` : caminho;
     }
     // De dentro da LeuApps instalada, o Android abre outros endereços numa janelinha onde o Chrome não deixa instalar.
     // Por isso a instalação abre no Chrome de verdade: lá o botão Instalar coloca o app na tela, sem pedir permissões.
