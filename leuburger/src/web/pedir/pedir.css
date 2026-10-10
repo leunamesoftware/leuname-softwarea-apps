@@ -237,3 +237,7 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-cats-icones button, .pd-cat-link, .pd-cat-todas { width: 84px; color: #4B5563; font-weight: 600; }
 .pd-dest-nota { position: absolute; top: 8px; left: 8px; background: rgba(17,24,39,.75); color: #fff; font-weight: 800; font-size: 13px; padding: 4px 10px; border-radius: 99px; }
 .pd-dest-img .logo-loja { top: auto; }
+.pd-minis { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px 4px; }
+.pd-minis::-webkit-scrollbar { display: none; }
+.pd-minis a { flex: none; width: 140px; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.pd-minis img { width: 100%; height: auto; display: block; aspect-ratio: 450 / 580; }

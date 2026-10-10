@@ -151,7 +151,7 @@ function Inicio() {
             <span>{tipo ? 'Veja as outras categorias.' : `Estamos chegando! Peça para a sua lanchonete preferida entrar no ${NOME_APP}.`}</span>
             {tipo ? <button className="btn" onClick={() => setTipo('')}>Ver todas</button> : <button className="btn" onClick={() => setEscolherLocal(true)}>Mudar o local</button>}</div>
         ) : <>
-          {!tipo && <FaixaSugestoes lojas={lojas} />}
+          {!tipo && <div className="pd-minis">{MINIS.map((m) => <Link key={m.img} to={m.ir}><img src={`/img/banners/${m.img}.webp`} alt={m.alt} width={150} height={193} loading="lazy" /></Link>)}</div>}
           {!tipo && famosos.length > 0 && <section>
             <h2 className="pd-tit">Famosos no Pedêê<small className="pd-sub">As lojas mais pedidas da região</small></h2>
             <div className="pd-famosos">{famosos.map((l) => <Link key={l.slug} to={`/${l.slug}`}><Logo l={l} t={72} /><span>{l.nome}</span></Link>)}</div>
@@ -266,6 +266,13 @@ function Descobrir({ lojas }: { lojas: LojaCartao[] | null }) {
 const BANNERS: { img: string; ir: string | null; alt: string }[] = [
   { img: 'fome', ir: null, alt: 'Bateu a fome? Pedêê!' }, { img: 'pizza', ir: '/culinaria/pizzarias', alt: 'Pizza quentinha' }, { img: 'acai', ir: '/culinaria/acaiterias', alt: 'Açaí e sorvetes' },
   { img: 'salgados', ir: '/culinaria/lanchonetes', alt: 'Salgados fresquinhos' }, { img: 'mapa', ir: null, alt: 'Acompanhe no mapa' }, { img: 'pagamento', ir: null, alt: 'Pague na entrega' },
+];
+/** Banners pequenos em pé, embaixo das culinárias (como no iFood). */
+const MINIS = [
+  { img: 'm-gratis', ir: '/culinaria/gratis', alt: 'Entrega grátis aqui' }, { img: 'm-lanche', ir: '/culinaria/lanchonetes', alt: 'Lanche bom e barato' },
+  { img: 'm-pizza', ir: '/culinaria/pizzarias', alt: 'Pizza quentinha' }, { img: 'm-acai', ir: '/culinaria/acaiterias', alt: 'Açaí e sorvetes' },
+  { img: 'm-caseira', ir: '/culinaria/restaurantes', alt: 'Comida caseira' }, { img: 'm-salgados', ir: '/culinaria/lanchonetes', alt: 'Salgados na hora' },
+  { img: 'm-doces', ir: '/culinaria/docerias', alt: 'Doces e bolos' },
 ];
 /** Banners que passam sozinhos (e com o dedo), com as bolinhas embaixo. */
 function Carrossel() {

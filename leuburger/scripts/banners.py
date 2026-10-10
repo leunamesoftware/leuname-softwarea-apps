@@ -57,3 +57,30 @@ def banner(nome, img, cor1, cor2, linha1, linha2, sub):
 os.makedirs(SAIDA, exist_ok=True)
 for b in BANNERS: banner(*b)
 print('banners:', len(BANNERS))
+
+# ---- Banners pequenos em pé (os quadradinhos embaixo das culinárias, como no iFood) ----
+MINI = [
+    ('m-lanche', 'hamburguer-artesanal', (255, 112, 30), (232, 70, 12), 'lanche', 'bom e barato'),
+    ('m-gratis', 'coxinha-frango', (226, 26, 12), (160, 10, 10), 'entrega', 'grátis aqui'),
+    ('m-pizza', 'mini-pizza', (5, 110, 70), (2, 80, 52), 'pizza', 'quentinha'),
+    ('m-acai', 'sorvete-coco', (124, 58, 237), (88, 28, 180), 'açaí e', 'sorvetes'),
+    ('m-caseira', 'lasanha-bolonhesa', (200, 30, 40), (130, 12, 22), 'comida', 'caseira'),
+    ('m-doces', 'brigadeiro-tradicional', (219, 39, 119), (160, 20, 90), 'doces', 'e bolos'),
+    ('m-salgados', 'pastel-carne', (234, 140, 20), (200, 90, 10), 'salgados', 'na hora'),
+]
+def mini(nome, img, cor1, cor2, l1, l2):
+    MW, MH = 450, 580
+    im = Image.new('RGB', (MW, MH), cor1); d = ImageDraw.Draw(im)
+    d.ellipse([-MW * 0.4, MH * 0.52, MW * 1.4, MH * 1.5], fill=cor2)
+    p = foto(img); lado = min(p.size); p = p.crop(((p.width - lado) // 2, (p.height - lado) // 2, (p.width + lado) // 2, (p.height + lado) // 2)).resize((330, 330), Image.LANCZOS)
+    m = Image.new('L', (330, 330), 0); ImageDraw.Draw(m).ellipse([0, 0, 329, 329], fill=255)
+    borda = Image.new('L', (346, 346), 0); ImageDraw.Draw(borda).ellipse([0, 0, 345, 345], fill=255)
+    im.paste((255, 255, 255), ((MW - 346) // 2, 222), borda); im.paste(p, ((MW - 330) // 2, 230), m)
+    d = ImageDraw.Draw(im)
+    f1 = F('Poppins-Bold.ttf', 50); w = d.textlength(l1, font=f1); d.text(((MW - w) / 2, 34), l1, font=f1, fill=(255, 255, 255))
+    t = 76
+    while d.textlength(l2, font=F('Poppins-ExtraBold.ttf', t)) > MW - 40: t -= 4
+    f2 = F('Poppins-ExtraBold.ttf', t); w = d.textlength(l2, font=f2); d.text(((MW - w) / 2, 96), l2, font=f2, fill=(255, 255, 255))
+    im.save(os.path.join(SAIDA, nome + '.webp'), quality=74, method=6)
+for b in MINI: mini(*b)
+print('mini:', len(MINI))
