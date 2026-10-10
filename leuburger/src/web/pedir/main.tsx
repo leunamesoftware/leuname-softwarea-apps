@@ -159,11 +159,11 @@ function Inicio() {
           {destaques.length > 0 && <section>
             <h2 className="pd-tit pd-tit-linha">{tipo ? CATS.find((c) => c[0] === tipo)?.[1] : 'Mais bem avaliados'}</h2>
             <div className="pd-faixa pd-destaques">{destaques.map((l) => (
-              <Link key={l.slug} className="pd-dest" to={`/${l.slug}`}>
-                <div className="pd-dest-img"><Capa l={l} /><Logo l={l} t={42} />{l.nota ? <span className="pd-dest-nota">★ {l.nota.toLocaleString('pt-BR')}</span> : null}</div>
-                <b>{l.nome}</b>
-                <small><Estrelas nota={l.nota} total={l.avaliacoes} /> · {l.tipo_nome}</small>
-                <small>{l.tempo_entrega ? `${l.tempo_entrega} · ` : ''}{entregaTexto(l)}</small>
+              <Link key={l.slug} className="pd-dest pd-dest2" to={`/${l.slug}`}>
+                <div className="pd-dest-img"><Capa l={l} />{l.nota ? <span className="pd-dest-nota">★ {l.nota.toLocaleString('pt-BR')}</span> : <span className="pd-dest-nota">Novo</span>}
+                  <button type="button" className={`pd-dest-fav ${ler().favoritos.includes(l.slug) ? 'sel' : ''}`} aria-label="Favoritar" onClick={(e) => { e.preventDefault(); gravar((x) => ({ ...x, favoritos: x.favoritos.includes(l.slug) ? x.favoritos.filter((y) => y !== l.slug) : [l.slug, ...x.favoritos] })); setG(ler()); }}>{ler().favoritos.includes(l.slug) ? '❤️' : '🤍'}</button></div>
+                <div className="pd-dest-nome"><Logo l={l} t={34} /><b>{l.nome}</b></div>
+                <small>{[l.tempo_entrega, l.faz_entrega ? (l.taxa_entrega ? brl(l.taxa_entrega) : 'Grátis') : 'Retirada'].filter(Boolean).join(' • ')}</small>
               </Link>
             ))}</div>
           </section>}

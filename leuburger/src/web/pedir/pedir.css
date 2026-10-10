@@ -241,3 +241,15 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-minis::-webkit-scrollbar { display: none; }
 .pd-minis a { flex: none; width: 140px; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
 .pd-minis img { width: 100%; height: auto; display: block; aspect-ratio: 450 / 580; }
+/* Cartões como “Restaurantes com cupom” do iFood: foto quadrada, nota e coração em cima, logo + nome embaixo */
+.pd-dest2 { width: 176px; gap: 6px; }
+.pd-dest2 .pd-dest-img { height: 176px; border-radius: 18px; }
+.pd-dest2 .pd-dest-img .logo-loja { display: none; }
+.pd-dest-fav { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(17,24,39,.7); font-size: 16px; display: grid; place-items: center; cursor: pointer; }
+.pd-dest-nome { display: flex; align-items: center; gap: 8px; }
+.pd-dest-nome .logo-loja { border-radius: 50% !important; flex: none; }
+.pd-dest-nome b { font-size: 15px; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.pd-dest2 small { color: var(--suave); font-size: 13.5px; }
+.pd-dest2 { flex: none; overflow: hidden; }
+.pd-dest-nome { min-width: 0; } .pd-dest-nome b { min-width: 0; white-space: normal; }
+.pd-destaques { gap: 14px !important; }
