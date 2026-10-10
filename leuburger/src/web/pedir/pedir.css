@@ -301,10 +301,79 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .pd-grupo { background: #F3F4F6; padding: 14px 18px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
 .pd-grupo b { font-size: 16px; color: #374151; } .pd-grupo small { grid-column: 1; color: var(--suave); } .pd-grupo em { grid-row: 1 / 3; grid-column: 2; align-self: center; font-style: normal; font-size: 11px; font-weight: 800; color: #fff; background: #374151; padding: 4px 8px; border-radius: 6px; }
 .pd-opcao { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--linha); cursor: pointer; }
-.pd-opcao span { display: grid; } .pd-opcao small { color: var(--suave); font-size: 14px; }
+.pd-opcao > span:first-child { display: grid; } .pd-opcao small { color: var(--suave); font-size: 14px; }
 .pd-opcao input { width: 22px; height: 22px; accent-color: var(--laranja); }
 .pd-obs { margin: 12px 18px 20px; width: calc(100% - 36px); min-height: 84px; }
 .pd-produto-pe { display: flex; gap: 12px; align-items: center; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--linha); background: #fff; }
 .pd-produto-pe .qtd { flex: none; border: 1px solid var(--linha); border-radius: 12px; padding: 4px; display: flex; align-items: center; gap: 6px; }
 .pd-produto-pe .qtd .num { min-width: 28px; text-align: center; font-weight: 700; }
 .pd-adicionar { flex: 1; display: flex !important; justify-content: space-between; }
+
+/* ---------- grupos de opções (escolha de X a Y) ---------- */
+.pd-grupo em.ok { background: #16A34A; display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border-radius: 50%; }
+.pd-grupo.falta { background: #FEE2E2; } .pd-grupo.falta em { background: var(--vermelho, #DC2626); }
+.pd-passo { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.pd-passo button { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--laranja); cursor: pointer; }
+.pd-passo button:disabled { color: #D1D5DB; cursor: default; }
+.pd-passo b { min-width: 16px; text-align: center; }
+.pd-passo.cinza { background: #F3F4F6; border-radius: 12px; padding: 2px 4px; gap: 4px; align-self: start; }
+.pd-adicionar.falta { background: #9CA3AF; border-color: #9CA3AF; }
+
+/* ---------- barra da sacola na loja ---------- */
+.pd-barra-sacola { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--linha); box-shadow: 0 -6px 20px rgba(0,0,0,.06); }
+.pd-barra-sacola > span, .pd-sacola-pe > span { display: grid; min-width: 0; }
+.pd-barra-sacola small, .pd-sacola-pe small { color: var(--suave); font-size: 13.5px; font-weight: 500; }
+.pd-barra-sacola > span > b, .pd-sacola-pe > span > b { font-size: 19px; }
+.pd-barra-sacola .btn, .pd-sacola-pe .btn { flex: none; min-width: 150px; }
+
+/* ---------- sacola em tela cheia ---------- */
+.pd-sacola { position: fixed; inset: 0; z-index: 80; background: #fff; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; animation: pd-sobe .2s ease; }
+.pd-sacola-topo { display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; padding: calc(10px + env(safe-area-inset-top)) 16px 10px; }
+.pd-sacola-topo > b { text-align: center; letter-spacing: .5px; }
+.pd-sacola-topo .link { justify-self: end; color: var(--laranja); font-weight: 700; }
+.pd-redondo.cinza { background: #F3F4F6; color: #111827; box-shadow: none; }
+.pd-sacola-rola { overflow-y: auto; padding: 4px 16px 24px; width: 100%; max-width: 760px; margin: 0 auto; }
+.pd-sacola-loja { display: flex; align-items: center; gap: 12px; margin: 8px 0 6px; }
+.pd-sacola-loja .logo-loja { border-radius: 50% !important; }
+.pd-sacola-loja > span { display: grid; justify-items: start; } .pd-sacola-loja b { font-size: 18px; }
+.pd-sacola-loja .link, .pd-sacola-end .link { color: var(--laranja); font-weight: 700; padding: 0; }
+.pd-sacola-tit { margin: 22px 0 12px; font-size: 18px; }
+.pd-sacola-item { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 12px; padding: 10px 0 14px; }
+.pd-sacola-item .foto { position: relative; width: 70px; height: 70px; padding: 0; border: 0; border-radius: 10px; overflow: visible; background: #F3F4F6; cursor: pointer; }
+.pd-sacola-item .foto img, .pd-sacola-item .foto .pd-foto-padrao { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.pd-sacola-item .lapis { position: absolute; top: -6px; right: -6px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--laranja); box-shadow: 0 1px 6px rgba(0,0,0,.2); }
+.pd-sacola-item .txt { display: grid; gap: 3px; align-content: start; }
+.pd-sacola-item .txt small { color: var(--suave); }
+.pd-sacola-item .preco { font-weight: 800; }
+.pd-sacola-item ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14px; }
+.pd-sacola-item li { display: flex; align-items: center; gap: 8px; }
+.pd-sacola-item li em { font-style: normal; background: #F3F4F6; border-radius: 99px; padding: 0 8px; font-size: 13px; }
+.pd-sacola-mais { background: #F3F4F6 !important; border: 0 !important; margin-top: 6px; }
+.pd-peca { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.pd-peca button { flex: none; width: 124px; display: grid; gap: 3px; text-align: left; border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
+.pd-peca .f { position: relative; height: 104px; border-radius: 12px; overflow: hidden; background: #F3F4F6; }
+.pd-peca .f img, .pd-peca .f .pd-foto-padrao { width: 100%; height: 100%; object-fit: cover; }
+.pd-peca .f i { position: absolute; right: 6px; bottom: 6px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--laranja); box-shadow: 0 1px 6px rgba(0,0,0,.2); }
+.pd-peca span:last-child { font-size: 13.5px; color: var(--suave); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pd-sacola-valores { display: grid; gap: 8px; }
+.pd-sacola-valores .total { font-size: 18px; padding-top: 8px; border-top: 1px solid var(--linha); }
+.pd-sacola-end { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.pd-sacola-end .pino { font-size: 22px; } .pd-sacola-end > span:nth-child(2) { display: grid; } .pd-sacola-end small { color: var(--suave); }
+.pd-sacola-opcoes { display: grid; gap: 12px; }
+.pd-sacola-opcoes button { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; text-align: left; padding: 16px; border: 1.5px solid var(--linha); border-radius: 12px; background: #fff; font: inherit; cursor: pointer; }
+.pd-sacola-opcoes button > span { display: grid; } .pd-sacola-opcoes small { color: var(--suave); }
+.pd-sacola-opcoes em { font-style: normal; font-weight: 700; } .pd-sacola-opcoes em.verde { color: #16A34A; }
+.pd-sacola-opcoes i { width: 24px; height: 24px; border-radius: 50%; background: #F3F4F6; grid-column: 3; }
+.pd-sacola-opcoes button.sel { border-color: #111827; }
+.pd-sacola-opcoes button.sel i { background: #fff; border: 7px solid var(--laranja); }
+.pd-sacola-opcoes button:disabled { opacity: .5; cursor: default; }
+.pd-sacola-pe { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--linha); background: #fff; }
+.pd-folha-fundo { position: fixed; inset: 0; z-index: 95; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; }
+.pd-folha { width: min(760px, 100%); background: #fff; border-radius: 22px 22px 0 0; padding: 10px 20px calc(16px + env(safe-area-inset-bottom)); animation: pd-sobe .2s ease; }
+.pd-folha .alca { display: block; width: 44px; height: 5px; border-radius: 9px; background: #E5E7EB; margin: 0 auto 14px; }
+.pd-folha h2 { text-align: center; margin: 0 0 14px; font-size: 21px; }
+.pd-folha .r { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; }
+.pd-folha .r > span:first-child { font-size: 22px; text-align: center; }
+.pd-folha .r > span:nth-child(2) { display: grid; } .pd-folha .r small { color: var(--suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pd-folha .btn { margin-top: 12px; }
+.pd-folha .link.bloco { display: block; width: 100%; text-align: center; padding: 14px; color: var(--laranja); font-weight: 700; }

@@ -9,6 +9,15 @@ export interface Opcoes {
   tamanhos?: { nome: string; preco: number }[]; // preço do tamanho substitui o preço base
   adicionais?: { nome: string; preco: number }[];
   retirar?: string[];
+  /** Grupos de escolha (como no iFood): “Condimentos — escolha de 3 a 7”, “Cobertura — escolha 1”. */
+  grupos?: GrupoOpcao[];
+}
+export interface GrupoOpcao {
+  nome: string;
+  min: number; // 0 = opcional
+  max: number; // quantas escolhas no total (contando repetições)
+  repetir?: boolean; // pode pedir 2x o mesmo item (mostra − 1 +)
+  itens: { nome: string; preco: number }[];
 }
 
 export interface ProdutoPreco {
@@ -26,6 +35,8 @@ export interface EscolhaItem {
   adicionais?: string[];
   retirar?: string[];
   observacao?: string;
+  /** Escolhas dos grupos: [{ grupo, item, qtd }]. Ausente = venda do caixa (não confere mínimos). */
+  escolhas?: { grupo: string; item: string; qtd: number }[];
 }
 
 export interface ItemCalculado {
@@ -70,6 +81,25 @@ export function calcularItem(p: ProdutoPreco, e: EscolhaItem): ItemCalculado {
     if (!a) throw new ErroPedido(`Adicional "${nome}" não existe em ${p.nome}.`);
     return { nome: a.nome, preco: a.preco };
   });
+  // Grupos: confere se o item existe, o mínimo e o máximo de cada grupo. As escolhas entram como adicionais
+  // (assim aparecem no pedido da loja, no comprovante e para o cliente sem mudar mais nada).
+  if (e.escolhas !== undefined) {
+    for (const g of op.grupos || []) {
+      const doGrupo = e.escolhas.filter((x) => x.grupo === g.nome);
+      let n = 0;
+      for (const x of doGrupo) {
+        const it = g.itens.find((i) => i.nome === x.item);
+        const q = Number(x.qtd);
+        if (!it) throw new ErroPedido(`"${x.item}" não existe em ${g.nome}.`);
+        if (!Number.isInteger(q) || q < 1 || (!g.repetir && q > 1)) throw new ErroPedido(`Quantidade inválida em ${g.nome}.`);
+        n += q;
+        adicionais.push({ nome: q > 1 ? `${q}x ${it.nome}` : it.nome, preco: it.preco * q });
+      }
+      if (n < (g.min || 0)) throw new ErroPedido(g.min === 1 ? `Escolha 1 opção em ${g.nome}.` : `Escolha pelo menos ${g.min} em ${g.nome}.`);
+      if (n > g.max) throw new ErroPedido(`Escolha no máximo ${g.max} em ${g.nome}.`);
+    }
+    for (const x of e.escolhas) if (!(op.grupos || []).some((g) => g.nome === x.grupo)) throw new ErroPedido(`Opção "${x.grupo}" não existe em ${p.nome}.`);
+  }
   const retirar = (e.retirar || []).filter((r) => (op.retirar || []).includes(r));
   const precoUnit = base + adicionais.reduce((s, a) => s + a.preco, 0);
   if (precoUnit < 0) throw new ErroPedido(`Preço inválido em ${p.nome}.`);

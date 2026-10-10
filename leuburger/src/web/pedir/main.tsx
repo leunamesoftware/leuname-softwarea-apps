@@ -452,7 +452,7 @@ function Loja() {
   const [erro, setErro] = useState('');
   const [cat, setCat] = useState('');
   const [busca, setBusca] = useState('');
-  const [escolher, setEscolher] = useState<{ p: Produto; item?: ItemCarrinho } | null>(null);
+  const [escolher, setEscolher] = useState<{ p: Produto; item?: ItemCarrinho; daSacola?: boolean } | null>(null);
   const [carrinho, setCarrinhoEstado] = useState<ItemCarrinho[]>(() => lerCarrinho(slug));
   const [verCarrinho, setVerCarrinho] = useState(false);
   const [verAvaliacoes, setVerAvaliacoes] = useState(false);
@@ -545,16 +545,18 @@ function Loja() {
           );
         })}
         {!visiveis.length && <div className="vazio"><Ic n="busca" t={36} /><b>Nada encontrado</b></div>}
-        <div style={{ height: qtd ? 90 : 20 }} />
+        <div style={{ height: qtd ? 100 : 20 }} />
       </main>
-      {qtd > 0 && <button className="pd-barra-carrinho" onClick={() => setVerCarrinho(true)}><span className="selo">{qtd}</span><b>Ver carrinho</b><span className="num">{brl(subtotal)}</span></button>}
+      {qtd > 0 && <div className="pd-barra-sacola"><span><small>Total sem a entrega</small><b className="num">{brl(subtotal)} <small>/ {qtd} {qtd === 1 ? 'item' : 'itens'}</small></b></span><button className="btn prim grande" onClick={() => setVerCarrinho(true)}>Ver sacola</button></div>}
       {verAvaliacoes && <Avaliacoes slug={slug} aoFechar={() => setVerAvaliacoes(false)} />}
-      {escolher && <Escolher produto={escolher.p} item={escolher.item} loja={l} aoFechar={() => setEscolher(null)} aoSalvar={(it) => {
-        setCarrinho(escolher.item ? carrinho.map((x) => (x.chave === escolher.item!.chave ? it : x)) : [...carrinho, it]); setEscolher(null);
+      {escolher && <Escolher produto={escolher.p} item={escolher.item} loja={l} aoFechar={() => { if (escolher.daSacola) setVerCarrinho(true); setEscolher(null); }} aoSalvar={(it) => {
+        setCarrinho(escolher.item ? carrinho.map((x) => (x.chave === escolher.item!.chave ? it : x)) : [...carrinho, it]);
+        if (escolher.daSacola) setVerCarrinho(true); setEscolher(null);
       }} />}
-      {verCarrinho && <Carrinho loja={l} slug={slug} linhas={linhas} subtotal={subtotal} aoFechar={() => setVerCarrinho(false)}
+      {verCarrinho && <Carrinho loja={l} slug={slug} linhas={linhas} subtotal={subtotal} produtos={produtos} aoFechar={() => setVerCarrinho(false)}
+        adicionar={(p) => { setVerCarrinho(false); setEscolher({ p, daSacola: true }); }} limpar={() => setCarrinho([])}
         mudarQtd={(chave, n) => setCarrinho(n <= 0 ? carrinho.filter((x) => x.chave !== chave) : carrinho.map((x) => (x.chave === chave ? { ...x, qtd: Math.min(99, n) } : x)))}
-        editar={(i) => { const p = porId.get(i.produtoId); if (p) { setVerCarrinho(false); setEscolher({ p, item: i }); } }}
+        editar={(i) => { const p = porId.get(i.produtoId); if (p) { setVerCarrinho(false); setEscolher({ p, item: i, daSacola: true }); } }}
         aoPedir={(token) => { setCarrinho([]); nav(`/pedido/${token}`, { replace: false }); }} />}
     </div>
   );
@@ -608,16 +610,35 @@ function TopoVoltar({ titulo, compartilhar }: { titulo: string; compartilhar?: s
 
 function Escolher({ produto: p, item, aoFechar, aoSalvar, loja }: { produto: Produto; item?: ItemCarrinho; aoFechar: () => void; aoSalvar: (i: ItemCarrinho) => void; loja?: LojaCompleta }) {
   const op = p.opcoes || {};
+  const grupos = op.grupos || [];
   const [tamanho, setTamanho] = useState(item?.tamanho || op.tamanhos?.[0]?.nome || null);
   const [adic, setAdic] = useState<string[]>(item?.adicionais || []);
   const [ret, setRet] = useState<string[]>(item?.retirar || []);
   const [obs, setObs] = useState(item?.observacao || '');
   const [qtd, setQtd] = useState(item?.qtd || 1);
+  // Escolhas dos grupos: "grupo|item" → quantidade.
+  const [esc, setEsc] = useState<Record<string, number>>(() => Object.fromEntries((item?.escolhas || []).map((x) => [`${x.grupo}|${x.item}`, x.qtd])));
+  const [faltaVer, setFaltaVer] = useState('');
   const alternar = (l: string[], set: (x: string[]) => void, v: string) => set(l.includes(v) ? l.filter((x) => x !== v) : [...l, v]);
-  const novo: ItemCarrinho = { chave: item?.chave || novaChave(), produtoId: p.id, qtd, tamanho, adicionais: adic, retirar: ret, observacao: obs.trim() || undefined };
-  let total = 0; try { total = calcularItem(p, novo).total; } catch { /* opção que saiu do cardápio */ }
+  const noGrupo = (g: string) => Object.entries(esc).filter(([k]) => k.startsWith(g + '|')).reduce((s, [, n]) => s + n, 0);
+  const mudar = (g: NonNullable<Opcoes['grupos']>[number], it: string, n: number) => {
+    const k = `${g.nome}|${it}`;
+    if (g.max === 1 && !g.repetir) { setEsc((e) => { const x = Object.fromEntries(Object.entries(e).filter(([c]) => !c.startsWith(g.nome + '|'))); return n > 0 ? { ...x, [k]: 1 } : x; }); return setFaltaVer(''); }
+    const atual = esc[k] || 0;
+    if (n > atual && noGrupo(g.nome) >= g.max) return;
+    setEsc((e) => { const x = { ...e }; if (n <= 0) delete x[k]; else x[k] = n; return x; }); setFaltaVer('');
+  };
+  const escolhas = grupos.flatMap((g) => g.itens.filter((it) => esc[`${g.nome}|${it.nome}`]).map((it) => ({ grupo: g.nome, item: it.nome, qtd: esc[`${g.nome}|${it.nome}`] })));
+  const faltando = grupos.find((g) => noGrupo(g.nome) < (g.min || 0));
+  const novo: ItemCarrinho = { chave: item?.chave || novaChave(), produtoId: p.id, qtd, tamanho, adicionais: adic, retirar: ret, observacao: obs.trim() || undefined, escolhas };
+  let total = 0; try { total = calcularItem(p, { ...novo, escolhas: undefined, adicionais: [...adic] }).total + escolhas.reduce((s, x) => s + (grupos.find((g) => g.nome === x.grupo)?.itens.find((i) => i.nome === x.item)?.preco || 0) * x.qtd, 0) * qtd; } catch { /* opção que saiu do cardápio */ }
   useEffect(() => { const t = (e: KeyboardEvent) => { if (e.key === 'Escape') aoFechar(); }; addEventListener('keydown', t); document.body.style.overflow = 'hidden'; return () => { removeEventListener('keydown', t); document.body.style.overflow = ''; }; }, [aoFechar]);
   const precoBase = op.tamanhos?.find((t) => t.nome === tamanho)?.preco ?? p.preco;
+  const salvar = () => {
+    if (faltando) { setFaltaVer(faltando.nome); document.getElementById('grupo-' + grupos.indexOf(faltando))?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    aoSalvar(novo);
+  };
+  const regra = (g: { min: number; max: number }) => (g.min && g.min === g.max ? `Escolha ${g.min} ${g.min === 1 ? 'opção' : 'opções'}` : g.min ? `Escolha de ${g.min} a ${g.max}` : `Escolha até ${g.max} ${g.max === 1 ? 'opção' : 'opções'}`);
   return (
     <div className="pd-produto" role="dialog" aria-modal="true" aria-label={p.nome}>
       <div className="pd-produto-rola">
@@ -630,8 +651,27 @@ function Escolher({ produto: p, item, aoFechar, aoSalvar, loja }: { produto: Pro
           {p.descricao && <p>{p.descricao}</p>}
           <b className="num">{brl(precoBase)}</b>
         </div>
-        {!!op.tamanhos?.length && <><div className="pd-grupo"><b>Tamanho</b><small>Escolha 1 opção</small><em>Obrigatório</em></div>
+        {!!op.tamanhos?.length && <><div className="pd-grupo"><b>Tamanho</b><small>Escolha 1 opção</small><em className="ok"><Ic n="check" t={14} /></em></div>
           {op.tamanhos.map((t) => <label key={t.nome} className="pd-opcao"><span>{t.nome}<small className="num">{brl(t.preco)}</small></span><input type="radio" name="tam" checked={tamanho === t.nome} onChange={() => setTamanho(t.nome)} /></label>)}</>}
+        {grupos.map((g, gi) => {
+          const n = noGrupo(g.nome), ok = n >= (g.min || 0), radio = g.max === 1 && !g.repetir;
+          return (
+            <div key={g.nome} id={'grupo-' + gi}>
+              <div className={`pd-grupo ${faltaVer === g.nome ? 'falta' : ''}`}><b>{g.nome}</b><small>{regra(g)}{g.max > 1 ? ` · ${n}/${g.max}` : ''}</small>
+                {g.min > 0 ? (ok ? <em className="ok"><Ic n="check" t={14} /></em> : <em>Obrigatório</em>) : null}</div>
+              {g.itens.map((it) => {
+                const k = `${g.nome}|${it.nome}`, q = esc[k] || 0, cheio = n >= g.max;
+                return radio
+                  ? <label key={it.nome} className="pd-opcao"><span>{it.nome}{it.preco > 0 && <small className="num">+ {brl(it.preco)}</small>}</span><input type="radio" name={'g' + gi} checked={q > 0} onChange={() => mudar(g, it.nome, 1)} /></label>
+                  : <div key={it.nome} className="pd-opcao"><span>{it.nome}{it.preco > 0 && <small className="num">+ {brl(it.preco)}</small>}</span>
+                    {g.repetir
+                      ? <span className="pd-passo">{q > 0 && <><button onClick={() => mudar(g, it.nome, q - 1)} aria-label={`Menos ${it.nome}`}><Ic n="menos" t={18} /></button><b className="num">{q}</b></>}<button onClick={() => mudar(g, it.nome, q + 1)} disabled={cheio} aria-label={`Mais ${it.nome}`}><Ic n="mais" t={18} /></button></span>
+                      : <input type="checkbox" checked={q > 0} disabled={!q && cheio} onChange={() => mudar(g, it.nome, q ? 0 : 1)} aria-label={it.nome} />}
+                  </div>;
+              })}
+            </div>
+          );
+        })}
         {!!op.adicionais?.length && <><div className="pd-grupo"><b>Adicionais</b><small>Escolha até {op.adicionais.length} {op.adicionais.length === 1 ? 'opção' : 'opções'}</small></div>
           {op.adicionais.map((a) => <label key={a.nome} className="pd-opcao"><span>{a.nome}<small className="num">+ {brl(a.preco)}</small></span><input type="checkbox" checked={adic.includes(a.nome)} onChange={() => alternar(adic, setAdic, a.nome)} /></label>)}</>}
         {!!op.retirar?.length && <><div className="pd-grupo"><b>Retirar ingredientes</b><small>Se quiser</small></div>
@@ -641,91 +681,185 @@ function Escolher({ produto: p, item, aoFechar, aoSalvar, loja }: { produto: Pro
       </div>
       <div className="pd-produto-pe">
         <span className="qtd"><button onClick={() => setQtd(Math.max(1, qtd - 1))} aria-label="Menos"><Ic n="menos" /></button><span className="num">{qtd}</span><button onClick={() => setQtd(Math.min(99, qtd + 1))} aria-label="Mais"><Ic n="mais" /></button></span>
-        <button className="btn prim grande pd-adicionar" onClick={() => aoSalvar(novo)}><span>{item ? 'Atualizar' : 'Adicionar'}</span><span className="num">{brl(total)}</span></button>
+        <button className={`btn prim grande pd-adicionar ${faltando ? 'falta' : ''}`} onClick={salvar}><span>{faltando ? 'Escolha as opções' : item ? 'Atualizar' : 'Adicionar'}</span><span className="num">{brl(total)}</span></button>
       </div>
     </div>
   );
 }
 
 const textoEscolhas = (i: EscolhaItem) => [i.tamanho && i.tamanho !== 'Padrão' ? i.tamanho : '', (i.adicionais || []).join(', '), (i.retirar || []).map((r) => 'sem ' + r.toLowerCase()).join(', '), i.observacao || ''].filter(Boolean).join(' · ');
+const temOpcoes = (p: Produto) => Boolean(p.opcoes?.tamanhos?.length || p.opcoes?.adicionais?.length || p.opcoes?.retirar?.length || p.opcoes?.grupos?.length);
+const itensTexto = (n: number) => `${n} ${n === 1 ? 'item' : 'itens'}`;
 
-function Carrinho({ loja: l, slug, linhas, subtotal, aoFechar, mudarQtd, editar, aoPedir }: {
-  loja: LojaCompleta; slug: string; linhas: { i: ItemCarrinho; p: Produto; c: ReturnType<typeof calcularItem> }[]; subtotal: number;
-  aoFechar: () => void; mudarQtd: (chave: string, n: number) => void; editar: (i: ItemCarrinho) => void; aoPedir: (token: string) => void;
+/** Sacola em 3 passos, como no iFood: itens → entrega → pagamento → “Revise o seu pedido”. */
+function Carrinho({ loja: l, slug, linhas, subtotal, produtos, aoFechar, mudarQtd, editar, adicionar, limpar, aoPedir }: {
+  loja: LojaCompleta; slug: string; linhas: { i: ItemCarrinho; p: Produto; c: ReturnType<typeof calcularItem> }[]; subtotal: number; produtos: Produto[];
+  aoFechar: () => void; mudarQtd: (chave: string, n: number) => void; editar: (i: ItemCarrinho) => void; adicionar: (p: Produto) => void; limpar: () => void; aoPedir: (token: string) => void;
 }) {
   const g = ler();
   const podeEntregar = l.faz_entrega && l.entrega_aqui;
+  const [passo, setPasso] = useState<'itens' | 'entrega' | 'pagamento'>('itens');
+  const [revisar, setRevisar] = useState(false);
   const [mudarDados, setMudarDados] = useState(false);
+  const [trocarEnd, setTrocarEnd] = useState(!g.endereco);
+  const [talheres, setTalheres] = useState<boolean | null>(null);
   const [f, setF] = useState({ nome: g.nome, telefone: g.telefone, endereco: g.endereco, tipo: (podeEntregar ? 'entrega' : 'balcao') as 'entrega' | 'balcao', forma: (l.formas[0] || 'pix') as Forma, troco: '', obs: '' });
   const [erro, setErro] = useState(''), [enviando, setEnviando] = useState(false);
   const [chave] = useState(novaChave);
   const taxa = f.tipo === 'entrega' ? l.taxa_entrega : 0, total = subtotal + taxa;
   const falta = Math.max(0, l.pedido_minimo - subtotal);
+  const qtd = linhas.reduce((s, x) => s + x.i.qtd, 0);
   const muda = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF({ ...f, [k]: e.target.value }); setErro(''); };
-  const enviar = async () => {
-    if (!l.aceitando) return setErro('A loja está fechada agora.');
-    if (falta > 0) return setErro(`Faltam ${brl(falta)} para o pedido mínimo.`);
-    if (f.nome.trim().length < 2) return setErro('Digite seu nome.');
+  // “Peça também”: o que a loja tem e ainda não está na sacola (bebidas e sobremesas primeiro).
+  const naSacola = new Set(linhas.map((x) => x.p.id));
+  const peso = (p: Produto) => (p.categoria_icone === 'bebida' ? 0 : p.categoria_icone === 'sobremesa' || p.categoria_icone === 'acai' ? 1 : 2);
+  const sugestoes = produtos.filter((p) => !naSacola.has(p.id)).sort((a, b) => peso(a) - peso(b)).slice(0, 10);
+  useEffect(() => { const t = (e: KeyboardEvent) => { if (e.key === 'Escape') aoFechar(); }; addEventListener('keydown', t); document.body.style.overflow = 'hidden'; return () => { removeEventListener('keydown', t); document.body.style.overflow = ''; }; }, [aoFechar]);
+  useEffect(() => { document.querySelector('.pd-sacola-rola')?.scrollTo(0, 0); setErro(''); }, [passo]);
+
+  const conferir = (): string => {
+    if (!l.aceitando) return 'A loja está fechada agora.';
+    if (falta > 0) return `Faltam ${brl(falta)} para o pedido mínimo.`;
+    if (passo === 'itens') return '';
+    if (f.tipo === 'entrega' && f.endereco.trim().length < 5) return 'Digite o endereço da entrega (rua, número, bairro).';
+    if (passo === 'entrega') return '';
+    if (f.nome.trim().length < 2) return 'Digite seu nome.';
     const tel = f.telefone.replace(/\D/g, '');
-    if (tel.length < 10 || tel.length > 13) return setErro('Digite seu WhatsApp com DDD.');
-    if (f.tipo === 'entrega' && f.endereco.trim().length < 5) return setErro('Digite o endereço da entrega (rua, número, bairro).');
+    if (tel.length < 10 || tel.length > 13) return 'Digite seu WhatsApp com DDD.';
     const troco = f.forma === 'dinheiro' && f.troco.trim() ? lerValor(f.troco) : null;
-    if (troco != null && (Number.isNaN(troco) || troco < total)) return setErro(`O troco precisa ser para um valor maior que ${brl(total)}.`);
+    if (troco != null && (Number.isNaN(troco) || troco < total)) return `O troco precisa ser para um valor maior que ${brl(total)}.`;
+    return '';
+  };
+  const continuar = () => {
+    const e = conferir(); if (e) return setErro(e);
+    if (passo === 'itens') setPasso('entrega'); else if (passo === 'entrega') setPasso('pagamento'); else setRevisar(true);
+  };
+  const voltar = () => (revisar ? setRevisar(false) : passo === 'pagamento' ? setPasso('entrega') : passo === 'entrega' ? setPasso('itens') : aoFechar());
+  const enviar = async () => {
+    const troco = f.forma === 'dinheiro' && f.troco.trim() ? lerValor(f.troco) : null;
+    const obs = [talheres === true ? 'Mandar talheres e guardanapo' : talheres === false ? 'Não precisa de talheres' : '', f.obs.trim()].filter(Boolean).join(' · ');
     setEnviando(true); setErro('');
     try {
       const dest = f.tipo === 'entrega' ? (ler().local || await procurarEndereco(`${f.endereco.trim()}, ${l.cidade || ''}, ${l.uf || 'RJ'}, Brasil`)) : null;
       const r = await post<{ token: string }>(`/publico/app/loja/${encodeURIComponent(slug)}/pedido`, {
-        lat: dest?.lat ?? null, lng: dest?.lng ?? null, chave, nome: f.nome.trim(), telefone: f.telefone.trim(), tipo: f.tipo, endereco: f.tipo === 'entrega' ? f.endereco.trim() : null, forma: f.forma, trocoPara: troco, observacao: f.obs.trim() || null,
-        itens: linhas.map(({ i }) => ({ produtoId: i.produtoId, qtd: i.qtd, tamanho: i.tamanho ?? null, adicionais: i.adicionais || [], retirar: i.retirar || [], observacao: i.observacao })),
+        lat: dest?.lat ?? null, lng: dest?.lng ?? null, chave, nome: f.nome.trim(), telefone: f.telefone.trim(), tipo: f.tipo, endereco: f.tipo === 'entrega' ? f.endereco.trim() : null, forma: f.forma, trocoPara: troco, observacao: obs.slice(0, 200) || null,
+        itens: linhas.map(({ i }) => ({ produtoId: i.produtoId, qtd: i.qtd, tamanho: i.tamanho ?? null, adicionais: i.adicionais || [], retirar: i.retirar || [], observacao: i.observacao, escolhas: i.escolhas })),
       });
       gravar((x) => ({ ...x, nome: f.nome.trim(), telefone: f.telefone.trim(), endereco: f.tipo === 'entrega' ? f.endereco.trim() : x.endereco,
         pedidos: [{ token: r.token, loja: l.nome, slug, criado_em: new Date().toISOString() }, ...x.pedidos.filter((p) => p.token !== r.token)].slice(0, 30) }));
       aoPedir(r.token);
-    } catch (e) { setErro(msgErro(e)); } finally { setEnviando(false); }
+    } catch (e) { setRevisar(false); setErro(msgErro(e)); } finally { setEnviando(false); }
   };
+  const textoTaxa = f.tipo === 'balcao' ? 'retirando na loja' : taxa ? `entrega ${brl(taxa)}` : 'entrega grátis';
+
   return (
-    <Modal titulo="Seu pedido" aoFechar={aoFechar}>
-      <div className="pd-carrinho">
-        {linhas.map(({ i, p, c }) => (
-          <div className="c-item" key={i.chave}>
-            <FotoItem p={p} />
-            <div><b>{p.nome}</b>{textoEscolhas(i) && <small>{textoEscolhas(i)}</small>}{(p.opcoes?.tamanhos?.length || p.opcoes?.adicionais?.length || p.opcoes?.retirar?.length) ? <button className="link" onClick={() => editar(i)}>Mudar</button> : null}</div>
-            <div className="lado"><span className="qtd"><button onClick={() => mudarQtd(i.chave, i.qtd - 1)} aria-label="Menos">{i.qtd === 1 ? <Ic n="lixeira" t={16} /> : <Ic n="menos" t={16} />}</button><span>{i.qtd}</span><button onClick={() => mudarQtd(i.chave, i.qtd + 1)} aria-label="Mais"><Ic n="mais" t={16} /></button></span><b className="num">{brl(c.total)}</b></div>
-          </div>
-        ))}
-        {!linhas.length && <p>O carrinho está vazio.</p>}
-      </div>
-      {linhas.length > 0 && <>
-        <h3 className="pd-sub">Como quer receber?</h3>
-        <div className="chips" role="radiogroup">
-          {l.faz_entrega && <button role="radio" aria-checked={f.tipo === 'entrega'} disabled={!l.entrega_aqui} className={`chip ${f.tipo === 'entrega' ? 'sel' : ''}`} onClick={() => setF({ ...f, tipo: 'entrega' })}><Ic n="seta" t={16} />Entrega{l.taxa_entrega ? ` · ${brl(l.taxa_entrega)}` : ' grátis'}</button>}
-          {l.faz_retirada && <button role="radio" aria-checked={f.tipo === 'balcao'} className={`chip ${f.tipo === 'balcao' ? 'sel' : ''}`} onClick={() => setF({ ...f, tipo: 'balcao' })}><Ic n="loja" t={16} />Retirar na loja</button>}
-        </div>
-        {l.faz_entrega && !l.entrega_aqui && <p className="aviso" style={{ marginTop: 8 }}>Você está fora da área de entrega desta loja. Dá para retirar no local.</p>}
-        {f.tipo === 'balcao' && l.endereco && <p style={{ color: 'var(--suave)', margin: '8px 0 0' }}>Retirar em: {l.endereco}</p>}
-        <div className="campos" style={{ marginTop: 12 }}>
-          {ler().conta && !mudarDados ? <div className="campo largo pd-quem"><span>Pedido de <b>{f.nome}</b> · {f.telefone}</span><button type="button" className="link" onClick={() => setMudarDados(true)}>Alterar</button></div> : <>
-            <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
-            <label className="campo">WhatsApp<input value={f.telefone} onChange={muda('telefone')} inputMode="tel" autoComplete="tel" placeholder="(11) 98765-4321" /></label>
+    <div className="pd-sacola" role="dialog" aria-modal="true" aria-label="Sacola">
+      <header className="pd-sacola-topo">
+        <button className="pd-redondo cinza" onClick={voltar} aria-label="Voltar"><Ic n={passo === 'itens' ? 'baixo' : 'voltar'} /></button>
+        <b>SACOLA</b>
+        {linhas.length ? <button className="link" onClick={() => { if (confirm('Tirar todos os itens da sacola?')) { limpar(); aoFechar(); } }}>Limpar</button> : <span />}
+      </header>
+      <div className="pd-sacola-rola">
+        {passo !== 'entrega' && <div className="pd-sacola-loja"><Logo l={l} t={52} /><span><b>{l.nome}</b><button className="link" onClick={aoFechar}>Adicionar mais itens</button></span></div>}
+
+        {passo === 'itens' && <>
+          <h3 className="pd-sacola-tit">Itens adicionados</h3>
+          {linhas.map(({ i, p, c }) => (
+            <div className="pd-sacola-item" key={i.chave}>
+              <button className="foto" onClick={() => temOpcoes(p) && editar(i)} aria-label={`Mudar ${p.nome}`}><FotoItem p={p} />{temOpcoes(p) && <span className="lapis"><Ic n="lapis" t={14} /></span>}</button>
+              <div className="txt">
+                <b>{p.nome}</b>
+                {textoEscolhas({ ...i, adicionais: [] }) && <small>{textoEscolhas({ ...i, adicionais: [] })}</small>}
+                <span className="num preco">{brl(c.total)}</span>
+                {!!c.detalhes.adicionais.length && <ul>{[...(i.adicionais || []).map((a) => ({ n: 1, a })), ...(i.escolhas || []).map((x) => ({ n: x.qtd, a: x.item }))].map((x, k) => <li key={k}><em className="num">{x.n}</em>{x.a}</li>)}</ul>}
+              </div>
+              <span className="pd-passo cinza"><button onClick={() => mudarQtd(i.chave, i.qtd - 1)} aria-label={i.qtd === 1 ? 'Tirar' : 'Menos'}>{i.qtd === 1 ? <Ic n="lixeira" t={18} /> : <Ic n="menos" t={18} />}</button><b className="num">{i.qtd}</b><button onClick={() => mudarQtd(i.chave, i.qtd + 1)} aria-label="Mais"><Ic n="mais" t={18} /></button></span>
+            </div>
+          ))}
+          {!linhas.length && <p className="vazio">A sacola está vazia.</p>}
+          <button className="btn bloco pd-sacola-mais" onClick={aoFechar}>Adicionar mais itens</button>
+          {sugestoes.length > 0 && <>
+            <h3 className="pd-sacola-tit">Peça também</h3>
+            <div className="pd-peca">{sugestoes.map((p) => (
+              <button key={p.id} onClick={() => adicionar(p)} aria-label={`Adicionar ${p.nome}`}>
+                <span className="f"><FotoItem p={p} /><i><Ic n="mais" t={16} /></i></span>
+                <b className="num">{brl(Math.min(p.preco, ...(p.opcoes?.tamanhos || []).map((t) => t.preco)))}</b><span>{p.nome}</span>
+              </button>
+            ))}</div>
           </>}
-          {f.tipo === 'entrega' && <label className="campo largo">Endereço da entrega<input value={f.endereco} onChange={muda('endereco')} maxLength={200} autoComplete="street-address" placeholder="Rua, número, bairro e referência" /></label>}
-        </div>
-        <h3 className="pd-sub">Pagamento <small style={{ color: 'var(--suave)', fontWeight: 500 }}>(na entrega ou na retirada)</small></h3>
-        <div className="chips" role="radiogroup">{l.formas.map((x) => <button key={x} role="radio" aria-checked={f.forma === x} className={`chip ${f.forma === x ? 'sel' : ''}`} onClick={() => setF({ ...f, forma: x })}>{FORMAS[x]}</button>)}</div>
-        {f.forma === 'dinheiro' && <label className="campo" style={{ marginTop: 10 }}>Troco para quanto? (deixe vazio se não precisar)<input value={f.troco} onChange={muda('troco')} inputMode="decimal" placeholder="Ex.: 50,00" /></label>}
-        <label className="campo" style={{ marginTop: 10 }}>Observação para a loja (opcional)<input value={f.obs} onChange={muda('obs')} maxLength={200} placeholder="Ex.: interfone 12, sem talher" /></label>
-        <div style={{ display: 'grid', gap: 6, marginTop: 14 }}>
-          <div className="linha-valor"><span>Subtotal</span><b className="num">{brl(subtotal)}</b></div>
-          {f.tipo === 'entrega' && <div className="linha-valor"><span>Taxa de entrega</span><b className="num">{taxa ? brl(taxa) : 'Grátis'}</b></div>}
-          <div className="total laranja"><span>Total</span><b className="num">{brl(total)}</b></div>
-          {falta > 0 && <p className="aviso" style={{ margin: 0 }}>Pedido mínimo {brl(l.pedido_minimo)}: faltam {brl(falta)}.</p>}
-        </div>
+          <h3 className="pd-sacola-tit">Precisa de talheres e guardanapo?</h3>
+          <div className="chips" role="radiogroup">
+            <button role="radio" aria-checked={talheres === true} className={`chip ${talheres === true ? 'sel' : ''}`} onClick={() => setTalheres(true)}>🍴 Sim, mandar</button>
+            <button role="radio" aria-checked={talheres === false} className={`chip ${talheres === false ? 'sel' : ''}`} onClick={() => setTalheres(false)}>🌱 Não precisa</button>
+          </div>
+          <h3 className="pd-sacola-tit">Resumo de valores</h3>
+          <div className="pd-sacola-valores">
+            <div className="linha-valor"><span>Subtotal</span><b className="num">{brl(subtotal)}</b></div>
+            {podeEntregar && <div className="linha-valor"><span>Taxa de entrega</span><b className="num">{l.taxa_entrega ? brl(l.taxa_entrega) : 'Grátis'}</b></div>}
+            {falta > 0 && <p className="aviso" style={{ margin: 0 }}>Pedido mínimo {brl(l.pedido_minimo)}: faltam {brl(falta)}.</p>}
+          </div>
+        </>}
+
+        {passo === 'entrega' && <>
+          {f.tipo === 'entrega' && <>
+            <h3 className="pd-sacola-tit">Entregar no endereço</h3>
+            {trocarEnd
+              ? <label className="campo">Endereço da entrega<input value={f.endereco} onChange={muda('endereco')} maxLength={200} autoComplete="street-address" placeholder="Rua, número, bairro e referência" /></label>
+              : <div className="pd-sacola-end"><span className="pino">📍</span><span><b>{f.endereco}</b><small>{g.cidade || l.cidade || ''}</small></span><button className="link" onClick={() => setTrocarEnd(true)}>Trocar</button></div>}
+          </>}
+          <h3 className="pd-sacola-tit">Opções de entrega</h3>
+          <div className="pd-sacola-opcoes" role="radiogroup">
+            {l.faz_entrega && <button role="radio" aria-checked={f.tipo === 'entrega'} disabled={!l.entrega_aqui} className={f.tipo === 'entrega' ? 'sel' : ''} onClick={() => setF({ ...f, tipo: 'entrega' })}>
+              <span><b>Entrega</b><small>{l.entrega_aqui ? `Hoje${l.tempo_entrega ? `, ${l.tempo_entrega}` : ''}` : 'Fora da área de entrega'}</small></span>
+              <em className={l.taxa_entrega ? '' : 'verde'}>{l.taxa_entrega ? brl(l.taxa_entrega) : 'Grátis'}</em><i /></button>}
+            {l.faz_retirada && <button role="radio" aria-checked={f.tipo === 'balcao'} className={f.tipo === 'balcao' ? 'sel' : ''} onClick={() => setF({ ...f, tipo: 'balcao' })}>
+              <span><b>Retirar na loja</b><small>{l.endereco || 'No endereço da loja'}</small></span><em className="verde">Grátis</em><i /></button>}
+          </div>
+        </>}
+
+        {passo === 'pagamento' && <>
+          <h3 className="pd-sacola-tit">Pagamento na {f.tipo === 'entrega' ? 'entrega' : 'retirada'}</h3>
+          <div className="pd-sacola-opcoes" role="radiogroup">{l.formas.map((x) => (
+            <button key={x} role="radio" aria-checked={f.forma === x} className={f.forma === x ? 'sel' : ''} onClick={() => setF({ ...f, forma: x })}><span><b>{FORMAS[x]}</b></span><i /></button>
+          ))}</div>
+          {f.forma === 'dinheiro' && <label className="campo" style={{ marginTop: 10 }}>Troco para quanto? (deixe vazio se não precisar)<input value={f.troco} onChange={muda('troco')} inputMode="decimal" placeholder="Ex.: 50,00" /></label>}
+          <h3 className="pd-sacola-tit">Seus dados</h3>
+          <div className="campos">
+            {ler().conta && !mudarDados ? <div className="campo largo pd-quem"><span>Pedido de <b>{f.nome}</b> · {f.telefone}</span><button type="button" className="link" onClick={() => setMudarDados(true)}>Alterar</button></div> : <>
+              <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
+              <label className="campo">WhatsApp<input value={f.telefone} onChange={muda('telefone')} inputMode="tel" autoComplete="tel" placeholder="(21) 98765-4321" /></label>
+            </>}
+          </div>
+          <label className="campo" style={{ marginTop: 10 }}>Observação para a loja (opcional)<input value={f.obs} onChange={muda('obs')} maxLength={150} placeholder="Ex.: interfone 12, portão azul" /></label>
+          <h3 className="pd-sacola-tit">Resumo de valores</h3>
+          <div className="pd-sacola-valores">
+            <div className="linha-valor"><span>Subtotal</span><b className="num">{brl(subtotal)}</b></div>
+            {f.tipo === 'entrega' && <div className="linha-valor"><span>Taxa de entrega</span><b className="num">{taxa ? brl(taxa) : 'Grátis'}</b></div>}
+            <div className="linha-valor total"><span>Total</span><b className="num">{brl(total)}</b></div>
+          </div>
+        </>}
         {erro && <p className="aviso erro" role="alert">{erro}</p>}
-        <button className="btn prim grande bloco" style={{ marginTop: 12 }} onClick={enviar} disabled={enviando || !l.aceitando}><Ic n="check" />{enviando ? 'Enviando…' : l.aceitando ? `Fazer pedido · ${brl(total)}` : 'Loja fechada agora'}</button>
-      </>}
-    </Modal>
+      </div>
+      <footer className="pd-sacola-pe">
+        <span><small>Total com <b>{textoTaxa}</b></small><b className="num">{brl(passo === 'itens' && podeEntregar ? subtotal + l.taxa_entrega : total)} <small>/ {itensTexto(qtd)}</small></b></span>
+        <button className="btn prim grande" onClick={continuar} disabled={!linhas.length || !l.aceitando}>{l.aceitando ? 'Continuar' : 'Loja fechada'}</button>
+      </footer>
+      {revisar && <div className="pd-folha-fundo" onClick={() => !enviando && setRevisar(false)}>
+        <div className="pd-folha" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Revise o seu pedido">
+          <span className="alca" />
+          <h2>Revise o seu pedido</h2>
+          <div className="r"><span>{f.tipo === 'entrega' ? '🛵' : '🏪'}</span><span><b>{f.tipo === 'entrega' ? 'Entrega hoje' : 'Retirar na loja'}</b><small>{f.tipo === 'entrega' ? (l.tempo_entrega ? `Hoje, ${l.tempo_entrega}` : 'Hoje') : l.endereco || l.nome}</small></span></div>
+          {f.tipo === 'entrega' && <div className="r"><span>📍</span><span><b>{f.endereco}</b><small>{g.cidade || l.cidade || ''}</small></span></div>}
+          <div className="r"><span>{talheres ? '🍴' : '🌱'}</span><span><b>{talheres ? 'Com talheres e guardanapo' : talheres === false ? 'Sem talheres' : 'Talheres: a loja decide'}</b><small>{itensTexto(qtd)}</small></span></div>
+          <div className="r"><span>💳</span><span><b>Pagamento na {f.tipo === 'entrega' ? 'entrega' : 'retirada'}</b><small>{FORMAS[f.forma]}{f.forma === 'dinheiro' && f.troco.trim() ? ` · troco para ${f.troco.trim()}` : ''}</small></span><b className="num">{brl(total)}</b></div>
+          <button className="btn prim grande bloco" onClick={enviar} disabled={enviando}>{enviando ? 'Enviando…' : 'Fazer pedido'}</button>
+          <button className="link bloco" onClick={() => setRevisar(false)} disabled={enviando}>Alterar pedido</button>
+        </div>
+      </div>}
+    </div>
   );
 }
+
 
 // ---------- acompanhamento do pedido ----------
 interface Acomp {

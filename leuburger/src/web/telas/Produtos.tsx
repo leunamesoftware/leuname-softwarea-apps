@@ -95,6 +95,7 @@ function SemCardapio({ aoCriar }: { aoCriar: () => void }) {
 }
 
 type Linha = { nome: string; preco: string };
+type GrupoForm = { nome: string; min: string; max: string; repetir: boolean; itens: Linha[] };
 function FormProduto({ produto, categorias, aoFechar, aoSalvar }: { produto: Produto | null; categorias: Categoria[]; aoFechar: () => void; aoSalvar: () => void }) {
   const aviso = useAviso();
   const itensEstoque = useDados(() => get<{ itens: { id: string; nome: string; unidade: string }[] }>('/estoque'));
@@ -104,6 +105,7 @@ function FormProduto({ produto, categorias, aoFechar, aoSalvar }: { produto: Pro
   const [tamanhos, setTamanhos] = useState<Linha[]>((p?.opcoes.tamanhos || []).map((t) => ({ nome: t.nome, preco: reais(t.preco) })));
   const [adicionais, setAdicionais] = useState<Linha[]>((p?.opcoes.adicionais || []).map((t) => ({ nome: t.nome, preco: reais(t.preco) })));
   const [retirar, setRetirar] = useState((p?.opcoes.retirar || []).join(', '));
+  const [grupos, setGrupos] = useState<GrupoForm[]>((p?.opcoes.grupos || []).map((g) => ({ nome: g.nome, min: String(g.min), max: String(g.max), repetir: Boolean(g.repetir), itens: g.itens.map((i) => ({ nome: i.nome, preco: reais(i.preco) })) })));
   const [receita, setReceita] = useState<{ item_id: string; qtd: string }[]>((p?.receita || []).map((r) => ({ item_id: r.item_id, qtd: String(r.qtd).replace('.', ',') })));
   const [erros, setErros] = useState<Record<string, string>>({});
   const [ocupado, setOcupado] = useState(false);
@@ -124,11 +126,17 @@ function FormProduto({ produto, categorias, aoFechar, aoSalvar }: { produto: Pro
     if (Number.isNaN(custo)) e.custo = 'Custo inválido.';
     const conv = (l: Linha[], campo: string) => l.filter((x) => x.nome.trim()).map((x) => { const v = lerValor(x.preco); if (Number.isNaN(v)) e[campo] = 'Confira os preços.'; return { nome: x.nome.trim(), preco: v }; });
     const t = conv(tamanhos, 'tamanhos'), a = conv(adicionais, 'adicionais');
+    const gr = grupos.filter((g) => g.nome.trim()).map((g) => {
+      const itens = conv(g.itens, 'grupos'), min = Number(g.min) || 0, max = Number(g.max) || 1;
+      if (!itens.length) e.grupos = `Coloque as opções de "${g.nome.trim()}".`;
+      if (max < min) e.grupos = `Em "${g.nome.trim()}" o máximo é menor que o mínimo.`;
+      return { nome: g.nome.trim(), min, max, repetir: g.repetir, itens };
+    });
     const rec = receita.filter((r) => r.item_id).map((r) => { const q = Number(r.qtd.replace(',', '.')); if (!(q > 0)) e.receita = 'Quantidade inválida na baixa de estoque.'; return { item_id: r.item_id, qtd: q }; });
     if (Object.keys(e).length) return setErros(e);
     setOcupado(true);
     const dados = { nome: f.nome.trim(), descricao: f.descricao.trim() || null, codigo: f.codigo.trim() || null, categoria_id: f.categoria_id, preco, custo, foto_id: foto, ativo: f.ativo,
-      opcoes: { tamanhos: t, adicionais: a, retirar: retirar.split(',').map((x) => x.trim()).filter(Boolean) }, receita: rec };
+      opcoes: { tamanhos: t, adicionais: a, retirar: retirar.split(',').map((x) => x.trim()).filter(Boolean), grupos: gr }, receita: rec };
     try {
       if (p) await put(`/produtos/${p.id}`, dados); else await post('/produtos', dados);
       aviso(p ? 'Produto salvo.' : 'Produto cadastrado.'); aoSalvar();
@@ -167,6 +175,26 @@ function FormProduto({ produto, categorias, aoFechar, aoSalvar }: { produto: Pro
         {erros.tamanhos && <small className="erro largo">{erros.tamanhos}</small>}
         <ListaOpcoes titulo="Adicionais" lista={adicionais} set={setAdicionais} dica="Opcional. Somam no preço (ex.: Queijo extra + R$ 3,00)." />
         {erros.adicionais && <small className="erro largo">{erros.adicionais}</small>}
+        <div className="largo">
+          <b style={{ fontSize: 14 }}>Grupos de escolha</b><p style={{ margin: '2px 0 8px', color: 'var(--suave)', fontSize: 13 }}>Opcional. O cliente escolhe dentro do grupo (ex.: Molhos — escolha de 1 a 3; Bebida — escolha até 1). Mínimo 0 = não obrigatório.</p>
+          {grupos.map((g, gi) => {
+            const mg = (x: Partial<GrupoForm>) => setGrupos(grupos.map((y, k) => (k === gi ? { ...y, ...x } : y)));
+            return (
+              <div key={gi} className="cartao" style={{ padding: 12, marginBottom: 10, display: 'grid', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 70px 70px 40px', gap: 8, alignItems: 'end' }}>
+                  <label className="campo">Nome do grupo<input value={g.nome} onChange={(e) => mg({ nome: e.target.value })} maxLength={40} placeholder="Ex.: Molhos" /></label>
+                  <label className="campo">Mín.<input value={g.min} onChange={(e) => mg({ min: e.target.value.replace(/\D/g, '').slice(0, 2) })} inputMode="numeric" /></label>
+                  <label className="campo">Máx.<input value={g.max} onChange={(e) => mg({ max: e.target.value.replace(/\D/g, '').slice(0, 2) })} inputMode="numeric" /></label>
+                  <button className="btn-ic vermelho" onClick={() => setGrupos(grupos.filter((_, k) => k !== gi))} aria-label="Tirar grupo"><Ic n="lixeira" /></button>
+                </div>
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 14 }}><input type="checkbox" checked={g.repetir} onChange={(e) => mg({ repetir: e.target.checked })} />Pode repetir a mesma opção (ex.: 2x Paçoca)</label>
+                <ListaOpcoes titulo="Opções" lista={g.itens} set={(itens) => mg({ itens })} dica="Preço 0 = sem custo extra." />
+              </div>
+            );
+          })}
+          <button className="btn peq" onClick={() => setGrupos([...grupos, { nome: '', min: '0', max: '1', repetir: false, itens: [{ nome: '', preco: '' }] }])}><Ic n="mais" t={16} />Adicionar grupo</button>
+          {erros.grupos && <small className="erro" style={{ display: 'block' }}>{erros.grupos}</small>}
+        </div>
         <label className="campo largo">Pode retirar (separe por vírgula)<input value={retirar} onChange={(e) => setRetirar(e.target.value)} placeholder="Ex.: Cebola, Tomate, Alface" /></label>
         <div className="largo">
           <b style={{ fontSize: 14 }}>Baixa de estoque</b><p style={{ margin: '2px 0 8px', color: 'var(--suave)', fontSize: 13 }}>O que sai do estoque a cada unidade vendida (ex.: 1 pão, 0,12 kg de carne).</p>

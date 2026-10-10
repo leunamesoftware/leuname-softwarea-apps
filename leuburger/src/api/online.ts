@@ -131,7 +131,7 @@ appPublico.get('/publico/app/foto/:id', async (c) => {
 
 const esqItem = z.object({
   produtoId: z.string().min(1).max(64), qtd: z.number().int().min(1).max(99), tamanho: z.string().max(30).nullable().optional(),
-  adicionais: z.array(z.string().max(40)).max(30).optional(), retirar: z.array(z.string().max(40)).max(20).optional(), observacao: z.string().max(150).optional(),
+  adicionais: z.array(z.string().max(40)).max(30).optional(), retirar: z.array(z.string().max(40)).max(20).optional(), observacao: z.string().max(150).optional(), escolhas: z.array(z.object({ grupo: z.string().max(40), item: z.string().max(40), qtd: z.number().int().min(1).max(30) })).max(60).optional(),
 });
 const esqPedido = z.object({
   chave: z.string().min(8).max(64),

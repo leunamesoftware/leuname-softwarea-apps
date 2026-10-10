@@ -88,3 +88,21 @@ describe('estoque', () => {
     expect(situacaoEstoque(9, 5)).toBe('ok');
   });
 });
+
+describe('grupos de escolha', () => {
+  const acai = { id: 'a1', nome: 'Açaí 400ml', preco: 1500, custo: 0, opcoes: { grupos: [
+    { nome: 'Complementos', min: 2, max: 3, repetir: true, itens: [{ nome: 'Paçoca', preco: 0 }, { nome: 'Leite ninho', preco: 200 }] },
+    { nome: 'Cobertura', min: 0, max: 1, itens: [{ nome: 'Morango', preco: 100 }] },
+  ] } };
+  it('soma as escolhas e confere mínimo e máximo', () => {
+    const i = calcularItem(acai, { produtoId: 'a1', qtd: 2, escolhas: [{ grupo: 'Complementos', item: 'Paçoca', qtd: 1 }, { grupo: 'Complementos', item: 'Leite ninho', qtd: 2 }, { grupo: 'Cobertura', item: 'Morango', qtd: 1 }] });
+    expect(i.precoUnit).toBe(1500 + 400 + 100);
+    expect(i.detalhes.adicionais.map((a) => a.nome)).toEqual(['Paçoca', '2x Leite ninho', 'Morango']);
+    expect(() => calcularItem(acai, { produtoId: 'a1', qtd: 1, escolhas: [{ grupo: 'Complementos', item: 'Paçoca', qtd: 1 }] })).toThrow(ErroPedido);
+    expect(() => calcularItem(acai, { produtoId: 'a1', qtd: 1, escolhas: [{ grupo: 'Complementos', item: 'Paçoca', qtd: 4 }] })).toThrow(ErroPedido);
+    expect(() => calcularItem(acai, { produtoId: 'a1', qtd: 1, escolhas: [{ grupo: 'Complementos', item: 'Paçoca', qtd: 2 }, { grupo: 'Cobertura', item: 'Morango', qtd: 2 }] })).toThrow(ErroPedido);
+    expect(() => calcularItem(acai, { produtoId: 'a1', qtd: 1, escolhas: [{ grupo: 'Complementos', item: 'Bala', qtd: 2 }] })).toThrow(ErroPedido);
+    // Caixa (sem escolhas) continua vendendo sem travar.
+    expect(calcularItem(acai, { produtoId: 'a1', qtd: 1 }).total).toBe(1500);
+  });
+});

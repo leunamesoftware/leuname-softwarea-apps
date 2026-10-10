@@ -91,7 +91,7 @@ const esqVenda = z.object({
   chave: z.string().min(8).max(64),
   itens: z.array(z.object({
     produtoId: z.string().min(1), qtd: z.number(), tamanho: z.string().nullable().optional(),
-    adicionais: z.array(z.string()).max(30).optional(), retirar: z.array(z.string()).max(20).optional(), observacao: z.string().max(150).optional(),
+    adicionais: z.array(z.string()).max(30).optional(), retirar: z.array(z.string()).max(20).optional(), observacao: z.string().max(150).optional(), escolhas: z.array(z.object({ grupo: z.string().max(40), item: z.string().max(40), qtd: z.number().int().min(1).max(30) })).max(60).optional(),
   })).min(1, 'O pedido está vazio.').max(100),
   desconto: z.object({ tipo: z.enum(['valor', 'pct']), valor: z.number().min(0) }).nullable().optional(),
   pagamentos: z.array(z.object({ forma: z.string(), valor: z.number() })).min(1, 'Escolha a forma de pagamento.').max(6),

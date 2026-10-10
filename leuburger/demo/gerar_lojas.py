@@ -128,6 +128,8 @@ def main():
             L.append(f"INSERT OR IGNORE INTO avaliacoes (id, empresa_id, pedido_id, nota, comentario, nome, criado_em) VALUES ({q(uid('av', pid))}, {q(eid)}, {q(pid)}, {nota}, {q(rnd.choice(COMENT[nota]) if rnd.random() < .7 else '')}, {q(rnd.choice(NOMES))}, {q(AGORA)});")
     base = ''
     open(SQL, 'w', encoding='utf-8').write(base + '\n'.join(L) + '\n')
+    import importlib.util  # bebidas e grupos de escolha (bloco próprio no fim do SQL)
+    sp = importlib.util.spec_from_file_location('opcoes_demo', os.path.join(os.path.dirname(__file__), 'opcoes_demo.py')); m = importlib.util.module_from_spec(sp); sp.loader.exec_module(m); m.main()
     # remoção
     E = "(SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo')"
     V = f"(SELECT id FROM vendas WHERE empresa_id IN {E})"

@@ -76,6 +76,10 @@ cadastros.get('/fotos/:id', servirFoto);
 const esqOpcoes = z.object({
   tamanhos: z.array(z.object({ nome: texto(30), preco: centavos() })).max(6).default([]),
   adicionais: z.array(z.object({ nome: texto(40), preco: centavos() })).max(30).default([]),
+  grupos: z.array(z.object({
+    nome: texto(40, 'Digite o nome do grupo.'), min: z.number().int().min(0).max(30).default(0), max: z.number().int().min(1).max(30).default(1), repetir: z.boolean().default(false),
+    itens: z.array(z.object({ nome: texto(40), preco: centavos().default(0) })).min(1, 'Coloque pelo menos 1 opção no grupo.').max(40),
+  }).refine((g) => g.max >= g.min, 'O máximo precisa ser maior ou igual ao mínimo.')).max(10).optional(),
   retirar: z.array(texto(40)).max(20).default([]),
 }).default({});
 const esqProduto = z.object({
