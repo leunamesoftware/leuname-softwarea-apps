@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import type * as Leaflet from 'leaflet';
 
 export interface Ponto { lat: number; lng: number }
-export interface DadosMapa { loja: Ponto | null; destino: Ponto | null; entregador: (Ponto & { em?: string | null }) | null }
+export interface DadosMapa { loja: Ponto | null; destino: Ponto | null; entregador: (Ponto & { em?: string | null; veiculo?: string | null }) | null }
 
 export function distanciaKm(a: Ponto, b: Ponto) {
   const r = (g: number) => (g * Math.PI) / 180, dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
@@ -40,7 +40,7 @@ export function Mapa({ dados, altura = 260 }: { dados: DadosMapa; altura?: numbe
     if (dados.destino) L.marker([dados.destino.lat, dados.destino.lng], { icon: icone('🏠'), title: 'fixo' }).addTo(mapa);
     if (dados.entregador) {
       const p: [number, number] = [dados.entregador.lat, dados.entregador.lng];
-      if (e.moto) e.moto.setLatLng(p); else e.moto = L.marker(p, { icon: icone('🛵', 40), zIndexOffset: 1000 }).addTo(mapa);
+      if (e.moto) e.moto.setLatLng(p); else e.moto = L.marker(p, { icon: icone(dados.entregador.veiculo === 'bike' ? '🚲' : '🛵', 40), zIndexOffset: 1000 }).addTo(mapa);
     }
     const pts = [dados.loja, dados.destino, dados.entregador].filter(Boolean) as Ponto[];
     if (pts.length > 1) mapa.fitBounds(L.latLngBounds(pts.map((p) => [p.lat, p.lng] as [number, number])), { padding: [36, 36], maxZoom: 17, animate: e.ajustou });

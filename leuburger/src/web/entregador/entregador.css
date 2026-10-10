@@ -44,3 +44,4 @@
 .ent-abas button { background: none; border: 0; display: grid; justify-items: center; gap: 2px; padding: 8px 0 6px; font: inherit; font-size: 12px; font-weight: 700; color: var(--suave); cursor: pointer; }
 .ent-abas button.ativo { color: #15803D; }
 .ent-lanc b { text-align: left; }
+.ent-baixar { display: flex; gap: 10px; align-items: flex-start; text-decoration: none; color: inherit; margin: 0; }

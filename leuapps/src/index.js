@@ -191,7 +191,8 @@ export default {
     }
     // APKs da loja para Android (fora da Play Store): /baixar/leuapps.apk, /baixar/gestacell.apk e a versão da LeuApps.
     const BAIXAR = { '/baixar/leuapps.apk': ['leuapps.apk', 'LeuApps.apk'], '/baixar/gestacell.apk': ['gestacell.apk', 'Gestacell.apk'],
-      '/baixar/leuapps-versao.json': ['leuapps-versao.json'], '/baixar/gestacell-versao.json': ['gestacell-loja-versao.json'] };
+      '/baixar/leuapps-versao.json': ['leuapps-versao.json'], '/baixar/gestacell-versao.json': ['gestacell-loja-versao.json'],
+      '/baixar/pedee-entregador.apk': ['pedee-entregador.apk', 'PedeeEntregador.apk'], '/baixar/pedee-entregador-versao.json': ['pedee-entregador-versao.json'] };
     if (BAIXAR[url.pathname] && env.DOWNLOADS && (req.method === 'GET' || req.method === 'HEAD')) {
       const [chave, nome] = BAIXAR[url.pathname];
       const obj = req.method === 'HEAD' ? await env.DOWNLOADS.head(chave) : await env.DOWNLOADS.get(chave);

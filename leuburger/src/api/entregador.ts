@@ -177,9 +177,10 @@ entregador.get('/entregador/entregas', async (c) => {
 entregador.post('/entregador/posicao', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }), await corpo(c));
-  await c.env.BANCO.prepare("UPDATE vendas SET pos_lat = ?, pos_lng = ?, pos_em = ? WHERE entregador_id = ? AND andamento = 'a_caminho' AND status = 'concluida'")
+  const r = await c.env.BANCO.prepare("UPDATE vendas SET pos_lat = ?, pos_lng = ?, pos_em = ? WHERE entregador_id = ? AND andamento = 'a_caminho' AND status = 'concluida'")
     .bind(d.lat, d.lng, agora(), e.id).run();
-  return c.json({ ok: true });
+  // em_rota = false: o app Android desliga o GPS sozinho (nenhuma entrega a caminho).
+  return c.json({ ok: true, em_rota: Boolean(r.meta?.changes) });
 });
 
 entregador.post('/entregador/entregas/:id', async (c) => {

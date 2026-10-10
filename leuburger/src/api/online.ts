@@ -184,7 +184,7 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, (SELECT veiculo FROM entregadores WHERE id = v.entregador_id) AS veiculo, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
@@ -205,7 +205,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     mapa: situacao === 'a_caminho' && o.tipo === 'entrega' ? {
       loja: o.loja_lat != null ? { lat: o.loja_lat, lng: o.loja_lng } : null,
       destino: o.dest_lat != null ? { lat: o.dest_lat, lng: o.dest_lng } : null,
-      entregador: o.pos_lat != null ? { lat: o.pos_lat, lng: o.pos_lng, em: o.pos_em } : null,
+      entregador: o.pos_lat != null ? { lat: o.pos_lat, lng: o.pos_lng, em: o.pos_em, veiculo: o.veiculo } : null,
     } : null,
   } });
 });

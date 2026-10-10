@@ -618,12 +618,17 @@
       "url": "https://leuburger.leunamesoftware.com.br/entregador/",
       "id": "https://leuburger.leunamesoftware.com.br/entregador/"
     },
-    "descricao": "App do entregador. Crie a conta com seu WhatsApp, fique disponível e receba as entregas das lojas que te adicionaram, com endereço, mapa, forma de pagamento e troco.",
+    "android": {
+      "pacote": "com.leunamesoftwares.pedee.entregador",
+      "apk": "https://www.leunamesoftware.com.br/baixar/pedee-entregador.apk",
+      "versao": 1
+    },
+    "descricao": "App do entregador (moto ou bicicleta). Crie a conta com seu e-mail, fique disponível e receba as entregas das lojas que te adicionaram, com endereço, mapa, forma de pagamento e troco. No Android o GPS é do próprio celular: o cliente vê você no mapa em tempo real, mesmo com a tela apagada.",
     "recursos": [
       "🔔 Aviso sonoro de nova entrega",
-      "📍 Endereço e mapa com um toque",
-      "💵 Mostra se precisa levar troco",
-      "✅ Saí para entrega e Entreguei"
+      "📍 GPS em tempo real, mesmo com a tela apagada",
+      "💬 Conversa com a loja, sem trocar telefone",
+      "✅ Saí para entrega e Entreguei com código do cliente"
     ],
     "tags": [
       "Entregas"

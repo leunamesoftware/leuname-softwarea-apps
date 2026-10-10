@@ -90,6 +90,9 @@ const dia = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { weekday
 const kmTxt = (km: number | null) => (km == null ? '' : `${km.toFixed(1).replace('.', ',')} km`);
 const inicioSemana = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; };
 
+/** Ponte do app Android Pedêê Entregador (não existe no navegador). */
+const NATIVO = (window as unknown as { PedeeNativo?: { rastrear: (ligar: boolean) => void; pedirLocalizacao: () => void; abrirConfiguracoes: () => void } }).PedeeNativo;
+
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('inicio');
   const [lista, setLista] = useState<Entrega[] | null>(null), [feitas, setFeitas] = useState<Feita[]>([]), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
@@ -120,6 +123,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
     const a = { lat: x.loja_lat ?? -22.7856, lng: x.loja_lng ?? -43.3117 };
     const b = x.dest_lat != null ? { lat: x.dest_lat, lng: x.dest_lng as number } : { lat: a.lat + 0.008, lng: a.lng + 0.008 };
     const total = 45; let i = 0; simulando.current = true; setSimPasso(1);
+    try { NATIVO?.rastrear(false); } catch { /* app antigo */ }
     const t = setInterval(() => {
       i++; const f = Math.min(1, i / total), p = { lat: a.lat + (b.lat - a.lat) * f, lng: a.lng + (b.lng - a.lng) * f };
       post('/entregador/posicao', p).catch(() => {}); setEu0(p);
@@ -141,13 +145,15 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       setEu0({ lat: p.coords.latitude, lng: p.coords.longitude });
       if (Date.now() - ultimo < 8000) return;
       ultimo = Date.now();
-      post('/entregador/posicao', { lat: p.coords.latitude, lng: p.coords.longitude }).catch(() => {});
+      if (!NATIVO) post('/entregador/posicao', { lat: p.coords.latitude, lng: p.coords.longitude }).catch(() => {}); // no app Android quem manda é o próprio app
     }, (e) => { if (e.code === 1) setGps('negado'); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     // Quando a pessoa libera a localização nas configurações do navegador, volta a mandar sozinho.
     let perm: PermissionStatus | null = null;
     navigator.permissions?.query({ name: 'geolocation' }).then((x) => { perm = x; x.onchange = () => { if (x.state === 'granted') { setGps(''); setTentarGps((n) => n + 1); } }; }).catch(() => {});
     return () => { navigator.geolocation.clearWatch(id); if (perm) perm.onchange = null; };
   }, [emRota, tentarGps]);
+  // App Android: liga o GPS do próprio celular (continua com a tela apagada) só enquanto tem entrega a caminho.
+  useEffect(() => { try { NATIVO?.rastrear(emRota); } catch { /* app antigo */ } }, [emRota]);
   const pedirGps = () => navigator.geolocation?.getCurrentPosition(() => { setGps(''); setTentarGps((n) => n + 1); }, (e) => { if (e.code === 1) setGps('negado'); }, { timeout: 15000 });
 
   const hoje = new Date().toDateString();
@@ -174,7 +180,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
     <div className="pd com-abas ent-app">
       {aba === 'inicio' && <>
         <div className="ent-mapa">
-          <Mapa dados={{ loja: foco?.loja_lat != null ? { lat: foco.loja_lat, lng: foco.loja_lng as number } : null, destino: foco?.dest_lat != null ? { lat: foco.dest_lat, lng: foco.dest_lng as number } : null, entregador: eu0 }} altura={300} />
+          <Mapa dados={{ loja: foco?.loja_lat != null ? { lat: foco.loja_lat, lng: foco.loja_lng as number } : null, destino: foco?.dest_lat != null ? { lat: foco.dest_lat, lng: foco.dest_lng as number } : null, entregador: eu0 && { ...eu0, veiculo: eu.entregador.veiculo } }} altura={300} />
           <div className="ent-flutua">
             {avatar}
             <button className={`ent-disp2 ${eu.entregador.disponivel ? 'sim' : ''}`} onClick={disponivel}>{eu.entregador.disponivel ? '🟢 Disponível' : '🌙 Volto breve'}</button>
@@ -188,8 +194,13 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
             <small>Hoje: {deHoje.length} {deHoje.length === 1 ? 'entrega' : 'entregas'}{kmHoje ? ` · ${kmTxt(kmHoje)}` : ''}</small>
           </button>
           {erro && <p className="aviso erro">{erro}</p>}
-          {emRota && (gps === 'negado'
-            ? <div className="aviso erro" style={{ margin: 0 }}>
+          {!NATIVO && /Android/i.test(navigator.userAgent) && <a className="aviso ent-baixar" href="https://www.leunamesoftware.com.br/baixar/pedee-entregador.apk">
+            📲 <span><b>Instale o app Pedêê Entregador para Android.</b> O GPS funciona direto, sem bloqueio do navegador, e continua com a tela apagada. Toque para baixar.</span></a>}
+          {emRota && gps === 'negado' && NATIVO && <div className="aviso erro" style={{ margin: 0 }}>
+            <b>Falta permitir a localização no app.</b> Sem ela o cliente não vê você no mapa.
+            <div className="dupla" style={{ marginTop: 8 }}><button className="btn peq" onClick={() => { NATIVO.pedirLocalizacao(); setTimeout(pedirGps, 4000); }}>📍 Permitir</button><button className="btn peq" onClick={() => NATIVO.abrirConfiguracoes()}>⚙️ Abrir configurações</button></div>
+          </div>}
+          {emRota && (gps === 'negado' ? !NATIVO && <div className="aviso erro" style={{ margin: 0 }}>
                 <b>O GPS está ligado, mas o Chrome não deixa o Pedêê usar a localização.</b> É uma permissão separada, só deste app. Para liberar:
                 <ol style={{ margin: '6px 0', paddingLeft: 20 }}>
                   <li>Abra o <b>Chrome</b> → <b>⋮</b> (3 pontinhos) → <b>Configurações</b> → <b>Configurações do site</b> → <b>Local</b>.</li>
