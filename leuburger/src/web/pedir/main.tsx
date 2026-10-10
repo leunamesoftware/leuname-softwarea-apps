@@ -933,7 +933,7 @@ function Pedido() {
         {erro && <p className="aviso erro">{erro}</p>}
         {(p.situacao === 'aguardando' || faltam(p.cancelar_ate)) && <section className="cartao" style={{ textAlign: 'center' }}>
           <p style={{ margin: '0 0 8px' }}>{p.situacao === 'aguardando'
-            ? <>A loja ainda não aceitou. Não quer mais esperar? <b>Pode cancelar</b> sem custo.</>
+            ? <>A loja ainda não aceitou. Não quer mais esperar? <b>Pode cancelar</b> sem custo.<br /><small style={{ color: 'var(--suave)' }}>Se a loja não responder em 20 minutos, o pedido é cancelado sozinho.</small></>
             : <>Mudou de ideia? Você pode cancelar por mais <b>{faltam(p.cancelar_ate)}</b>.</>}</p>
           <button className="btn bloco" onClick={cancelar} disabled={cancelando}>Cancelar pedido</button>
         </section>}

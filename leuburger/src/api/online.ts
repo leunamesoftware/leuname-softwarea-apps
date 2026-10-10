@@ -8,7 +8,7 @@ import { RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { contaLogada } from './contaCliente';
 import { enviarFoto } from './entregador';
-import { agora, aleatorio, auditar, corpo, erro, janelaCancelarMs, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
+import { agora, aleatorio, auditar, corpo, erro, esperaLojaMs, janelaCancelarMs, MOTIVO_SEM_RESPOSTA, novoId, type C, type D1Prepared, type Empresa, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { registrarVenda } from './vendas';
 import { abrirSessao } from './auth';
@@ -180,10 +180,18 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
   return c.json({ ok: true, token }, 201);
 });
 
+/** Cancela sozinho o que a loja não aceitou no prazo (por pedido, pelo token, ou todos de uma loja). */
+function expirar(c: C, onde: 'token' | 'empresa_id' | 'id', valor: string) {
+  const quando = agora();
+  return c.env.BANCO.prepare(`UPDATE pedidos_online SET status = 'recusado', motivo_recusa = ?, respondido_em = ? WHERE ${onde} = ? AND status = 'aguardando' AND cancelado_em IS NULL AND criado_em < ?`)
+    .bind(MOTIVO_SEM_RESPOSTA, quando, valor, new Date(Date.now() - esperaLojaMs(c.env)).toISOString()).run();
+}
+
 /** Acompanhamento do pedido do app (aguardando → aceito e andamento da cozinha/entrega, ou recusado). */
 appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  await expirar(c, 'token', token);
   const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, (SELECT veiculo FROM entregadores WHERE id = v.entregador_id) AS veiculo, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
@@ -296,6 +304,7 @@ export const appLoja = new Hono<{ Bindings: Env; Variables: Vars }>();
 /** Pedidos do app esperando resposta e os respondidos nas últimas 3 horas. */
 appLoja.get('/pedidos-app', async (c) => {
   exigir(c, 'vender');
+  await expirar(c, 'empresa_id', c.get('empresa').id);
   const { results } = await c.env.BANCO.prepare(`SELECT id, status, nome, telefone, tipo, endereco, forma, troco_para, observacao, resumo, subtotal, taxa_entrega, total, motivo_recusa, venda_id, criado_em, respondido_em, cancelado_em
     FROM pedidos_online WHERE empresa_id = ? AND (status = 'aguardando' OR respondido_em > ?) ORDER BY criado_em`).bind(c.get('empresa').id, new Date(Date.now() - 3 * 3600e3).toISOString()).all<Record<string, unknown>>();
   const prazo = janelaCancelarMs(c.env);
@@ -308,11 +317,13 @@ appLoja.get('/pedidos-app', async (c) => {
 appLoja.post('/pedidos-app/:id/aceitar', async (c) => {
   exigir(c, 'vender');
   const db = c.env.BANCO, emp = c.get('empresa') as Loja;
+  await expirar(c, 'id', c.req.param('id'));
   const o = await db.prepare('SELECT * FROM pedidos_online WHERE id = ? AND empresa_id = ?').bind(c.req.param('id'), emp.id).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   if (o.status !== 'aguardando') {
     if (o.status === 'aceito') return c.json({ ok: true, venda_id: o.venda_id, repetido: true });
-    throw erro(409, 'ja_respondido', 'Este pedido já foi recusado.');
+    if (o.motivo_recusa === MOTIVO_SEM_RESPOSTA) throw erro(409, 'expirou', 'O cliente esperou demais: o pedido foi cancelado sozinho.');
+    throw erro(409, 'ja_respondido', o.cancelado_em ? 'O cliente cancelou este pedido.' : 'Este pedido já foi recusado.');
   }
   // Cliente da loja: acha pelo WhatsApp ou cadastra (assim ele aparece em Clientes e no comprovante).
   const tel = digitos(o.telefone);

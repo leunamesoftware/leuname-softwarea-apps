@@ -19,6 +19,7 @@ export interface Env {
   DONO_EMAIL?: string;
   /** Minutos que o cliente tem para cancelar o pedido do app (padrão 5). */
   JANELA_CANCELAR_MIN?: string;
+  ESPERA_LOJA_MIN?: string;
 }
 
 export interface Usuario { id: string; empresa_id: string; nome: string; login: string; papel: Papel; dono: number }
@@ -69,3 +70,6 @@ export function iguais(a: string, b: string) {
 
 /** Prazo (em milissegundos) em que o cliente ainda pode cancelar o pedido do app. */
 export const janelaCancelarMs = (env: Env) => Math.max(0, Number(env.JANELA_CANCELAR_MIN ?? 5)) * 60e3;
+/** Pedido do app que a loja não aceita nesse tempo é cancelado sozinho (o cliente não fica esperando para sempre). */
+export const esperaLojaMs = (env: Env) => Math.max(1, Number(env.ESPERA_LOJA_MIN ?? 20)) * 60e3;
+export const MOTIVO_SEM_RESPOSTA = 'A loja não respondeu a tempo. O pedido foi cancelado sozinho e nada foi cobrado.';

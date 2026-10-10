@@ -521,10 +521,18 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
 
       // 4) Loja demorando para aceitar: mesmo depois do prazo o cliente pode cancelar.
       const t4 = await novo('prazo-cliente-004');
-      A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 30 * 60e3).toISOString()}' WHERE token = '${t4}'`);
+      A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 15 * 60e3).toISOString()}' WHERE token = '${t4}'`);
       expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido).toMatchObject({ situacao: 'aguardando', cancelar_ate: null, pode_cancelar: true });
       expect((await cli.post(`/publico/app/pedido/${t4}/cancelar`, {})).status).toBe(200);
       expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido.situacao).toBe('cancelado');
+
+      // 5) A loja não respondeu em 20 minutos: o pedido cancela sozinho e a loja não consegue mais aceitar.
+      const t5 = await novo('prazo-cliente-005');
+      A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 25 * 60e3).toISOString()}' WHERE token = '${t5}'`);
+      const ped5 = (await n.get('/pedidos-app')).corpo.pedidos.find((x: { status: string; motivo_recusa: string | null }) => x.motivo_recusa?.startsWith('A loja não respondeu'));
+      expect(ped5.status).toBe('recusado');
+      expect((await n.post(`/pedidos-app/${ped5.id}/aceitar`, {})).corpo.erro).toBe('expirou');
+      expect((await cli.get(`/publico/app/pedido/${t5}`)).corpo.pedido).toMatchObject({ situacao: 'recusado', pode_cancelar: false });
     } finally { A.env.JANELA_CANCELAR_MIN = '0'; }
   });
 });
