@@ -472,6 +472,16 @@ function Loja() {
       }).catch((e) => setErro(msgErro(e)));
   }, [slug]);
 
+  // A aba da categoria acompanha a rolagem (como no iFood).
+  useEffect(() => {
+    const rolar = () => {
+      const secoes = [...document.querySelectorAll<HTMLElement>('.pd-loja-secao')];
+      const atual = secoes.filter((x) => x.getBoundingClientRect().top <= 140).pop();
+      setCat(atual ? atual.id.replace('cat-', '') : '');
+    };
+    addEventListener('scroll', rolar, { passive: true });
+    return () => removeEventListener('scroll', rolar);
+  }, [dados]);
   const porId = useMemo(() => new Map((dados?.produtos || []).map((p) => [p.id, p])), [dados]);
   const linhas = carrinho.flatMap((i) => { const p = porId.get(i.produtoId); if (!p) return []; try { return [{ i, p, c: calcularItem(p, i) }]; } catch { return []; } });
   const subtotal = linhas.reduce((s, l) => s + l.c.total, 0), qtd = linhas.reduce((s, l) => s + l.c.qtd, 0);
@@ -481,46 +491,54 @@ function Loja() {
   const { loja: l, categorias, produtos } = dados;
   const q = busca.trim().toLowerCase();
   const visiveis = produtos.filter((p) => (!cat || p.categoria_id === cat) && (!q || p.nome.toLowerCase().includes(q) || (p.descricao || '').toLowerCase().includes(q)));
-  const adicionar = (p: Produto) => {
-    if (p.opcoes?.tamanhos?.length || p.opcoes?.adicionais?.length || p.opcoes?.retirar?.length) return setEscolher({ p });
-    const igual = carrinho.find((i) => i.produtoId === p.id && !i.adicionais?.length && !i.retirar?.length && !i.observacao && !i.tamanho);
-    setCarrinho(igual ? carrinho.map((i) => (i === igual ? { ...i, qtd: Math.min(99, i.qtd + 1) } : i)) : [...carrinho, { chave: novaChave(), produtoId: p.id, qtd: 1 }]);
-  };
+  const adicionar = (p: Produto) => setEscolher({ p });
+  const preco = (p: Produto) => Math.min(p.preco, ...(p.opcoes?.tamanhos || []).map((t) => t.preco));
+  // Destaques: os primeiros com foto (até 6), como “Destaques” do iFood.
+  const destaques = [...produtos].sort((a, b) => Number(Boolean(b.foto_id)) - Number(Boolean(a.foto_id))).slice(0, 6);
+  const irPara = (id: string) => { setCat(id); document.getElementById('cat-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   const capa = foto(l.capa_id) || CAPA_TIPO[l.tipo];
+  const entrega = !l.faz_entrega ? 'Só retirada' : !l.entrega_aqui ? 'Fora da área de entrega' : l.taxa_entrega ? brl(l.taxa_entrega) : 'Grátis';
   return (
-    <div className="pd">
-      <TopoVoltar titulo={l.nome} compartilhar={`${location.origin}/pedir/${slug}`} />
-      <div className="pd-capa" style={capa ? { backgroundImage: `url(${capa})` } : undefined} />
-      <section className="pd-cab-loja">
-        <Logo l={l} t={72} />
-        <div><h1>{l.nome}</h1><p>{l.tipo_nome}{l.distancia != null ? ` · ${l.distancia.toLocaleString('pt-BR')} km` : ''}{l.cidade ? ` · ${l.cidade}` : ''}</p>
-          <button className="pd-nota-btn" onClick={() => setVerAvaliacoes(true)}><Estrelas nota={l.nota} total={l.avaliacoes} />{l.avaliacoes > 0 && <span> · ver avaliações</span>}</button></div>
-        <button className={`pd-fav ${fav ? 'sim' : ''}`} onClick={alternarFav} aria-label={fav ? 'Tirar das favoritas' : 'Guardar nas favoritas'} aria-pressed={fav}>{fav ? '❤️' : '🤍'}</button>
+    <div className="pd pd-loja-pag">
+      <div className="pd-loja-capa" style={capa ? { backgroundImage: `url(${capa})` } : undefined}>
+        <button className="pd-redondo" onClick={() => (history.length > 1 ? nav(-1) : nav('/'))} aria-label="Voltar"><Ic n="voltar" /></button>
+        <span style={{ flex: 1 }} />
+        <button className="pd-redondo" onClick={alternarFav} aria-label={fav ? 'Tirar das favoritas' : 'Guardar nas favoritas'} aria-pressed={fav}>{fav ? '❤️' : '🤍'}</button>
+        <button className="pd-redondo" onClick={() => document.getElementById('busca-loja')?.focus()} aria-label="Buscar no cardápio"><Ic n="busca" /></button>
+      </div>
+      <section className="pd-loja-card">
+        <div className="pd-loja-logo"><Logo l={l} t={84} /></div>
+        <h1>{l.nome}</h1>
+        <p className="pd-loja-linha">{[l.distancia != null ? `${l.distancia.toLocaleString('pt-BR')} km` : l.cidade, l.pedido_minimo > 0 ? `Mín ${brl(l.pedido_minimo)}` : '', l.tipo_nome].filter(Boolean).join(' • ')}</p>
+        <button className="pd-loja-item" onClick={() => setVerAvaliacoes(true)}><span>{l.nota ? <>★ <b>{l.nota.toLocaleString('pt-BR')}</b> ({l.avaliacoes} {l.avaliacoes === 1 ? 'avaliação' : 'avaliações'})</> : <><b>Novo</b> no Pedêê</>}</span><Ic n="direita" /></button>
+        <div className="pd-loja-item"><span>{l.aceitando ? 'Padrão' : <b className="fechado">Fechada agora</b>}{l.tempo_entrega ? ` • ${l.tempo_entrega}` : ''} • <b className={entrega === 'Grátis' ? 'verde' : ''}>{entrega}</b></span></div>
+        {l.descricao && <p className="pd-loja-desc">{l.descricao}</p>}
       </section>
-      <main className="pd-corpo" style={{ paddingTop: 0 }}>
-        {l.descricao && <p style={{ margin: 0, color: 'var(--suave)' }}>{l.descricao}</p>}
-        <div className="pd-infos">
-          <span className={l.aceitando ? 'aberta' : 'fechado'}>{l.aceitando ? 'Aberta' : 'Fechada agora'}</span>
-          {l.tempo_entrega && <span><Ic n="calendario" t={15} />{l.tempo_entrega}</span>}
-          {l.faz_entrega && <span><Ic n="seta" t={15} />{l.entrega_aqui ? (l.taxa_entrega ? `Entrega ${brl(l.taxa_entrega)}` : 'Entrega grátis') : 'Fora da área de entrega'}</span>}
-          {l.pedido_minimo > 0 && <span>Mínimo {brl(l.pedido_minimo)}</span>}
-        </div>
-        {!l.aceitando && <p className="aviso">A loja não está recebendo pedidos agora. Você pode olhar o cardápio e pedir quando ela abrir.</p>}
-        <span className="entrada"><Ic n="busca" /><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar no cardápio…" aria-label="Buscar no cardápio" /></span>
-        {!q && categorias.length > 1 && <div className="chips pd-cats" role="group" aria-label="Categorias">
-          <button className={`chip ${!cat ? 'sel' : ''}`} onClick={() => setCat('')}>Tudo</button>
-          {categorias.map((c) => <button key={c.id} className={`chip ${cat === c.id ? 'sel' : ''}`} onClick={() => setCat(c.id)}><Ic n={c.icone} t={16} />{c.nome}</button>)}
-        </div>}
-        {(cat || q ? [{ id: 'x', nome: '', icone: '' }] : categorias).map((c) => {
-          const itens = cat || q ? visiveis : visiveis.filter((p) => p.categoria_id === c.id);
+      {!l.aceitando && <p className="aviso" style={{ margin: '0 16px' }}>A loja não está recebendo pedidos agora. Você pode olhar o cardápio e pedir quando ela abrir.</p>}
+      <div className="pd-loja-fixo">
+        <span className="entrada"><Ic n="busca" /><input id="busca-loja" value={busca} onChange={(e) => setBusca(e.target.value)} placeholder={`Buscar em ${l.nome}`} aria-label="Buscar no cardápio" /></span>
+        {!q && categorias.length > 0 && <nav className="pd-loja-abas">{categorias.map((c) => <button key={c.id} className={cat === c.id ? 'sel' : ''} onClick={() => irPara(c.id)}>{c.nome}</button>)}</nav>}
+      </div>
+      <main className="pd-corpo" style={{ paddingTop: 6 }}>
+        {!q && destaques.length > 2 && <section>
+          <h2 className="pd-tit">Destaques</h2>
+          <div className="pd-destaques-grade">{destaques.map((p, k) => (
+            <button key={p.id} onClick={() => adicionar(p)} aria-label={`${p.nome}, ${brl(preco(p))}`}>
+              <span className="pd-dg-foto"><FotoItem p={p} />{k === 0 && <em>Mais pedido</em>}</span>
+              <b className="num">{brl(preco(p))}</b><span>{p.nome}</span>
+            </button>
+          ))}</div>
+        </section>}
+        {(q ? [{ id: 'x', nome: '', icone: '' }] : categorias).map((c) => {
+          const itens = q ? visiveis : visiveis.filter((p) => p.categoria_id === c.id);
           if (!itens.length) return null;
           return (
-            <section key={c.id}>
+            <section key={c.id} id={'cat-' + c.id} className="pd-loja-secao">
               {c.nome && <h2 className="pd-tit">{c.nome}</h2>}
-              <div className="pd-cardapio">{itens.map((p) => (
-                <button key={p.id} className="pd-prod" onClick={() => adicionar(p)} aria-label={`${p.nome}, ${brl(p.preco)}`}>
-                  <span className="pd-prod-txt"><b>{p.nome}</b>{p.descricao && <small>{p.descricao}</small>}<span className="num">{p.opcoes?.tamanhos?.length ? 'a partir de ' : ''}{brl(Math.min(p.preco, ...(p.opcoes?.tamanhos || []).map((t) => t.preco)))}</span></span>
-                  <FotoItem p={p} className="pd-prod-foto" />
+              <div className="pd-cardapio2">{itens.map((p) => (
+                <button key={p.id} className="pd-prod2" onClick={() => adicionar(p)} aria-label={`${p.nome}, ${brl(preco(p))}`}>
+                  <span className="pd-prod-txt"><b>{p.nome}</b>{p.descricao && <small>{p.descricao}</small>}<span className="num">{p.opcoes?.tamanhos?.length ? 'a partir de ' : ''}{brl(preco(p))}</span></span>
+                  <FotoItem p={p} className="pd-prod2-foto" />
                 </button>
               ))}</div>
             </section>
@@ -531,7 +549,7 @@ function Loja() {
       </main>
       {qtd > 0 && <button className="pd-barra-carrinho" onClick={() => setVerCarrinho(true)}><span className="selo">{qtd}</span><b>Ver carrinho</b><span className="num">{brl(subtotal)}</span></button>}
       {verAvaliacoes && <Avaliacoes slug={slug} aoFechar={() => setVerAvaliacoes(false)} />}
-      {escolher && <Escolher produto={escolher.p} item={escolher.item} aoFechar={() => setEscolher(null)} aoSalvar={(it) => {
+      {escolher && <Escolher produto={escolher.p} item={escolher.item} loja={l} aoFechar={() => setEscolher(null)} aoSalvar={(it) => {
         setCarrinho(escolher.item ? carrinho.map((x) => (x.chave === escolher.item!.chave ? it : x)) : [...carrinho, it]); setEscolher(null);
       }} />}
       {verCarrinho && <Carrinho loja={l} slug={slug} linhas={linhas} subtotal={subtotal} aoFechar={() => setVerCarrinho(false)}
@@ -588,7 +606,7 @@ function TopoVoltar({ titulo, compartilhar }: { titulo: string; compartilhar?: s
   );
 }
 
-function Escolher({ produto: p, item, aoFechar, aoSalvar }: { produto: Produto; item?: ItemCarrinho; aoFechar: () => void; aoSalvar: (i: ItemCarrinho) => void }) {
+function Escolher({ produto: p, item, aoFechar, aoSalvar, loja }: { produto: Produto; item?: ItemCarrinho; aoFechar: () => void; aoSalvar: (i: ItemCarrinho) => void; loja?: LojaCompleta }) {
   const op = p.opcoes || {};
   const [tamanho, setTamanho] = useState(item?.tamanho || op.tamanhos?.[0]?.nome || null);
   const [adic, setAdic] = useState<string[]>(item?.adicionais || []);
@@ -598,29 +616,34 @@ function Escolher({ produto: p, item, aoFechar, aoSalvar }: { produto: Produto; 
   const alternar = (l: string[], set: (x: string[]) => void, v: string) => set(l.includes(v) ? l.filter((x) => x !== v) : [...l, v]);
   const novo: ItemCarrinho = { chave: item?.chave || novaChave(), produtoId: p.id, qtd, tamanho, adicionais: adic, retirar: ret, observacao: obs.trim() || undefined };
   let total = 0; try { total = calcularItem(p, novo).total; } catch { /* opção que saiu do cardápio */ }
+  useEffect(() => { const t = (e: KeyboardEvent) => { if (e.key === 'Escape') aoFechar(); }; addEventListener('keydown', t); document.body.style.overflow = 'hidden'; return () => { removeEventListener('keydown', t); document.body.style.overflow = ''; }; }, [aoFechar]);
+  const precoBase = op.tamanhos?.find((t) => t.nome === tamanho)?.preco ?? p.preco;
   return (
-    <Modal titulo={p.nome} aoFechar={aoFechar}>
-      <div className="personalizar pd-escolher">
-        <div><FotoItem p={p} className="foto-grande" />{p.descricao && <p style={{ color: 'var(--suave)' }}>{p.descricao}</p>}</div>
-        <div>
-          {!!op.tamanhos?.length && <><h3>Tamanho</h3><div className="opcoes-tamanho">{op.tamanhos.map((t) => <button key={t.nome} className={`opcao-t ${tamanho === t.nome ? 'sel' : ''}`} onClick={() => setTamanho(t.nome)}>{t.nome}<small className="num">{brl(t.preco)}</small></button>)}</div></>}
-          {!!op.adicionais?.length && <><h3>Adicionais</h3>{op.adicionais.map((a) => (
-            <label key={a.nome} className="marcar"><input type="checkbox" checked={adic.includes(a.nome)} onChange={() => alternar(adic, setAdic, a.nome)} /><span>{a.nome}</span><small className="num">+ {brl(a.preco)}</small></label>
-          ))}</>}
-          {!!op.retirar?.length && <><h3>Retirar</h3>{op.retirar.map((r) => (
-            <label key={r} className="marcar"><input type="checkbox" checked={ret.includes(r)} onChange={() => alternar(ret, setRet, r)} /><span>Sem {r.toLowerCase()}</span></label>
-          ))}</>}
-          <h3>Alguma observação?</h3>
-          <textarea value={obs} onChange={(e) => setObs(e.target.value.slice(0, 150))} placeholder="Ex.: ponto da carne, molho à parte" aria-label="Observação" />
-          <div className="rodape-fixo"><h3>Quantidade</h3>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span className="qtd"><button onClick={() => setQtd(Math.max(1, qtd - 1))} aria-label="Menos"><Ic n="menos" /></button><span className="num" style={{ minWidth: 40 }}>{qtd}</span><button onClick={() => setQtd(Math.min(99, qtd + 1))} aria-label="Mais"><Ic n="mais" /></button></span>
-              <button className="btn prim grande" style={{ flex: '1 1 220px' }} onClick={() => aoSalvar(novo)}><Ic n="sacola" />{item ? 'Atualizar' : 'Adicionar'}<span className="num" style={{ marginLeft: 'auto' }}>{brl(total)}</span></button>
-            </div>
-          </div>
+    <div className="pd-produto" role="dialog" aria-modal="true" aria-label={p.nome}>
+      <div className="pd-produto-rola">
+        <div className="pd-produto-foto"><FotoItem p={p} />
+          <button className="pd-redondo claro" onClick={aoFechar} aria-label="Voltar"><Ic n="voltar" /></button>
+          {loja && <div className="pd-produto-loja"><Logo l={loja} t={40} /><span><b>{loja.nome}</b><small>{loja.nota ? `★ ${loja.nota.toLocaleString('pt-BR')} (${loja.avaliacoes})` : 'Novo'}{loja.tempo_entrega ? ` • ${loja.tempo_entrega}` : ''}</small></span></div>}
         </div>
+        <div className="pd-produto-info">
+          <h2>{p.nome}</h2>
+          {p.descricao && <p>{p.descricao}</p>}
+          <b className="num">{brl(precoBase)}</b>
+        </div>
+        {!!op.tamanhos?.length && <><div className="pd-grupo"><b>Tamanho</b><small>Escolha 1 opção</small><em>Obrigatório</em></div>
+          {op.tamanhos.map((t) => <label key={t.nome} className="pd-opcao"><span>{t.nome}<small className="num">{brl(t.preco)}</small></span><input type="radio" name="tam" checked={tamanho === t.nome} onChange={() => setTamanho(t.nome)} /></label>)}</>}
+        {!!op.adicionais?.length && <><div className="pd-grupo"><b>Adicionais</b><small>Escolha até {op.adicionais.length} {op.adicionais.length === 1 ? 'opção' : 'opções'}</small></div>
+          {op.adicionais.map((a) => <label key={a.nome} className="pd-opcao"><span>{a.nome}<small className="num">+ {brl(a.preco)}</small></span><input type="checkbox" checked={adic.includes(a.nome)} onChange={() => alternar(adic, setAdic, a.nome)} /></label>)}</>}
+        {!!op.retirar?.length && <><div className="pd-grupo"><b>Retirar ingredientes</b><small>Se quiser</small></div>
+          {op.retirar.map((r) => <label key={r} className="pd-opcao"><span>Sem {r.toLowerCase()}</span><input type="checkbox" checked={ret.includes(r)} onChange={() => alternar(ret, setRet, r)} /></label>)}</>}
+        <div className="pd-grupo"><b>Alguma observação?</b><small>{obs.length}/150</small></div>
+        <textarea className="pd-obs" value={obs} onChange={(e) => setObs(e.target.value.slice(0, 150))} placeholder="Ex.: tirar a cebola, maionese à parte etc." aria-label="Observação" />
       </div>
-    </Modal>
+      <div className="pd-produto-pe">
+        <span className="qtd"><button onClick={() => setQtd(Math.max(1, qtd - 1))} aria-label="Menos"><Ic n="menos" /></button><span className="num">{qtd}</span><button onClick={() => setQtd(Math.min(99, qtd + 1))} aria-label="Mais"><Ic n="mais" /></button></span>
+        <button className="btn prim grande pd-adicionar" onClick={() => aoSalvar(novo)}><span>{item ? 'Atualizar' : 'Adicionar'}</span><span className="num">{brl(total)}</span></button>
+      </div>
+    </div>
   );
 }
 
