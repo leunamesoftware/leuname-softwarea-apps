@@ -7,7 +7,7 @@ import { msgErro } from '../comuns';
 import '../estilo.css';
 import './admin.css';
 
-type Aba = 'testes' | 'resumo' | 'lojas' | 'entregadores' | 'pedidos' | 'clientes';
+type Aba = 'testes' | 'resumo' | 'reclamacoes' | 'lojas' | 'entregadores' | 'pedidos' | 'clientes';
 type Linha = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const data = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '—');
 const dataHora = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
@@ -52,7 +52,7 @@ function Painel({ aoSair }: { aoSair: () => void }) {
   const dados = cache[aba] || null;
   const acao = async (url: string, corpo: unknown) => { try { await post(url, corpo); await carregar(); } catch (e) { setErro(msgErro(e)); } };
   const filtra = (l: Linha[]) => { const q = busca.trim().toLowerCase(); return q ? l.filter((x) => JSON.stringify(x).toLowerCase().includes(q)) : l; };
-  const MENU: [Aba, string, string][] = [['testes', '🧪', 'Central de testes'], ['resumo', '📊', 'Resumo'], ['lojas', '🏪', 'Lojas'], ['entregadores', '🛵', 'Entregadores'], ['pedidos', '🧾', 'Pedidos'], ['clientes', '👥', 'Clientes']];
+  const MENU: [Aba, string, string][] = [['testes', '🧪', 'Central de testes'], ['resumo', '📊', 'Resumo'], ['reclamacoes', '📣', 'Reclamações'], ['lojas', '🏪', 'Lojas'], ['entregadores', '🛵', 'Entregadores'], ['pedidos', '🧾', 'Pedidos'], ['clientes', '👥', 'Clientes']];
   return (
     <div className="adm">
       <aside className="adm-lado">
@@ -92,6 +92,14 @@ function Painel({ aoSair }: { aoSair: () => void }) {
               <td data-r="Tipo">{p.tipo === 'entrega' ? '🛵 Entrega' : '🏪 Retirada'}</td><td data-r="Valor">{brl(p.total)}</td>
               <td data-r="Situação">{p.cancelado_em ? '❌ Cancelado pelo cliente' : p.status === 'recusado' ? '⛔ Recusado' : p.status === 'aguardando' ? '⏳ Esperando a loja' : SIT[p.andamento] || p.andamento}</td><td data-r="Entregador">{p.entregador || '—'}</td>
             </tr>)}</tbody></table>}
+          {aba === 'reclamacoes' && <table className="adm-tab"><thead><tr><th>Reclamação</th><th>Loja</th><th>Cliente</th><th>Pedido</th><th>Situação</th><th /></tr></thead><tbody>
+            {filtra(dados.reclamacoes).map((r) => <tr key={r.id}>
+              <td className="adm-titulo"><b>{r.texto}</b><small>{dataHora(r.criado_em)}</small></td>
+              <td data-r="Loja">{r.loja}</td><td data-r="Cliente">{r.nome}</td><td data-r="Pedido">{brl(r.total)} · {dataHora(r.pedido_em)}</td>
+              <td data-r="Situação">{r.resolvida_em ? '✅ Resolvida' : '🔴 Aberta'}</td>
+              <td className="adm-acoes">{!r.resolvida_em && <button className="btn peq" onClick={() => acao(`/admin/reclamacoes/${r.id}/resolver`, {})}>Marcar resolvida</button>}</td>
+            </tr>)}
+            {!dados.reclamacoes.length && <tr><td colSpan={6}>Nenhuma reclamação. 🎉</td></tr>}</tbody></table>}
           {aba === 'clientes' && <table className="adm-tab"><thead><tr><th>Cliente</th><th>Celular</th><th>Pedidos</th><th>Conta criada</th></tr></thead><tbody>
             {filtra(dados.clientes).map((c) => <tr key={c.email}><td className="adm-titulo"><b>{c.nome}</b><small>{c.email}</small></td><td data-r="Celular">{c.telefone}</td><td data-r="Pedidos">{c.pedidos}</td><td data-r="Conta criada">{data(c.criado_em)}</td></tr>)}
             {!dados.clientes.length && <tr><td colSpan={4}>Nenhuma conta de cliente ainda (quem pede como visitante não aparece aqui).</td></tr>}</tbody></table>}

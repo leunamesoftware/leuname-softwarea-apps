@@ -4,6 +4,7 @@
 // O cliente nunca vê custo, receita, estoque nem dados de outras lojas; cada loja só vê os pedidos dela.
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { prazosDoPedido } from '../regras/prazos';
 import { conferirMensagem, RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { contaLogada } from './contaCliente';
@@ -208,6 +209,20 @@ appPublico.post('/publico/app/pedido/:token/loja-mensagem', async (c) => {
   return c.json({ ok: true });
 });
 
+/** Cliente reclama com o Pedêê (atraso, problema no pedido). O dono vê no Painel Admin. */
+appPublico.post('/publico/app/pedido/:token/reclamar', async (c) => {
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const d = validar(z.object({ texto: z.string().trim().min(5, 'Conte o que aconteceu.').max(500) }), await corpo(c));
+  const db = c.env.BANCO;
+  const o = await db.prepare('SELECT id, empresa_id FROM pedidos_online WHERE token = ?').bind(token).first<{ id: string; empresa_id: string }>();
+  if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM reclamacoes WHERE pedido_id = ?').bind(o.id).first<{ n: number }>();
+  if ((n?.n ?? 0) >= 3) throw erro(429, 'muitas', 'Já recebemos as suas reclamações deste pedido. Vamos analisar.');
+  await db.prepare('INSERT INTO reclamacoes (id, pedido_id, empresa_id, texto, criado_em) VALUES (?,?,?,?,?)').bind(novoId(), o.id, o.empresa_id, d.texto, agora()).run();
+  return c.json({ ok: true });
+});
+
 /** Cancela sozinho o que a loja não aceitou no prazo (por pedido, pelo token, ou todos de uma loja). */
 function expirar(c: C, onde: 'token' | 'empresa_id' | 'id', valor: string) {
   const quando = agora();
@@ -220,7 +235,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
   const token = c.req.param('token');
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   await expirar(c, 'token', token);
-  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, (SELECT veiculo FROM entregadores WHERE id = v.entregador_id) AS veiculo, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
+  const o = await c.env.BANCO.prepare(`SELECT o.*, e.nome AS loja, e.slug, e.telefone AS loja_telefone, e.lat AS loja_lat, e.lng AS loja_lng, e.tempo_preparo, v.entregador_em, v.pos_lat, v.pos_lng, v.pos_em, v.id AS venda_id, v.entregador_id, v.codigo_entrega, (SELECT foto IS NOT NULL FROM entregadores WHERE id = v.entregador_id) AS tem_foto, (SELECT veiculo FROM entregadores WHERE id = v.entregador_id) AS veiculo, v.numero, v.andamento, v.status AS venda_status, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, av.nota AS av_nota, av.comentario AS av_comentario
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
@@ -236,7 +251,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     loja: o.loja, slug: o.slug, loja_telefone: o.loja_telefone, numero: o.numero || null, situacao, motivo_recusa: o.motivo_recusa, tipo: o.tipo, endereco: o.endereco,
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
-    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, cancelar_ate, pode_cancelar: situacao === 'aguardando' || Boolean(cancelar_ate), cancelado_pelo_cliente: Boolean(o.cancelado_em),
+    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, prazos: ['aguardando', 'preparando', 'pronto', 'a_caminho'].includes(situacao) ? prazosDoPedido(o) : null, cancelar_ate, pode_cancelar: situacao === 'aguardando' || Boolean(cancelar_ate), cancelado_pelo_cliente: Boolean(o.cancelado_em),
     codigo_entrega: o.tipo === 'entrega' && ['preparando', 'pronto', 'a_caminho'].includes(situacao) ? o.codigo_entrega : null,
     entregador_foto: o.entregador_id && o.tem_foto ? `/api/publico/app/pedido/${token}/entregador-foto` : null, mensagens: conversa, pode_conversar: Boolean(o.entregador_id) && ['pronto', 'a_caminho', 'preparando'].includes(situacao),
     // Mapa ao vivo: só enquanto o entregador está a caminho.
@@ -413,7 +428,7 @@ appLoja.post('/pedidos-app/:id/recusar', async (c) => {
 });
 
 // ---------- configuração da loja no app ----------
-const CAMPOS = 'slug, no_app, aceitando, tipo_loja, descricao, logo_id, capa_id, tempo_entrega, pedido_minimo, faz_entrega, faz_retirada, lat, lng, raio_km, taxa_entrega_padrao, cidade, uf, endereco, telefone, nome';
+const CAMPOS = 'slug, no_app, aceitando, tipo_loja, descricao, logo_id, capa_id, tempo_entrega, tempo_preparo, pedido_minimo, faz_entrega, faz_retirada, lat, lng, raio_km, taxa_entrega_padrao, cidade, uf, endereco, telefone, nome';
 const RESERVADOS = new Set(['loja', 'pedido', 'pedidos', 'admin', 'entrar', 'app']);
 export const sugerirSlug = (nome: string) => { const s = semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40); return !s || s.length < 3 ? 'minha-loja' : RESERVADOS.has(s) ? `${s}-1` : s; };
 
@@ -430,6 +445,7 @@ const esqLojaApp = z.object({
   descricao: z.string().trim().max(140).nullable().optional(),
   logo_id: z.string().max(64).nullable().optional(), capa_id: z.string().max(64).nullable().optional(),
   tempo_entrega: z.string().trim().max(20).nullable().optional(),
+  tempo_preparo: z.number().int().min(5, 'O preparo leva pelo menos 5 minutos.').max(180).optional(),
   pedido_minimo: z.number().int().min(0).max(1_000_000),
   lat: z.number().min(-90).max(90).nullable().optional(), lng: z.number().min(-180).max(180).nullable().optional(),
   raio_km: z.number().min(0.5).max(60),
@@ -442,9 +458,9 @@ appLoja.put('/loja-app', async (c) => {
   if (RESERVADOS.has(d.slug)) throw erro(400, 'slug_reservado', 'Escolha outro endereço.', { slug: 'Endereço reservado.' });
   if (await db.prepare('SELECT 1 FROM empresas WHERE slug = ? AND id <> ?').bind(d.slug, emp.id).first()) throw erro(409, 'slug_em_uso', 'Este endereço já é de outra loja. Escolha outro.', { slug: 'Já está em uso.' });
   if (d.no_app && !emp.cidade) throw erro(400, 'sem_cidade', 'Preencha a cidade da loja em Dados da empresa antes de aparecer no app.');
-  await db.prepare(`UPDATE empresas SET slug=?, no_app=?, aceitando=?, faz_entrega=?, faz_retirada=?, tipo_loja=?, descricao=?, logo_id=?, capa_id=?, tempo_entrega=?, pedido_minimo=?, lat=?, lng=?, raio_km=? WHERE id=?`)
+  await db.prepare(`UPDATE empresas SET slug=?, no_app=?, aceitando=?, faz_entrega=?, faz_retirada=?, tipo_loja=?, descricao=?, logo_id=?, capa_id=?, tempo_entrega=?, tempo_preparo=COALESCE(?, tempo_preparo), pedido_minimo=?, lat=?, lng=?, raio_km=? WHERE id=?`)
     .bind(d.slug, d.no_app ? 1 : 0, d.aceitando ? 1 : 0, d.faz_entrega ? 1 : 0, d.faz_retirada ? 1 : 0, d.tipo_loja, d.descricao || null, d.logo_id || null, d.capa_id || null,
-      d.tempo_entrega || null, d.pedido_minimo, d.lat ?? null, d.lng ?? null, d.raio_km, emp.id).run();
+      d.tempo_entrega || null, d.tempo_preparo ?? null, d.pedido_minimo, d.lat ?? null, d.lng ?? null, d.raio_km, emp.id).run();
   return c.json({ ok: true });
 });
 

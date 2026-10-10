@@ -8,6 +8,7 @@ import { distanciaKm } from './online';
 import { agora, aleatorio, corpo, erro, hashSenha, iguais, novoId, sha256, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { RAPIDAS_ENTREGADOR, vezesPermitidas } from '../regras/mensagens';
+import { prazosDoPedido } from '../regras/prazos';
 
 const COOKIE = 'pe_sessao';
 const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
@@ -144,6 +145,8 @@ entregador.get('/entregador/resumo', async (c) => {
 entregador.post('/entregador/veiculo', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ veiculo: z.enum(['moto', 'bike']) }), await corpo(c));
+  // De bicicleta para moto só com a moto e a CNH cadastradas (vem depois).
+  if (d.veiculo === 'moto' && e.veiculo === 'bike') throw erro(403, 'precisa_cnh', 'Para entregar de moto é preciso cadastrar a moto e a habilitação (CNH).');
   await c.env.BANCO.prepare('UPDATE entregadores SET veiculo = ? WHERE id = ?').bind(d.veiculo, e.id).run();
   return c.json({ ok: true });
 });
@@ -158,7 +161,8 @@ entregador.post('/entregador/disponivel', async (c) => {
 /** Entregas do entregador: as que estão com ele agora e as entregues nas últimas 12 horas. */
 entregador.get('/entregador/entregas', async (c) => {
   const e = await entregadorLogado(c);
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.entregador_em AS chamado_em, v.finalizado_em, v.endereco_entrega, v.observacao,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.entregador_em AS chamado_em, v.entregador_em, v.pronto_em, v.finalizado_em, v.endereco_entrega, v.observacao, v.tipo, em.tempo_preparo,
+      COALESCE((SELECT po.respondido_em FROM pedidos_online po WHERE po.venda_id = v.id), v.criado_em) AS respondido_em,
       em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, cl.nome AS cliente,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
@@ -170,7 +174,7 @@ entregador.get('/entregador/entregas', async (c) => {
   const { results: msgs } = ids.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_entrega WHERE venda_id IN (${ids.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...ids).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
   const { results: daLoja } = ids.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_loja WHERE venda_id IN (${ids.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...ids).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
   return c.json({ entregas: results.map((r) => ({ ...r, km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: Number(r.loja_lat), lng: Number(r.loja_lng) }, { lat: Number(r.dest_lat), lng: Number(r.dest_lng) }) * 10) / 10 : null,
-    mensagens: msgs.filter((m) => m.venda_id === r.id).slice(-12), conversa_loja: daLoja.filter((m) => m.venda_id === r.id).slice(-40) })) });
+    prazos: ['entregue', 'retirado'].includes(String(r.andamento)) ? null : prazosDoPedido({ ...r, status: 'aceito' }), mensagens: msgs.filter((m) => m.venda_id === r.id).slice(-12), conversa_loja: daLoja.filter((m) => m.venda_id === r.id).slice(-40) })) });
 });
 
 /** O app do entregador manda a posição dele; vale para as entregas dele que estão a caminho. */

@@ -129,6 +129,19 @@ admin.get('/admin/clientes', async (c) => {
   return c.json({ clientes: results });
 });
 
+/** Reclamações dos clientes (atraso, problema no pedido). */
+admin.get('/admin/reclamacoes', async (c) => {
+  await exigirAdmin(c);
+  const { results } = await c.env.BANCO.prepare(`SELECT r.id, r.texto, r.criado_em, r.resolvida_em, o.nome, o.total, o.criado_em AS pedido_em, e.nome AS loja, e.telefone AS loja_telefone
+    FROM reclamacoes r JOIN pedidos_online o ON o.id = r.pedido_id JOIN empresas e ON e.id = r.empresa_id ORDER BY r.resolvida_em IS NOT NULL, r.criado_em DESC LIMIT 300`).all();
+  return c.json({ reclamacoes: results });
+});
+admin.post('/admin/reclamacoes/:id/resolver', async (c) => {
+  await exigirAdmin(c);
+  await c.env.BANCO.prepare('UPDATE reclamacoes SET resolvida_em = ? WHERE id = ?').bind(agora(), c.req.param('id')).run();
+  return c.json({ ok: true });
+});
+
 /** Central de testes: o dono entra, com um toque, na loja de teste e no entregador de teste (contas de demonstração). */
 export const LOGIN_LOJA_TESTE = '21900000001', EMAIL_ENTREGADOR_TESTE = 'motoboy@teste.pedee';
 admin.post('/admin/teste/:papel', async (c) => {

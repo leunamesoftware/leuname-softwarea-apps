@@ -2,7 +2,7 @@
 // (Pedidos, Cardápio, Entregadores e Minha loja). O caixa completo continua disponível para quem quiser.
 import { CIDADES_RJ } from '../cidades-rj';
 import { CULINARIAS } from '../culinarias';
-import { faltam, useRelogio } from '../tempo';
+import { faltam, prazo, useRelogio, type Prazos } from '../tempo';
 import { useEffect, useRef, useState } from 'react';
 import { brl, FORMAS, lerValor, type Forma, type Opcoes } from '../../regras/pedido';
 import { RAPIDAS_LOJA_CLIENTE } from '../../regras/mensagens';
@@ -116,7 +116,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 
 // ---------- pedidos ----------
 interface Novo { cancelar_ate: string | null; cancelado_em: string | null; nome_cliente?: string; id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { app_id?: string | null; conversa_entregador?: { de: 'loja' | 'entregador'; texto: string; criado_em: string }[]; app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface EmAndamento { prazos?: Prazos | null; app_id?: string | null; conversa_entregador?: { de: 'loja' | 'entregador'; texto: string; criado_em: string }[]; app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -237,6 +237,10 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           {p.cliente && <div className="ped-cli">{p.cliente}</div>}
           {p.resumo && <div className="ped-itens">{p.resumo}</div>}
           {p.tipo === 'entrega' && <div className="ped-end"><Ic n="inicio" t={16} />{p.endereco_entrega}</div>}
+          {p.prazos && (() => {
+            const pr = prazo(p.andamento === 'preparando' ? p.prazos.pronto : p.prazos.entrega || p.prazos.pronto);
+            return pr && <div className={`lj-prazo ${pr.atrasado ? 'ruim' : ''}`}>{p.andamento === 'preparando' ? '👨‍🍳 Pronto até' : p.tipo === 'entrega' ? '🏠 Entregar até' : '🛍️ Retirada até'} <b>{pr.hora}</b> · {pr.atrasado ? `⚠️ ${pr.texto} — o cliente está vendo` : pr.texto}</div>;
+          })()}
           <div className="ped-status"><span className={`selo st-${p.andamento}`}>{({ preparando: 'Em preparo', pronto: 'Pronto', a_caminho: 'A caminho' } as Record<string, string>)[p.andamento]}</span><b className="num">{brl(p.total)}</b></div>
           <div className="ped-acoes">
             {p.andamento === 'preparando' && <button className="btn prim" disabled={ocupado === p.id || Boolean(faltam(p.app_cancelar_ate))} onClick={() => andar(p, 'pronto')}><Ic n="check" />{faltam(p.app_cancelar_ate) ? `Pronto (espere ${faltam(p.app_cancelar_ate)})` : 'Pronto'}</button>}
@@ -481,9 +485,9 @@ function LojaEditavel({ e, recarregar }: { e: Empresa; recarregar: () => void })
 // ---------- minha loja ----------
 function MinhaLoja({ e, recarregar, aoSair, soDados }: { e: Empresa; recarregar: () => void; aoSair: () => void; soDados?: boolean }) {
   const [cfg, setCfg] = useState<Record<string, any> | null>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
-  const [f, setF] = useState({ nome: e.nome, telefone: e.telefone || '', endereco: e.endereco || '', cidade: e.cidade || '', uf: e.uf || '', taxa: reais(e.taxa_entrega_padrao), tempo: '', minimo: '' });
+  const [f, setF] = useState({ nome: e.nome, telefone: e.telefone || '', endereco: e.endereco || '', cidade: e.cidade || '', uf: e.uf || '', taxa: reais(e.taxa_entrega_padrao), tempo: '', minimo: '', preparo: '20' });
   const [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
-  useEffect(() => { get<{ loja: Record<string, any> }>('/loja-app').then((r) => { setCfg(r.loja); setF((x) => ({ ...x, tempo: r.loja.tempo_entrega || '', minimo: reais(r.loja.pedido_minimo || 0) })); }).catch(() => {}); }, []); // eslint-disable-line @typescript-eslint/no-explicit-any
+  useEffect(() => { get<{ loja: Record<string, any> }>('/loja-app').then((r) => { setCfg(r.loja); setF((x) => ({ ...x, tempo: r.loja.tempo_entrega || '', minimo: reais(r.loja.pedido_minimo || 0), preparo: String(r.loja.tempo_preparo || 20) })); }).catch(() => {}); }, []); // eslint-disable-line @typescript-eslint/no-explicit-any
   const link = `${location.origin}/pedir/${e.slug || ''}`;
   const subirLogo = async (arq?: File) => {
     if (!arq || !cfg) return;
@@ -498,11 +502,13 @@ function MinhaLoja({ e, recarregar, aoSair, soDados }: { e: Empresa; recarregar:
     if (!cfg) return;
     const taxa = f.taxa.trim() ? lerValor(f.taxa) : 0, minimo = f.minimo.trim() ? lerValor(f.minimo) : 0;
     if (Number.isNaN(taxa) || Number.isNaN(minimo)) return setMsg('Confira os valores.');
+    const preparo = Number(f.preparo);
+    if (!(preparo >= 5 && preparo <= 180)) return setMsg('Tempo de preparo: de 5 a 180 minutos.');
     setOcupado(true); setMsg('');
     try {
       await put('/empresa', { nome: f.nome, cnpj: e.cnpj, telefone: f.telefone, endereco: f.endereco, cidade: f.cidade, uf: f.uf, mensagem_cupom: e.mensagem_cupom, formas_pagamento: e.formas_pagamento, desconto_max_caixa: e.desconto_max_caixa, largura_cupom: e.largura_cupom, taxa_entrega_padrao: taxa });
       await put('/loja-app', { slug: cfg.slug, no_app: true, aceitando: Boolean(cfg.aceitando), faz_entrega: Boolean(cfg.faz_entrega), faz_retirada: Boolean(cfg.faz_retirada), tipo_loja: cfg.tipo_loja, descricao: cfg.descricao,
-        logo_id: cfg.logo_id, capa_id: cfg.capa_id, tempo_entrega: f.tempo.trim() || null, pedido_minimo: minimo, lat: cfg.lat ?? null, lng: cfg.lng ?? null, raio_km: cfg.raio_km || 8 });
+        logo_id: cfg.logo_id, capa_id: cfg.capa_id, tempo_entrega: f.tempo.trim() || null, tempo_preparo: preparo, pedido_minimo: minimo, lat: cfg.lat ?? null, lng: cfg.lng ?? null, raio_km: cfg.raio_km || 8 });
       setMsg('Salvo!'); recarregar();
     } catch (x) { setMsg(msgErro(x)); } finally { setOcupado(false); }
   };
@@ -525,8 +531,9 @@ function MinhaLoja({ e, recarregar, aoSair, soDados }: { e: Empresa; recarregar:
           <label className="campo">WhatsApp da loja<input value={f.telefone} onChange={(x) => setF({ ...f, telefone: x.target.value })} inputMode="tel" /></label>
           <label className="campo">Taxa de entrega (R$)<input value={f.taxa} onChange={(x) => setF({ ...f, taxa: x.target.value })} inputMode="decimal" placeholder="0,00 = grátis" /></label>
           <label className="campo">Tempo de entrega<input value={f.tempo} onChange={(x) => setF({ ...f, tempo: x.target.value.slice(0, 20) })} placeholder="Ex.: 30-45 min" /></label>
+          <label className="campo">Tempo de preparo (min)<input value={f.preparo} onChange={(x) => setF({ ...f, preparo: x.target.value.replace(/\D/g, '').slice(0, 3) })} inputMode="numeric" placeholder="20" /><small style={{ color: 'var(--suave)', fontWeight: 500 }}>O cliente vê “pronto até…”. Passou, aparece atrasado.</small></label>
           <label className="campo">Pedido mínimo (R$)<input value={f.minimo} onChange={(x) => setF({ ...f, minimo: x.target.value })} inputMode="decimal" placeholder="0,00" /></label>
-          <label className="campo largo">Sobre a loja (aparece na vitrine)<input value={cfg?.descricao || ''} onChange={(x) => cfg && setCfg({ ...cfg, descricao: x.target.value.slice(0, 200) })} maxLength={200} placeholder="Ex.: Hambúrguer artesanal feito na brasa desde 2015." /></label>
+          <label className="campo largo">Sobre a loja (aparece na vitrine)<input value={cfg?.descricao || ''} onChange={(x) => cfg && setCfg({ ...cfg, descricao: x.target.value.slice(0, 140) })} maxLength={140} placeholder="Ex.: Hambúrguer artesanal feito na brasa desde 2015." /></label>
           <label className="campo largo">Endereço<input value={f.endereco} onChange={(x) => setF({ ...f, endereco: x.target.value })} maxLength={150} /></label>
           <label className="campo">Cidade<input value={f.cidade} onChange={(x) => setF({ ...f, cidade: x.target.value })} maxLength={60} list="cidades-rj" /><datalist id="cidades-rj">{CIDADES_RJ.map((c) => <option key={c} value={c} />)}</datalist></label>
           <label className="campo">UF<input value={f.uf} onChange={(x) => setF({ ...f, uf: x.target.value.toUpperCase().slice(0, 2) })} maxLength={2} /></label>

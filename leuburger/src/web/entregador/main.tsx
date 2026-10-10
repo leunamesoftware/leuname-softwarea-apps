@@ -4,6 +4,7 @@ import { Selfie } from '../selfie';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { brl, FORMAS, type Forma } from '../../regras/pedido';
+import { prazo, type Prazos } from '../tempo';
 import { RAPIDAS_ENTREGADOR } from '../../regras/mensagens';
 import { ErroApp, get, post } from '../api';
 import { Modal, msgErro } from '../comuns';
@@ -15,7 +16,7 @@ import './entregador.css';
 
 interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean; tem_foto: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
-  id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; chamado_em?: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
+  id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; chamado_em?: string | null; prazos?: Prazos | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
   loja: string; loja_endereco: string | null; cliente: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null; loja_lat: number | null; loja_lng: number | null; km: number | null;
   mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; conversa_loja: { de: 'entregador' | 'loja'; texto: string; criado_em: string }[];
 }
@@ -221,9 +222,15 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
             return (
               <article key={x.id} className="ent-card">
                 <div className="ped-topo"><b>#{x.numero}</b><span className="selo">{x.loja}</span><small>{hora(x.criado_em)}</small></div>
-                <div className="ent-tempo">{x.andamento === 'a_caminho' && x.saiu_em
-                  ? <>🛵 Em rota há <b>{minEntre(x.saiu_em, Date.now())} min</b><small>saiu {hora(x.saiu_em)}{x.chamado_em ? ` · levou ${minEntre(x.chamado_em, x.saiu_em)} min para sair da loja` : ''}</small></>
-                  : x.chamado_em ? <>⏱️ A loja chamou há <b>{minEntre(x.chamado_em, Date.now())} min</b><small>vá até a loja e toque em “Saí para entrega” ao pegar o pedido</small></> : <>⏱️ Vá até a loja buscar o pedido</>}</div>
+                {(() => {
+                  const emRota2 = x.andamento === 'a_caminho' && x.saiu_em;
+                  const pr = prazo(emRota2 ? x.prazos?.entrega : x.prazos?.coleta);
+                  return <div className={`ent-tempo ${pr?.atrasado ? 'ruim' : ''}`}>
+                    {pr && <span>{emRota2 ? '🏠 Entregar até' : '🏪 Pegar na loja até'} <b>{pr.hora}</b> · {pr.atrasado ? `⚠️ ${pr.texto}` : pr.texto}</span>}
+                    {emRota2 ? <small>🛵 Em rota há {minEntre(x.saiu_em!, Date.now())} min · saiu {hora(x.saiu_em!)}{x.chamado_em ? ` · levou ${minEntre(x.chamado_em, x.saiu_em!)} min para sair da loja` : ''}{x.prazos ? ` · trajeto previsto ${x.prazos.rota_min} min` : ''}</small>
+                      : <small>{x.chamado_em ? `A loja chamou há ${minEntre(x.chamado_em, Date.now())} min. ` : ''}Toque em “Saí para entrega” ao pegar o pedido.</small>}
+                  </div>;
+                })()}
                 <div className="ent-end"><Ic n="inicio" /><div><b>{x.endereco_entrega}</b><small>👤 {x.cliente || 'Cliente'}{x.km != null ? ` · ${kmTxt(x.km)} da loja` : ''}</small></div></div>
                 {x.observacao && <div className="ped-obs">Obs.: {x.observacao}</div>}
                 {x.resumo && <div className="ped-itens">{x.resumo}</div>}
@@ -268,7 +275,9 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           </section>
           <section className="cartao">
             <h2 className="cartao-tit">Forma de entrega</h2>
-            <div className="dupla">{(['moto', 'bike'] as const).map((v) => <button key={v} className={`btn ${eu.entregador.veiculo === v ? 'prim' : ''}`} onClick={async () => { await post('/entregador/veiculo', { veiculo: v }).catch(() => {}); recarregar(); }}>{v === 'moto' ? '🛵 Moto' : '🚲 Bicicleta'}</button>)}</div>
+            {eu.entregador.veiculo === 'bike'
+              ? <p style={{ margin: 0 }}>🚲 <b>Bicicleta</b><br /><small style={{ color: 'var(--suave)' }}>Para entregar de moto é preciso cadastrar a moto e a habilitação (CNH). Em breve aqui.</small></p>
+              : <div className="dupla">{(['moto', 'bike'] as const).map((v) => <button key={v} className={`btn ${eu.entregador.veiculo === v ? 'prim' : ''}`} onClick={async () => { if (v === 'bike' && !confirm('Mudar para bicicleta? Para voltar para moto vai precisar cadastrar a moto e a CNH.')) return; await post('/entregador/veiculo', { veiculo: v }).catch(() => {}); recarregar(); }}>{v === 'moto' ? '🛵 Moto' : '🚲 Bicicleta'}</button>)}</div>}
           </section>
           <section className="cartao">
             <h2 className="cartao-tit">Lojas onde você entrega</h2>

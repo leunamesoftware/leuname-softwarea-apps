@@ -2,7 +2,7 @@
 // O link de cada loja (/pedir/<loja>) abre o mesmo app direto naquela loja e guarda em "Minhas lojas".
 import { CIDADES_RJ } from '../cidades-rj';
 import { CULINARIAS, DESTAQUE, SEGMENTOS } from '../culinarias';
-import { alo, faltam, useRelogio } from '../tempo';
+import { alo, faltam, prazo, useRelogio, type Prazos } from '../tempo';
 import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -868,6 +868,41 @@ function Carrinho({ loja: l, slug, linhas, subtotal, produtos, aoFechar, mudarQt
 
 
 // ---------- acompanhamento do pedido ----------
+/** Previsão em tempo real (pronto, saída, chegada) e aviso de atraso com o botão de reclamar ao Pedêê. */
+function Previsao({ p, token }: { p: { situacao: string; tipo: string; prazos?: Prazos | null }; token: string }) {
+  useRelogio(true);
+  const [reclamar, setReclamar] = useState(false), [texto, setTexto] = useState(''), [msg, setMsg] = useState(''), [erro, setErro] = useState('');
+  const z = p.prazos!; const entrega = p.tipo === 'entrega';
+  const pronto = prazo(z.pronto), coleta = prazo(z.coleta), chega = prazo(z.entrega);
+  const final = entrega ? chega : pronto;
+  // O que está atrasado agora: o preparo (loja) ou a entrega.
+  const atraso = p.situacao === 'preparando' && pronto?.atrasado ? `A loja está atrasada ${pronto.min} min no preparo.`
+    : entrega && ['pronto', 'a_caminho'].includes(p.situacao) && chega?.atrasado ? `A entrega está atrasada ${chega.min} min.` : '';
+  const enviar = async () => {
+    try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/reclamar`, { texto: texto.trim() }); setReclamar(false); setTexto(''); setMsg('Recebemos a sua reclamação. A equipe do Pedêê vai analisar.'); } catch (e) { setErro(msgErro(e)); }
+  };
+  return (
+    <section className={`cartao pd-previsao ${atraso ? 'atrasado' : ''}`}>
+      <small>{p.situacao === 'aguardando' ? 'Se a loja aceitar agora, fica pronto por volta de' : entrega ? 'Previsão de entrega' : 'Pronto para retirar'}</small>
+      <b className="num">{p.situacao === 'aguardando' && entrega ? chega?.hora : final?.hora}</b>
+      {p.situacao !== 'aguardando' && final && <span>{final.atrasado ? `⚠️ ${final.texto}` : final.texto}</span>}
+      {p.situacao !== 'aguardando' && <ul className="pd-prev-etapas">
+        <li className={['pronto', 'a_caminho'].includes(p.situacao) ? 'ok' : pronto?.atrasado ? 'ruim' : ''}>👨‍🍳 Preparo até <b>{pronto?.hora}</b></li>
+        {entrega && coleta && <li className={p.situacao === 'a_caminho' ? 'ok' : coleta.atrasado ? 'ruim' : ''}>🛵 Entregador busca até <b>{coleta.hora}</b></li>}
+        {entrega && chega && <li className={chega.atrasado ? 'ruim' : ''}>🏠 Chega até <b>{chega.hora}</b> <small>({z.rota_min} min de trajeto)</small></li>}
+      </ul>}
+      {atraso && <p className="aviso erro" style={{ margin: '8px 0 0' }}>⚠️ {atraso}</p>}
+      {msg && <p className="aviso" style={{ margin: '8px 0 0' }}>{msg}</p>}
+      {atraso && !msg && !reclamar && <button className="btn bloco" style={{ marginTop: 8 }} onClick={() => setReclamar(true)}>📣 Reclamar com o Pedêê</button>}
+      {reclamar && <div style={{ marginTop: 8, display: 'grid', gap: 8 }}>
+        <textarea value={texto} onChange={(e) => setTexto(e.target.value.slice(0, 500))} placeholder="Conte o que aconteceu (ex.: pedido muito atrasado e a loja não responde)." aria-label="Reclamação" />
+        {erro && <p className="aviso erro" style={{ margin: 0 }}>{erro}</p>}
+        <div className="dupla"><button className="btn" onClick={() => setReclamar(false)}>Voltar</button><button className="btn prim" onClick={enviar} disabled={texto.trim().length < 5}>Enviar</button></div>
+      </div>}
+    </section>
+  );
+}
+
 /** Conversa com a loja sobre o pedido: texto livre, mas o servidor barra telefone, link e palavrão. */
 function ConversaLoja({ token, loja, msgs, aoEnviar }: { token: string; loja: string; msgs: { de: 'cliente' | 'loja'; texto: string; criado_em: string }[]; aoEnviar: () => void }) {
   const [aberta, setAberta] = useState(msgs.length > 0), [texto, setTexto] = useState(''), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
@@ -895,7 +930,7 @@ interface Acomp {
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
   avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; pode_cancelar?: boolean; cancelado_pelo_cliente: boolean; codigo_entrega: string | null; entregador_foto: string | null;
   mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; pode_conversar: boolean;
-  conversa_loja?: { de: 'cliente' | 'loja'; texto: string; criado_em: string }[]; pode_falar_loja?: boolean;
+  conversa_loja?: { de: 'cliente' | 'loja'; texto: string; criado_em: string }[]; pode_falar_loja?: boolean; prazos?: Prazos | null;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 const AVISO: Record<string, string> = {
@@ -960,6 +995,7 @@ function Pedido() {
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
         {erro && <p className="aviso erro">{erro}</p>}
+        {p.prazos && <Previsao p={p} token={token} />}
         {(p.situacao === 'aguardando' || faltam(p.cancelar_ate)) && <section className="cartao" style={{ textAlign: 'center' }}>
           <p style={{ margin: '0 0 8px' }}>{p.situacao === 'aguardando'
             ? <>A loja ainda não aceitou. Não quer mais esperar? <b>Pode cancelar</b> sem custo.<br /><small style={{ color: 'var(--suave)' }}>Se a loja não responder em 20 minutos, o pedido é cancelado sozinho.</small></>

@@ -407,3 +407,11 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .lj-grupo-item { display: grid; grid-template-columns: minmax(0, 1fr) 110px 36px; gap: 6px; }
 .lj-grupo-pe { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; } .lj-grupo-pe label { display: flex; align-items: center; gap: 6px; }
 .ent-rapidas { display: flex; flex-wrap: wrap; gap: 6px; } .ent-rapidas .chip { font-size: 13px; }
+/* Previsão e atraso */
+.pd-previsao { display: grid; gap: 2px; text-align: center; }
+.pd-previsao > small { color: var(--suave); font-weight: 700; } .pd-previsao > b { font-size: 34px; color: #111827; } .pd-previsao > span { color: #15803D; font-weight: 700; }
+.pd-previsao.atrasado > span { color: #B91C1C; }
+.pd-prev-etapas { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; text-align: left; font-size: 14.5px; }
+.pd-prev-etapas li { padding: 8px 10px; border-radius: 10px; background: #F9FAFB; } .pd-prev-etapas li.ok { background: #F0FDF4; color: #166534; } .pd-prev-etapas li.ruim { background: #FEF2F2; color: #991B1B; }
+.lj-prazo { margin: 6px 0; padding: 7px 10px; border-radius: 10px; background: #F0FDF4; color: #166534; font-size: 14px; }
+.lj-prazo.ruim, .ent-tempo.ruim { background: #FEF2F2; color: #991B1B; }

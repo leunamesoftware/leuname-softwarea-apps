@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { agora, corpo, erro, janelaCancelarMs, novoId, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
+import { prazosDoPedido } from '../regras/prazos';
 
 export const ANDAMENTOS = ['preparando', 'pronto', 'a_caminho', 'entregue', 'retirado'] as const;
 type Andamento = (typeof ANDAMENTOS)[number];
@@ -46,12 +47,14 @@ export const andamento = new Hono<{ Bindings: Env; Variables: Vars }>();
 andamento.get('/andamento', async (c) => {
   exigir(c, 'vender');
   const desde = new Date(Date.now() - 864e5).toISOString(), recentes = new Date(Date.now() - 3 * 3600e3).toISOString();
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.tipo, v.andamento, v.total, v.troco, v.criado_em, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, v.entregador_id,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.tipo, v.andamento, v.total, v.troco, v.criado_em, v.pronto_em, v.saiu_em, v.finalizado_em, v.entregador, v.entregador_id, v.entregador_em,
+      em.tempo_preparo, em.lat AS loja_lat, em.lng AS loja_lng, COALESCE((SELECT po.respondido_em FROM pedidos_online po WHERE po.venda_id = v.id), v.criado_em) AS respondido_em,
+      (SELECT po.dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT po.dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng,
       v.endereco_entrega, v.observacao, v.token_cliente, v.token_entregador, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
       (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em, (SELECT po.id FROM pedidos_online po WHERE po.venda_id = v.id) AS app_id, (v.codigo_entrega IS NOT NULL) AS pede_codigo
-    FROM vendas v LEFT JOIN clientes cl ON cl.id = v.cliente_id
+    FROM vendas v JOIN empresas em ON em.id = v.empresa_id LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.token_cliente IS NOT NULL
       AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em >= ?)
     ORDER BY v.criado_em`).bind(c.get('empresa').id, desde, recentes).all();
@@ -60,7 +63,8 @@ andamento.get('/andamento', async (c) => {
   const { results: msgs } = comEntregador.length ? await c.env.BANCO.prepare(`SELECT venda_id, de, texto, criado_em FROM mensagens_loja WHERE venda_id IN (${comEntregador.map(() => '?').join(',')}) ORDER BY criado_em`).bind(...comEntregador).all<{ venda_id: string; de: string; texto: string; criado_em: string }>() : { results: [] as { venda_id: string; de: string; texto: string; criado_em: string }[] };
   return c.json({ pedidos: results.map((r) => {
     const ate = r.app_criado_em ? new Date(String(r.app_criado_em)).getTime() + prazo : 0;
-    return { ...r, app_cancelar_ate: ate > Date.now() && r.andamento === 'preparando' ? new Date(ate).toISOString() : null, conversa_entregador: msgs.filter((m) => m.venda_id === r.id).slice(-40) };
+    return { ...r, app_cancelar_ate: ate > Date.now() && r.andamento === 'preparando' ? new Date(ate).toISOString() : null, conversa_entregador: msgs.filter((m) => m.venda_id === r.id).slice(-40),
+      prazos: ['entregue', 'retirado'].includes(String(r.andamento)) ? null : prazosDoPedido({ ...r, status: 'aceito' }) };
   }) });
 });
 

@@ -23,3 +23,13 @@ export function alo() {
     navigator.vibrate?.([200, 100, 200]);
   } catch { /* sem som */ }
 }
+
+/** Prazos que o servidor manda (previsão de pronto, coleta e entrega). */
+export interface Prazos { pronto: string; coleta: string | null; entrega: string | null; rota_min: number }
+const hm = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+/** "até 21:50 · faltam 8 min" ou "era até 21:50 · atrasado 5 min". */
+export function prazo(iso: string | null | undefined) {
+  if (!iso) return null;
+  const min = Math.round((new Date(iso).getTime() - Date.now()) / 60000);
+  return { hora: hm(iso), atrasado: min < 0, min: Math.abs(min), texto: min < 0 ? `atrasado ${Math.abs(min)} min` : min === 0 ? 'agora' : `faltam ${min} min` };
+}

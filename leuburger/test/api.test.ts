@@ -536,6 +536,10 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
       expect((await n.post(`/pedidos-app/${ped6.id}/mensagem`, { texto: 'Pode sim!' })).status).toBe(200);
       expect((await n.get('/pedidos-app/conversas')).corpo.conversas[ped6.id].map((m: { de: string }) => m.de)).toEqual(['cliente', 'loja']);
       expect((await cli.get(`/publico/app/pedido/${t6}`)).corpo.pedido).toMatchObject({ pode_falar_loja: true, conversa_loja: [{ texto: 'Pode mandar sem cebola?' }, { texto: 'Pode sim!' }] });
+      // Previsão (preparo de 20 min por padrão) e reclamação ao Pedêê.
+      const pv = (await cli.get(`/publico/app/pedido/${t6}`)).corpo.pedido.prazos;
+      expect(Math.round((new Date(pv.pronto).getTime() - Date.now()) / 60000)).toBe(20);
+      expect((await cli.post(`/publico/app/pedido/${t6}/reclamar`, { texto: 'Está demorando demais' })).status).toBe(200);
       expect((await cli.post(`/publico/app/pedido/${t6}/cancelar`, {})).status).toBe(200);
 
       // 5) A loja não respondeu em 20 minutos: o pedido cancela sozinho e a loja não consegue mais aceitar.
