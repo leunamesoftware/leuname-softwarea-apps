@@ -7,7 +7,7 @@ import { distanciaKm, Mapa, minutosAte, type DadosMapa } from '../mapa';
 import { StrictMode, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { RAPIDAS_CLIENTE } from '../../regras/mensagens';
+import { RAPIDAS_CLIENTE, RAPIDAS_CLIENTE_LOJA } from '../../regras/mensagens';
 import { brl, calcularItem, FORMAS, lerValor, type EscolhaItem, type Forma, type Opcoes } from '../../regras/pedido';
 import { ErroApp, get, post, put } from '../api';
 import { Modal, msgErro } from '../comuns';
@@ -868,12 +868,34 @@ function Carrinho({ loja: l, slug, linhas, subtotal, produtos, aoFechar, mudarQt
 
 
 // ---------- acompanhamento do pedido ----------
+/** Conversa com a loja sobre o pedido: texto livre, mas o servidor barra telefone, link e palavrão. */
+function ConversaLoja({ token, loja, msgs, aoEnviar }: { token: string; loja: string; msgs: { de: 'cliente' | 'loja'; texto: string; criado_em: string }[]; aoEnviar: () => void }) {
+  const [aberta, setAberta] = useState(msgs.length > 0), [texto, setTexto] = useState(''), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
+  const enviar = async (t: string) => {
+    if (!t.trim()) return;
+    setOcupado(true);
+    try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/loja-mensagem`, { texto: t.trim() }); setTexto(''); setErro(''); aoEnviar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
+  };
+  if (!aberta) return <button className="btn bloco grande" onClick={() => setAberta(true)}>💬 Conversar com a loja</button>;
+  return (
+    <section className="cartao pd-conversa-loja">
+      <h2 className="cartao-tit">💬 Conversa com {loja}</h2>
+      {!msgs.length && <small style={{ color: 'var(--suave)' }}>Fale com a loja por aqui sobre o seu pedido. Não é permitido passar telefone, link ou palavrão.</small>}
+      {msgs.length > 0 && <div className="pd-chat">{msgs.map((m, k) => <p key={k} className={m.de === 'cliente' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}</div>}
+      <div className="pd-rapidas" style={{ margin: '8px 0' }}>{RAPIDAS_CLIENTE_LOJA.map((t) => <button key={t} className="chip" onClick={() => enviar(t)} disabled={ocupado}>{t}</button>)}</div>
+      {erro && <p className="aviso erro">{erro}</p>}
+      <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={300} placeholder="Mensagem para a loja" aria-label="Mensagem para a loja" onKeyDown={(e) => { if (e.key === 'Enter') enviar(texto); }} /><button className="btn prim" onClick={() => enviar(texto)} disabled={!texto.trim() || ocupado}>Enviar</button></div>
+    </section>
+  );
+}
+
 interface Acomp {
   loja: string; slug: string; loja_telefone: string | null; numero: number | null; situacao: string; motivo_recusa: string | null; tipo: 'entrega' | 'balcao'; endereco: string | null;
   forma: Forma; troco_para: number | null; itens: { nome: string; qtd: number; total: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[];
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
   avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; pode_cancelar?: boolean; cancelado_pelo_cliente: boolean; codigo_entrega: string | null; entregador_foto: string | null;
   mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; pode_conversar: boolean;
+  conversa_loja?: { de: 'cliente' | 'loja'; texto: string; criado_em: string }[]; pode_falar_loja?: boolean;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
 const AVISO: Record<string, string> = {
@@ -890,7 +912,7 @@ function Pedido() {
   const { token = '' } = useParams();
   const [p, setP] = useState<Acomp | null>(null), [erro, setErro] = useState('');
   const [vez, setVez] = useState(0), [aviso, setAviso] = useState('');
-  const antes = useRef<string | null>(null), msgs = useRef<number | null>(null);
+  const antes = useRef<string | null>(null), msgs = useRef<number | null>(null), msgsLoja = useRef<number | null>(null);
   const responder = async (t: string) => { try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/mensagem`, { texto: t }); setErro(''); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); } };
   useEffect(() => {
     let parar = false;
@@ -901,6 +923,9 @@ function Pedido() {
       const doEntregador = r.pedido.mensagens.filter((m) => m.de === 'entregador');
       if (msgs.current != null && doEntregador.length > msgs.current) { setAviso(`💬 Entregador: ${doEntregador[doEntregador.length - 1].texto}`); alo(); setTimeout(() => setAviso(''), 12000); }
       msgs.current = doEntregador.length;
+      const daLoja = (r.pedido.conversa_loja || []).filter((m) => m.de === 'loja');
+      if (msgsLoja.current != null && daLoja.length > msgsLoja.current) { setAviso(`💬 ${r.pedido.loja}: ${daLoja[daLoja.length - 1].texto}`); alo(); setTimeout(() => setAviso(''), 12000); }
+      msgsLoja.current = daLoja.length;
       antes.current = nova;
       setP(r.pedido); setErro(''); marcarFim(token, nova);
     }).catch((e) => setErro(msgErro(e)));
@@ -922,7 +947,6 @@ function Pedido() {
     { t: 'Pedido enviado', h: p.criado_em }, { t: 'Loja aceitou · em preparo', h: p.respondido_em }, { t: p.tipo === 'entrega' ? 'Pronto' : 'Pronto para retirar', h: p.pronto_em },
     ...(p.tipo === 'entrega' ? [{ t: `Saiu para entrega${p.entregador ? ` com ${p.entregador}` : ''}`, h: p.saiu_em }] : []), { t: p.tipo === 'entrega' ? 'Entregue' : 'Retirado', h: p.finalizado_em },
   ];
-  const tel = (p.loja_telefone || '').replace(/\D/g, '');
   return (
     <div className="pd">
       <TopoVoltar titulo={p.loja} />
@@ -972,7 +996,7 @@ function Pedido() {
           <p style={{ color: 'var(--suave)', marginBottom: 0 }}>Pagamento na {p.tipo === 'entrega' ? 'entrega' : 'retirada'}: {FORMAS[p.forma]}{p.troco_para ? ` · troco para ${brl(p.troco_para)}` : ''}</p>
           {p.tipo === 'entrega' && p.endereco && <p style={{ color: 'var(--suave)', marginBottom: 0 }}>Entregar em: {p.endereco}</p>}
         </section>
-        {tel && <a className="btn bloco grande" href={`https://wa.me/${tel.length <= 11 ? '55' + tel : tel}?text=${encodeURIComponent(`Olá! Sobre o meu pedido${p.numero ? ' #' + p.numero : ''} pelo ${NOME_APP}…`)}`} target="_blank" rel="noopener"><Ic n="whatsapp" />Falar com a loja</a>}
+        {p.pode_falar_loja && <ConversaLoja token={token} loja={p.loja} msgs={p.conversa_loja || []} aoEnviar={() => setVez((x) => x + 1)} />}
         <Link className="btn prim bloco grande" to={`/${p.slug}`}><Ic n="sacola" />{final ? 'Pedir de novo' : 'Ver o cardápio'}</Link>
         <Link className="btn bloco" to="/">Ver outras lojas</Link>
       </main>

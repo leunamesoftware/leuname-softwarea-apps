@@ -50,7 +50,7 @@ andamento.get('/andamento', async (c) => {
       v.endereco_entrega, v.observacao, v.token_cliente, v.token_entregador, cl.nome AS cliente, cl.telefone AS cliente_telefone,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
-      (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em, (v.codigo_entrega IS NOT NULL) AS pede_codigo
+      (SELECT po.criado_em FROM pedidos_online po WHERE po.venda_id = v.id) AS app_criado_em, (SELECT po.id FROM pedidos_online po WHERE po.venda_id = v.id) AS app_id, (v.codigo_entrega IS NOT NULL) AS pede_codigo
     FROM vendas v LEFT JOIN clientes cl ON cl.id = v.cliente_id
     WHERE v.empresa_id = ? AND v.status = 'concluida' AND v.criado_em >= ? AND v.token_cliente IS NOT NULL
       AND (v.andamento NOT IN ('entregue','retirado') OR v.finalizado_em >= ?)

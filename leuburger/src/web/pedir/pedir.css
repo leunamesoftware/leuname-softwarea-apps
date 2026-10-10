@@ -62,8 +62,8 @@ body { background: var(--fundo); }
 .pd-cta-loja { display: grid; grid-template-columns: auto minmax(0,1fr) 18px; gap: 12px; align-items: center; padding: 14px; border-radius: var(--raio); background: var(--grafite); color: #fff; text-decoration: none; margin-top: 6px; }
 .pd-cta-loja > .ic:first-child { color: #FFB020; }
 .pd-cta-loja span { display: grid; gap: 2px; } .pd-cta-loja small { color: #D1D5DB; }
-.pd-abas-lojista { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: 0; width: min(760px, 100%); display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--linha); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
-.pd-abas-lojista button { display: grid; justify-items: center; gap: 2px; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--suave); padding: 4px; }
+.pd-abas-lojista { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: 0; width: min(760px, 100%); display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-top: 1px solid var(--linha); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
+.pd-abas-lojista button { display: grid; justify-items: center; gap: 2px; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--suave); padding: 4px; white-space: nowrap; }
 .pd-abas-lojista .bolha { position: relative; display: grid; place-items: center; width: 52px; height: 30px; border-radius: 99px; }
 .pd-abas-lojista .ativo { color: #E8380F; } .pd-abas-lojista .ativo .bolha { background: var(--laranja-claro); }
 .pd-abas-lojista .bolha i { position: absolute; top: -4px; right: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 99px; background: #E8160C; color: #fff; font-style: normal; font-size: 11px; display: grid; place-items: center; }
@@ -391,3 +391,19 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 /* Vitrine do lojista: a loja real dentro de um "celular" */
 .lj-celular { width: min(100%, 420px); margin: 0 auto; height: min(78vh, 760px); border: 8px solid #111827; border-radius: 28px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
 .lj-celular iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* App Parceiro: a loja editável (igual à do cliente, com os botões de editar) */
+.lj-capa { position: relative; align-items: flex-end; justify-content: flex-end; min-height: 190px; }
+.lj-trocar { position: absolute; right: 14px; top: calc(14px + env(safe-area-inset-top)); display: inline-flex; align-items: center; gap: 6px; background: rgba(17,24,39,.78); color: #fff; font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 99px; cursor: pointer; }
+.lj-logo { cursor: pointer; } .lj-logo i { position: absolute; right: 0; bottom: 2px; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--laranja); color: #fff; border: 2px solid #fff; font-style: normal; }
+.lj-cat { display: flex; align-items: center; justify-content: space-between; gap: 10px; } .lj-cat .link { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
+.lj-foto { position: relative; flex: none; } .lj-foto i { position: absolute; right: -4px; top: -4px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--laranja); box-shadow: 0 1px 6px rgba(0,0,0,.2); }
+.lj-mais { width: 100%; margin: 8px 0 4px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border: 2px dashed var(--laranja-borda, #FFD3BD); border-radius: 12px; background: var(--laranja-claro, #FFF0E8); color: var(--laranja); font: inherit; font-weight: 700; cursor: pointer; }
+.lj-aviso { position: sticky; top: 8px; z-index: 25; background: #DCFCE7; color: #166534; border-color: #BBF7D0; }
+.lj-grupos { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha); display: grid; gap: 10px; }
+.lj-grupos > p { margin: -6px 0 0; color: var(--suave); font-size: 13px; }
+.lj-grupo { border: 1px solid var(--linha); border-radius: 12px; padding: 10px; display: grid; gap: 6px; background: #FAFAFA; }
+.lj-grupo-topo { display: grid; grid-template-columns: minmax(0, 1fr) 62px 62px 40px; gap: 6px; align-items: end; }
+.lj-grupo-topo label { display: grid; font-size: 11px; color: var(--suave); font-weight: 700; }
+.lj-grupo-item { display: grid; grid-template-columns: minmax(0, 1fr) 110px 36px; gap: 6px; }
+.lj-grupo-pe { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; } .lj-grupo-pe label { display: flex; align-items: center; gap: 6px; }
+.ent-rapidas { display: flex; flex-wrap: wrap; gap: 6px; } .ent-rapidas .chip { font-size: 13px; }

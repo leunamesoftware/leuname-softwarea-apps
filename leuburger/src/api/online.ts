@@ -4,7 +4,7 @@
 // O cliente nunca vê custo, receita, estoque nem dados de outras lojas; cada loja só vê os pedidos dela.
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
+import { conferirMensagem, RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { contaLogada } from './contaCliente';
 import { enviarFoto } from './entregador';
@@ -180,6 +180,34 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
   return c.json({ ok: true, token }, 201);
 });
 
+/** Cliente e loja conversam enquanto o pedido anda e até 2 horas depois de terminar. */
+function podeFalarLoja(situacao: string, fim: string | null) {
+  if (['aguardando', 'preparando', 'pronto', 'a_caminho'].includes(situacao)) return true;
+  return Boolean(fim) && Date.now() - new Date(String(fim)).getTime() < 2 * 3600e3;
+}
+async function gravarMensagemPedido(c: C, pedidoId: string, de: 'cliente' | 'loja', texto: string) {
+  const ruim = conferirMensagem(texto);
+  if (ruim) throw erro(400, 'mensagem_bloqueada', ruim);
+  const db = c.env.BANCO;
+  const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_pedido WHERE pedido_id = ? AND de = ?').bind(pedidoId, de).first<{ n: number }>();
+  if ((n?.n ?? 0) >= 40) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
+  await db.prepare('INSERT INTO mensagens_pedido (id, pedido_id, de, texto, criado_em) VALUES (?,?,?,?,?)').bind(novoId(), pedidoId, de, texto, agora()).run();
+}
+
+/** Cliente manda mensagem para a loja (texto livre, sem telefone/link/palavrão). */
+appPublico.post('/publico/app/pedido/:token/loja-mensagem', async (c) => {
+  const token = c.req.param('token');
+  if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
+  const o = await c.env.BANCO.prepare(`SELECT o.id, o.status, o.cancelado_em, o.respondido_em, v.andamento, v.status AS venda_status, v.finalizado_em FROM pedidos_online o LEFT JOIN vendas v ON v.id = o.venda_id WHERE o.token = ?`)
+    .bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
+  if (!podeFalarLoja(situacao, o.finalizado_em || o.respondido_em)) throw erro(409, 'conversa_fechada', 'A conversa deste pedido já foi encerrada.');
+  await gravarMensagemPedido(c, o.id, 'cliente', d.texto);
+  return c.json({ ok: true });
+});
+
 /** Cancela sozinho o que a loja não aceitou no prazo (por pedido, pelo token, ou todos de uma loja). */
 function expirar(c: C, onde: 'token' | 'empresa_id' | 'id', valor: string) {
   const quando = agora();
@@ -202,7 +230,9 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     ? (await c.env.BANCO.prepare('SELECT de, texto, criado_em FROM mensagens_entrega WHERE venda_id = ? ORDER BY criado_em').bind(o.venda_id).all()).results.slice(-12) : [];
   const ate = new Date(o.criado_em).getTime() + janelaCancelarMs(c.env);
   const cancelar_ate = !o.cancelado_em && ['aguardando', 'preparando'].includes(situacao) && ate > Date.now() ? new Date(ate).toISOString() : null;
+  const { results: conversaLoja } = await c.env.BANCO.prepare('SELECT de, texto, criado_em FROM mensagens_pedido WHERE pedido_id = ? ORDER BY criado_em').bind(o.id).all();
   return c.json({ pedido: {
+    conversa_loja: conversaLoja.slice(-40), pode_falar_loja: podeFalarLoja(situacao, o.finalizado_em || o.respondido_em),
     loja: o.loja, slug: o.slug, loja_telefone: o.loja_telefone, numero: o.numero || null, situacao, motivo_recusa: o.motivo_recusa, tipo: o.tipo, endereco: o.endereco,
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
@@ -312,6 +342,25 @@ appLoja.get('/pedidos-app', async (c) => {
     const ate = new Date(String(p.criado_em)).getTime() + prazo;
     return { ...p, itens: JSON.parse(String(p.resumo)), resumo: undefined, cancelar_ate: !p.cancelado_em && ate > Date.now() ? new Date(ate).toISOString() : null };
   }) });
+});
+
+/** Conversas com os clientes dos pedidos das últimas 6 horas: { pedido_id: mensagens }. */
+appLoja.get('/pedidos-app/conversas', async (c) => {
+  exigir(c, 'vender');
+  const { results } = await c.env.BANCO.prepare(`SELECT m.pedido_id, m.de, m.texto, m.criado_em FROM mensagens_pedido m JOIN pedidos_online o ON o.id = m.pedido_id
+    WHERE o.empresa_id = ? AND o.criado_em > ? ORDER BY m.criado_em`).bind(c.get('empresa').id, new Date(Date.now() - 6 * 3600e3).toISOString()).all<{ pedido_id: string; de: string; texto: string; criado_em: string }>();
+  const conversas: Record<string, { de: string; texto: string; criado_em: string }[]> = {};
+  for (const m of results) (conversas[m.pedido_id] ||= []).push({ de: m.de, texto: m.texto, criado_em: m.criado_em });
+  return c.json({ conversas });
+});
+
+appLoja.post('/pedidos-app/:id/mensagem', async (c) => {
+  exigir(c, 'vender');
+  const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
+  const o = await c.env.BANCO.prepare('SELECT id FROM pedidos_online WHERE id = ? AND empresa_id = ?').bind(c.req.param('id'), c.get('empresa').id).first<{ id: string }>();
+  if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
+  await gravarMensagemPedido(c, o.id, 'loja', d.texto);
+  return c.json({ ok: true });
 });
 
 appLoja.post('/pedidos-app/:id/aceitar', async (c) => {

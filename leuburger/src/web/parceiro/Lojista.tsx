@@ -4,7 +4,8 @@ import { CIDADES_RJ } from '../cidades-rj';
 import { CULINARIAS } from '../culinarias';
 import { faltam, useRelogio } from '../tempo';
 import { useEffect, useRef, useState } from 'react';
-import { brl, FORMAS, lerValor, type Forma } from '../../regras/pedido';
+import { brl, FORMAS, lerValor, type Forma, type Opcoes } from '../../regras/pedido';
+import { RAPIDAS_LOJA_CLIENTE } from '../../regras/mensagens';
 import { del, ErroApp, get, post, put } from '../api';
 import { Modal, msgErro, reduzirFoto } from '../comuns';
 import { Ic } from '../icones';
@@ -14,7 +15,6 @@ interface Empresa { id: string; nome: string; cnpj: string | null; telefone: str
   formas_pagamento: Forma[]; desconto_max_caixa: number; largura_cupom: string; taxa_entrega_padrao: number; no_app: boolean; aceitando: boolean; slug: string | null; acesso_ate: string | null }
 interface Eu { usuario: { nome: string }; empresa: Empresa }
 const dig = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
-const wa = (tel: string | null | undefined, texto = '') => { const n = dig(tel); return `https://wa.me/${n.length >= 10 && n.length <= 11 ? '55' + n : n}${texto ? '?text=' + encodeURIComponent(texto) : ''}`; };
 const reais = (c: number) => (c ? (c / 100).toFixed(2).replace('.', ',') : '');
 
 export function Lojista() {
@@ -90,7 +90,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
 }
 
 // ---------- painel ----------
-type Aba = 'pedidos' | 'vitrine' | 'cardapio' | 'entregadores' | 'loja';
+type Aba = 'pedidos' | 'vitrine' | 'entregadores' | 'loja';
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('pedidos');
   const [novos, setNovos] = useState(0);
@@ -99,15 +99,14 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
   return (
     <div className="pd">
       <TopoLoja titulo={e.nome}><button className="pd-voltar" onClick={abrirFechar} aria-label={e.aceitando ? 'Fechar a loja' : 'Abrir a loja'} title={e.aceitando ? 'Aberta' : 'Fechada'} style={{ width: 'auto', padding: '0 10px', fontWeight: 800, fontSize: 13 }}>{e.aceitando ? '🟢 Aberta' : '🔴 Fechada'}</button></TopoLoja>
-      <main className="pd-corpo" style={{ paddingBottom: 90 }}>
+      {aba === 'vitrine' && <div style={{ paddingBottom: 80 }}><LojaEditavel e={e} recarregar={recarregar} /></div>}
+      <main className="pd-corpo" style={{ paddingBottom: 90, display: aba === 'vitrine' ? 'none' : undefined }}>
         {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} />}
-        {aba === 'vitrine' && <Vitrine e={e} irPara={setAba} />}
-        {aba === 'cardapio' && <Cardapio />}
         {aba === 'entregadores' && <Entregadores />}
         {aba === 'loja' && <MinhaLoja e={e} recarregar={recarregar} aoSair={aoSair} />}
       </main>
       <nav className="pd-abas-lojista">
-        {([['pedidos', 'pedidos', 'Pedidos'], ['vitrine', 'olho', 'Vitrine'], ['cardapio', 'produtos', 'Cardápio'], ['entregadores', 'seta', 'Entregadores'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
+        {([['pedidos', 'pedidos', 'Pedidos'], ['vitrine', 'loja', 'Minha loja'], ['entregadores', 'seta', 'Entregadores'], ['loja', 'config', 'Ajustes']] as [Aba, string, string][]).map(([v, ic, n]) => (
           <button key={v} className={aba === v ? 'ativo' : ''} onClick={() => setAba(v)}><span className="bolha"><Ic n={ic} />{v === 'pedidos' && novos > 0 && <i>{novos}</i>}</span>{n}</button>
         ))}
       </nav>
@@ -117,7 +116,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
 
 // ---------- pedidos ----------
 interface Novo { cancelar_ate: string | null; cancelado_em: string | null; nome_cliente?: string; id: string; nome: string; telefone: string; tipo: 'entrega' | 'balcao'; endereco: string | null; forma: Forma; troco_para: number | null; observacao: string | null; itens: { nome: string; qtd: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[]; total: number; criado_em: string }
-interface EmAndamento { conversa_entregador?: { de: 'loja' | 'entregador'; texto: string; criado_em: string }[]; app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
+interface EmAndamento { app_id?: string | null; conversa_entregador?: { de: 'loja' | 'entregador'; texto: string; criado_em: string }[]; app_cancelar_ate: string | null; pede_codigo: number | boolean | null; id: string; numero: number; tipo: 'entrega' | 'balcao'; andamento: string; entregador: string | null; entregador_id: string | null; total: number; troco: number; criado_em: string; finalizado_em: string | null; endereco_entrega: string | null; observacao: string | null; token_entregador: string; cliente: string | null; cliente_telefone: string | null; resumo: string | null; formas: string | null }
 const det = (d: Novo['itens'][0]['detalhes']) => [d.tamanho && d.tamanho !== 'Padrão' ? d.tamanho : '', ...(d.adicionais || []).map((a) => a.nome), ...(d.retirar || []).map((r) => 'sem ' + r.toLowerCase()), d.observacao || ''].filter(Boolean).join(' · ');
 const hora = (iso: string) => new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 function plim() {
@@ -152,20 +151,47 @@ function ConversaEntregador({ p, aoEnviar }: { p: EmAndamento; aoEnviar: () => P
   );
 }
 
+type Msg = { de: string; texto: string; criado_em: string };
+/** Conversa da loja com o cliente do pedido (no app, sem telefone; o servidor barra número, link e palavrão). */
+function ConversaCliente({ pedidoId, nome, msgs, aoEnviar }: { pedidoId: string; nome: string; msgs: Msg[]; aoEnviar: () => Promise<void> }) {
+  const dele = msgs.filter((m) => m.de === 'cliente').length;
+  const [aberta, setAberta] = useState(false), [vistas, setVistas] = useState(0), [texto, setTexto] = useState(''), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
+  const novas = aberta ? 0 : dele - vistas;
+  const enviar = async (t: string) => {
+    if (!t.trim()) return;
+    setOcupado(true);
+    try { await post(`/pedidos-app/${pedidoId}/mensagem`, { texto: t.trim() }); setTexto(''); setErro(''); await aoEnviar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
+  };
+  const primeiro = nome.split(' ')[0];
+  if (!aberta) return <button className={`btn bloco peq ${novas > 0 ? 'prim' : ''}`} style={{ marginTop: 8 }} onClick={() => { setAberta(true); setVistas(dele); }}>💬 Conversar com {primeiro}{novas > 0 && ` (${novas} nova${novas > 1 ? 's' : ''})`}</button>;
+  return (
+    <div className="ent-chat" style={{ marginTop: 8 }}>
+      <b>💬 Conversa com {primeiro}</b><button className="link" style={{ float: 'right' }} onClick={() => { setAberta(false); setVistas(dele); }}>Fechar</button>
+      {msgs.map((m, k) => <p key={k} className={m.de === 'loja' ? 'eu' : 'ele'}>{m.texto}<small>{hora(m.criado_em)}</small></p>)}
+      <div className="ent-rapidas">{RAPIDAS_LOJA_CLIENTE.map((t) => <button key={t} className="chip" onClick={() => enviar(t)} disabled={ocupado}>{t}</button>)}</div>
+      {erro && <p className="aviso erro">{erro}</p>}
+      <div className="pd-chat-enviar"><input value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={300} placeholder={`Mensagem para ${primeiro}`} aria-label="Mensagem para o cliente" onKeyDown={(e) => { if (e.key === 'Enter') enviar(texto); }} /><button className="btn prim" onClick={() => enviar(texto)} disabled={!texto.trim() || ocupado}>Enviar</button></div>
+    </div>
+  );
+}
+
 function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) {
   const [novos, setNovos] = useState<Novo[]>([]), [lista, setLista] = useState<EmAndamento[]>([]);
   const [carregou, setCarregou] = useState(false), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
   const [recusar, setRecusar] = useState<Novo | null>(null), [cancelados, setCancelados] = useState<Novo[]>([]);
   const [escolher, setEscolher] = useState<EmAndamento | null>(null);
   const vistos = useRef<Set<string> | null>(null), msgsVistas = useRef<number | null>(null);
+  const [conversas, setConversas] = useState<Record<string, Msg[]>>({});
   const carregar = async () => {
     try {
-      const [a, b] = await Promise.all([get<{ pedidos: (Novo & { status: string })[] }>('/pedidos-app'), get<{ pedidos: EmAndamento[] }>('/andamento')]);
+      const [a, b, cv] = await Promise.all([get<{ pedidos: (Novo & { status: string })[] }>('/pedidos-app'), get<{ pedidos: EmAndamento[] }>('/andamento'), get<{ conversas: Record<string, Msg[]> }>('/pedidos-app/conversas').catch(() => ({ conversas: {} }))]);
       const n = a.pedidos.filter((p) => p.status === 'aguardando');
       if (vistos.current && n.some((p) => !vistos.current!.has(p.id))) plim();
       vistos.current = new Set(n.map((p) => p.id));
       // Mensagem nova do entregador também toca o aviso.
-      const nm = b.pedidos.reduce((t, p) => t + (p.conversa_entregador || []).filter((m) => m.de === 'entregador').length, 0);
+      const nm = b.pedidos.reduce((t, p) => t + (p.conversa_entregador || []).filter((m) => m.de === 'entregador').length, 0)
+        + Object.values(cv.conversas).reduce((t, l) => t + l.filter((m) => m.de === 'cliente').length, 0);
+      setConversas(cv.conversas);
       if (msgsVistas.current != null && nm > msgsVistas.current) plim();
       msgsVistas.current = nm;
       setCancelados(a.pedidos.filter((p) => p.cancelado_em && Date.now() - new Date(p.cancelado_em).getTime() < 2 * 3600e3));
@@ -199,8 +225,8 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
           <div className="ped-acoes">
             <button className="btn prim" disabled={ocupado === p.id} onClick={() => agir(p.id, () => post(`/pedidos-app/${p.id}/aceitar`))}><Ic n="check" />Aceitar</button>
             <button className="btn" onClick={() => setRecusar(p)}><Ic n="x" />Recusar</button>
-            <a className="btn" href={wa(p.telefone)} target="_blank" rel="noopener"><Ic n="whatsapp" /></a>
           </div>
+          <ConversaCliente pedidoId={p.id} nome={p.nome} msgs={conversas[p.id] || []} aoEnviar={carregar} />
         </article>
       ))}
       {cancelados.map((p) => <p key={p.id} className="aviso erro" style={{ margin: 0 }}>❌ <b>{p.nome}</b> cancelou o pedido ({brl(p.total)}). Não precisa preparar.</p>)}
@@ -223,8 +249,8 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
             {p.tipo === 'entrega' && p.andamento === 'pronto' && p.entregador_id && <button className="btn" onClick={() => setEscolher(p)}>Trocar entregador</button>}
             {p.andamento === 'a_caminho' && p.entregador && <span className="selo">🛵 Com {p.entregador.split(' ')[0]}</span>}
             {p.andamento === 'a_caminho' && <button className="btn prim" disabled={ocupado === p.id} onClick={() => andar(p, 'entregue')}><Ic n="check" />Entregue</button>}
-            {p.cliente_telefone && <a className="btn" href={wa(p.cliente_telefone)} target="_blank" rel="noopener" aria-label="WhatsApp do cliente"><Ic n="usuario" /></a>}
           </div>
+          {p.app_id && <ConversaCliente pedidoId={p.app_id} nome={p.cliente || 'cliente'} msgs={conversas[p.app_id] || []} aoEnviar={carregar} />}
           {p.entregador_id && <ConversaEntregador p={p} aoEnviar={carregar} />}
         </article>
       ))}
@@ -247,36 +273,50 @@ interface Prod { id: string; nome: string; descricao: string | null; preco: numb
 interface Cat { id: string; nome: string; icone: string }
 const iconeDe = (nome: string) => { const n = nome.toLowerCase(); return /burg|lanche|hamb|sandu|x-/.test(n) ? 'hamburguer' : /bebid|refri|suco|água|agua|cerveja/.test(n) ? 'bebida' : /porç|porc|batata|petisc|frit/.test(n) ? 'porcao' : /combo/.test(n) ? 'combo' : /açaí|acai|sorvet/.test(n) ? 'acai' : /doce|sobremesa|bolo|torta/.test(n) ? 'sobremesa' : 'outro'; };
 
-function Cardapio() {
-  const [d, setD] = useState<{ produtos: Prod[]; categorias: Cat[] } | null>(null), [erro, setErro] = useState('');
-  const [editar, setEditar] = useState<Prod | 'novo' | null>(null);
-  const carregar = () => Promise.all([get<{ produtos: Prod[] }>('/produtos'), get<{ categorias: Cat[] }>('/categorias')]).then(([p, c]) => setD({ produtos: p.produtos.filter((x) => x.ativo), categorias: c.categorias })).catch((e) => setErro(msgErro(e)));
-  useEffect(() => { carregar(); }, []);
-  if (erro) return <p className="aviso erro">{erro}</p>;
-  if (!d) return <div className="carregando"><div className="giro" /></div>;
+type GrupoEd = { nome: string; min: string; max: string; repetir: boolean; itens: { nome: string; preco: string }[] };
+const MODELOS: [string, GrupoEd][] = [
+  ['🥫 Molhos', { nome: 'Molhos', min: '0', max: '2', repetir: false, itens: [{ nome: 'Ketchup', preco: '' }, { nome: 'Mostarda', preco: '' }, { nome: 'Maionese', preco: '' }] }],
+  ['🥤 Bebida', { nome: 'Bebida', min: '1', max: '1', repetir: false, itens: [{ nome: 'Coca-Cola lata', preco: '' }, { nome: 'Guaraná lata', preco: '' }] }],
+  ['➕ Turbinar', { nome: 'Turbine seu lanche', min: '0', max: '3', repetir: true, itens: [{ nome: 'Bacon', preco: '4,00' }, { nome: 'Cheddar', preco: '3,00' }] }],
+  ['✏️ Em branco', { nome: '', min: '0', max: '1', repetir: false, itens: [{ nome: '', preco: '' }] }],
+];
+/** Grupos de escolha do produto: o cliente escolhe dentro de cada grupo (ex.: Molhos — escolha até 2). */
+function EditorGrupos({ grupos, set }: { grupos: GrupoEd[]; set: (g: GrupoEd[]) => void }) {
+  const muda = (k: number, x: Partial<GrupoEd>) => set(grupos.map((g, i) => (i === k ? { ...g, ...x } : g)));
   return (
-    <>
-      <button className="btn prim grande bloco" onClick={() => setEditar('novo')}><Ic n="mais" />Adicionar produto</button>
-      {!d.produtos.length && <div className="vazio"><Ic n="produtos" t={40} /><b>Seu cardápio está vazio</b><span>Adicione os seus lanches com foto e preço. Assim que tiver o primeiro produto, a loja aparece para os clientes.</span></div>}
-      {d.categorias.filter((c) => d.produtos.some((p) => p.categoria_id === c.id)).map((c) => (
-        <section key={c.id}>
-          <h2 className="pd-tit">{c.nome}</h2>
-          <div className="pd-cardapio">{d.produtos.filter((p) => p.categoria_id === c.id).map((p) => (
-            <button key={p.id} className="pd-prod" onClick={() => setEditar(p)}>
-              <span className="pd-prod-txt"><b>{p.nome}</b>{p.descricao && <small>{p.descricao}</small>}<span className="num">{brl(p.preco)} · <span style={{ color: 'var(--laranja)' }}>editar</span></span></span>
-              {p.foto_id ? <img className="pd-prod-foto" src={`/api/fotos/${p.foto_id}`} alt="" /> : <div className="sem-foto pd-prod-foto"><Ic n={p.categoria_icone || 'outro'} t={30} /></div>}
-            </button>
-          ))}</div>
-        </section>
+    <div className="lj-grupos">
+      <b>Escolhas do cliente</b>
+      <p>Opcional. Ex.: molhos, bebida do combo, ponto da carne, adicionais pagos. Mínimo 0 = não é obrigatório.</p>
+      {grupos.map((g, k) => (
+        <div key={k} className="lj-grupo">
+          <div className="lj-grupo-topo">
+            <input value={g.nome} onChange={(e) => muda(k, { nome: e.target.value.slice(0, 40) })} placeholder="Nome (ex.: Molhos)" aria-label="Nome do grupo" />
+            <label>Mín.<input value={g.min} onChange={(e) => muda(k, { min: e.target.value.replace(/\D/g, '').slice(0, 2) })} inputMode="numeric" /></label>
+            <label>Máx.<input value={g.max} onChange={(e) => muda(k, { max: e.target.value.replace(/\D/g, '').slice(0, 2) })} inputMode="numeric" /></label>
+            <button className="btn-ic vermelho" onClick={() => set(grupos.filter((_, i) => i !== k))} aria-label="Tirar grupo"><Ic n="lixeira" /></button>
+          </div>
+          {g.itens.map((it, j) => (
+            <div key={j} className="lj-grupo-item">
+              <input value={it.nome} onChange={(e) => muda(k, { itens: g.itens.map((y, i) => (i === j ? { ...y, nome: e.target.value.slice(0, 40) } : y)) })} placeholder="Opção" aria-label="Opção" />
+              <input value={it.preco} onChange={(e) => muda(k, { itens: g.itens.map((y, i) => (i === j ? { ...y, preco: e.target.value } : y)) })} placeholder="+ R$" inputMode="decimal" aria-label="Preço a mais" />
+              <button className="btn-ic" onClick={() => muda(k, { itens: g.itens.filter((_, i) => i !== j) })} aria-label="Tirar opção"><Ic n="x" /></button>
+            </div>
+          ))}
+          <div className="lj-grupo-pe">
+            <button className="link" onClick={() => muda(k, { itens: [...g.itens, { nome: '', preco: '' }] })}>+ opção</button>
+            <label><input type="checkbox" checked={g.repetir} onChange={(e) => muda(k, { repetir: e.target.checked })} />Pode repetir (2x Bacon)</label>
+          </div>
+        </div>
       ))}
-      {editar && <EditarProduto p={editar === 'novo' ? null : editar} categorias={d.categorias} aoFechar={() => setEditar(null)} aoSalvar={() => { setEditar(null); carregar(); }} />}
-    </>
+      <div className="chips">{MODELOS.map(([n, m]) => <button key={n} className="chip" onClick={() => set([...grupos, JSON.parse(JSON.stringify(m))])}>{n}</button>)}</div>
+    </div>
   );
 }
 
-function EditarProduto({ p, categorias, aoFechar, aoSalvar }: { p: Prod | null; categorias: Cat[]; aoFechar: () => void; aoSalvar: () => void }) {
-  const [f, setF] = useState({ nome: p?.nome || '', descricao: p?.descricao || '', preco: reais(p?.preco || 0), categoria: p?.categoria || categorias[0]?.nome || '' });
+function EditarProduto({ p, categorias, categoriaInicial, aoFechar, aoSalvar }: { p: Prod | null; categorias: Cat[]; categoriaInicial?: string; aoFechar: () => void; aoSalvar: () => void }) {
+  const [f, setF] = useState({ nome: p?.nome || '', descricao: p?.descricao || '', preco: reais(p?.preco || 0), categoria: p?.categoria || categoriaInicial || categorias[0]?.nome || '' });
   const [foto, setFoto] = useState(p?.foto_id || null);
+  const [grupos, setGrupos] = useState<GrupoEd[]>(() => ((p?.opcoes as Opcoes | undefined)?.grupos || []).map((g) => ({ nome: g.nome, min: String(g.min), max: String(g.max), repetir: Boolean(g.repetir), itens: g.itens.map((i) => ({ nome: i.nome, preco: reais(i.preco) })) })));
   const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false);
   const subir = async (arq?: File) => { if (!arq) return; setOcupado(true); try { setFoto((await post<{ id: string }>('/fotos', { dados: await reduzirFoto(arq) })).id); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); } };
   const salvar = async () => {
@@ -284,11 +324,20 @@ function EditarProduto({ p, categorias, aoFechar, aoSalvar }: { p: Prod | null; 
     if (!f.nome.trim()) return setErro('Digite o nome do produto.');
     if (Number.isNaN(preco) || preco <= 0) return setErro('Digite o preço.');
     if (!f.categoria.trim()) return setErro('Digite a categoria (ex.: Lanches, Bebidas).');
+    let ruim = '';
+    const gr = grupos.filter((g) => g.nome.trim()).map((g) => {
+      const itens = g.itens.filter((i) => i.nome.trim()).map((i) => { const v = i.preco.trim() ? lerValor(i.preco) : 0; if (Number.isNaN(v)) ruim = `Confira os preços em "${g.nome}".`; return { nome: i.nome.trim(), preco: v }; });
+      const min = Number(g.min) || 0, max = Math.max(1, Number(g.max) || 1);
+      if (!itens.length) ruim = `Coloque as opções de "${g.nome.trim()}".`;
+      if (max < min) ruim = `Em "${g.nome.trim()}" o máximo é menor que o mínimo.`;
+      return { nome: g.nome.trim(), min, max, repetir: g.repetir, itens };
+    });
+    if (ruim) return setErro(ruim);
     setOcupado(true); setErro('');
     try {
       let cat = categorias.find((c) => c.nome.toLowerCase() === f.categoria.trim().toLowerCase());
       if (!cat) { const nome = f.categoria.trim(); const r = await post<{ id: string }>('/categorias', { nome, icone: iconeDe(nome), ordem: categorias.length + 1 }); cat = { id: r.id, nome, icone: iconeDe(nome) }; }
-      const dados = { nome: f.nome.trim(), descricao: f.descricao.trim() || null, codigo: p?.codigo || null, categoria_id: cat.id, preco, custo: p?.custo || 0, foto_id: foto, ativo: true, opcoes: p?.opcoes || {}, receita: p?.receita || [] };
+      const dados = { nome: f.nome.trim(), descricao: f.descricao.trim() || null, codigo: p?.codigo || null, categoria_id: cat.id, preco, custo: p?.custo || 0, foto_id: foto, ativo: true, opcoes: { ...((p?.opcoes as Opcoes) || {}), grupos: gr }, receita: p?.receita || [] };
       if (p) await put(`/produtos/${p.id}`, dados); else await post('/produtos', dados);
       aoSalvar();
     } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
@@ -306,35 +355,131 @@ function EditarProduto({ p, categorias, aoFechar, aoSalvar }: { p: Prod | null; 
         <label className="campo">Preço (R$)<input value={f.preco} onChange={(e) => setF({ ...f, preco: e.target.value })} inputMode="decimal" placeholder="0,00" /></label>
         <label className="campo">Categoria<input value={f.categoria} onChange={(e) => setF({ ...f, categoria: e.target.value })} list="lista-cats" maxLength={40} placeholder="Ex.: Lanches" /><datalist id="lista-cats">{categorias.map((c) => <option key={c.id} value={c.nome} />)}</datalist></label>
       </div>
+      <EditorGrupos grupos={grupos} set={setGrupos} />
       {erro && <p className="aviso erro">{erro}</p>}
     </Modal>
   );
 }
 
-// ---------- vitrine: a loja como o cliente vê ----------
-function Vitrine({ e, irPara }: { e: Empresa; irPara: (a: Aba) => void }) {
-  const [vez, setVez] = useState(0);
-  if (!e.slug) return <div className="vazio"><Ic n="loja" t={40} /><b>Sua loja ainda não está no app</b><span>Complete os dados em Minha loja e adicione produtos no Cardápio.</span><button className="btn prim" onClick={() => irPara('loja')}>Ir para Minha loja</button></div>;
-  const link = `/pedir/${e.slug}`;
+// ---------- Minha loja: a loja de verdade, igual o cliente vê, editando direto nela ----------
+const fotoUrl = (id: string | null | undefined) => (id ? `/api/fotos/${id}` : null);
+const PADRAO_FOTO: Record<string, string> = { hamburguer: '/img/hamburguer.webp', porcao: '/img/porcao.webp', bebida: '/img/bebida.webp', combo: '/img/combo.webp' };
+function FotoProd({ p, className }: { p: Pick<Prod, 'foto_id' | 'categoria_icone'>; className?: string }) {
+  const src = fotoUrl(p.foto_id) || (p.categoria_icone && PADRAO_FOTO[p.categoria_icone]);
+  return src ? <img className={className} src={src} alt="" loading="lazy" /> : <div className={`sem-foto ${className || ''}`}><Ic n={p.categoria_icone || 'outro'} t={30} /></div>;
+}
+type Cfg = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+function LojaEditavel({ e, recarregar }: { e: Empresa; recarregar: () => void }) {
+  const [d, setD] = useState<{ cfg: Cfg; produtos: Prod[]; categorias: Cat[]; nota: number | null; avaliacoes: number } | null>(null);
+  const [erro, setErro] = useState(''), [aviso, setAviso] = useState(''), [ocupado, setOcupado] = useState('');
+  const [editar, setEditar] = useState<{ p: Prod | null; categoria?: string } | null>(null);
+  const [dados, setDados] = useState(false), [cat, setCat] = useState('');
+  const carregar = async () => {
+    try {
+      const [l, p, c] = await Promise.all([get<{ loja: Cfg }>('/loja-app'), get<{ produtos: Prod[] }>('/produtos'), get<{ categorias: Cat[] }>('/categorias')]);
+      let nota: number | null = null, avaliacoes = 0;
+      if (l.loja.slug) try { const pub = await get<{ loja: { nota: number | null; avaliacoes: number } }>(`/publico/app/loja/${encodeURIComponent(l.loja.slug)}`); nota = pub.loja.nota; avaliacoes = pub.loja.avaliacoes; } catch { /* loja ainda fora do app */ }
+      setD({ cfg: l.loja, produtos: p.produtos.filter((x) => x.ativo), categorias: c.categorias, nota, avaliacoes }); setErro('');
+    } catch (x) { setErro(msgErro(x)); }
+  };
+  useEffect(() => { carregar(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (aviso) { const t = setTimeout(() => setAviso(''), 2500); return () => clearTimeout(t); } }, [aviso]);
+  // Salva a configuração da loja no app com uma mudança (banner, logo...). Manda tudo, como a tela Ajustes.
+  const salvarCfg = async (mudanca: Cfg, texto: string) => {
+    if (!d) return;
+    const c = { ...d.cfg, ...mudanca };
+    await put('/loja-app', { slug: c.slug, no_app: true, aceitando: Boolean(c.aceitando), faz_entrega: Boolean(c.faz_entrega), faz_retirada: Boolean(c.faz_retirada), tipo_loja: c.tipo_loja, descricao: c.descricao,
+      logo_id: c.logo_id, capa_id: c.capa_id, tempo_entrega: c.tempo_entrega || null, pedido_minimo: c.pedido_minimo || 0, lat: c.lat ?? null, lng: c.lng ?? null, raio_km: c.raio_km || 8 });
+    setD({ ...d, cfg: c }); setAviso(texto);
+  };
+  const trocarFoto = async (qual: 'capa_id' | 'logo_id', arq?: File) => {
+    if (!arq) return;
+    setOcupado(qual);
+    try { const r = await post<{ id: string }>('/fotos', { dados: await reduzirFoto(arq, qual === 'capa_id' ? 1200 : 600) }); await salvarCfg({ [qual]: r.id }, qual === 'capa_id' ? '✓ Banner trocado' : '✓ Logo trocado'); }
+    catch (x) { setErro(msgErro(x)); } finally { setOcupado(''); }
+  };
+  const novaCategoria = async () => {
+    const nome = prompt('Nome da nova categoria (ex.: Lanches, Bebidas, Sobremesas):')?.trim();
+    if (!nome || !d) return;
+    try { await post('/categorias', { nome, icone: iconeDe(nome), ordem: d.categorias.length + 1 }); await carregar(); setAviso('✓ Categoria criada. Agora adicione os produtos dela.'); } catch (x) { setErro(msgErro(x)); }
+  };
+  const renomear = async (c: Cat) => {
+    const nome = prompt('Novo nome da categoria:', c.nome)?.trim();
+    if (!nome || nome === c.nome) return;
+    try { await put(`/categorias/${c.id}`, { nome, icone: c.icone || iconeDe(nome), ordem: d?.categorias.findIndex((x) => x.id === c.id) ?? 0 }); await carregar(); } catch (x) { setErro(msgErro(x)); }
+  };
+  if (erro && !d) return <p className="aviso erro">{erro}</p>;
+  if (!d) return <div className="carregando"><div className="giro" /></div>;
+  const { cfg, produtos, categorias } = d;
+  const comProdutos = categorias.filter((c) => produtos.some((p) => p.categoria_id === c.id));
+  const vazias = categorias.filter((c) => !produtos.some((p) => p.categoria_id === c.id));
+  const destaques = [...produtos].sort((a, b) => Number(Boolean(b.foto_id)) - Number(Boolean(a.foto_id))).slice(0, 6);
+  const capa = fotoUrl(cfg.capa_id);
+  const tipoNome = CULINARIAS.find(([v]) => v === cfg.tipo_loja)?.[1];
+  const taxa = e.taxa_entrega_padrao;
+  const irPara2 = (id: string) => { setCat(id); document.getElementById('ed-cat-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   return (
-    <>
-      <h2 className="pd-tit" style={{ marginTop: 0 }}>Sua loja no Pedêê</h2>
-      <p style={{ margin: '0 0 10px', color: 'var(--suave)' }}>É assim que os clientes veem a sua loja: banner, logo, categorias e produtos.</p>
-      <div className="lj-celular"><iframe key={vez} src={`${link}?previa=1`} title="Prévia da sua loja" /></div>
-      <div className="dupla" style={{ marginTop: 12 }}>
-        <button className="btn" onClick={() => irPara('cardapio')}><Ic n="produtos" />Editar cardápio</button>
-        <button className="btn" onClick={() => irPara('loja')}><Ic n="foto" />Banner e logo</button>
+    <div className="pd-loja-pag lj-editavel">
+      <div className="pd-loja-capa lj-capa" style={capa ? { backgroundImage: `url(${capa})` } : undefined}>
+        <label className="lj-trocar">{ocupado === 'capa_id' ? 'Enviando…' : <><Ic n="foto" t={16} />{capa ? 'Trocar banner' : 'Colocar banner'}</>}<input type="file" accept="image/*" hidden onChange={(x) => trocarFoto('capa_id', x.target.files?.[0])} /></label>
       </div>
-      <div className="dupla" style={{ marginTop: 8 }}>
-        <button className="btn" onClick={() => setVez(vez + 1)}>🔄 Atualizar</button>
-        <a className="btn prim" href={link} target="_blank" rel="noopener"><Ic n="olho" />Abrir em tela cheia</a>
+      <section className="pd-loja-card">
+        <label className="pd-loja-logo lj-logo" title="Trocar logo">
+          {cfg.logo_id ? <img className="logo-loja" src={fotoUrl(cfg.logo_id)!} alt="" style={{ width: 84, height: 84 }} /> : <span className="logo-loja letra" style={{ width: 84, height: 84, fontSize: 35 }}>{(e.nome.trim()[0] || '?').toUpperCase()}</span>}
+          <i>{ocupado === 'logo_id' ? '…' : <Ic n="foto" t={14} />}</i>
+          <input type="file" accept="image/*" hidden onChange={(x) => trocarFoto('logo_id', x.target.files?.[0])} />
+        </label>
+        <h1>{e.nome}</h1>
+        <p className="pd-loja-linha">{[e.cidade, cfg.pedido_minimo > 0 ? `Mín ${brl(cfg.pedido_minimo)}` : '', tipoNome].filter(Boolean).join(' • ')}</p>
+        <div className="pd-loja-item"><span>{d.nota ? <>★ <b>{d.nota.toLocaleString('pt-BR')}</b> ({d.avaliacoes} {d.avaliacoes === 1 ? 'avaliação' : 'avaliações'})</> : <><b>Novo</b> no Pedêê</>}</span></div>
+        <div className="pd-loja-item"><span>{cfg.aceitando ? 'Padrão' : <b className="fechado">Fechada agora</b>}{cfg.tempo_entrega ? ` • ${cfg.tempo_entrega}` : ''} • <b className={taxa ? '' : 'verde'}>{!cfg.faz_entrega ? 'Só retirada' : taxa ? brl(taxa) : 'Grátis'}</b></span></div>
+        {cfg.descricao ? <p className="pd-loja-desc">{cfg.descricao}</p> : <p className="pd-loja-desc" style={{ color: 'var(--suave)' }}>Sem descrição ainda.</p>}
+        <button className="btn bloco peq" style={{ margin: '6px 0 10px' }} onClick={() => setDados(true)}><Ic n="lapis" t={16} />Editar nome, descrição, entrega e horários</button>
+      </section>
+      <div className="pd-loja-fixo">
+        {categorias.length > 0 && <nav className="pd-loja-abas">{comProdutos.map((c) => <button key={c.id} className={cat === c.id ? 'sel' : ''} onClick={() => irPara2(c.id)}>{c.nome}</button>)}</nav>}
       </div>
-    </>
+      <main className="pd-corpo" style={{ paddingTop: 6 }}>
+        {aviso && <p className="aviso lj-aviso">{aviso}</p>}
+        {erro && <p className="aviso erro">{erro}</p>}
+        {destaques.length > 2 && <section>
+          <h2 className="pd-tit">Destaques</h2>
+          <div className="pd-destaques-grade">{destaques.map((p, k) => (
+            <button key={p.id} onClick={() => setEditar({ p })} aria-label={`Editar ${p.nome}`}>
+              <span className="pd-dg-foto"><FotoProd p={p} />{k === 0 && <em>Mais pedido</em>}</span>
+              <b className="num">{brl(p.preco)}</b><span>{p.nome}</span>
+            </button>
+          ))}</div>
+        </section>}
+        {!produtos.length && <div className="vazio"><Ic n="produtos" t={40} /><b>Sua loja ainda está vazia</b><span>Crie uma categoria (ex.: Lanches) e adicione os produtos com foto e preço. Assim que tiver o primeiro, os clientes já veem a loja.</span></div>}
+        {[...comProdutos, ...vazias].map((c) => {
+          const itens = produtos.filter((p) => p.categoria_id === c.id);
+          return (
+            <section key={c.id} id={'ed-cat-' + c.id} className="pd-loja-secao">
+              <h2 className="pd-tit lj-cat"><span>{c.nome}</span><button className="link" onClick={() => renomear(c)}><Ic n="lapis" t={14} />Renomear</button></h2>
+              <div className="pd-cardapio2">{itens.map((p) => (
+                <button key={p.id} className="pd-prod2" onClick={() => setEditar({ p })} aria-label={`Editar ${p.nome}`}>
+                  <span className="pd-prod-txt"><b>{p.nome}</b>{p.descricao && <small>{p.descricao}</small>}<span className="num">{brl(p.preco)}</span></span>
+                  <span className="lj-foto"><FotoProd p={p} className="pd-prod2-foto" /><i><Ic n="lapis" t={14} /></i></span>
+                </button>
+              ))}</div>
+              <button className="lj-mais" onClick={() => setEditar({ p: null, categoria: c.nome })}><Ic n="mais" t={18} />Adicionar produto em {c.nome}</button>
+            </section>
+          );
+        })}
+        <button className="btn bloco" style={{ marginTop: 18 }} onClick={novaCategoria}><Ic n="mais" />Nova categoria</button>
+        {cfg.slug && <a className="btn bloco" style={{ marginTop: 8 }} href={`/pedir/${cfg.slug}`} target="_blank" rel="noopener"><Ic n="olho" />Abrir no app do cliente</a>}
+        <div style={{ height: 20 }} />
+      </main>
+      {editar && <EditarProduto p={editar.p} categoriaInicial={editar.categoria} categorias={categorias} aoFechar={() => setEditar(null)} aoSalvar={() => { setEditar(null); carregar(); setAviso('✓ Salvo. Já aparece assim para os clientes.'); }} />}
+      {dados && <Modal titulo="Dados da loja" aoFechar={() => { setDados(false); carregar(); }}><MinhaLoja e={e} recarregar={() => { recarregar(); carregar(); }} aoSair={() => {}} soDados /></Modal>}
+    </div>
   );
 }
 
 // ---------- minha loja ----------
-function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => void; aoSair: () => void }) {
+function MinhaLoja({ e, recarregar, aoSair, soDados }: { e: Empresa; recarregar: () => void; aoSair: () => void; soDados?: boolean }) {
   const [cfg, setCfg] = useState<Record<string, any> | null>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [f, setF] = useState({ nome: e.nome, telefone: e.telefone || '', endereco: e.endereco || '', cidade: e.cidade || '', uf: e.uf || '', taxa: reais(e.taxa_entrega_padrao), tempo: '', minimo: '' });
   const [msg, setMsg] = useState(''), [ocupado, setOcupado] = useState(false);
@@ -364,7 +509,7 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
   const copiar = async () => { try { await navigator.clipboard.writeText(link); setMsg('Link copiado.'); } catch { setMsg(link); } };
   return (
     <>
-      <section className="cartao">
+      {!soDados && <section className="cartao">
         <h2 className="cartao-tit">Divulgue a sua loja</h2>
         <p style={{ margin: '0 0 8px', wordBreak: 'break-all' }}><b>{link}</b></p>
         <div className="dupla">
@@ -372,7 +517,7 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
           <a className="btn prim" href={`https://wa.me/?text=${encodeURIComponent(`Agora você pede na ${e.nome} pelo Pedêê! 🍔\nToque no link, instale e faça o seu pedido:\n${link}`)}`} target="_blank" rel="noopener"><Ic n="whatsapp" />Mandar no WhatsApp</a>
         </div>
         {e.acesso_ate && <p style={{ color: 'var(--suave)', fontSize: 14, marginBottom: 0 }}>Grátis até {new Date(e.acesso_ate).toLocaleDateString('pt-BR')}. Depois, R$ 29,90 por mês, sem comissão.</p>}
-      </section>
+      </section>}
       <section className="cartao">
         <h2 className="cartao-tit">Dados da loja</h2>
         <div className="campos">
@@ -394,8 +539,8 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
         {msg && <p className="aviso" style={{ marginBottom: 0 }}>{msg}</p>}
         <button className="btn prim grande bloco" style={{ marginTop: 12 }} onClick={salvar} disabled={ocupado || !cfg}>{ocupado ? 'Salvando…' : 'Salvar'}</button>
       </section>
-      <a className="btn bloco" href="/" target="_blank" rel="noopener"><Ic n="caixa" />Painel completo (caixa, estoque)</a>
-      <button className="btn bloco" onClick={async () => { await post('/auth/sair').catch(() => {}); aoSair(); }}><Ic n="sair" />Sair</button>
+      {!soDados && <a className="btn bloco" href="/" target="_blank" rel="noopener"><Ic n="caixa" />Painel completo (caixa, estoque)</a>}
+      {!soDados && <button className="btn bloco" onClick={async () => { await post('/auth/sair').catch(() => {}); aoSair(); }}><Ic n="sair" />Sair</button>}
     </>
   );
 }

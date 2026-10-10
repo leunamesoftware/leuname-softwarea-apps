@@ -526,6 +526,18 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
       expect((await cli.post(`/publico/app/pedido/${t4}/cancelar`, {})).status).toBe(200);
       expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido.situacao).toBe('cancelado');
 
+      // Conversa cliente ↔ loja: livre, mas barra telefone, link e palavrão.
+      const t6 = await novo('prazo-cliente-006');
+      expect((await cli.post(`/publico/app/pedido/${t6}/loja-mensagem`, { texto: 'Pode mandar sem cebola?' })).status).toBe(200);
+      expect((await cli.post(`/publico/app/pedido/${t6}/loja-mensagem`, { texto: 'me chama no 21 99876-5432' })).corpo.erro).toBe('mensagem_bloqueada');
+      expect((await cli.post(`/publico/app/pedido/${t6}/loja-mensagem`, { texto: 'vê wa.me/5521' })).corpo.erro).toBe('mensagem_bloqueada');
+      expect((await cli.post(`/publico/app/pedido/${t6}/loja-mensagem`, { texto: 'seu porra' })).corpo.erro).toBe('mensagem_bloqueada');
+      const ped6 = (await n.get('/pedidos-app')).corpo.pedidos.find((x: { status: string; cancelado_em: string | null }) => x.status === 'aguardando' && !x.cancelado_em);
+      expect((await n.post(`/pedidos-app/${ped6.id}/mensagem`, { texto: 'Pode sim!' })).status).toBe(200);
+      expect((await n.get('/pedidos-app/conversas')).corpo.conversas[ped6.id].map((m: { de: string }) => m.de)).toEqual(['cliente', 'loja']);
+      expect((await cli.get(`/publico/app/pedido/${t6}`)).corpo.pedido).toMatchObject({ pode_falar_loja: true, conversa_loja: [{ texto: 'Pode mandar sem cebola?' }, { texto: 'Pode sim!' }] });
+      expect((await cli.post(`/publico/app/pedido/${t6}/cancelar`, {})).status).toBe(200);
+
       // 5) A loja não respondeu em 20 minutos: o pedido cancela sozinho e a loja não consegue mais aceitar.
       const t5 = await novo('prazo-cliente-005');
       A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 25 * 60e3).toISOString()}' WHERE token = '${t5}'`);

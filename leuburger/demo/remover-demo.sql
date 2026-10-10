@@ -1,4 +1,5 @@
 -- Apaga TODAS as lojas de demonstração e o que foi feito nelas (vendas, pedidos, caixa). Também o entregador de teste.
+DELETE FROM mensagens_pedido WHERE pedido_id IN (SELECT id FROM pedidos_online WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM mensagens_entrega WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM mensagens_loja WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
 DELETE FROM pagamentos WHERE venda_id IN (SELECT id FROM vendas WHERE empresa_id IN (SELECT id FROM empresas WHERE conta_email LIKE 'demo-%@leupede.demo'));
