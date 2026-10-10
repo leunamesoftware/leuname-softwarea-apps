@@ -1543,13 +1543,12 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
     }
     // Página de instalar do app no navegador de verdade.
     // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
-    // LeuApps instalada no Android: intent:// abre o Chrome de verdade (na janelinha do app o Chrome não instala).
-    // iPhone instalado: ?de=leuapps (a tela ensina o caminho).
+    // LeuApps instalada: ?de=leuapps. O Android abre numa janelinha (intent:// também cai nela); a tela de instalar
+    // mostra o botão se o Chrome liberar, senão o caminho ⋮ → Abrir no Chrome → Instalar.
     function irParaInstalar(id) {
-      const caminho = `/instalar/${id}`, completo = location.origin + caminho;
-      if (N) location.href = `googlechrome://navigate?url=${encodeURIComponent(completo)}`;
-      else if (android && janelaApp()) location.href = `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(completo)};end`;
-      else location.href = janelaApp() ? `${caminho}?de=leuapps` : caminho;
+      const caminho = `/instalar/${id}`;
+      location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(location.origin + caminho)}`
+        : janelaApp() ? `${caminho}?de=leuapps` : caminho;
     }
     // De dentro da LeuApps instalada, o Android abre outros endereços numa janelinha onde o Chrome não deixa instalar.
     // Por isso a instalação abre no Chrome de verdade: lá o botão Instalar coloca o app na tela, sem pedir permissões.
