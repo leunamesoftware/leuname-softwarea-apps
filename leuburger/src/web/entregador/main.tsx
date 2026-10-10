@@ -190,9 +190,14 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           {erro && <p className="aviso erro">{erro}</p>}
           {emRota && (gps === 'negado'
             ? <div className="aviso erro" style={{ margin: 0 }}>
-                <b>O navegador bloqueou a sua localização para o Pedêê.</b> Mesmo com o GPS do celular ligado, é preciso permitir aqui:
-                toque no <b>cadeado</b> (ou nos 3 pontinhos) ao lado do endereço do site → <b>Permissões</b> → <b>Localização</b> → <b>Permitir</b>.
-                <button className="btn peq" style={{ marginTop: 8 }} onClick={pedirGps}>📍 Tentar de novo</button>
+                <b>O GPS está ligado, mas o Chrome não deixa o Pedêê usar a localização.</b> É uma permissão separada, só deste app. Para liberar:
+                <ol style={{ margin: '6px 0', paddingLeft: 20 }}>
+                  <li>Abra o <b>Chrome</b> → <b>⋮</b> (3 pontinhos) → <b>Configurações</b> → <b>Configurações do site</b> → <b>Local</b>.</li>
+                  <li>Em “Bloqueado”, toque em <b>leuburger.leunamesoftware.com.br</b> → <b>Permitir</b>.</li>
+                  <li>Se não achar: <b>Configurações do celular</b> → <b>Apps</b> → <b>Chrome</b> (e também <b>Pedêê Entregador</b>, se aparecer) → <b>Permissões</b> → <b>Localização</b> → <b>Permitir</b>.</li>
+                </ol>
+                Depois volte aqui e toque em:
+                <button className="btn peq" style={{ marginTop: 8, display: 'flex' }} onClick={pedirGps}>📍 Tentar de novo</button>
               </div>
             : <p className="aviso" style={{ margin: 0 }}>📍 O cliente está vendo você no mapa. Deixe este app aberto durante a entrega.</p>)}
           <h2 className="pd-tit">Entregas agora</h2>
