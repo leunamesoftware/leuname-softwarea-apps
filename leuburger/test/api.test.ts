@@ -506,6 +506,13 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
       A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 6 * 60e3).toISOString()}' WHERE token = '${t3}'`);
       expect((await cli.post(`/publico/app/pedido/${t3}/cancelar`, {})).status).toBe(409);
       expect((await n.post(`/vendas/${venda3}/andamento`, { andamento: 'pronto' })).status).toBe(200);
+
+      // 4) Loja demorando para aceitar: mesmo depois do prazo o cliente pode cancelar.
+      const t4 = await novo('prazo-cliente-004');
+      A.db.exec(`UPDATE pedidos_online SET criado_em = '${new Date(Date.now() - 30 * 60e3).toISOString()}' WHERE token = '${t4}'`);
+      expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido).toMatchObject({ situacao: 'aguardando', cancelar_ate: null, pode_cancelar: true });
+      expect((await cli.post(`/publico/app/pedido/${t4}/cancelar`, {})).status).toBe(200);
+      expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido.situacao).toBe('cancelado');
     } finally { A.env.JANELA_CANCELAR_MIN = '0'; }
   });
 });

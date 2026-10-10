@@ -866,7 +866,7 @@ interface Acomp {
   loja: string; slug: string; loja_telefone: string | null; numero: number | null; situacao: string; motivo_recusa: string | null; tipo: 'entrega' | 'balcao'; endereco: string | null;
   forma: Forma; troco_para: number | null; itens: { nome: string; qtd: number; total: number; detalhes: { tamanho?: string; adicionais?: { nome: string }[]; retirar?: string[]; observacao?: string } }[];
   subtotal: number; taxa_entrega: number; total: number; criado_em: string; respondido_em: string | null; pronto_em: string | null; saiu_em: string | null; finalizado_em: string | null; entregador: string | null;
-  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; cancelado_pelo_cliente: boolean; codigo_entrega: string | null; entregador_foto: string | null;
+  avaliacao: { nota: number; comentario: string | null } | null; mapa: DadosMapa | null; cancelar_ate: string | null; pode_cancelar?: boolean; cancelado_pelo_cliente: boolean; codigo_entrega: string | null; entregador_foto: string | null;
   mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; pode_conversar: boolean;
 }
 const hora = (iso: string | null) => (iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '');
@@ -906,7 +906,7 @@ function Pedido() {
   useRelogio(Boolean(p?.cancelar_ate));
   const [cancelando, setCancelando] = useState(false);
   const cancelar = async () => {
-    if (!confirm('Cancelar este pedido?')) return;
+    if (!confirm('Cancelar este pedido? A loja será avisada.')) return;
     setCancelando(true);
     try { await post(`/publico/app/pedido/${encodeURIComponent(token)}/cancelar`, {}); setVez((x) => x + 1); } catch (e) { setErro(msgErro(e)); setVez((x) => x + 1); } finally { setCancelando(false); }
   };
@@ -931,8 +931,10 @@ function Pedido() {
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
         {erro && <p className="aviso erro">{erro}</p>}
-        {faltam(p.cancelar_ate) && <section className="cartao" style={{ textAlign: 'center' }}>
-          <p style={{ margin: '0 0 8px' }}>Mudou de ideia? Você pode cancelar por mais <b>{faltam(p.cancelar_ate)}</b>.</p>
+        {(p.situacao === 'aguardando' || faltam(p.cancelar_ate)) && <section className="cartao" style={{ textAlign: 'center' }}>
+          <p style={{ margin: '0 0 8px' }}>{p.situacao === 'aguardando'
+            ? <>A loja ainda não aceitou. Não quer mais esperar? <b>Pode cancelar</b> sem custo.</>
+            : <>Mudou de ideia? Você pode cancelar por mais <b>{faltam(p.cancelar_ate)}</b>.</>}</p>
           <button className="btn bloco" onClick={cancelar} disabled={cancelando}>Cancelar pedido</button>
         </section>}
         {p.codigo_entrega && <section className="cartao pd-codigo">

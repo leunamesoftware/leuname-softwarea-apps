@@ -187,7 +187,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id LEFT JOIN vendas v ON v.id = o.venda_id LEFT JOIN avaliacoes av ON av.pedido_id = o.id WHERE o.token = ?`).bind(token).first<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const situacao = o.cancelado_em ? 'cancelado' : o.status === 'aguardando' ? 'aguardando' : o.status === 'recusado' ? 'recusado' : o.venda_status === 'cancelada' ? 'cancelado' : o.andamento;
-  // Cliente cancela só nos primeiros minutos e antes de o pedido ficar pronto.
+  // Cliente cancela quando quiser enquanto a loja não aceitou; depois de aceito, só nos primeiros minutos e antes de ficar pronto.
   // Conversa com o entregador (só enquanto a entrega está com ele); ninguém vê o telefone do outro.
   const conversa = o.entregador_id && !['entregue', 'retirado', 'cancelado'].includes(situacao)
     ? (await c.env.BANCO.prepare('SELECT de, texto, criado_em FROM mensagens_entrega WHERE venda_id = ? ORDER BY criado_em').bind(o.venda_id).all()).results.slice(-12) : [];
@@ -197,7 +197,7 @@ appPublico.get('/publico/app/pedido/:token', async (c) => {
     loja: o.loja, slug: o.slug, loja_telefone: o.loja_telefone, numero: o.numero || null, situacao, motivo_recusa: o.motivo_recusa, tipo: o.tipo, endereco: o.endereco,
     forma: o.forma, troco_para: o.troco_para, itens: JSON.parse(o.resumo), subtotal: o.subtotal, taxa_entrega: o.taxa_entrega, total: o.total,
     criado_em: o.criado_em, respondido_em: o.respondido_em, pronto_em: o.pronto_em, saiu_em: o.saiu_em, finalizado_em: o.finalizado_em, entregador: o.entregador,
-    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, cancelar_ate, cancelado_pelo_cliente: Boolean(o.cancelado_em),
+    avaliacao: o.av_nota ? { nota: o.av_nota, comentario: o.av_comentario } : null, cancelar_ate, pode_cancelar: situacao === 'aguardando' || Boolean(cancelar_ate), cancelado_pelo_cliente: Boolean(o.cancelado_em),
     codigo_entrega: o.tipo === 'entrega' && ['preparando', 'pronto', 'a_caminho'].includes(situacao) ? o.codigo_entrega : null,
     entregador_foto: o.entregador_id && o.tem_foto ? `/api/publico/app/pedido/${token}/entregador-foto` : null, mensagens: conversa, pode_conversar: Boolean(o.entregador_id) && ['pronto', 'a_caminho', 'preparando'].includes(situacao),
     // Mapa ao vivo: só enquanto o entregador está a caminho.
@@ -242,7 +242,7 @@ appPublico.post('/publico/app/pedido/:token/cancelar', async (c) => {
   if (!o) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   if (o.cancelado_em) throw erro(409, 'ja_cancelado', 'Este pedido já foi cancelado.');
   if (o.status === 'recusado') throw erro(409, 'ja_recusado', 'A loja já recusou este pedido.');
-  if (new Date(o.criado_em).getTime() + janelaCancelarMs(c.env) < Date.now() || (o.venda_id && o.andamento !== 'preparando')) {
+  if (o.status !== 'aguardando' && (new Date(o.criado_em).getTime() + janelaCancelarMs(c.env) < Date.now() || (o.venda_id && o.andamento !== 'preparando'))) {
     throw erro(409, 'fora_do_prazo', 'O prazo para cancelar já passou. Fale com a loja pelo WhatsApp.');
   }
   const quando = agora(), stmts: D1Prepared[] = [];
@@ -254,7 +254,13 @@ appPublico.post('/publico/app/pedido/:token/cancelar', async (c) => {
       stmts.push(db.prepare("INSERT INTO estoque_movimentos (id, empresa_id, item_id, tipo, qtd, ref, motivo, usuario_id, criado_em) VALUES (?,?,?,'cancelamento',?,?,'Cancelado pelo cliente no app',?,?)").bind(novoId(), o.empresa_id, m.item_id, -m.qtd, o.venda_id, o.usuario_id, quando));
     }
   }
-  stmts.push(db.prepare("UPDATE pedidos_online SET cancelado_em = ?, status = CASE WHEN status = 'aguardando' THEN 'recusado' ELSE status END, motivo_recusa = CASE WHEN status = 'aguardando' THEN 'Cancelado pelo cliente' ELSE motivo_recusa END, respondido_em = COALESCE(respondido_em, ?) WHERE id = ?").bind(quando, quando, o.id));
+  stmts.push(db.prepare("UPDATE pedidos_online SET cancelado_em = ?, status = CASE WHEN status = 'aguardando' THEN 'recusado' ELSE status END, motivo_recusa = CASE WHEN status = 'aguardando' THEN 'Cancelado pelo cliente' ELSE motivo_recusa END, respondido_em = COALESCE(respondido_em, ?) WHERE id = ? AND status = ? AND cancelado_em IS NULL").bind(quando, quando, o.id, o.status));
+  // Se a loja aceitou no mesmo instante, o pedido não muda aqui: o cliente tenta de novo já vendo o pedido aceito.
+  if (o.status === 'aguardando') {
+    const r = await db.batch(stmts);
+    if (!r[r.length - 1].meta?.changes) throw erro(409, 'mudou', 'A loja acabou de aceitar o pedido. Toque em cancelar de novo se ainda quiser.');
+    return c.json({ ok: true });
+  }
   await db.batch(stmts);
   return c.json({ ok: true });
 });
