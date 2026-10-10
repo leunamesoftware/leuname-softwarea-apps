@@ -647,14 +647,8 @@
     .rodape { height: calc(var(--altura-menu, 80px) + 8px); }
 
     /* Android no navegador: só a página do app LeuApps (a loja completa fica dentro do app) */
-    .so-app main, .so-app .menu, .so-app .rodape, .so-app .topo { display: none !important; }
-    .pagina-app { max-width: 520px; margin: 0 auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom)); }
-    .pagina-app .det-topo { grid-template-columns: 84px 1fr; }
-    .pagina-app .det-topo img { width: 84px; height: 84px; border-radius: 20px; }
-    .pagina-app .instalar-app { display: flex; justify-content: center; margin: 4px 0 6px; }
-    .pagina-app .instalar-app .acao { min-width: 168px; min-height: 40px; font-size: 15px; }
-    .pagina-app .nota { margin: 14px 0 0; font-size: 13px; color: var(--suave); text-align: center; }
-  </style>
+  .aviso-site{margin:10px 16px;padding:12px 14px;border-radius:14px;background:#FFF4E5;color:#5A3A00;font-size:14px;line-height:1.45}
+</style>
   <style>
     html.pelo-atalho body > :not(#janela-app) { visibility: hidden; }
     html.pelo-atalho, html.pelo-atalho body { background: #fff; }
@@ -2403,52 +2397,23 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       } catch {}
     }
 
-    // ---- Android no navegador: só a página do app LeuApps (como a página de um app na loja) ----
-    // "Instalar" usa a instalação do próprio Chrome (vai direto para a tela, sem pacote nem Play Store).
-    // Instalada, a LeuApps abre como app (tela cheia) e mostra a loja completa.
-    // Aberta pelo ícone da LeuApps? (o ícone abre /?origem=app; vale para a janela inteira do app)
-    const modo = (q) => matchMedia(`(display-mode: ${q})`).matches;
-    let instalada = modo('standalone') || modo('fullscreen') || modo('minimal-ui') || Boolean(navigator.standalone)
-      || new URLSearchParams(location.search).get('origem') === 'app' || document.referrer.startsWith('android-app://');
-    try { if (instalada) sessionStorage.setItem('leuapps.app', '1'); else instalada = sessionStorage.getItem('leuapps.app') === '1'; } catch {}
-    let pedidoChrome = null;
+    // Pedido de instalação do Chrome para o app aberto na loja (computador: o Instalar da loja usa esse pedido).
     addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
-      if (manifestoDe) pedidosApp[manifestoDe] = e; else pedidoChrome = e;
+      if (manifestoDe) pedidosApp[manifestoDe] = e;
     });
     addEventListener('appinstalled', () => {
       const id = Object.keys(baixando).find((k) => baixando[k] === -2);
-      if (id) { delete baixando[id]; icones = [...new Set([...icones, id])]; gravarIcones(); recemInstalados.add(id); marcarInstalado(id); mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
-        const a = todos.find((x) => x.id === id); return avisar(`✓ ${a ? a.nome : 'App'} instalado! O ícone já está na tela do celular.`); }
-      pedidoChrome = null; if ($('nota-app')) $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
+      if (!id) return;
+      delete baixando[id]; icones = [...new Set([...icones, id])]; gravarIcones(); recemInstalados.add(id); marcarInstalado(id); mostrar(); if (location.hash.slice(1) === id) mostrarDetalhe();
+      const a = todos.find((x) => x.id === id); avisar(`✓ ${a ? a.nome : 'App'} instalado! O ícone já está na tela.`);
     });
-    if (new URLSearchParams(location.search).get('loja') === '1') { try { sessionStorage.setItem('leuapps.app', '1'); } catch {} instalada = true; }
-    // Android no Chrome: abre a página da LeuApps com o botão Instalar (o Chrome põe a LeuApps na tela do celular).
-    if (android && !N && !instalada) {
-      document.body.classList.add('so-app');
-      const pag = document.createElement('section'); pag.className = 'pagina-app';
-      pag.innerHTML = `
-        <div class="det-topo"><img src="/img/leuapps-192.png" alt=""><div><h1>LeuApps</h1><div class="det-dev">LeuName Softwares</div><div class="det-compra">Loja de aplicativos</div></div></div>
-        <ul class="det-fatos"><li><b>Grátis</b>para baixar</li><li><b>Android</b>funciona em</li><li><b id="qtd-apps">3 apps</b>na loja</li></ul>
-        <div class="instalar-app"><button class="acao" type="button" id="instalar-leuapps">Instalar</button></div>
-        <h2>Sobre este app</h2>
-        <p class="det-desc">A loja da LeuName Softwares. Toque em Instalar em qualquer app e ele fica pronto em Meus apps, abrindo em tela cheia como no celular. Atualizações chegam sozinhas.</p>
-        <ul class="tags"><li>📲 Instala com um toque</li><li>🔄 Atualiza sozinho</li><li>🗑️ Desinstala quando quiser</li></ul>
-        <p class="nota" id="nota-app">Depois de instalar, abra a LeuApps pelo ícone na tela do celular.</p>
-`;
-      document.body.prepend(pag);
-      $('instalar-leuapps').addEventListener('click', async () => {
-        if (pedidoChrome) {
-          const q = pedidoChrome; pedidoChrome = null;
-          q.prompt();
-          const r = await q.userChoice;
-          if (r.outcome === 'accepted') $('nota-app').innerHTML = '✓ Pronto! Abra a <b>LeuApps</b> pelo ícone na tela do celular.';
-          return;
-        }
-        // O Chrome ainda não ofereceu (ou a LeuApps já está instalada): mostra o caminho pelo menu.
-        folha(`<h3>Instalar a LeuApps</h3><p class="sub">Se a LeuApps já está na tela do celular, é só abrir por lá. Se não:</p>
-          <ol><li>Toque nos <b>⋮</b> do Chrome (canto de baixo ou de cima).</li><li>Toque em <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol>`, 'Entendi');
-      });
+    // A LeuApps é site: no celular ela abre no Chrome e o Instalar de cada app põe o app na tela.
+    // Quem ainda tem a LeuApps instalada como app (janelinha do Android, onde não dá para instalar) vê o aviso.
+    if (android && !N && janelaApp()) {
+      const av = document.createElement('div'); av.className = 'aviso-site'; av.setAttribute('role', 'note');
+      av.innerHTML = '<b>A LeuApps agora é site.</b> Para instalar os apps, apague este ícone da LeuApps e abra <b>leunamesoftware.com.br</b> no Chrome.';
+      document.body.prepend(av);
     }
 
     // ---- Serviços sob encomenda (abas + exemplos com marca d'água + orçamento pelo WhatsApp) ----
