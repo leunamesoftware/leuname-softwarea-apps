@@ -48,7 +48,9 @@ function Painel({ aoSair }: { aoSair: () => void }) {
     try { const d = aba === 'testes' ? (await get('/admin/eu'), {}) : await get(`/admin/${aba}`); setCache((x) => ({ ...x, [aba]: d })); setErro(''); }
     catch (e) { if (e instanceof ErroApp && e.status === 401) aoSair(); else setErro(msgErro(e)); }
   };
-  useEffect(() => { setBusca(''); scrollTo(0, 0); carregar(); const t = setInterval(carregar, 30000); return () => clearInterval(t); }, [aba]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Carrega todas as abas de uma vez ao entrar: trocar de aba fica instantâneo, sem a tela pular.
+  useEffect(() => { (['resumo', 'reclamacoes', 'lojas', 'entregadores', 'pedidos', 'clientes'] as Aba[]).forEach((a) => get(`/admin/${a}`).then((d) => setCache((x) => ({ [a]: d, ...x }))).catch(() => {})); }, []);
+  useEffect(() => { setBusca(''); window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); carregar(); const t = setInterval(carregar, 30000); return () => clearInterval(t); }, [aba]); // eslint-disable-line react-hooks/exhaustive-deps
   const dados = cache[aba] || null;
   const acao = async (url: string, corpo: unknown) => { try { await post(url, corpo); await carregar(); } catch (e) { setErro(msgErro(e)); } };
   const filtra = (l: Linha[]) => { const q = busca.trim().toLowerCase(); return q ? l.filter((x) => JSON.stringify(x).toLowerCase().includes(q)) : l; };

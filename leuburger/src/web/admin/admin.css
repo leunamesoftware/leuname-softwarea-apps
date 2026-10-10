@@ -1,4 +1,5 @@
 /* Pedêê Admin: feito para o computador (menu ao lado), mas abre também no celular. */
+html { scrollbar-gutter: stable; overflow-y: scroll; } /* a barra de rolagem não some/aparece ao trocar de aba (a tela não pula de lado) */
 body { background: #F4F2FA; }
 .adm-entrar { min-height: 100dvh; display: grid; place-items: center; padding: 16px; background: linear-gradient(135deg, #2E1065, #5B21B6); }
 .adm-entrar form { width: min(380px, 100%); display: grid; gap: 12px; text-align: center; }
@@ -11,7 +12,7 @@ body { background: #F4F2FA; }
 .adm-lado nav button, .adm-sair { display: flex; align-items: center; gap: 10px; border: 0; border-radius: 10px; padding: 11px 12px; background: none; color: #DDD6FE; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
 .adm-lado nav button.ativo, .adm-lado nav button:hover { background: #5B21B6; color: #fff; }
 .adm-sair { margin-top: auto; color: #FCA5A5; }
-.adm-corpo { padding: 22px 26px; min-width: 0; }
+.adm-corpo { padding: 22px 26px; min-width: 0; min-height: 100dvh; }
 .adm-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .adm-topo h1 { margin: 0; font-size: 26px; } .adm-topo input { max-width: 280px; }
 .adm-sub { font-size: 16px; color: var(--suave); margin: 18px 0 10px; }
