@@ -2127,9 +2127,9 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         const caminho = `/instalar/${itl.dataset.instalarTela}`;
         const completo = location.origin + caminho;
         // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
-        // LeuApps instalada pelo Chrome (janela própria): intent:// abre o Chrome de verdade. No Chrome comum: abre direto.
+        // Janela da LeuApps instalada: abre a tela de instalar com o caminho ⋮ → Abrir no Chrome. No Chrome comum: abre direto.
         location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(completo)}`
-          : android && janelaApp() ? `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(completo)};end` : caminho;
+          : janelaApp() ? `${caminho}?de=leuapps` : caminho; // na janela da LeuApps: a tela mostra ⋮ → Abrir no Chrome → Instalar
         return; }
       const ict = t.closest('[data-icone-tela]'); if (ict) {
         const id = ict.dataset.iconeTela, q = pedidosApp[id]; if (!q) return; delete pedidosApp[id];

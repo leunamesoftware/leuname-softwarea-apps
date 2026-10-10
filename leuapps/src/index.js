@@ -164,7 +164,7 @@ export default {
         const lista = await (await env.ASSETS.fetch(new Request(url.origin + '/apps.json'))).json();
         const app = lista.find((x) => x.id === inst[1]);
         // ?instalar=1: o app abre direto na tela com o botão Instalar.
-        if (app && app.instalar) destino = app.instalar + (app.instalar.includes('?') ? '&' : '?') + 'instalar=1';
+        if (app && app.instalar) destino = app.instalar + (app.instalar.includes('?') ? '&' : '?') + 'instalar=1' + (url.searchParams.get('de') === 'leuapps' ? '&de=leuapps' : '');
       } catch {}
       return Response.redirect(destino, 302);
     }
