@@ -1496,7 +1496,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         N.instalar(id, a.android.apk);
         return;
       }
-      // 2) Apps do www com a loja aberta no Chrome: o Instalar põe o app direto na tela do celular (ícone próprio,
+      // 2) Celular: abre a página de instalar do próprio app (/instalar/<id>), a mesma do link do WhatsApp.
+      //    Lá o Chrome mostra o botão Instalar e o ícone vai para a tela do celular.
+      if (a.instalar && celular) return irParaInstalar(id);
+      // 3) Apps do www com a loja aberta no Chrome: o Instalar põe o app direto na tela do celular (ícone próprio,
       //    abre lá fora), só com a confirmação do Chrome. Sem permissão e sem Play Store.
       if (a.abrirWww && !N && !janelaApp() && 'onbeforeinstallprompt' in window) {
         trocarManifesto(a);
@@ -1515,10 +1518,10 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         setTimeout(() => { if (baixando[id] === -2) { delete baixando[id]; mostrar(); mostrarDetalhe(); } }, 60000);
         return;
       }
-      // 3) Dentro do ícone da LeuApps (janela própria): o Android não deixa criar ícone ali. O app instala DENTRO
+      // 4) Dentro do ícone da LeuApps (janela própria): o Android não deixa criar ícone ali. O app instala DENTRO
       //    da LeuApps (voltinha), vai para "Meus apps" e abre aqui dentro, em tela cheia.
       if (a.abrirWww || (a.abrirFrame && (janelaApp() || !android))) return instalarDentro(a);
-      // 4) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
+      // 5) Chrome/Edge com instalação direta pela loja: instala com um toque, sem abrir o app antes.
       if (a.instalarDireto && 'install' in navigator) {
         try {
           await navigator.install(a.instalarDireto.url, a.instalarDireto.id);
@@ -1527,7 +1530,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
           return;
         } catch (e) { if (e && e.name === 'AbortError') return; }
       }
-      // 5) Outros navegadores: o app abre e mostra o botão "Instalar" (o navegador exige esse toque lá).
+      // 6) Outros navegadores: o app abre e mostra o botão "Instalar" (o navegador exige esse toque lá).
       //    Não marca como instalado aqui: a loja não tem como saber se a pessoa confirmou.
       if (!a.instalar) return;
       if (!a.instalarPassos) { abrirNoChrome(a.instalar); return; }
@@ -1537,6 +1540,14 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         : ['Clique no ícone <b>⊕</b> no fim da barra de endereço,', 'ou no menu <b>⋮</b> → <b>Transmitir, salvar e compartilhar</b> → <b>Instalar</b>.'];
       folha(`<h3>Instalar o ${esc(a.nome)}</h3><p class="sub">O ${esc(a.nome)} vai abrir. Quando abrir:</p>
         <ol>${passos.map((x) => `<li>${x}</li>`).join('')}</ol><a class="acao" href="${esc(a.instalar)}">Abrir o ${esc(a.nome)}</a>`);
+    }
+    // Página de instalar do app no navegador de verdade.
+    // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
+    // Janela da LeuApps instalada: ?de=leuapps (se o Chrome não liberar o botão ali, a tela ensina ⋮ → Abrir no Chrome).
+    function irParaInstalar(id) {
+      const caminho = `/instalar/${id}`;
+      location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(location.origin + caminho)}`
+        : janelaApp() ? `${caminho}?de=leuapps` : caminho;
     }
     // De dentro da LeuApps instalada, o Android abre outros endereços numa janelinha onde o Chrome não deixa instalar.
     // Por isso a instalação abre no Chrome de verdade: lá o botão Instalar coloca o app na tela, sem pedir permissões.
@@ -2124,13 +2135,7 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // Ícone próprio na tela do celular: abre a página de instalar do app no Chrome de verdade
       // (dentro da janela da LeuApps o Android não deixa instalar; o link intent:// leva para o Chrome).
       const itl = t.closest('[data-instalar-tela]'); if (itl) {
-        const caminho = `/instalar/${itl.dataset.instalarTela}`;
-        const completo = location.origin + caminho;
-        // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
-        // Janela da LeuApps instalada: abre a tela de instalar com o caminho ⋮ → Abrir no Chrome. No Chrome comum: abre direto.
-        location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(completo)}`
-          : janelaApp() ? `${caminho}?de=leuapps` : caminho; // na janela da LeuApps: a tela mostra ⋮ → Abrir no Chrome → Instalar
-        return; }
+        irParaInstalar(itl.dataset.instalarTela); return; }
       const ict = t.closest('[data-icone-tela]'); if (ict) {
         const id = ict.dataset.iconeTela, q = pedidosApp[id]; if (!q) return; delete pedidosApp[id];
         q.prompt(); q.userChoice.then((r) => { if (r.outcome === 'accepted') avisar('✓ Pronto! O ícone vai aparecer na tela do celular.'); }).catch(() => {}); return; }
