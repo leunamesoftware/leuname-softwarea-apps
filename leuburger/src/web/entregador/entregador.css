@@ -45,3 +45,4 @@
 .ent-abas button.ativo { color: #15803D; }
 .ent-lanc b { text-align: left; }
 .ent-baixar { display: flex; gap: 10px; align-items: flex-start; text-decoration: none; color: inherit; margin: 0; }
+.ent-tempo { display: grid; gap: 2px; background: #FFF7ED; border-radius: 10px; padding: 8px 10px; margin: 6px 0; font-size: 14.5px; } .ent-tempo small { color: var(--suave); font-size: 12.5px; }

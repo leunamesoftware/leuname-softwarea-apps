@@ -130,13 +130,13 @@ entregador.post('/entregador/entregas/:id/loja', async (c) => {
 /** Ganhos e histórico do entregador (últimos 30 dias): taxa de entrega de cada pedido entregue e os km da loja até o cliente. */
 entregador.get('/entregador/resumo', async (c) => {
   const e = await entregadorLogado(c);
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.finalizado_em, v.saiu_em, v.taxa_entrega, v.endereco_entrega, em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.finalizado_em, v.saiu_em, v.entregador_em, v.taxa_entrega, v.endereco_entrega, em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng,
       (SELECT dest_lat FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lat, (SELECT dest_lng FROM pedidos_online po WHERE po.venda_id = v.id) AS dest_lng
     FROM vendas v JOIN empresas em ON em.id = v.empresa_id
     WHERE v.entregador_id = ? AND v.status = 'concluida' AND v.andamento = 'entregue' AND v.finalizado_em > ? ORDER BY v.finalizado_em DESC LIMIT 500`)
     .bind(e.id, new Date(Date.now() - 30 * 864e5).toISOString()).all<Record<string, any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
   return c.json({ entregas: results.map((r) => ({
-    id: r.id, numero: r.numero, quando: r.finalizado_em, saiu_em: r.saiu_em, loja: r.loja, endereco: r.endereco_entrega, ganho: r.taxa_entrega || 0,
+    id: r.id, numero: r.numero, quando: r.finalizado_em, saiu_em: r.saiu_em, chamado_em: r.entregador_em, loja: r.loja, endereco: r.endereco_entrega, ganho: r.taxa_entrega || 0,
     km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: r.loja_lat, lng: r.loja_lng }, { lat: r.dest_lat, lng: r.dest_lng }) * 10) / 10 : null,
   })) });
 });
@@ -158,7 +158,7 @@ entregador.post('/entregador/disponivel', async (c) => {
 /** Entregas do entregador: as que estão com ele agora e as entregues nas últimas 12 horas. */
 entregador.get('/entregador/entregas', async (c) => {
   const e = await entregadorLogado(c);
-  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.finalizado_em, v.endereco_entrega, v.observacao,
+  const { results } = await c.env.BANCO.prepare(`SELECT v.id, v.numero, v.andamento, v.total, v.troco, v.criado_em, v.saiu_em, v.entregador_em AS chamado_em, v.finalizado_em, v.endereco_entrega, v.observacao,
       em.nome AS loja, em.lat AS loja_lat, em.lng AS loja_lng, em.endereco AS loja_endereco, cl.nome AS cliente,
       (SELECT GROUP_CONCAT(i.qtd || 'x ' || i.nome, ' · ') FROM venda_itens i WHERE i.venda_id = v.id) AS resumo,
       (SELECT GROUP_CONCAT(forma) FROM pagamentos WHERE venda_id = v.id) AS formas,
@@ -233,6 +233,6 @@ entregadoresDaLoja.post('/vendas/:id/entregador', async (c) => {
     if (!e) throw erro(400, 'entregador_invalido', 'Este entregador não está na sua lista.');
     nome = e.nome;
   }
-  await db.prepare('UPDATE vendas SET entregador_id = ?, entregador = ? WHERE id = ?').bind(d.entregador_id, nome, v.id).run();
+  await db.prepare('UPDATE vendas SET entregador_id = ?, entregador = ?, entregador_em = ? WHERE id = ?').bind(d.entregador_id, nome, d.entregador_id ? agora() : null, v.id).run();
   return c.json({ ok: true });
 });

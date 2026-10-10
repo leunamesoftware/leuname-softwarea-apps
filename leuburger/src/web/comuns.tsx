@@ -98,9 +98,9 @@ export function FotoProduto({ fotoId, icone, nome, className }: { fotoId?: strin
 }
 
 /** Reduz a foto escolhida para no máximo 600 px (JPEG) antes de enviar. */
-export async function reduzirFoto(arquivo: File): Promise<string> {
+export async function reduzirFoto(arquivo: File, maior = 600): Promise<string> {
   const img = await createImageBitmap(arquivo);
-  const k = Math.min(1, 600 / Math.max(img.width, img.height));
+  const k = Math.min(1, maior / Math.max(img.width, img.height));
   const cv = document.createElement('canvas');
   cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
   const g = cv.getContext('2d')!; g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); g.drawImage(img, 0, 0, cv.width, cv.height);

@@ -15,7 +15,7 @@ import './entregador.css';
 
 interface Eu { entregador: { nome: string; email: string; veiculo: string; disponivel: boolean; tem_foto: boolean }; lojas: { nome: string; cidade: string | null }[] }
 interface Entrega {
-  id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
+  id: string; numero: number; andamento: string; total: number; troco: number; criado_em: string; saiu_em: string | null; chamado_em?: string | null; finalizado_em: string | null; endereco_entrega: string; observacao: string | null;
   loja: string; loja_endereco: string | null; cliente: string | null; resumo: string | null; formas: string | null; dest_lat: number | null; dest_lng: number | null; loja_lat: number | null; loja_lng: number | null; km: number | null;
   mensagens: { de: 'entregador' | 'cliente'; texto: string; criado_em: string }[]; conversa_loja: { de: 'entregador' | 'loja'; texto: string; criado_em: string }[];
 }
@@ -84,7 +84,7 @@ function Acesso({ aoEntrar }: { aoEntrar: () => void }) {
   );
 }
 
-interface Feita { id: string; numero: number; quando: string; saiu_em: string | null; loja: string; endereco: string; ganho: number; km: number | null; criado_em?: string }
+interface Feita { id: string; numero: number; quando: string; saiu_em: string | null; chamado_em?: string | null; loja: string; endereco: string; ganho: number; km: number | null; criado_em?: string }
 type Aba = 'inicio' | 'financeiro' | 'ajuda' | 'perfil';
 const dia = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
 const kmTxt = (km: number | null) => (km == null ? '' : `${km.toFixed(1).replace('.', ',')} km`);
@@ -92,6 +92,8 @@ const inicioSemana = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.set
 
 /** Ponte do app Android Pedêê Entregador (não existe no navegador). */
 const NATIVO = (window as unknown as { PedeeNativo?: { rastrear: (ligar: boolean) => void; pedirLocalizacao: () => void; abrirConfiguracoes: () => void } }).PedeeNativo;
+
+const minEntre = (a: string, b: string | number) => Math.max(1, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 60000));
 
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('inicio');
@@ -219,6 +221,9 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
             return (
               <article key={x.id} className="ent-card">
                 <div className="ped-topo"><b>#{x.numero}</b><span className="selo">{x.loja}</span><small>{hora(x.criado_em)}</small></div>
+                <div className="ent-tempo">{x.andamento === 'a_caminho' && x.saiu_em
+                  ? <>🛵 Em rota há <b>{minEntre(x.saiu_em, Date.now())} min</b><small>saiu {hora(x.saiu_em)}{x.chamado_em ? ` · levou ${minEntre(x.chamado_em, x.saiu_em)} min para sair da loja` : ''}</small></>
+                  : x.chamado_em ? <>⏱️ A loja chamou há <b>{minEntre(x.chamado_em, Date.now())} min</b><small>vá até a loja e toque em “Saí para entrega” ao pegar o pedido</small></> : <>⏱️ Vá até a loja buscar o pedido</>}</div>
                 <div className="ent-end"><Ic n="inicio" /><div><b>{x.endereco_entrega}</b><small>👤 {x.cliente || 'Cliente'}{x.km != null ? ` · ${kmTxt(x.km)} da loja` : ''}</small></div></div>
                 {x.observacao && <div className="ped-obs">Obs.: {x.observacao}</div>}
                 {x.resumo && <div className="ped-itens">{x.resumo}</div>}
@@ -391,11 +396,14 @@ function Financeiro({ feitas, valor, verValor, alternar }: { feitas: Feita[]; va
           <div><span>Loja</span><b>{ver.loja}</b></div>
           <div><span>Entregue em</span><b style={{ textAlign: 'right' }}>{ver.endereco}</b></div>
           {ver.km != null && <div><span>Distância (loja → cliente)</span><b>{kmTxt(ver.km)}</b></div>}
-          {ver.saiu_em && <div><span>Tempo em rota</span><b>{Math.max(1, Math.round((new Date(ver.quando).getTime() - new Date(ver.saiu_em).getTime()) / 60000))} min</b></div>}
+          {ver.chamado_em && ver.saiu_em && <div><span>Da chamada até sair da loja</span><b>{minEntre(ver.chamado_em, ver.saiu_em)} min</b></div>}
+          {ver.saiu_em && <div><span>Da loja até o cliente</span><b>{minEntre(ver.saiu_em, ver.quando)} min</b></div>}
+          {ver.chamado_em && <div><span>Tempo total</span><b>{minEntre(ver.chamado_em, ver.quando)} min</b></div>}
         </div>
         <ol className="passos" style={{ marginTop: 12 }}>
-          {ver.saiu_em && <li className="feito"><span className="bola"><Ic n="check" t={16} /></span><b>Saiu para entrega</b><small>{hora(ver.saiu_em)}</small></li>}
-          <li className="feito"><span className="bola"><Ic n="check" t={16} /></span><b>Pedido entregue (código conferido)</b><small>{hora(ver.quando)}</small></li>
+          {ver.chamado_em && <li className="feito"><span className="bola"><Ic n="check" t={16} /></span><b>A loja chamou você</b><small>{hora(ver.chamado_em)}</small></li>}
+          {ver.saiu_em && <li className="feito"><span className="bola"><Ic n="check" t={16} /></span><b>Saiu da loja com o pedido</b><small>{hora(ver.saiu_em)}{ver.chamado_em ? ` · ${minEntre(ver.chamado_em, ver.saiu_em)} min` : ''}</small></li>}
+          <li className="feito"><span className="bola"><Ic n="check" t={16} /></span><b>Pedido entregue (código conferido)</b><small>{hora(ver.quando)}{ver.saiu_em ? ` · ${minEntre(ver.saiu_em, ver.quando)} min` : ''}</small></li>
         </ol>
       </Modal>}
     </>

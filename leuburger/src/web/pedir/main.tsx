@@ -460,12 +460,15 @@ function Loja() {
   const [fav, setFav] = useState(() => ler().favoritos.includes(slug));
   const alternarFav = () => { gravar((x) => ({ ...x, favoritos: x.favoritos.includes(slug) ? x.favoritos.filter((y) => y !== slug) : [slug, ...x.favoritos] })); setFav(!fav); };
   const setCarrinho = (c: ItemCarrinho[]) => { setCarrinhoEstado(c); gravarCarrinho(slug, c); };
+  // Prévia aberta pelo lojista no app Parceiro: mostra a loja igual ao cliente, sem guardar nada e sem pedir.
+  const previa = new URLSearchParams(location.search).has('previa');
 
   useEffect(() => {
     const g = ler();
     get<{ loja: LojaCompleta; categorias: Categoria[]; produtos: Produto[] }>(`/publico/app/loja/${encodeURIComponent(slug)}?${qs({ lat: g.local?.lat, lng: g.local?.lng })}`)
       .then((r) => {
         setDados(r); document.title = `${r.loja.nome} · ${NOME_APP}`;
+        if (previa) return;
         // Guarda em "Minhas lojas" (a mais recente primeiro).
         gravar((x) => ({ ...x, lojas: [{ slug, nome: r.loja.nome, logo_id: r.loja.logo_id, tipo: r.loja.tipo }, ...x.lojas.filter((l) => l.slug !== slug)].slice(0, 12) }));
         // Se instalar agora pelo navegador, o app abre direto aqui.
@@ -501,6 +504,7 @@ function Loja() {
   const entrega = !l.faz_entrega ? 'Só retirada' : !l.entrega_aqui ? 'Fora da área de entrega' : l.taxa_entrega ? brl(l.taxa_entrega) : 'Grátis';
   return (
     <div className="pd pd-loja-pag">
+      {previa && <div className="pd-previa">👀 Prévia: é assim que os clientes veem a sua loja</div>}
       <div className="pd-loja-capa" style={capa ? { backgroundImage: `url(${capa})` } : undefined}>
         <button className="pd-redondo" onClick={() => (history.length > 1 ? nav(-1) : nav('/'))} aria-label="Voltar"><Ic n="voltar" /></button>
         <span style={{ flex: 1 }} />
@@ -548,9 +552,10 @@ function Loja() {
         {!visiveis.length && <div className="vazio"><Ic n="busca" t={36} /><b>Nada encontrado</b></div>}
         <div style={{ height: qtd ? 100 : 20 }} />
       </main>
-      {qtd > 0 && <div className="pd-barra-sacola"><span><small>Total sem a entrega</small><b className="num">{brl(subtotal)} <small>/ {qtd} {qtd === 1 ? 'item' : 'itens'}</small></b></span><button className="btn prim grande" onClick={() => setVerCarrinho(true)}>Ver sacola</button></div>}
+      {qtd > 0 && !previa && <div className="pd-barra-sacola"><span><small>Total sem a entrega</small><b className="num">{brl(subtotal)} <small>/ {qtd} {qtd === 1 ? 'item' : 'itens'}</small></b></span><button className="btn prim grande" onClick={() => setVerCarrinho(true)}>Ver sacola</button></div>}
       {verAvaliacoes && <Avaliacoes slug={slug} aoFechar={() => setVerAvaliacoes(false)} />}
       {escolher && <Escolher produto={escolher.p} item={escolher.item} loja={l} aoFechar={() => { if (escolher.daSacola) setVerCarrinho(true); setEscolher(null); }} aoSalvar={(it) => {
+        if (previa) { alert('Na prévia não dá para pedir. Os clientes veem o botão “Adicionar” assim.'); setEscolher(null); return; }
         setCarrinho(escolher.item ? carrinho.map((x) => (x.chave === escolher.item!.chave ? it : x)) : [...carrinho, it]);
         if (escolher.daSacola) setVerCarrinho(true); setEscolher(null);
       }} />}

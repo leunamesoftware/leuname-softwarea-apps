@@ -62,7 +62,7 @@ body { background: var(--fundo); }
 .pd-cta-loja { display: grid; grid-template-columns: auto minmax(0,1fr) 18px; gap: 12px; align-items: center; padding: 14px; border-radius: var(--raio); background: var(--grafite); color: #fff; text-decoration: none; margin-top: 6px; }
 .pd-cta-loja > .ic:first-child { color: #FFB020; }
 .pd-cta-loja span { display: grid; gap: 2px; } .pd-cta-loja small { color: #D1D5DB; }
-.pd-abas-lojista { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: 0; width: min(760px, 100%); display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-top: 1px solid var(--linha); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
+.pd-abas-lojista { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: 0; width: min(760px, 100%); display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border-top: 1px solid var(--linha); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
 .pd-abas-lojista button { display: grid; justify-items: center; gap: 2px; border: 0; background: none; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--suave); padding: 4px; }
 .pd-abas-lojista .bolha { position: relative; display: grid; place-items: center; width: 52px; height: 30px; border-radius: 99px; }
 .pd-abas-lojista .ativo { color: #E8380F; } .pd-abas-lojista .ativo .bolha { background: var(--laranja-claro); }
@@ -387,3 +387,7 @@ a.pd-busca > .ic { position: static; transform: none; flex: none; }
 .ent-chat-loja { background: #EFF6FF; }
 .ent-loja-bt { margin-top: 6px; }
 .ent-loja-bt .selo { background: var(--laranja); color: #fff; margin-left: 6px; }
+.pd-previa { background: #111827; color: #fff; text-align: center; font-size: 13px; font-weight: 700; padding: 8px 12px; }
+/* Vitrine do lojista: a loja real dentro de um "celular" */
+.lj-celular { width: min(100%, 420px); margin: 0 auto; height: min(78vh, 760px); border: 8px solid #111827; border-radius: 28px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+.lj-celular iframe { width: 100%; height: 100%; border: 0; display: block; }

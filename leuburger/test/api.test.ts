@@ -470,7 +470,7 @@ describe('Mapa ao vivo da entrega', () => {
     expect((await moto.post(`/entregador/entregas/${vendaId}`, { andamento: 'entregue', codigo: pd.codigo_entrega })).status).toBe(200);
     expect((await cli.get(`/publico/app/pedido/${token}`)).corpo.pedido.mapa).toBeNull();
     const resumo = (await moto.get('/entregador/resumo')).corpo.entregas;
-    expect(resumo[0]).toMatchObject({ ganho: 500, km: expect.any(Number) });
+    expect(resumo[0]).toMatchObject({ ganho: 500, km: expect.any(Number), chamado_em: expect.any(String), saiu_em: expect.any(String) });
     // Foto: o entregador manda; o cliente do pedido consegue ver.
     const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
     expect((await moto.post('/entregador/foto', { dados: 'texto qualquer' })).status).toBe(400);

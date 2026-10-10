@@ -90,7 +90,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
 }
 
 // ---------- painel ----------
-type Aba = 'pedidos' | 'cardapio' | 'entregadores' | 'loja';
+type Aba = 'pedidos' | 'vitrine' | 'cardapio' | 'entregadores' | 'loja';
 function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('pedidos');
   const [novos, setNovos] = useState(0);
@@ -101,12 +101,13 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       <TopoLoja titulo={e.nome}><button className="pd-voltar" onClick={abrirFechar} aria-label={e.aceitando ? 'Fechar a loja' : 'Abrir a loja'} title={e.aceitando ? 'Aberta' : 'Fechada'} style={{ width: 'auto', padding: '0 10px', fontWeight: 800, fontSize: 13 }}>{e.aceitando ? '🟢 Aberta' : '🔴 Fechada'}</button></TopoLoja>
       <main className="pd-corpo" style={{ paddingBottom: 90 }}>
         {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} />}
+        {aba === 'vitrine' && <Vitrine e={e} irPara={setAba} />}
         {aba === 'cardapio' && <Cardapio />}
         {aba === 'entregadores' && <Entregadores />}
         {aba === 'loja' && <MinhaLoja e={e} recarregar={recarregar} aoSair={aoSair} />}
       </main>
       <nav className="pd-abas-lojista">
-        {([['pedidos', 'pedidos', 'Pedidos'], ['cardapio', 'produtos', 'Cardápio'], ['entregadores', 'seta', 'Entregadores'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
+        {([['pedidos', 'pedidos', 'Pedidos'], ['vitrine', 'olho', 'Vitrine'], ['cardapio', 'produtos', 'Cardápio'], ['entregadores', 'seta', 'Entregadores'], ['loja', 'loja', 'Minha loja']] as [Aba, string, string][]).map(([v, ic, n]) => (
           <button key={v} className={aba === v ? 'ativo' : ''} onClick={() => setAba(v)}><span className="bolha"><Ic n={ic} />{v === 'pedidos' && novos > 0 && <i>{novos}</i>}</span>{n}</button>
         ))}
       </nav>
@@ -310,6 +311,28 @@ function EditarProduto({ p, categorias, aoFechar, aoSalvar }: { p: Prod | null; 
   );
 }
 
+// ---------- vitrine: a loja como o cliente vê ----------
+function Vitrine({ e, irPara }: { e: Empresa; irPara: (a: Aba) => void }) {
+  const [vez, setVez] = useState(0);
+  if (!e.slug) return <div className="vazio"><Ic n="loja" t={40} /><b>Sua loja ainda não está no app</b><span>Complete os dados em Minha loja e adicione produtos no Cardápio.</span><button className="btn prim" onClick={() => irPara('loja')}>Ir para Minha loja</button></div>;
+  const link = `/pedir/${e.slug}`;
+  return (
+    <>
+      <h2 className="pd-tit" style={{ marginTop: 0 }}>Sua loja no Pedêê</h2>
+      <p style={{ margin: '0 0 10px', color: 'var(--suave)' }}>É assim que os clientes veem a sua loja: banner, logo, categorias e produtos.</p>
+      <div className="lj-celular"><iframe key={vez} src={`${link}?previa=1`} title="Prévia da sua loja" /></div>
+      <div className="dupla" style={{ marginTop: 12 }}>
+        <button className="btn" onClick={() => irPara('cardapio')}><Ic n="produtos" />Editar cardápio</button>
+        <button className="btn" onClick={() => irPara('loja')}><Ic n="foto" />Banner e logo</button>
+      </div>
+      <div className="dupla" style={{ marginTop: 8 }}>
+        <button className="btn" onClick={() => setVez(vez + 1)}>🔄 Atualizar</button>
+        <a className="btn prim" href={link} target="_blank" rel="noopener"><Ic n="olho" />Abrir em tela cheia</a>
+      </div>
+    </>
+  );
+}
+
 // ---------- minha loja ----------
 function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => void; aoSair: () => void }) {
   const [cfg, setCfg] = useState<Record<string, any> | null>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -320,6 +343,10 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
   const subirLogo = async (arq?: File) => {
     if (!arq || !cfg) return;
     try { const r = await post<{ id: string }>('/fotos', { dados: await reduzirFoto(arq) }); setCfg({ ...cfg, logo_id: r.id }); setMsg('Logo escolhido. Toque em Salvar.'); } catch (x) { setMsg(msgErro(x)); }
+  };
+  const subirCapa = async (arq?: File) => {
+    if (!arq || !cfg) return;
+    try { const r = await post<{ id: string }>('/fotos', { dados: await reduzirFoto(arq, 1200) }); setCfg({ ...cfg, capa_id: r.id }); setMsg('Banner escolhido. Toque em Salvar.'); } catch (x) { setMsg(msgErro(x)); }
   };
   const marcarLocal = () => navigator.geolocation?.getCurrentPosition((p) => { if (cfg) { setCfg({ ...cfg, lat: Math.round(p.coords.latitude * 1e5) / 1e5, lng: Math.round(p.coords.longitude * 1e5) / 1e5 }); setMsg('Localização marcada. Toque em Salvar.'); } }, () => setMsg('Permita a localização e tente de novo, de dentro da loja.'));
   const salvar = async () => {
@@ -354,11 +381,13 @@ function MinhaLoja({ e, recarregar, aoSair }: { e: Empresa; recarregar: () => vo
           <label className="campo">Taxa de entrega (R$)<input value={f.taxa} onChange={(x) => setF({ ...f, taxa: x.target.value })} inputMode="decimal" placeholder="0,00 = grátis" /></label>
           <label className="campo">Tempo de entrega<input value={f.tempo} onChange={(x) => setF({ ...f, tempo: x.target.value.slice(0, 20) })} placeholder="Ex.: 30-45 min" /></label>
           <label className="campo">Pedido mínimo (R$)<input value={f.minimo} onChange={(x) => setF({ ...f, minimo: x.target.value })} inputMode="decimal" placeholder="0,00" /></label>
+          <label className="campo largo">Sobre a loja (aparece na vitrine)<input value={cfg?.descricao || ''} onChange={(x) => cfg && setCfg({ ...cfg, descricao: x.target.value.slice(0, 200) })} maxLength={200} placeholder="Ex.: Hambúrguer artesanal feito na brasa desde 2015." /></label>
           <label className="campo largo">Endereço<input value={f.endereco} onChange={(x) => setF({ ...f, endereco: x.target.value })} maxLength={150} /></label>
           <label className="campo">Cidade<input value={f.cidade} onChange={(x) => setF({ ...f, cidade: x.target.value })} maxLength={60} list="cidades-rj" /><datalist id="cidades-rj">{CIDADES_RJ.map((c) => <option key={c} value={c} />)}</datalist></label>
           <label className="campo">UF<input value={f.uf} onChange={(x) => setF({ ...f, uf: x.target.value.toUpperCase().slice(0, 2) })} maxLength={2} /></label>
         </div>
         <div className="lista-config" style={{ marginTop: 10 }}>
+          <div><span>Banner (foto grande do topo)<small style={{ display: 'block', color: 'var(--suave)', fontWeight: 500 }}>Foto deitada do seu melhor prato</small></span>{cfg?.capa_id && <img src={`/api/fotos/${cfg.capa_id}`} alt="" style={{ width: 64, height: 40, borderRadius: 8, objectFit: 'cover' }} />}<label className="btn peq"><Ic n="foto" t={16} />{cfg?.capa_id ? 'Trocar' : 'Colocar'}<input type="file" accept="image/*" hidden onChange={(x) => subirCapa(x.target.files?.[0])} /></label></div>
           <div><span>Logo da loja</span>{cfg?.logo_id && <img src={`/api/fotos/${cfg.logo_id}`} alt="" style={{ width: 40, height: 40, borderRadius: 10, objectFit: 'cover' }} />}<label className="btn peq"><Ic n="foto" t={16} />{cfg?.logo_id ? 'Trocar' : 'Colocar'}<input type="file" accept="image/*" hidden onChange={(x) => subirLogo(x.target.files?.[0])} /></label></div>
           <div><span>Localização (clientes perto veem a loja)<small style={{ display: 'block', color: 'var(--suave)', fontWeight: 500 }}>{cfg?.lat != null ? 'Marcada' : 'Faça de dentro da loja'}</small></span><button className="btn peq" onClick={marcarLocal}><Ic n="inicio" t={16} />Marcar aqui</button></div>
         </div>
