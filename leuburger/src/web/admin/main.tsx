@@ -42,14 +42,14 @@ function Entrar({ aoEntrar }: { aoEntrar: () => void }) {
 
 function Painel({ aoSair }: { aoSair: () => void }) {
   const [aba, setAba] = useState<Aba>('testes');
-  const [carga, setCarga] = useState<{ aba: Aba; d: Linha } | null>(null), [erro, setErro] = useState(''), [busca, setBusca] = useState('');
+  // Guarda o que já carregou de cada aba: ao trocar, mostra na hora (sem a tela pular) e atualiza por baixo.
+  const [cache, setCache] = useState<Partial<Record<Aba, Linha>>>({}), [erro, setErro] = useState(''), [busca, setBusca] = useState('');
   const carregar = async () => {
-    try { const d = aba === 'testes' ? (await get('/admin/eu'), {}) : await get(`/admin/${aba}`); setCarga({ aba, d }); setErro(''); }
+    try { const d = aba === 'testes' ? (await get('/admin/eu'), {}) : await get(`/admin/${aba}`); setCache((x) => ({ ...x, [aba]: d })); setErro(''); }
     catch (e) { if (e instanceof ErroApp && e.status === 401) aoSair(); else setErro(msgErro(e)); }
   };
-  useEffect(() => { setBusca(''); carregar(); const t = setInterval(carregar, 30000); return () => clearInterval(t); }, [aba]); // eslint-disable-line react-hooks/exhaustive-deps
-  // Só mostra os dados da aba aberta (ao trocar de aba, espera os novos chegarem).
-  const dados = carga?.aba === aba ? carga.d : null;
+  useEffect(() => { setBusca(''); scrollTo(0, 0); carregar(); const t = setInterval(carregar, 30000); return () => clearInterval(t); }, [aba]); // eslint-disable-line react-hooks/exhaustive-deps
+  const dados = cache[aba] || null;
   const acao = async (url: string, corpo: unknown) => { try { await post(url, corpo); await carregar(); } catch (e) { setErro(msgErro(e)); } };
   const filtra = (l: Linha[]) => { const q = busca.trim().toLowerCase(); return q ? l.filter((x) => JSON.stringify(x).toLowerCase().includes(q)) : l; };
   const MENU: [Aba, string, string][] = [['testes', '🧪', 'Central de testes'], ['resumo', '📊', 'Resumo'], ['lojas', '🏪', 'Lojas'], ['entregadores', '🛵', 'Entregadores'], ['pedidos', '🧾', 'Pedidos'], ['clientes', '👥', 'Clientes']];
@@ -61,7 +61,7 @@ function Painel({ aoSair }: { aoSair: () => void }) {
         <button className="adm-sair" onClick={async () => { await post('/admin/sair', {}).catch(() => {}); aoSair(); }}>Sair</button>
       </aside>
       <main className="adm-corpo">
-        <header className="adm-topo"><h1>{MENU.find((m) => m[0] === aba)![2]}</h1>{!['resumo', 'testes'].includes(aba) && <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar…" aria-label="Buscar" />}</header>
+        <header className="adm-topo"><h1>{MENU.find((m) => m[0] === aba)![2]}</h1><input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar…" aria-label="Buscar" style={['resumo', 'testes'].includes(aba) ? { visibility: 'hidden' } : undefined} /></header>
         {erro && <p className="aviso erro">{erro}</p>}
         {!dados ? <div className="carregando"><div className="giro" /></div> : <>
           {aba === 'resumo' && <Resumo r={dados} />}
@@ -70,10 +70,10 @@ function Painel({ aoSair }: { aoSair: () => void }) {
             {filtra(dados.lojas).map((l) => {
               const vencida = l.acesso_ate && new Date(l.acesso_ate) < new Date();
               return <tr key={l.id}>
-                <td><b>{l.nome}</b>{l.demo && <span className="adm-selo">demonstração</span>}<small>{TIPO[l.tipo_loja] || l.tipo_loja} · {l.telefone || 'sem telefone'} · {l.entregadores} entregador(es)</small></td>
-                <td>{l.cidade}{l.uf ? `-${l.uf}` : ''}</td><td>{l.pedidos_30d}</td><td>{brl(l.valor_30d)}</td><td>{l.nota ? `★ ${l.nota}` : '—'}</td>
-                <td className={vencida ? 'adm-ruim' : ''}>{l.acesso_ate ? data(l.acesso_ate) : 'Sem prazo'}{vencida ? ' (vencido)' : ''}</td>
-                <td>{l.no_app ? (l.aceitando ? '🟢 Aberta' : '🟡 Fechada') : '⛔ Fora'}</td>
+                <td className="adm-titulo"><b>{l.nome}</b>{l.demo && <span className="adm-selo">demonstração</span>}<small>{TIPO[l.tipo_loja] || l.tipo_loja} · {l.telefone || 'sem telefone'} · {l.entregadores} entregador(es)</small></td>
+                <td data-r="Cidade">{l.cidade}{l.uf ? `-${l.uf}` : ''}</td><td data-r="Pedidos 30d">{l.pedidos_30d}</td><td data-r="Vendido 30d">{brl(l.valor_30d)}</td><td data-r="Nota">{l.nota ? `★ ${l.nota}` : '—'}</td>
+                <td data-r="Acesso até" className={vencida ? 'adm-ruim' : ''}>{l.acesso_ate ? data(l.acesso_ate) : 'Sem prazo'}{vencida ? ' (vencido)' : ''}</td>
+                <td data-r="No app">{l.no_app ? (l.aceitando ? '🟢 Aberta' : '🟡 Fechada') : '⛔ Fora'}</td>
                 <td className="adm-acoes">
                   <button className="btn peq" onClick={() => { const n = prompt('Dar quantos dias de acesso a esta loja?', '30'); if (n && Number(n) > 0) acao(`/admin/lojas/${l.id}`, { mais_dias: Math.round(Number(n)) }); }}>+ dias</button>
                   <button className={`btn peq ${l.no_app ? 'adm-perigo' : ''}`} onClick={() => { if (!l.no_app || confirm(`Tirar "${l.nome}" do app? Os clientes param de ver a loja.`)) acao(`/admin/lojas/${l.id}`, { no_app: !l.no_app }); }}>{l.no_app ? 'Tirar do app' : 'Pôr no app'}</button>
@@ -81,19 +81,19 @@ function Painel({ aoSair }: { aoSair: () => void }) {
             })}</tbody></table>}
           {aba === 'entregadores' && <table className="adm-tab"><thead><tr><th>Entregador</th><th>Veículo</th><th>Lojas</th><th>Entregas 30d</th><th>Desde</th><th>Situação</th><th /></tr></thead><tbody>
             {filtra(dados.entregadores).map((e) => <tr key={e.id}>
-              <td className="adm-pessoa">{e.tem_foto ? <img src={`/api/admin/entregadores/${e.id}/foto`} alt="" /> : <span>🙂</span>}<div><b>{e.nome}</b><small>{e.email}{e.cidade ? ` · ${e.cidade}` : ''}</small></div></td>
-              <td>{e.veiculo === 'bike' ? '🚲 Bicicleta' : '🛵 Moto'}</td><td>{e.lojas || '—'}</td><td>{e.entregas_30d}</td><td>{data(e.criado_em)}</td>
-              <td>{!e.ativo ? '⛔ Desativado' : e.disponivel ? '🟢 Disponível' : '🌙 Volto breve'}</td>
+              <td className="adm-pessoa adm-titulo">{e.tem_foto ? <img src={`/api/admin/entregadores/${e.id}/foto`} alt="" /> : <span>🙂</span>}<div><b>{e.nome}</b><small>{e.email}{e.cidade ? ` · ${e.cidade}` : ''}</small></div></td>
+              <td data-r="Veículo">{e.veiculo === 'bike' ? '🚲 Bicicleta' : '🛵 Moto'}</td><td data-r="Lojas">{e.lojas || '—'}</td><td data-r="Entregas 30d">{e.entregas_30d}</td><td data-r="Desde">{data(e.criado_em)}</td>
+              <td data-r="Situação">{!e.ativo ? '⛔ Desativado' : e.disponivel ? '🟢 Disponível' : '🌙 Volto breve'}</td>
               <td className="adm-acoes"><button className={`btn peq ${e.ativo ? 'adm-perigo' : ''}`} onClick={() => { if (!e.ativo || confirm(`Desativar ${e.nome}? Ele sai do app na hora.`)) acao(`/admin/entregadores/${e.id}`, { ativo: !e.ativo }); }}>{e.ativo ? 'Desativar' : 'Reativar'}</button></td>
             </tr>)}</tbody></table>}
-          {aba === 'pedidos' && <table className="adm-tab"><thead><tr><th>Quando</th><th>Loja</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Situação</th><th>Entregador</th></tr></thead><tbody>
+          {aba === 'pedidos' && <table className="adm-tab"><thead><tr><th>Loja / quando</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Situação</th><th>Entregador</th></tr></thead><tbody>
             {filtra(dados.pedidos).map((p) => <tr key={p.id}>
-              <td>{dataHora(p.criado_em)}</td><td><b>{p.loja}</b><small>{p.cidade}{p.numero ? ` · #${p.numero}` : ''}</small></td><td>{p.nome}</td>
-              <td>{p.tipo === 'entrega' ? '🛵 Entrega' : '🏪 Retirada'}</td><td>{brl(p.total)}</td>
-              <td>{p.cancelado_em ? '❌ Cancelado pelo cliente' : p.status === 'recusado' ? '⛔ Recusado' : p.status === 'aguardando' ? '⏳ Esperando a loja' : SIT[p.andamento] || p.andamento}</td><td>{p.entregador || '—'}</td>
+              <td className="adm-titulo"><b>{p.loja}</b><small>{dataHora(p.criado_em)} · {p.cidade}{p.numero ? ` · #${p.numero}` : ''}</small></td><td data-r="Cliente">{p.nome}</td>
+              <td data-r="Tipo">{p.tipo === 'entrega' ? '🛵 Entrega' : '🏪 Retirada'}</td><td data-r="Valor">{brl(p.total)}</td>
+              <td data-r="Situação">{p.cancelado_em ? '❌ Cancelado pelo cliente' : p.status === 'recusado' ? '⛔ Recusado' : p.status === 'aguardando' ? '⏳ Esperando a loja' : SIT[p.andamento] || p.andamento}</td><td data-r="Entregador">{p.entregador || '—'}</td>
             </tr>)}</tbody></table>}
           {aba === 'clientes' && <table className="adm-tab"><thead><tr><th>Cliente</th><th>Celular</th><th>Pedidos</th><th>Conta criada</th></tr></thead><tbody>
-            {filtra(dados.clientes).map((c) => <tr key={c.email}><td><b>{c.nome}</b><small>{c.email}</small></td><td>{c.telefone}</td><td>{c.pedidos}</td><td>{data(c.criado_em)}</td></tr>)}
+            {filtra(dados.clientes).map((c) => <tr key={c.email}><td className="adm-titulo"><b>{c.nome}</b><small>{c.email}</small></td><td data-r="Celular">{c.telefone}</td><td data-r="Pedidos">{c.pedidos}</td><td data-r="Conta criada">{data(c.criado_em)}</td></tr>)}
             {!dados.clientes.length && <tr><td colSpan={4}>Nenhuma conta de cliente ainda (quem pede como visitante não aparece aqui).</td></tr>}</tbody></table>}
         </>}
       </main>

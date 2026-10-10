@@ -114,6 +114,8 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
   useEffect(() => { carregar(); const t = setInterval(carregar, 8000); return () => clearInterval(t); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { navigator.geolocation?.getCurrentPosition((p) => setEu0({ lat: p.coords.latitude, lng: p.coords.longitude }), () => {}, { maximumAge: 60000, timeout: 15000 }); }, []);
   const marcar = async (x: Entrega, andamento: 'a_caminho' | 'entregue', codigo?: string) => {
+    // No toque em “Saí para entrega” (pelo navegador): pede a localização na hora, assim o Chrome mostra a pergunta em vez de bloquear sozinho.
+    if (andamento === 'a_caminho' && !NATIVO) navigator.geolocation?.getCurrentPosition(() => { setGps(''); setTentarGps((n) => n + 1); }, (e) => { if (e.code === 1) setGps('negado'); }, { timeout: 15000 });
     setOcupado(x.id);
     try { await post(`/entregador/entregas/${x.id}`, { andamento, codigo }); setCodigoDe(null); await carregar(); return ''; } catch (e) { const m = msgErro(e); if (!codigo) setErro(m); return m; } finally { setOcupado(''); }
   };
@@ -196,8 +198,6 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
             <small>Hoje: {deHoje.length} {deHoje.length === 1 ? 'entrega' : 'entregas'}{kmHoje ? ` · ${kmTxt(kmHoje)}` : ''}</small>
           </button>
           {erro && <p className="aviso erro">{erro}</p>}
-          {!NATIVO && /Android/i.test(navigator.userAgent) && <a className="aviso ent-baixar" href="https://www.leunamesoftware.com.br/baixar/pedee-entregador.apk">
-            📲 <span><b>Instale o app Pedêê Entregador para Android.</b> O GPS funciona direto, sem bloqueio do navegador, e continua com a tela apagada. Toque para baixar.</span></a>}
           {emRota && gps === 'negado' && NATIVO && <div className="aviso erro" style={{ margin: 0 }}>
             <b>Falta permitir a localização no app.</b> Sem ela o cliente não vê você no mapa.
             <div className="dupla" style={{ marginTop: 8 }}><button className="btn peq" onClick={() => { NATIVO.pedirLocalizacao(); setTimeout(pedirGps, 4000); }}>📍 Permitir</button><button className="btn peq" onClick={() => NATIVO.abrirConfiguracoes()}>⚙️ Abrir configurações</button></div>
@@ -331,6 +331,7 @@ const PERGUNTAS: [string, string, string][] = [
   ['Pedidos', 'O cliente não responde / não encontro o endereço', 'Use os avisos prontos no pedido (“Cheguei, estou na frente”, “Não encontrei o endereço”). O cliente recebe no app dele. Se não resolver, toque em “Conversar com a loja” e escreva o que precisar.'],
   ['Cadastro', 'Quero trocar minha foto ou meu veículo', 'A foto é tirada pela câmera, para o cliente saber quem está levando. Para trocar a foto ou mudar de moto para bicicleta, fale com o suporte.'],
   ['Ganhos', 'Como recebo pelas entregas?', 'Por enquanto o valor de cada entrega (a taxa de entrega) é combinado e pago direto pela loja. Em Financeiro você vê quanto fez no dia, na semana e em cada entrega.'],
+  ['Celular', 'Quero o GPS funcionando com a tela apagada', 'Pelo navegador o GPS para quando a tela apaga. No Android existe o app Pedêê Entregador (opcional), que continua mandando a sua posição: baixe em www.leunamesoftware.com.br/baixar/pedee-entregador.apk. O Android pode pedir para confirmar a instalação.'],
   ['Segurança', 'Sofri um acidente ou estou em perigo', 'Em perigo: toque em SOS (liga 190). Acidente com ferido: ligue 192 (SAMU). Depois avise a loja.'],
 ];
 function Ajuda() {

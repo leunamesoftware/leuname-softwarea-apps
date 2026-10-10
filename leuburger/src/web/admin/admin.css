@@ -23,6 +23,7 @@ body { background: #F4F2FA; }
 .adm-tab th { text-align: left; background: #EDE9FE; color: #3B0764; padding: 10px 12px; font-size: 13px; white-space: nowrap; }
 .adm-tab td { padding: 10px 12px; border-top: 1px solid #F1EEF8; vertical-align: middle; }
 .adm-tab td small { display: block; color: var(--suave); font-size: 12px; }
+.adm-tab td[data-r] { white-space: nowrap; } .adm-tab td[data-r="Cidade"], .adm-tab td[data-r="Lojas"], .adm-tab td[data-r="Cliente"] { white-space: normal; } .adm-tab td.adm-titulo { min-width: 170px; }
 .adm-tab tr:hover td { background: #FAF8FF; }
 .adm-acoes { white-space: nowrap; text-align: right; } .adm-acoes .btn + .btn { margin-left: 6px; }
 .adm-perigo { color: #B91C1C !important; border-color: #FCA5A5 !important; }
@@ -31,16 +32,36 @@ body { background: #F4F2FA; }
 .adm-pessoa { display: flex; align-items: center; gap: 10px; } .adm-pessoa div { display: grid; }
 .adm-pessoa img, .adm-pessoa > span { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; display: grid; place-items: center; background: #F3F4F6; }
 @media (max-width: 800px) {
-  .adm { grid-template-columns: 1fr; }
-  .adm-lado { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px; gap: 8px; }
-  .adm-lado nav { display: flex; overflow-x: auto; flex: 1 1 100%; order: 3; }
-  .adm-lado nav button { white-space: nowrap; }
-  .adm-sair { margin: 0 0 0 auto; }
-  .adm-corpo { padding: 14px; overflow-x: auto; }
-  .adm-tab { min-width: 720px; }
+  /* Celular: barra fixa em cima (marca + Sair) e as abas numa faixa que rola de lado; tabelas viram cartões. */
+  .adm { grid-template-columns: minmax(0, 1fr); }
+  .adm-lado { position: sticky; top: 0; z-index: 20; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 10px 12px 8px; gap: 8px; }
+  .adm-lado nav { grid-column: 1 / -1; grid-row: 2; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  .adm-lado nav::-webkit-scrollbar { display: none; }
+  .adm-lado nav button { white-space: nowrap; flex: none; padding: 9px 12px; }
+  .adm-sair { margin: 0; grid-column: 2; grid-row: 1; padding: 8px 10px; }
+  .adm-corpo { padding: 14px 12px 30px; }
+  .adm-topo { flex-wrap: wrap; } .adm-topo h1 { font-size: 22px; } .adm-topo input { max-width: none; flex: 1 1 100%; }
+  .adm-topo input[style*="hidden"] { display: none; }
+  .adm-teste { flex-wrap: wrap; } .adm-teste .btn { flex: 1 1 100%; }
 }
 .adm-testes { display: grid; gap: 12px; }
 .adm-teste { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(31, 17, 71, .07); }
 .adm-teste img { width: 56px; height: 56px; border-radius: 14px; flex: none; }
 .adm-teste div { display: grid; gap: 2px; flex: 1; min-width: 0; } .adm-teste b { font-size: 17px; } .adm-teste span { color: var(--suave); font-size: 14px; }
 .adm-teste small { font-size: 12px; color: var(--suave); overflow-wrap: anywhere; } .adm-teste a { color: #5B21B6; }
+@media (max-width: 1180px) {
+  /* Tela menor: cada linha da tabela vira um cartão (nada passa da borda). */
+  .adm-tab, .adm-tab tbody, .adm-tab tr, .adm-tab td { display: block; width: 100%; }
+  .adm-tab { background: none; box-shadow: none; border-radius: 0; }
+  .adm-tab thead { display: none; }
+  .adm-tab tr { background: #fff; border-radius: 14px; box-shadow: 0 2px 10px rgba(31, 17, 71, .07); padding: 10px 14px; margin-bottom: 10px; }
+  .adm-tab tr:hover td { background: none; }
+  .adm-tab td { border: 0; padding: 4px 0; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
+  .adm-tab td[data-r]::before { content: attr(data-r); color: var(--suave); font-weight: 600; text-align: left; flex: none; }
+  .adm-tab td.adm-titulo { display: block; text-align: left; padding-bottom: 8px; border-bottom: 1px solid #F1EEF8; margin-bottom: 4px; }
+  .adm-tab td.adm-pessoa { display: flex; justify-content: flex-start; }
+  .adm-tab td.adm-acoes { justify-content: flex-end; padding-top: 8px; }
+  .adm-tab td[data-r] { white-space: normal; }
+  .adm-tab td.adm-titulo { min-width: 0; }
+}
+@media (min-width: 801px) and (max-width: 1180px) { .adm-tab tbody { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; } .adm-tab tr { margin: 0; } }
