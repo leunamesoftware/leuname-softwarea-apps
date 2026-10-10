@@ -11,6 +11,7 @@ import { RAPIDAS_CLIENTE, RAPIDAS_CLIENTE_LOJA } from '../../regras/mensagens';
 import { brl, calcularItem, FORMAS, lerValor, type EscolhaItem, type Forma, type Opcoes } from '../../regras/pedido';
 import { ErroApp, get, post, put } from '../api';
 import { Modal, msgErro } from '../comuns';
+import { AtivarAvisos } from '../avisos';
 import { Ic } from '../icones';
 import '../estilo.css';
 import './pedir.css';
@@ -995,6 +996,7 @@ function Pedido() {
           {!final && <p style={{ color: 'var(--suave)', margin: '6px 0 0' }}>Esta tela atualiza sozinha.</p>}
         </section>
         {erro && <p className="aviso erro">{erro}</p>}
+        {!final && <AtivarAvisos chave={token} texto="Saiba na hora quando o pedido for aceito, ficar pronto e sair, mesmo com o app fechado." registrar={(endpoint) => post('/publico/push/cliente', { endpoint, tokens: [token, ...ler().pedidos.filter((x) => !x.fim && x.token !== token).map((x) => x.token)].slice(0, 20) })} />}
         {p.prazos && <Previsao p={p} token={token} />}
         {(p.situacao === 'aguardando' || faltam(p.cancelar_ate)) && <section className="cartao" style={{ textAlign: 'center' }}>
           <p style={{ margin: '0 0 8px' }}>{p.situacao === 'aguardando'

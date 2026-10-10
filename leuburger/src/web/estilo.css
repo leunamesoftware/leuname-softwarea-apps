@@ -453,3 +453,6 @@ tr.clicavel { cursor: pointer; } tr.clicavel:hover td { background: #FFF8F4; }
 .ped.novo { border: 2px solid var(--laranja); animation: pisca 1.6s ease-in-out 3; }
 @keyframes pisca { 50% { box-shadow: 0 0 0 6px var(--laranja-claro); } }
 .abre-fecha { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--texto); }
+/* Botão "Ativar avisos" (notificações com o app fechado) */
+.avisos-ligar { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; margin: 0 0 12px; padding: 12px 14px; border: 1.5px solid #FDE68A; border-radius: 14px; background: #FFFBEB; font: inherit; cursor: pointer; }
+.avisos-ligar > span:first-child { font-size: 26px; } .avisos-ligar > span:last-child { display: grid; } .avisos-ligar small { color: var(--suave); }

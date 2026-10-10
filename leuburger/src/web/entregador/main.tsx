@@ -9,6 +9,7 @@ import { RAPIDAS_ENTREGADOR } from '../../regras/mensagens';
 import { ErroApp, get, post } from '../api';
 import { Modal, msgErro } from '../comuns';
 import { Mapa } from '../mapa';
+import { AtivarAvisos } from '../avisos';
 import { Ic } from '../icones';
 import '../estilo.css';
 import '../pedir/pedir.css';
@@ -194,6 +195,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
           {!ativas.length && <div className="ent-busca">{eu.entregador.disponivel ? '🔎 Esperando as lojas passarem entregas para você' : 'Você está em “Volto breve”. Quando quiser receber entregas, toque no botão e fique Disponível.'}</div>}
         </div>
         <main className="pd-corpo">
+          <AtivarAvisos texto="Toca quando uma loja chamar você ou mandar mensagem, mesmo com o app fechado." registrar={(endpoint) => post('/entregador/push', { endpoint })} />
           <button className="ent-ganho" onClick={alternarValor} aria-label={verValor ? 'Esconder valores' : 'Mostrar valores'}>
             <span className="ent-cifrao">$</span><b>{valor(ganhoHoje)}</b><span>{verValor ? '👁️' : '🙈'}</span>
             <small>Hoje: {deHoje.length} {deHoje.length === 1 ? 'entrega' : 'entregas'}{kmHoje ? ` · ${kmTxt(kmHoje)}` : ''}</small>

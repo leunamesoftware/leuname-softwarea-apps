@@ -526,6 +526,24 @@ describe('Cancelamento pelo cliente (prazo de 5 minutos)', () => {
       expect((await cli.post(`/publico/app/pedido/${t4}/cancelar`, {})).status).toBe(200);
       expect((await cli.get(`/publico/app/pedido/${t4}`)).corpo.pedido.situacao).toBe('cancelado');
 
+      // Avisos com o app fechado: a loja se inscreve; pedido novo vai para a fila e "toca" o aparelho (assinado com VAPID).
+      const toques: { url: string; auth: string }[] = [];
+      const fetchOriginal = globalThis.fetch;
+      globalThis.fetch = (async (u: string, o: RequestInit) => { toques.push({ url: String(u), auth: String((o.headers as Record<string, string>).Authorization) }); return new Response(null, { status: 201 }); }) as typeof fetch;
+      try {
+        const ep = 'https://push.exemplo.com/assinatura-teste-123';
+        expect((await n.post('/pedidos-app/push', { endpoint: ep })).status).toBe(200);
+        expect((await cli.get('/publico/push/chave')).corpo.chave).toMatch(/^[A-Za-z0-9_-]{80,}$/);
+        await novo('prazo-cliente-push');
+        for (let i = 0; i < 50 && !toques.length; i++) await new Promise((r) => setTimeout(r, 20));
+        expect(toques[0]).toMatchObject({ url: ep, auth: expect.stringMatching(/^vapid t=[\w-]+\.[\w-]+\.[\w-]+, k=/) });
+        const fila = (await cli.post('/publico/push/fila', { endpoint: ep })).corpo.avisos;
+        expect(fila[0].titulo).toContain('Novo pedido');
+        expect((await cli.post('/publico/push/fila', { endpoint: ep })).corpo.avisos).toHaveLength(0);
+      } finally { globalThis.fetch = fetchOriginal; }
+      const tp = (await n.get('/pedidos-app')).corpo.pedidos.find((x: { status: string; cancelado_em: string | null }) => x.status === 'aguardando' && !x.cancelado_em);
+      expect((await n.post(`/pedidos-app/${tp.id}/recusar`, { motivo: 'Teste de aviso' })).status).toBe(200);
+
       // Conversa cliente ↔ loja: livre, mas barra telefone, link e palavrão.
       const t6 = await novo('prazo-cliente-006');
       expect((await cli.post(`/publico/app/pedido/${t6}/loja-mensagem`, { texto: 'Pode mandar sem cebola?' })).status).toBe(200);

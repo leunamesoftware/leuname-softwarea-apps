@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { agora, corpo, erro, janelaCancelarMs, novoId, type C, type Env, type Vars } from './base';
 import { exigir, validar } from './cadastros';
 import { prazosDoPedido } from '../regras/prazos';
+import { avisar } from './push';
 
 export const ANDAMENTOS = ['preparando', 'pronto', 'a_caminho', 'entregue', 'retirado'] as const;
 type Andamento = (typeof ANDAMENTOS)[number];
@@ -39,6 +40,12 @@ export async function mudarAndamento(c: C, v: { id: string; tipo: string; andame
   const campo = novo === 'pronto' ? 'pronto_em' : novo === 'a_caminho' ? 'saiu_em' : FINAIS.includes(novo) ? 'finalizado_em' : null;
   await c.env.BANCO.prepare(`UPDATE vendas SET andamento = ?${campo ? `, ${campo} = COALESCE(${campo}, ?)` : ''}${entregador !== undefined ? ', entregador = ?' : ''} WHERE id = ? AND status = 'concluida'`)
     .bind(...[novo, ...(campo ? [q] : []), ...(entregador !== undefined ? [entregador] : []), v.id]).run();
+  // Avisa o cliente do app (toca mesmo com o app fechado).
+  const AVISO: Record<string, string> = { pronto: v.tipo === 'entrega' ? '✅ Seu pedido está pronto!' : '✅ Pronto! Pode retirar o seu pedido.', a_caminho: '🛵 Seu pedido saiu para entrega!', entregue: '🎉 Pedido entregue! Bom apetite.', retirado: '🎉 Pedido retirado. Bom apetite!' };
+  if (AVISO[novo]) {
+    const o = await c.env.BANCO.prepare('SELECT o.token, e.nome FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id WHERE o.venda_id = ?').bind(v.id).first<{ token: string; nome: string }>();
+    if (o) avisar(c, 'cliente', o.token, { titulo: AVISO[novo], texto: o.nome, url: `/pedir/pedido/${o.token}` });
+  }
 }
 
 export const andamento = new Hono<{ Bindings: Env; Variables: Vars }>();
@@ -73,11 +80,12 @@ andamento.post('/vendas/:id/mensagem-entregador', async (c) => {
   exigir(c, 'vender');
   const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
   const db = c.env.BANCO;
-  const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND empresa_id = ? AND status = 'concluida' AND entregador_id IS NOT NULL").bind(c.req.param('id'), c.get('empresa').id).first<{ id: string }>();
+  const v = await db.prepare("SELECT id, entregador_id FROM vendas WHERE id = ? AND empresa_id = ? AND status = 'concluida' AND entregador_id IS NOT NULL").bind(c.req.param('id'), c.get('empresa').id).first<{ id: string; entregador_id: string }>();
   if (!v) throw erro(404, 'nao_encontrado', 'Este pedido não tem entregador do app.');
   const n = await db.prepare("SELECT COUNT(*) AS n FROM mensagens_loja WHERE venda_id = ? AND de = 'loja'").bind(v.id).first<{ n: number }>();
   if ((n?.n ?? 0) >= 150) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
   await db.prepare("INSERT INTO mensagens_loja (id, venda_id, de, texto, criado_em) VALUES (?,?,'loja',?,?)").bind(novoId(), v.id, d.texto, agora()).run();
+  avisar(c, 'entregador', v.entregador_id, { titulo: `💬 ${c.get('empresa').nome}`, texto: d.texto, url: '/entregador/' });
   return c.json({ ok: true });
 });
 

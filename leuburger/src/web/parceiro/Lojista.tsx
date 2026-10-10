@@ -8,6 +8,7 @@ import { brl, FORMAS, lerValor, type Forma, type Opcoes } from '../../regras/ped
 import { RAPIDAS_LOJA_CLIENTE } from '../../regras/mensagens';
 import { del, ErroApp, get, post, put } from '../api';
 import { Modal, msgErro, reduzirFoto } from '../comuns';
+import { AtivarAvisos } from '../avisos';
 import { Ic } from '../icones';
 
 const TIPOS: [string, string][] = CULINARIAS.map(([v, n]) => [v, n]);
@@ -213,6 +214,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
   return (
     <>
       {erro && <p className="aviso erro">{erro}</p>}
+      <AtivarAvisos texto="Toca quando chegar pedido novo ou mensagem, mesmo com o app fechado." registrar={(endpoint) => post('/pedidos-app/push', { endpoint })} />
       <h2 className="pd-tit">Novos pedidos {novos.length > 0 && <span className="selo st-a_caminho">{novos.length}</span>}</h2>
       {!novos.length ? <p style={{ margin: 0, color: 'var(--suave)' }}>Nenhum pedido esperando. Quando chegar, toca um aviso. Deixe esta tela aberta.</p> : novos.map((p) => (
         <article key={p.id} className="ped novo">

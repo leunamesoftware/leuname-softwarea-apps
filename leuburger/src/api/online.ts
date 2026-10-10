@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { prazosDoPedido } from '../regras/prazos';
+import { avisar, inscrever } from './push';
 import { conferirMensagem, RAPIDAS_CLIENTE, vezesPermitidas } from '../regras/mensagens';
 import { calcularItem, ErroPedido, FORMAS, totais, type EscolhaItem, type ItemCalculado, type ProdutoPreco } from '../regras/pedido';
 import { contaLogada } from './contaCliente';
@@ -178,6 +179,7 @@ appPublico.post('/publico/app/loja/:slug/pedido', async (c) => {
     if (outro) return c.json({ ok: true, token: outro.token, repetido: true });
     throw err;
   }
+  avisar(c, 'loja', e.id, { titulo: '🛎️ Novo pedido no Pedêê!', texto: `${d.nome} · ${d.tipo === 'entrega' ? 'Entrega' : 'Retirada'} · R$ ${(p.total / 100).toFixed(2).replace('.', ',')}`, url: '/parceiro/' });
   return c.json({ ok: true, token }, 201);
 });
 
@@ -193,6 +195,9 @@ async function gravarMensagemPedido(c: C, pedidoId: string, de: 'cliente' | 'loj
   const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_pedido WHERE pedido_id = ? AND de = ?').bind(pedidoId, de).first<{ n: number }>();
   if ((n?.n ?? 0) >= 40) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
   await db.prepare('INSERT INTO mensagens_pedido (id, pedido_id, de, texto, criado_em) VALUES (?,?,?,?,?)').bind(novoId(), pedidoId, de, texto, agora()).run();
+  const o = await db.prepare('SELECT o.token, o.empresa_id, o.nome, e.nome AS loja FROM pedidos_online o JOIN empresas e ON e.id = o.empresa_id WHERE o.id = ?').bind(pedidoId).first<{ token: string; empresa_id: string; nome: string; loja: string }>();
+  if (o && de === 'cliente') avisar(c, 'loja', o.empresa_id, { titulo: `💬 ${o.nome.split(' ')[0]} mandou mensagem`, texto, url: '/parceiro/' });
+  if (o && de === 'loja') avisar(c, 'cliente', o.token, { titulo: `💬 ${o.loja}`, texto, url: `/pedir/pedido/${o.token}` });
 }
 
 /** Cliente manda mensagem para a loja (texto livre, sem telefone/link/palavrão). */
@@ -278,11 +283,12 @@ appPublico.post('/publico/app/pedido/:token/mensagem', async (c) => {
   if (!/^[A-Za-z0-9_-]{20,64}$/.test(token)) throw erro(404, 'nao_encontrado', 'Pedido não encontrado.');
   const d = validar(z.object({ texto: z.enum(RAPIDAS_CLIENTE, { message: 'Escolha uma das mensagens prontas.' }) }), await corpo(c));
   const db = c.env.BANCO;
-  const v = await db.prepare("SELECT v.id FROM pedidos_online o JOIN vendas v ON v.id = o.venda_id WHERE o.token = ? AND v.entregador_id IS NOT NULL AND v.status = 'concluida' AND v.andamento NOT IN ('entregue','retirado')").bind(token).first<{ id: string }>();
+  const v = await db.prepare("SELECT v.id, v.entregador_id FROM pedidos_online o JOIN vendas v ON v.id = o.venda_id WHERE o.token = ? AND v.entregador_id IS NOT NULL AND v.status = 'concluida' AND v.andamento NOT IN ('entregue','retirado')").bind(token).first<{ id: string; entregador_id: string }>();
   if (!v) throw erro(409, 'sem_conversa', 'A conversa abre quando um entregador pega o seu pedido.');
   const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ? AND texto = ?').bind(v.id, 'cliente', d.texto).first<{ n: number }>();
   if ((n?.n ?? 0) >= vezesPermitidas(d.texto)) throw erro(429, 'muitas_mensagens', 'Você já mandou esse aviso. Se precisar, fale com a loja.');
   await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'cliente',?,?)").bind(novoId(), v.id, d.texto, agora()).run();
+  avisar(c, 'entregador', v.entregador_id, { titulo: '💬 Aviso do cliente', texto: d.texto, url: '/entregador/' });
   return c.json({ ok: true });
 });
 
@@ -313,9 +319,11 @@ appPublico.post('/publico/app/pedido/:token/cancelar', async (c) => {
   if (o.status === 'aguardando') {
     const r = await db.batch(stmts);
     if (!r[r.length - 1].meta?.changes) throw erro(409, 'mudou', 'A loja acabou de aceitar o pedido. Toque em cancelar de novo se ainda quiser.');
+    avisar(c, 'loja', o.empresa_id, { titulo: '❌ O cliente cancelou o pedido', texto: 'Não precisa preparar.', url: '/parceiro/' });
     return c.json({ ok: true });
   }
   await db.batch(stmts);
+  avisar(c, 'loja', o.empresa_id, { titulo: '❌ O cliente cancelou o pedido', texto: 'Pare o preparo: a venda foi cancelada.', url: '/parceiro/' });
   return c.json({ ok: true });
 });
 
@@ -415,7 +423,16 @@ appLoja.post('/pedidos-app/:id/aceitar', async (c) => {
   await db.prepare("UPDATE pedidos_online SET status = 'aceito', venda_id = ?, respondido_em = ? WHERE id = ? AND status = 'aguardando'").bind(r.id, agora(), o.id).run();
   // Código de entrega: o cliente vê no app e passa ao entregador só quando recebe o pedido.
   if (o.tipo === 'entrega') await db.prepare('UPDATE vendas SET codigo_entrega = COALESCE(codigo_entrega, ?) WHERE id = ?').bind(String(crypto.getRandomValues(new Uint32Array(1))[0] % 10000).padStart(4, '0'), r.id).run();
+  avisar(c, 'cliente', o.token, { titulo: '👨‍🍳 Pedido aceito!', texto: `${emp.nome} já está preparando o seu pedido.`, url: `/pedir/pedido/${o.token}` });
   return c.json({ ok: true, venda_id: r.id });
+});
+
+/** Loja ativa os avisos com o app fechado neste aparelho. */
+appLoja.post('/pedidos-app/push', async (c) => {
+  exigir(c, 'vender');
+  const d = validar(z.object({ endpoint: z.string().max(1000) }), await corpo(c));
+  await inscrever(c, d.endpoint, 'loja', [c.get('empresa').id]);
+  return c.json({ ok: true });
 });
 
 appLoja.post('/pedidos-app/:id/recusar', async (c) => {
@@ -424,6 +441,8 @@ appLoja.post('/pedidos-app/:id/recusar', async (c) => {
   const r = await c.env.BANCO.prepare("UPDATE pedidos_online SET status = 'recusado', motivo_recusa = ?, respondido_em = ? WHERE id = ? AND empresa_id = ? AND status = 'aguardando'")
     .bind(d.motivo, agora(), c.req.param('id'), c.get('empresa').id).run();
   if (!r.meta?.changes) throw erro(409, 'ja_respondido', 'Este pedido já foi respondido.');
+  const o = await c.env.BANCO.prepare('SELECT token FROM pedidos_online WHERE id = ?').bind(c.req.param('id')).first<{ token: string }>();
+  avisar(c, 'cliente', o?.token, { titulo: '⛔ A loja não pôde aceitar o pedido', texto: d.motivo, url: `/pedir/pedido/${o?.token}` });
   return c.json({ ok: true });
 });
 

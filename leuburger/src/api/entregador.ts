@@ -9,6 +9,7 @@ import { agora, aleatorio, corpo, erro, hashSenha, iguais, novoId, sha256, type 
 import { exigir, validar } from './cadastros';
 import { RAPIDAS_ENTREGADOR, vezesPermitidas } from '../regras/mensagens';
 import { prazosDoPedido } from '../regras/prazos';
+import { avisar, inscrever } from './push';
 
 const COOKIE = 'pe_sessao';
 const emailDe = (s: unknown) => String(s ?? '').trim().toLowerCase();
@@ -112,6 +113,8 @@ entregador.post('/entregador/entregas/:id/mensagem', async (c) => {
   const n = await db.prepare('SELECT COUNT(*) AS n FROM mensagens_entrega WHERE venda_id = ? AND de = ? AND texto = ?').bind(id, 'entregador', d.texto).first<{ n: number }>();
   if ((n?.n ?? 0) >= vezesPermitidas(d.texto)) throw erro(429, 'muitas_mensagens', 'Você já mandou esse aviso. Se precisar, fale com a loja.');
   await db.prepare("INSERT INTO mensagens_entrega (id, venda_id, de, texto, criado_em) VALUES (?,?,'entregador',?,?)").bind(novoId(), id, d.texto, agora()).run();
+  const o = await db.prepare('SELECT token FROM pedidos_online WHERE venda_id = ?').bind(id).first<{ token: string }>();
+  avisar(c, 'cliente', o?.token, { titulo: '🛵 Aviso do entregador', texto: d.texto, url: `/pedir/pedido/${o?.token}` });
   return c.json({ ok: true });
 });
 
@@ -120,11 +123,12 @@ entregador.post('/entregador/entregas/:id/loja', async (c) => {
   const e = await entregadorLogado(c);
   const d = validar(z.object({ texto: z.string().trim().min(1, 'Escreva a mensagem.').max(300) }), await corpo(c));
   const db = c.env.BANCO, id = c.req.param('id');
-  const v = await db.prepare("SELECT id FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida'").bind(id, e.id).first();
+  const v = await db.prepare("SELECT id, empresa_id FROM vendas WHERE id = ? AND entregador_id = ? AND status = 'concluida'").bind(id, e.id).first<{ id: string; empresa_id: string }>();
   if (!v) throw erro(404, 'nao_encontrado', 'Esta entrega não está com você.');
   const n = await db.prepare("SELECT COUNT(*) AS n FROM mensagens_loja WHERE venda_id = ? AND de = 'entregador'").bind(id).first<{ n: number }>();
   if ((n?.n ?? 0) >= 150) throw erro(429, 'muitas_mensagens', 'Muitas mensagens neste pedido.');
   await db.prepare("INSERT INTO mensagens_loja (id, venda_id, de, texto, criado_em) VALUES (?,?,'entregador',?,?)").bind(novoId(), id, d.texto, agora()).run();
+  avisar(c, 'loja', v.empresa_id, { titulo: `💬 Entregador ${e.nome.split(' ')[0]}`, texto: d.texto, url: '/parceiro/' });
   return c.json({ ok: true });
 });
 
@@ -140,6 +144,14 @@ entregador.get('/entregador/resumo', async (c) => {
     id: r.id, numero: r.numero, quando: r.finalizado_em, saiu_em: r.saiu_em, chamado_em: r.entregador_em, loja: r.loja, endereco: r.endereco_entrega, ganho: r.taxa_entrega || 0,
     km: r.loja_lat != null && r.dest_lat != null ? Math.round(distanciaKm({ lat: r.loja_lat, lng: r.loja_lng }, { lat: r.dest_lat, lng: r.dest_lng }) * 10) / 10 : null,
   })) });
+});
+
+/** Entregador ativa os avisos com o app fechado neste aparelho. */
+entregador.post('/entregador/push', async (c) => {
+  const e = await entregadorLogado(c);
+  const d = validar(z.object({ endpoint: z.string().max(1000) }), await corpo(c));
+  await inscrever(c, d.endpoint, 'entregador', [e.id]);
+  return c.json({ ok: true });
 });
 
 entregador.post('/entregador/veiculo', async (c) => {
@@ -238,5 +250,6 @@ entregadoresDaLoja.post('/vendas/:id/entregador', async (c) => {
     nome = e.nome;
   }
   await db.prepare('UPDATE vendas SET entregador_id = ?, entregador = ?, entregador_em = ? WHERE id = ?').bind(d.entregador_id, nome, d.entregador_id ? agora() : null, v.id).run();
+  avisar(c, 'entregador', d.entregador_id, { titulo: '🛵 Nova entrega para você!', texto: `${c.get('empresa').nome} chamou você. Vá até a loja buscar o pedido.`, url: '/entregador/' });
   return c.json({ ok: true });
 });

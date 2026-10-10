@@ -10,6 +10,7 @@ import { entregador, entregadoresDaLoja } from './entregador';
 import { gestao } from './gestao';
 import { appLoja, appPublico } from './online';
 import { vendas } from './vendas';
+import { push } from './push';
 
 export function criarApp() {
   const app = new Hono<{ Bindings: Env; Variables: Vars }>().basePath('/api');
@@ -38,6 +39,7 @@ export function criarApp() {
   app.route('/', appPublico); // app de pedidos dos clientes (sem login)
   app.route('/', entregador); // app do entregador (sessão própria)
   app.route('/', admin); // painel do administrador (só o dono)
+  app.route('/', push); // avisos com o app fechado
   app.use('*', exigirSessao);
   app.route('/', gestao);
   app.route('/', cadastros);
