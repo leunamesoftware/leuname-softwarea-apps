@@ -75,8 +75,9 @@ function Painel({ aoSair }: { aoSair: () => void }) {
                 <td className="adm-titulo"><b>{l.nome}</b>{l.demo && <span className="adm-selo">demonstração</span>}<small>{TIPO[l.tipo_loja] || l.tipo_loja} · {l.telefone || 'sem telefone'} · {l.entregadores} entregador(es)</small></td>
                 <td data-r="Cidade">{l.cidade}{l.uf ? `-${l.uf}` : ''}</td><td data-r="Pedidos 30d">{l.pedidos_30d}</td><td data-r="Vendido 30d">{brl(l.valor_30d)}</td><td data-r="Nota">{l.nota ? `★ ${l.nota}` : '—'}</td>
                 <td data-r="Acesso até" className={vencida ? 'adm-ruim' : ''}>{l.acesso_ate ? data(l.acesso_ate) : 'Sem prazo'}{vencida ? ' (vencido)' : ''}</td>
-                <td data-r="No app">{l.no_app ? (l.aceitando ? '🟢 Aberta' : '🟡 Fechada') : '⛔ Fora'}</td>
+                <td data-r="No app">{!l.aprovada ? <b className="adm-ruim">⏳ Esperando aprovação</b> : l.no_app ? (l.aceitando ? '🟢 Aberta' : '🟡 Fechada') : '⛔ Fora'}</td>
                 <td className="adm-acoes">
+                  {!l.aprovada && <button className="btn peq prim" onClick={() => { if (confirm(`Aprovar "${l.nome}"? A loja passa a aparecer para os clientes.`)) acao(`/admin/lojas/${l.id}`, { aprovada: true }); }}>✅ Aprovar</button>}
                   <button className="btn peq" onClick={() => { const n = prompt('Dar quantos dias de acesso a esta loja?', '30'); if (n && Number(n) > 0) acao(`/admin/lojas/${l.id}`, { mais_dias: Math.round(Number(n)) }); }}>+ dias</button>
                   <button className={`btn peq ${l.no_app ? 'adm-perigo' : ''}`} onClick={() => { if (!l.no_app || confirm(`Tirar "${l.nome}" do app? Os clientes param de ver a loja.`)) acao(`/admin/lojas/${l.id}`, { no_app: !l.no_app }); }}>{l.no_app ? 'Tirar do app' : 'Pôr no app'}</button>
                 </td></tr>;

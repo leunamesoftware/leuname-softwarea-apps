@@ -64,22 +64,23 @@ admin.get('/admin/resumo', async (c) => {
 
 admin.get('/admin/lojas', async (c) => {
   await exigirAdmin(c);
-  const { results } = await c.env.BANCO.prepare(`SELECT e.id, e.nome, e.slug, e.cidade, e.uf, e.tipo_loja, e.telefone, e.no_app, e.aceitando, e.acesso_ate, e.criado_em, e.conta_email,
+  const { results } = await c.env.BANCO.prepare(`SELECT e.id, e.nome, e.slug, e.cidade, e.uf, e.tipo_loja, e.telefone, e.no_app, e.aprovada, e.aceitando, e.acesso_ate, e.criado_em, e.conta_email,
       (SELECT COUNT(*) FROM pedidos_online o WHERE o.empresa_id = e.id AND o.criado_em >= ? AND o.chave NOT LIKE 'demo-%') AS pedidos_30d,
       (SELECT COALESCE(SUM(o.total), 0) FROM pedidos_online o WHERE o.empresa_id = e.id AND o.status = 'aceito' AND o.cancelado_em IS NULL AND o.criado_em >= ? AND o.chave NOT LIKE 'demo-%') AS valor_30d,
       (SELECT ROUND(AVG(a.nota), 1) FROM avaliacoes a WHERE a.empresa_id = e.id) AS nota,
       (SELECT COUNT(*) FROM loja_entregadores le WHERE le.empresa_id = e.id) AS entregadores
-    FROM empresas e WHERE e.slug IS NOT NULL ORDER BY e.criado_em DESC LIMIT 500`).bind(dias(30), dias(30)).all();
+    FROM empresas e WHERE e.slug IS NOT NULL ORDER BY e.aprovada, e.criado_em DESC LIMIT 500`).bind(dias(30), dias(30)).all();
   return c.json({ lojas: results.map((l) => ({ ...l, demo: /^demo-.*@leupede\.demo$/.test(String(l.conta_email)), conta_email: undefined })) });
 });
 
 /** Tirar/colocar a loja no app e dar mais dias de acesso (ex.: pagou por fora, cortesia). */
 admin.post('/admin/lojas/:id', async (c) => {
   await exigirAdmin(c);
-  const d = validar(z.object({ no_app: z.boolean().optional(), mais_dias: z.number().int().min(1).max(400).optional() }), await corpo(c));
+  const d = validar(z.object({ aprovada: z.boolean().optional(), no_app: z.boolean().optional(), mais_dias: z.number().int().min(1).max(400).optional() }), await corpo(c));
   const db = c.env.BANCO, id = c.req.param('id');
   const e = await db.prepare('SELECT acesso_ate FROM empresas WHERE id = ? AND slug IS NOT NULL').bind(id).first<{ acesso_ate: string | null }>();
   if (!e) throw erro(404, 'nao_encontrado', 'Loja não encontrada.');
+  if (d.aprovada !== undefined) await db.prepare('UPDATE empresas SET aprovada = ? WHERE id = ?').bind(d.aprovada ? 1 : 0, id).run();
   if (d.no_app !== undefined) await db.prepare('UPDATE empresas SET no_app = ? WHERE id = ?').bind(d.no_app ? 1 : 0, id).run();
   if (d.mais_dias) {
     const base = Math.max(Date.now(), e.acesso_ate ? new Date(e.acesso_ate).getTime() : Date.now());

@@ -15,7 +15,7 @@ gestao.get('/eu', (c) => {
   return c.json({
     usuario: { id: u.id, nome: u.nome, login: u.login, papel: u.papel, dono: Boolean(u.dono) },
     empresa: { id: e.id, nome: e.nome, cnpj: e.cnpj, telefone: e.telefone, endereco: e.endereco, cidade: e.cidade, uf: e.uf, mensagem_cupom: e.mensagem_cupom,
-      formas_pagamento: JSON.parse(e.formas_pagamento), desconto_max_caixa: e.desconto_max_caixa, taxa_entrega_padrao: e.taxa_entrega_padrao ?? 0, no_app: Boolean((e as { no_app?: number }).no_app), aceitando: Boolean((e as { aceitando?: number }).aceitando ?? 1), slug: (e as { slug?: string }).slug || null, largura_cupom: e.largura_cupom, acesso_ate: e.acesso_ate, criado_em: e.criado_em },
+      formas_pagamento: JSON.parse(e.formas_pagamento), desconto_max_caixa: e.desconto_max_caixa, taxa_entrega_padrao: e.taxa_entrega_padrao ?? 0, no_app: Boolean((e as { no_app?: number }).no_app), aprovada: (e as { aprovada?: number }).aprovada !== 0, aceitando: Boolean((e as { aceitando?: number }).aceitando ?? 1), slug: (e as { slug?: string }).slug || null, largura_cupom: e.largura_cupom, acesso_ate: e.acesso_ate, criado_em: e.criado_em },
   });
 });
 

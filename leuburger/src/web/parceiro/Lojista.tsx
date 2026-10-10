@@ -13,9 +13,11 @@ import { Ic } from '../icones';
 
 const TIPOS: [string, string][] = CULINARIAS.map(([v, n]) => [v, n]);
 interface Empresa { id: string; nome: string; cnpj: string | null; telefone: string | null; endereco: string | null; cidade: string | null; uf: string | null; mensagem_cupom: string | null;
-  formas_pagamento: Forma[]; desconto_max_caixa: number; largura_cupom: string; taxa_entrega_padrao: number; no_app: boolean; aceitando: boolean; slug: string | null; acesso_ate: string | null }
+  formas_pagamento: Forma[]; desconto_max_caixa: number; largura_cupom: string; taxa_entrega_padrao: number; no_app: boolean; aceitando: boolean; slug: string | null; acesso_ate: string | null; aprovada?: boolean }
 interface Eu { usuario: { nome: string }; empresa: Empresa }
 const dig = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
+/** Tira o +55 que o celular preenche sozinho. */
+const foneBR = (s: string) => { const d = dig(s); return (d.length === 12 || d.length === 13) && d.startsWith('55') ? d.slice(2) : d; };
 const reais = (c: number) => (c ? (c / 100).toFixed(2).replace('.', ',') : '');
 
 export function Lojista() {
@@ -42,7 +44,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
   const [erro, setErro] = useState(''), [ocupado, setOcupado] = useState(false), [ver, setVer] = useState(false);
   const muda = (k: keyof typeof f) => (e: { target: { value: string } }) => { setF({ ...f, [k]: e.target.value }); setErro(''); };
   const entrar = async () => {
-    const login = f.login.includes('@') ? f.login.trim() : dig(f.login);
+    const login = f.login.includes('@') ? f.login.trim() : foneBR(f.login);
     if (!login || !f.senha) return setErro('Digite o WhatsApp e a senha.');
     setOcupado(true);
     try { await post('/auth/entrar', { login, senha: f.senha }); try { localStorage.setItem('parceiro_ja_entrou', '1'); } catch { /* sem armazenamento */ } aoEntrar(); } catch (e) { setErro(msgErro(e)); } finally { setOcupado(false); }
@@ -61,7 +63,7 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
         <section className="cartao" style={{ textAlign: 'center' }}>
           <img src="/pedir-icone-192.png" alt="" style={{ width: 72, height: 72, borderRadius: 18 }} />
           <h1 style={{ margin: '8px 0 4px', fontSize: 22 }}>Venda pelo Pedêê</h1>
-          <p style={{ margin: 0, color: 'var(--suave)' }}>Cadastre sua lanchonete em 1 minuto. <b>Primeiro mês grátis</b>, depois R$ 29,90 por mês. <b>Sem comissão</b> nas suas vendas.</p>
+          <p style={{ margin: 0, color: 'var(--suave)' }}>Cadastre sua loja em 1 minuto. A equipe do Pedêê confere e libera a loja para os clientes. <b>R$ 29,90 por mês</b>, <b>sem comissão</b> nas suas vendas.</p>
         </section>
         <div className="chips" role="tablist">
           <button className={`chip ${aba === 'cadastrar' ? 'sel' : ''}`} onClick={() => { setAba('cadastrar'); setErro(''); }}>Cadastrar minha loja</button>
@@ -76,12 +78,12 @@ function EntrarOuCadastrar({ aoEntrar }: { aoEntrar: () => void }) {
             <label className="campo largo">Nome da loja<input value={f.loja} onChange={muda('loja')} maxLength={60} placeholder="Ex.: Lanchonete do Zé" /></label>
             <label className="campo">Tipo<select value={f.tipo_loja} onChange={muda('tipo_loja')}>{TIPOS.map(([v, n]) => <option key={v} value={v}>{n}</option>)}</select></label>
             <label className="campo">Seu nome<input value={f.nome} onChange={muda('nome')} maxLength={60} autoComplete="name" /></label>
-            <label className="campo">WhatsApp (será o seu login)<input value={f.whatsapp} onChange={muda('whatsapp')} inputMode="tel" autoComplete="tel" placeholder="(21) 99999-9999" /></label>
+            <label className="campo">Seu WhatsApp (é com ele que você entra no app)<input value={f.whatsapp} onChange={muda('whatsapp')} inputMode="tel" autoComplete="tel" placeholder="(21) 99999-9999" /></label>
             <label className="campo">Cidade<input value={f.cidade} onChange={muda('cidade')} maxLength={60} list="cidades-rj" placeholder="Ex.: Duque de Caxias" /><datalist id="cidades-rj">{CIDADES_RJ.map((c) => <option key={c} value={c} />)}</datalist></label>
             <label className="campo largo">Endereço da loja<input value={f.endereco} onChange={muda('endereco')} maxLength={150} placeholder="Rua, número e bairro" /></label>
             <label className="campo">UF<input value={f.uf} onChange={(e) => setF({ ...f, uf: e.target.value.toUpperCase().slice(0, 2) })} maxLength={2} /></label>
             {campoSenha}
-            <button className="btn prim grande bloco largo" onClick={cadastrar} disabled={ocupado}><Ic n="loja" />{ocupado ? 'Criando a loja…' : 'Criar minha loja grátis'}</button>
+            <button className="btn prim grande bloco largo" onClick={cadastrar} disabled={ocupado}><Ic n="loja" />{ocupado ? 'Criando a loja…' : 'Cadastrar minha loja'}</button>
           </div>}
           {erro && <p className="aviso erro" role="alert" style={{ marginBottom: 0 }}>{erro}</p>}
         </section>
@@ -102,7 +104,7 @@ function Painel({ eu, recarregar, aoSair }: { eu: Eu; recarregar: () => void; ao
       <TopoLoja titulo={e.nome}><button className="pd-voltar" onClick={abrirFechar} aria-label={e.aceitando ? 'Fechar a loja' : 'Abrir a loja'} title={e.aceitando ? 'Aberta' : 'Fechada'} style={{ width: 'auto', padding: '0 10px', fontWeight: 800, fontSize: 13 }}>{e.aceitando ? '🟢 Aberta' : '🔴 Fechada'}</button></TopoLoja>
       {aba === 'vitrine' && <div style={{ paddingBottom: 80 }}><LojaEditavel e={e} recarregar={recarregar} /></div>}
       <main className="pd-corpo" style={{ paddingBottom: 90, display: aba === 'vitrine' ? 'none' : undefined }}>
-        {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} />}
+        {aba === 'pedidos' && <Pedidos aoContar={setNovos} loja={e.nome} aprovada={e.aprovada} />}
         {aba === 'entregadores' && <Entregadores />}
         {aba === 'loja' && <MinhaLoja e={e} recarregar={recarregar} aoSair={aoSair} />}
       </main>
@@ -176,7 +178,7 @@ function ConversaCliente({ pedidoId, nome, msgs, aoEnviar }: { pedidoId: string;
   );
 }
 
-function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) {
+function Pedidos({ aoContar, aprovada }: { aoContar: (n: number) => void; loja: string; aprovada?: boolean }) {
   const [novos, setNovos] = useState<Novo[]>([]), [lista, setLista] = useState<EmAndamento[]>([]);
   const [carregou, setCarregou] = useState(false), [erro, setErro] = useState(''), [ocupado, setOcupado] = useState('');
   const [recusar, setRecusar] = useState<Novo | null>(null), [cancelados, setCancelados] = useState<Novo[]>([]);
@@ -214,6 +216,7 @@ function Pedidos({ aoContar }: { aoContar: (n: number) => void; loja: string }) 
   return (
     <>
       {erro && <p className="aviso erro">{erro}</p>}
+      {aprovada === false && <p className="aviso" style={{ margin: '0 0 12px' }}>⏳ <b>Sua loja está em análise.</b> Enquanto isso, monte o cardápio em “Minha loja”. Assim que a equipe do Pedêê aprovar, ela aparece para os clientes.</p>}
       <AtivarAvisos texto="Toca quando chegar pedido novo ou mensagem, mesmo com o app fechado." registrar={(endpoint) => post('/pedidos-app/push', { endpoint })} />
       <h2 className="pd-tit">Novos pedidos {novos.length > 0 && <span className="selo st-a_caminho">{novos.length}</span>}</h2>
       {!novos.length ? <p style={{ margin: 0, color: 'var(--suave)' }}>Nenhum pedido esperando. Quando chegar, toca um aviso. Deixe esta tela aberta.</p> : novos.map((p) => (

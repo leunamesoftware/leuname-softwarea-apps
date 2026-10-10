@@ -33,10 +33,12 @@ type Loja = Empresa & {
 
 /** Loja com acesso em dia (assinatura, teste ou vitalício) e ligada no app. */
 const NOTAS = "(SELECT ROUND(AVG(a.nota), 1) FROM avaliacoes a WHERE a.empresa_id = e.id) AS nota_media, (SELECT COUNT(*) FROM avaliacoes a WHERE a.empresa_id = e.id) AS nota_total";
-const LOJA_ATIVA = "e.no_app = 1 AND e.slug IS NOT NULL AND (e.acesso_ate IS NULL OR e.acesso_ate > ?) AND EXISTS (SELECT 1 FROM produtos p WHERE p.empresa_id = e.id AND p.ativo = 1)";
+const LOJA_ATIVA = "e.no_app = 1 AND e.aprovada = 1 AND e.slug IS NOT NULL AND (e.acesso_ate IS NULL OR e.acesso_ate > ?) AND EXISTS (SELECT 1 FROM produtos p WHERE p.empresa_id = e.id AND p.ativo = 1)";
 const limiteAcesso = () => new Date(Date.now() - 864e5).toISOString();
 const semAcento = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 const digitos = (s: string | null | undefined) => String(s || '').replace(/\D/g, '');
+/** Celular do Brasil só com DDD + número (tira o +55 que o celular preenche sozinho). */
+export const foneBR = (s: string | null | undefined) => { const d = digitos(s); return (d.length === 12 || d.length === 13) && d.startsWith('55') ? d.slice(2) : d; };
 
 /** Distância em km entre dois pontos (fórmula de haversine). */
 export function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -447,7 +449,7 @@ appLoja.post('/pedidos-app/:id/recusar', async (c) => {
 });
 
 // ---------- configuração da loja no app ----------
-const CAMPOS = 'slug, no_app, aceitando, tipo_loja, descricao, logo_id, capa_id, tempo_entrega, tempo_preparo, pedido_minimo, faz_entrega, faz_retirada, lat, lng, raio_km, taxa_entrega_padrao, cidade, uf, endereco, telefone, nome';
+const CAMPOS = 'aprovada, slug, no_app, aceitando, tipo_loja, descricao, logo_id, capa_id, tempo_entrega, tempo_preparo, pedido_minimo, faz_entrega, faz_retirada, lat, lng, raio_km, taxa_entrega_padrao, cidade, uf, endereco, telefone, nome';
 const RESERVADOS = new Set(['loja', 'pedido', 'pedidos', 'admin', 'entrar', 'app']);
 export const sugerirSlug = (nome: string) => { const s = semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40); return !s || s.length < 3 ? 'minha-loja' : RESERVADOS.has(s) ? `${s}-1` : s; };
 
@@ -497,7 +499,7 @@ const esqCadastroLoja = z.object({
   loja: z.string().trim().min(2, 'Digite o nome da loja.').max(60),
   tipo_loja: z.enum(Object.keys(TIPOS_LOJA) as [keyof typeof TIPOS_LOJA, ...(keyof typeof TIPOS_LOJA)[]]),
   nome: z.string().trim().min(2, 'Digite o seu nome.').max(60),
-  whatsapp: z.string().trim().refine((t) => digitos(t).length >= 10 && digitos(t).length <= 11, 'Digite o WhatsApp com DDD.'),
+  whatsapp: z.string().trim().refine((t) => foneBR(t).length >= 10 && foneBR(t).length <= 11, 'Digite o WhatsApp com DDD (ex.: 21 98765-4321).'),
   cidade: z.string().trim().min(2, 'Digite a cidade.').max(60),
   uf: z.string().trim().length(2, 'UF com 2 letras.'),
   endereco: z.string().trim().min(5, 'Digite o endereço da loja.').max(150),
@@ -507,7 +509,7 @@ const esqCadastroLoja = z.object({
 /** O lojista cria a loja direto no app: já entra logado, com a loja no app e o primeiro mês grátis. */
 appPublico.post('/publico/app/cadastrar-loja', async (c) => {
   const d = validar(esqCadastroLoja, await corpo(c));
-  const db = c.env.BANCO, login = digitos(d.whatsapp);
+  const db = c.env.BANCO, login = foneBR(d.whatsapp);
   const ip = c.req.header('CF-Connecting-IP') || 'local';
   const rec = await db.prepare("SELECT COUNT(*) AS n FROM auditoria WHERE acao = 'loja_cadastrada' AND detalhe LIKE ? AND criado_em > ?").bind(`%"ip":"${ip}"%`, new Date(Date.now() - 864e5).toISOString()).first<{ n: number }>();
   if ((rec?.n || 0) >= 3) throw erro(429, 'muitos_cadastros', 'Muitos cadastros seguidos deste aparelho. Tente amanhã ou fale com a gente.');
@@ -519,8 +521,9 @@ appPublico.post('/publico/app/cadastrar-loja', async (c) => {
   const emp = novoId(), uid = novoId(), sal = aleatorio(16), quando = agora();
   const ate = new Date(Date.now() + DIAS_GRATIS * 864e5).toISOString();
   await db.batch([
-    db.prepare(`INSERT INTO empresas (id, conta_email, nome, telefone, endereco, cidade, uf, acesso_ate, criado_em, slug, no_app, aceitando, tipo_loja, faz_entrega, faz_retirada, formas_pagamento)
-      VALUES (?,?,?,?,?,?,?,?,?,?,1,1,?,1,1,'["dinheiro","pix","debito","credito"]')`)
+    // Entra aprovada = 0: monta a loja, mas os clientes só veem depois que o administrador aprova.
+    db.prepare(`INSERT INTO empresas (id, conta_email, nome, telefone, endereco, cidade, uf, acesso_ate, criado_em, slug, no_app, aceitando, tipo_loja, faz_entrega, faz_retirada, formas_pagamento, aprovada)
+      VALUES (?,?,?,?,?,?,?,?,?,?,1,1,?,1,1,'["dinheiro","pix","debito","credito"]',0)`)
       .bind(emp, `app-${login}@pedee.app`, d.loja, d.whatsapp, d.endereco, d.cidade, d.uf.toUpperCase(), ate, quando, slug, d.tipo_loja),
     db.prepare("INSERT INTO usuarios (id, empresa_id, nome, login, senha_hash, senha_sal, papel, dono, criado_em) VALUES (?,?,?,?,?,?,'admin',0,?)")
       .bind(uid, emp, d.nome, login, await hashSenha(d.senha, sal), sal, quando),

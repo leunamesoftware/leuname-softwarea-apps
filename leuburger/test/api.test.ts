@@ -362,7 +362,7 @@ describe('LeuPede (app de pedidos dos clientes)', () => {
 describe('Pedêê: lojista cadastra a loja pelo app', () => {
   it('cadastra, já entra, monta o cardápio e a loja aparece para o cliente', async () => {
     const lj = A.navegador();
-    const dados = { loja: 'Açaí da Praça', tipo_loja: 'acai', nome: 'Rita', whatsapp: '(21) 99999-1234', cidade: 'Duque de Caxias', uf: 'rj', endereco: 'Praça Central, 10 - Xerém', senha: 'segredo1' };
+    const dados = { loja: 'Açaí da Praça', tipo_loja: 'acai', nome: 'Rita', whatsapp: '+55 21 99999-1234', cidade: 'Duque de Caxias', uf: 'rj', endereco: 'Praça Central, 10 - Xerém', senha: 'segredo1' };
     expect((await lj.post('/publico/app/cadastrar-loja', { ...dados, senha: '123' })).status).toBe(400);
     const r = await lj.post('/publico/app/cadastrar-loja', dados);
     expect(r.status).toBe(201);
@@ -378,6 +378,14 @@ describe('Pedêê: lojista cadastra a loja pelo app', () => {
     expect((await cli.get('/publico/app/lojas?cidade=duque de caxias')).corpo.lojas).toHaveLength(0);
     const cat = await lj.post('/categorias', { nome: 'Açaí', icone: 'acai' });
     expect((await lj.post('/produtos', { nome: 'Açaí 500 ml', categoria_id: cat.corpo.id, preco: 1800 })).status).toBe(201);
+    // Loja nova só aparece depois que o administrador aprova (ninguém abre loja sozinho).
+    expect((await cli.get('/publico/app/lojas?cidade=duque de caxias')).corpo.lojas).toHaveLength(0);
+    expect((await lj.get('/eu')).corpo.empresa.aprovada).toBe(false);
+    const adm = A.navegador();
+    expect((await adm.post('/admin/entrar', { email: 'dono@leuname.com', senha: 'senha-da-area-do-dono' })).status).toBe(200);
+    const pend = (await adm.get('/admin/lojas')).corpo.lojas.find((l: { slug: string }) => l.slug === 'acai-da-praca');
+    expect(pend.aprovada).toBe(0);
+    expect((await adm.post(`/admin/lojas/${pend.id}`, { aprovada: true })).status).toBe(200);
     expect((await cli.get('/publico/app/lojas?cidade=duque de caxias')).corpo.lojas.map((l: { nome: string }) => l.nome)).toEqual(['Açaí da Praça']);
     // Entra de novo pelo WhatsApp e a senha.
     const outra = A.navegador();
