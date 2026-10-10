@@ -113,7 +113,16 @@ Plano sugerido:
      publicação volta o antigo.
    - Na página de compra, o recebedor aparece como TRANS ANTUNES enquanto o CNPJ troca de nome.
 4. **Produtos de arquivo** (seção 4).
-5. **Microsoft Store** para computador com Windows (opcional). Dá para empacotar os PWAs pelo PWABuilder.
+5. **Microsoft Store** (computador com Windows; a conta Google Play foi banida). Conta Partner Center PF do dono, já verificada.
+   - **Gestacell enviado para certificação em 10/10/2026** (Store ID 9NQ9BWWVLGHM, pacote `Leunamesoftware.Gestacell`,
+     publisher `CN=83C078D6-4CCB-43A0-BC05-DD91FD6BD64C`). Grátis na Store; venda pelo nosso Mercado Pago (declarado).
+   - Pacote: workflow `microsoft-store.yml` (Leunamesite, PWABuilder) → /baixar/microsoft/<app>.msixbundle. Imagens 1920×1080
+     em `leuapps/public/microsoft/`. Justificativa do runFullTrust e notas de teste: em inglês (PWA do PWABuilder, sem login).
+   - 1ª vez de cada app é manual no celular do dono (nome, classificação IARC "outros tipos", Não em tudo exceto compras = Sim;
+     Propriedades: Negócios/Produtividade, privacidade www.leunamesoftware.com.br/privacidade.html, sem Mixed Reality;
+     Pacotes: marcar só Windows 10/11 Desktop). Passo a passo curto, UM passo por mensagem. Atualizações: automatizar depois
+     (app no Entra + msstore CLI, códigos só em segredos do GitHub) quando o dono tiver PC.
+   - Próximos: MercaGestão, ConstruGestão, Radar, PDV (nome novo).
 7. **Pedêê (pausado pelo dono; ele vai mandar a lista completa do que falta).** Já pendente:
    - **Prazos com Score do entregador:** os prazos já aparecem (`src/regras/prazos.ts`: coleta 15 min, trajeto 5 min + 3 min/km,
      preparo da loja em Ajustes). Falta o Score 0–100 por atraso, sem multa e sem bloqueio automático; score baixo vai para o fim
