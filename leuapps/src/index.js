@@ -191,8 +191,8 @@ export default {
     }
     // Links curtos de instalação do Pedêê (abrem a página com o botão "Instalar"; sem loja de aplicativos).
     const INSTALAR = { '/pedee': '/pedir/?instalar=1', '/pedee-loja': '/parceiro/?instalar=1', '/pedee-entregador': '/entregador/?instalar=1' };
-    const curto = INSTALAR[url.pathname.replace(/\/+$/, '').toLowerCase()];
-    if (curto) return Response.redirect('https://leuburger.leunamesoftware.com.br' + curto, 302);
+    const instalarCurto = INSTALAR[url.pathname.replace(/\/+$/, '').toLowerCase()];
+    if (instalarCurto) return Response.redirect('https://leuburger.leunamesoftware.com.br' + instalarCurto, 302);
     // APKs da loja para Android (fora da Play Store): /baixar/leuapps.apk, /baixar/gestacell.apk e a versão da LeuApps.
     const BAIXAR = { '/baixar/leuapps.apk': ['leuapps.apk', 'LeuApps.apk'], '/baixar/gestacell.apk': ['gestacell.apk', 'Gestacell.apk'],
       '/baixar/leuapps-versao.json': ['leuapps-versao.json'], '/baixar/gestacell-versao.json': ['gestacell-loja-versao.json'],
