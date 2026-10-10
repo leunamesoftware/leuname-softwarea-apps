@@ -1,7 +1,7 @@
 {
   "name": "LeuApps — aplicativos LeuName Softwares",
   "short_name": "LeuApps",
-  "start_url": "/?origem=app",
+  "start_url": "/apps?origem=app",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0E0C10",

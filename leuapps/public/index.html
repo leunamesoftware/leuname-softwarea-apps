@@ -781,7 +781,7 @@
 
   <script>
 // Link de divulgação www.leunamesoftware.com.br/quantocobrar abre aqui mesmo, já na página do app.
-if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, '', '/#quantocobrar');
+if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, '', '/apps#quantocobrar');
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const $ = (id) => document.getElementById(id);
     const detalhe = $('detalhe');

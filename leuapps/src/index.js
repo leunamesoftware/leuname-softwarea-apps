@@ -12,6 +12,7 @@ function seguro(resp) {
 // Manifesto e ícones ficam abertos porque o celular os busca sem a sessão na hora de instalar.
 const DONO_HOST = 'dono.leunamesoftware.com.br';
 const GESTACELL_HOST = 'gestacell.leunamesoftware.com.br';
+const SITE_HOSTS = ['www.leunamesoftware.com.br', 'leunamesoftware.com.br'];
 const MERCA_HOST = 'mercagestao.leunamesoftware.com.br';
 
 // NFC-e do MercaGestão: ponte para o emissor (Focus NFe). O navegador não fala direto com o emissor (CORS),
@@ -236,6 +237,9 @@ export default {
     if (url.pathname.startsWith('/dono/') && !DONO_LIVRE.test(url.pathname) && !(await eDono(req, env))) {
       return new Response(RESTRITA, { status: 403, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     }
+    // Página inicial do www: site da empresa (site.html). A loja de apps fica em /apps (e no apps.leunamesoftware.com.br).
+    if (url.pathname === '/apps' || url.pathname === '/apps/') return seguro(await env.ASSETS.fetch(new Request(url.origin + '/', req)));
+    if (url.pathname === '/' && SITE_HOSTS.includes(url.hostname)) return seguro(await env.ASSETS.fetch(new Request(url.origin + '/site', req)));
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);
     // Gestacell no endereço próprio: o manifesto vai já no HTML, para a loja conseguir instalar com um toque.
