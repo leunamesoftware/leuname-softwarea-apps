@@ -114,7 +114,20 @@ Plano sugerido:
    - Na página de compra, o recebedor aparece como TRANS ANTUNES enquanto o CNPJ troca de nome.
 4. **Produtos de arquivo** (seção 4).
 5. **Microsoft Store** para computador com Windows (opcional). Dá para empacotar os PWAs pelo PWABuilder.
-6. **MercaGestão: NFC-e.** O app monta a nota e manda pela ponte `/fiscal/nfce` (worker da loja, `fiscal()` em
+7. **Pedêê (pausado pelo dono; ele vai mandar a lista completa do que falta).** Já pendente:
+   - **Prazos com Score do entregador:** os prazos já aparecem (`src/regras/prazos.ts`: coleta 15 min, trajeto 5 min + 3 min/km,
+     preparo da loja em Ajustes). Falta o Score 0–100 por atraso, sem multa e sem bloqueio automático; score baixo vai para o fim
+     da lista da loja; o 1º imprevisto avisado no mês não conta. O dono ainda não aprovou os tempos.
+   - **Admin:** pedidos ao vivo (atrasos em vermelho), aprovar loja e entregador novos antes de entrarem, ficha completa
+     (pedidos, reclamações, nota), financeiro das mensalidades, mapa ao vivo dos entregadores, configurações da plataforma
+     (prazos, cidades, banners). O pulo ao trocar de aba foi resolvido (abas carregadas de uma vez + `scrollbar-gutter`).
+   - **Avisos com o app fechado (Web Push, `src/api/push.ts` + `public/sw.js`):** o dono ainda não testou no celular de verdade.
+   - **Entregador de moto:** cadastro da moto + CNH (hoje quem é de bicicleta não pode trocar para moto).
+   - **Mapa pago** (o dono quer contratar uma API de mapa depois; hoje é OpenStreetMap + botões do Waze e Google Maps).
+   - **Pagamento pelo app** (Mercado Pago, com a taxa por distância e o repasse ao entregador); hoje paga na entrega.
+   - **Instalação:** os 3 apps vão pelo navegador (PWA). O APK do entregador (`leuburger/android-entregador`) é opcional e
+     não aparece na loja: o Google Play Protect assusta quem instala.
+8. **MercaGestão: NFC-e.** O app monta a nota e manda pela ponte `/fiscal/nfce` (worker da loja, `fiscal()` em
    `leuapps/src/index.js`) para o Focus NFe, com o token da própria loja (Configurações → Nota fiscal). Falta testar
    em homologação com uma conta real do Focus (o cliente contrata, sobe o certificado A1 e o CSC lá).
    - Identidade própria: azul/azul-marinho/laranja, ícone do dono (`img/mercagestao-*.png`). Não copiar dos outros apps.
