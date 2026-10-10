@@ -2125,7 +2125,11 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
       // (dentro da janela da LeuApps o Android não deixa instalar; o link intent:// leva para o Chrome).
       const itl = t.closest('[data-instalar-tela]'); if (itl) {
         const caminho = `/instalar/${itl.dataset.instalarTela}`;
-        location.href = android && janelaApp() ? `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.origin + caminho)};end` : caminho;
+        const completo = location.origin + caminho;
+        // App LeuApps para Android (WebView): só sai para o Chrome por um endereço que não é nosso → googlechrome://.
+        // LeuApps instalada pelo Chrome (janela própria): intent:// abre o Chrome de verdade. No Chrome comum: abre direto.
+        location.href = N ? `googlechrome://navigate?url=${encodeURIComponent(completo)}`
+          : android && janelaApp() ? `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(completo)};end` : caminho;
         return; }
       const ict = t.closest('[data-icone-tela]'); if (ict) {
         const id = ict.dataset.iconeTela, q = pedidosApp[id]; if (!q) return; delete pedidosApp[id];
