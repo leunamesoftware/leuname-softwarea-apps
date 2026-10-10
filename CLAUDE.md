@@ -82,3 +82,7 @@
     conversa sem telefone, ganhos/km). Painel do administrador: https://leuburger.leunamesoftware.com.br/admin/
     (só DONO_EMAIL + senha da Área do Dono; atalho roxo na Área do Dono). Lojas de demonstração: demo/gerar_lojas.py
     (workflow leuburger-publicar com demo=sim|trocar|remover).
+    App Android do entregador (`leuburger/android-entregador`, Kotlin): GPS nativo sem permissão do navegador, continua com a tela
+    apagada (serviço de localização). APK pelo workflow leuapps-android.yml (job entregador) → /baixar/pedee-entregador.apk;
+    subir `android.versao` no apps.json para o versionCode novo (run_number + 1). Entregador↔cliente só avisos prontos
+    (src/regras/mensagens.ts); entregador↔loja conversa livre (mensagens_loja).
