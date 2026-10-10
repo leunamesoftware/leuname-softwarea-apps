@@ -123,6 +123,10 @@ Plano sugerido:
      Pacotes: marcar só Windows 10/11 Desktop). Passo a passo curto, UM passo por mensagem. Atualizações: automatizar depois
      (app no Entra + msstore CLI, códigos só em segredos do GitHub) quando o dono tiver PC.
    - Próximos: MercaGestão, ConstruGestão, Radar, PDV (nome novo).
+6. **LeuApps no celular é SITE (decisão do dono, 10/10/2026).** Não oferecer mais "instalar a LeuApps": app instalado abre links
+   numa janelinha onde o Android não deixa instalar outro app. No Chrome, o Instalar de cada app vai para `/instalar/<id>`
+   (tela do app com botão Instalar, testado e aprovado pelo dono). Quem ainda tem a LeuApps instalada vê o aviso "agora é site".
+   Links para divulgar/QR Code: `www.leunamesoftware.com.br/instalar/<id>`.
 7. **Pedêê (pausado pelo dono; ele vai mandar a lista completa do que falta).** Já pendente:
    - **Prazos com Score do entregador:** os prazos já aparecem (`src/regras/prazos.ts`: coleta 15 min, trajeto 5 min + 3 min/km,
      preparo da loja em Ajustes). Falta o Score 0–100 por atraso, sem multa e sem bloqueio automático; score baixo vai para o fim
