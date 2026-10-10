@@ -208,6 +208,13 @@ export default {
       if (obj.size) cab.set('Content-Length', String(obj.size));
       return new Response(req.method === 'HEAD' ? null : obj.body, { headers: cab });
     }
+    // Pacotes da Microsoft Store (gerados pelo workflow microsoft-store.yml): o dono baixa e envia no Partner Center.
+    const ms = url.pathname.match(/^\/baixar\/microsoft\/([a-z0-9-]{2,40}\.(msixbundle|appxbundle|zip))$/);
+    if (ms && env.DOWNLOADS && req.method === 'GET') {
+      const obj = await env.DOWNLOADS.get('microsoft/' + ms[1]);
+      if (!obj) return new Response('Pacote ainda não gerado.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      return new Response(obj.body, { headers: { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${ms[1]}"`, 'Cache-Control': 'no-cache' } });
+    }
     // A Área do Dono tem endereço próprio (vira um app separado no celular): dono.leunamesoftware.com.br.
     if (url.hostname !== DONO_HOST && (url.pathname === '/dono' || url.pathname.startsWith('/dono/'))) return Response.redirect(`https://${DONO_HOST}/`, 302);
     if (url.hostname === DONO_HOST) {
