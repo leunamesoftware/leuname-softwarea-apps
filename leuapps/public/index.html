@@ -2115,11 +2115,18 @@ if (/^\/quantocobrar\/?$/.test(location.pathname)) history.replaceState(null, ''
         const podeIcone = !N && a.abrirWww && pedidosApp[a.id]; // só no Chrome (fora da janela da LeuApps): ícone separado na tela
         f.innerHTML = `<div class="suspenso" role="menu"><button type="button" role="menuitem" data-fecha data-compartilhar="${esc(a.id)}">${ICO('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>')}Compartilhar</button>
           <button type="button" role="menuitem" data-fecha data-problema="${esc(a.id)}">${ICO('<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>')}Informar um problema</button>
+          ${!podeIcone && a.instalar && celular && !(N && a.android) ? `<button type="button" role="menuitem" data-fecha data-instalar-tela="${esc(a.id)}">${ICO('<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v6M9 11h6"/>')}Instalar na tela do celular</button>` : ''}
           ${podeIcone ? `<button type="button" role="menuitem" data-fecha data-icone-tela="${esc(a.id)}">${ICO('<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v6M9 11h6"/>')}Criar ícone na tela do celular</button>` : ''}
           ${podeAuto ? `<label class="suspenso-check">Atualizar sozinho<input type="checkbox" id="auto-atualizar" ${autoAtualizar(a.id) ? 'checked' : ''}></label>` : ''}</div>`;
         f.addEventListener('click', (ev) => { if (ev.target === f || ev.target.closest('[data-fecha]')) f.remove(); });
         f.querySelector('#auto-atualizar')?.addEventListener('change', (ev) => { gravarAuto(a.id, ev.target.checked); avisar(ev.target.checked ? `O ${a.nome} vai se atualizar sozinho quando você abrir a LeuApps.` : `Atualização automática do ${a.nome} desligada.`); });
         document.body.appendChild(f); return; }
+      // Ícone próprio na tela do celular: abre a página de instalar do app no Chrome de verdade
+      // (dentro da janela da LeuApps o Android não deixa instalar; o link intent:// leva para o Chrome).
+      const itl = t.closest('[data-instalar-tela]'); if (itl) {
+        const caminho = `/instalar/${itl.dataset.instalarTela}`;
+        location.href = android && janelaApp() ? `intent://${location.host}${caminho}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.origin + caminho)};end` : caminho;
+        return; }
       const ict = t.closest('[data-icone-tela]'); if (ict) {
         const id = ict.dataset.iconeTela, q = pedidosApp[id]; if (!q) return; delete pedidosApp[id];
         q.prompt(); q.userChoice.then((r) => { if (r.outcome === 'accepted') avisar('✓ Pronto! O ícone vai aparecer na tela do celular.'); }).catch(() => {}); return; }

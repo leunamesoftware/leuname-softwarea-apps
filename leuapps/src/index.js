@@ -163,7 +163,8 @@ export default {
       try {
         const lista = await (await env.ASSETS.fetch(new Request(url.origin + '/apps.json'))).json();
         const app = lista.find((x) => x.id === inst[1]);
-        if (app && app.instalar) destino = app.instalar;
+        // ?instalar=1: o app abre direto na tela com o botão Instalar.
+        if (app && app.instalar) destino = app.instalar + (app.instalar.includes('?') ? '&' : '?') + 'instalar=1';
       } catch {}
       return Response.redirect(destino, 302);
     }
