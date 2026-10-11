@@ -926,9 +926,9 @@ function renderLicenseGate(errMsg,modo){
   const criando=modo==='criar';
   root.innerHTML=`
   <div class="auth-screen"><div class="auth-card">
-    ${authBrandHTML()}
-    <h2 style="font-size:17px;text-align:center;margin-top:6px;">Gestacell</h2>
-    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br>${testeAcabou?'Planos a partir de <b>R$ 19,90/mês</b>.':'<b>3 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.'}</p>
+    <div style="text-align:center;"><img src="/img/gestacell-192.png" alt="" width="84" height="84" style="border-radius:20px;box-shadow:0 8px 22px rgba(30,111,217,.25);"></div>
+    <h2 style="font-size:24px;font-weight:800;text-align:center;margin:10px 0 0;">Gestacell</h2>
+    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da loja de celular.<br>${testeAcabou?'Planos a partir de <b>R$ 19,90/mês</b>.':'<b>3 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.'}</p>
     ${errMsg?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
     ${criando?`
     <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Crie a sua conta para testar grátis</p>
@@ -939,7 +939,7 @@ function renderLicenseGate(errMsg,modo){
     <button class="btn primary" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:12px;">Começar 3 dias grátis</button>
     <p class="small center" style="margin-top:12px;"><a href="#" id="cg-modo">Já tenho conta: entrar</a></p>`:`
     ${testeAcabou?'':`<button class="btn primary" id="cg-testar" style="width:100%;justify-content:center;padding:12px;">🎁 Testar 3 dias grátis</button>`}
-    <a class="btn ${testeAcabou?'primary':'outline'}" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;margin-top:10px;">🛒 Ver planos · a partir de R$ 19,90/mês</a>
+    <a class="btn ${testeAcabou?'primary':'outline'}" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;margin-top:10px;">🛒 Assinar ou comprar</a>
     <div class="divider" style="margin:18px 0 12px;"></div>
     <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Já tem conta? Entre</p>
     <div class="field"><label>E-mail</label><input id="cg-email" type="email" autocomplete="username" placeholder="voce@email.com"></div>
