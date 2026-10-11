@@ -68,6 +68,16 @@
       "/img/servicos/banner-restaurante-2.webp",
       "/img/servicos/banner-restaurante-3.webp"
      ]
+    },
+    {
+     "id": "padaria",
+     "segmento": "Padaria",
+     "resumo": "Banner para padaria: pães, doces e café em destaque, com botão para pedir no WhatsApp.",
+     "imagens": [
+      "/img/servicos/banner-padaria.webp",
+      "/img/servicos/banner-padaria-2.webp",
+      "/img/servicos/banner-padaria-3.webp"
+     ]
     }
    ]
   }
