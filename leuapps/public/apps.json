@@ -59,7 +59,7 @@
       "📊 Controle das suas vendas"
     ],
     "capturas": [
-      "/img/telas/quantocobrar-play-1.webp",
+      "/img/telas/quantocobrar-play-1c.webp",
       "/img/telas/quantocobrar-play-2.webp",
       "/img/telas/quantocobrar-play-3.webp",
       "/img/telas/quantocobrar-play-4.webp",
@@ -165,7 +165,7 @@
       "💰 Financeiro e relatórios"
     ],
     "capturas": [
-      "/img/telas/gestacell-play-1.webp",
+      "/img/telas/gestacell-play-1c.webp",
       "/img/telas/gestacell-play-2.webp",
       "/img/telas/gestacell-play-3.webp",
       "/img/telas/gestacell-play-4.webp",
@@ -282,7 +282,7 @@
       "➕ Cadastro rápido"
     ],
     "capturas": [
-      "/img/telas/radar-play-1.webp",
+      "/img/telas/radar-play-1c.webp",
       "/img/telas/radar-play-2.webp",
       "/img/telas/radar-play-3.webp",
       "/img/telas/radar-play-4.webp",
@@ -397,7 +397,7 @@
       "id": "https://construgestao.leunamesoftware.com.br/"
     },
     "capturas": [
-      "/img/telas/construgestao-play-1b.webp",
+      "/img/telas/construgestao-play-1c.webp",
       "/img/telas/construgestao-play-2.webp",
       "/img/telas/construgestao-play-3.webp",
       "/img/telas/construgestao-play-4.webp",
@@ -423,7 +423,7 @@
       "Ferramentas de negócios"
     ],
     "destaque": {
-      "imagem": "/img/destaques/construgestao-v2.webp",
+      "imagem": "/img/destaques/construgestao-v3.webp",
       "titulo": "ConstruGestão",
       "frase": "Sua loja de construção no controle",
       "textoNaImagem": true
@@ -477,7 +477,7 @@
       "id": "https://mercagestao.leunamesoftware.com.br/"
     },
     "capturas": [
-      "/img/telas/mercagestao-1.webp",
+      "/img/telas/mercagestao-1c.webp",
       "/img/telas/mercagestao-2.webp",
       "/img/telas/mercagestao-3.webp",
       "/img/telas/mercagestao-4.webp",
@@ -502,7 +502,7 @@
       "Ferramentas de negócios"
     ],
     "destaque": {
-      "imagem": "/img/destaques/mercagestao.webp",
+      "imagem": "/img/destaques/mercagestao-v2.webp",
       "titulo": "MercaGestão",
       "frase": "Seu mercado no controle",
       "textoNaImagem": true
