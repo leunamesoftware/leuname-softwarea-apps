@@ -127,10 +127,10 @@ Plano sugerido:
    numa janelinha onde o Android não deixa instalar outro app. No Chrome, o Instalar de cada app vai para `/instalar/<id>`
    (tela do app com botão Instalar, testado e aprovado pelo dono). Quem ainda tem a LeuApps instalada vê o aviso "agora é site".
    Links para divulgar/QR Code: `www.leunamesoftware.com.br/instalar/<id>`.
-7. **Site da empresa na página inicial (10/10/2026).** `www.leunamesoftware.com.br/` = `leuapps/public/site.html` (visual do site
-   antigo, CSS em `public/site/style.css`; categorias em `CATS` no próprio site.html; `?cat=<slug>` e `?q=` na mesma página).
-   A loja de apps continua em `/apps` (e em apps.leunamesoftware.com.br). Links antigos com #hash ou ?origem vão sozinhos para /apps.
-   Falta: sites prontos/logos para comprar e baixar (seção 4) — o dono vai mandar os arquivos e preços.
+7. **Página inicial do www = site antigo (11/10/2026, pedido do dono: "do jeito que era").** `/` vai para o worker leuname-site-br
+   (SITE_ANTIGO; código em Leunamesite/SITE-LEUNAMESOFTWARE-BR). A loja de apps fica em `/apps`. O dono vai dizer, por ordem,
+   o que mudar no site. Rumo combinado: sair da LeuApps; o cliente baixa/instala cada app direto do site (celular e PC),
+   entra com o e-mail, testa 3 dias (qualquer app) e depois paga o plano no Mercado Pago da empresa.
 7. **Pedêê (pausado pelo dono; ele vai mandar a lista completa do que falta).** Já pendente:
    - **Prazos com Score do entregador:** os prazos já aparecem (`src/regras/prazos.ts`: coleta 15 min, trajeto 5 min + 3 min/km,
      preparo da loja em Ajustes). Falta o Score 0–100 por atraso, sem multa e sem bloqueio automático; score baixo vai para o fim

@@ -237,9 +237,10 @@ export default {
     if (url.pathname.startsWith('/dono/') && !DONO_LIVRE.test(url.pathname) && !(await eDono(req, env))) {
       return new Response(RESTRITA, { status: 403, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     }
-    // Página inicial do www: site da empresa (site.html). A loja de apps fica em /apps (e no apps.leunamesoftware.com.br).
+    // A loja de apps fica em /apps (e no apps.leunamesoftware.com.br).
     if (url.pathname === '/apps' || url.pathname === '/apps/') return seguro(await env.ASSETS.fetch(new Request(url.origin + '/', req)));
-    if (url.pathname === '/' && SITE_HOSTS.includes(url.hostname)) return seguro(await env.ASSETS.fetch(new Request(url.origin + '/site', req)));
+    // Página inicial do www: o site antigo da LeuName (worker leuname-site-br), do jeito que era.
+    if (url.pathname === '/' && SITE_HOSTS.includes(url.hostname) && env.SITE_ANTIGO) return env.SITE_ANTIGO.fetch(new Request(url, req));
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);
     // Gestacell no endereço próprio: o manifesto vai já no HTML, para a loja conseguir instalar com um toque.
