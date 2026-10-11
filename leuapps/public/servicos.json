@@ -47,7 +47,19 @@
     "imagem": "/img/destaques/servico-banners-v2.webp",
     "frase": "Banners que chamam o cliente",
     "textoNaImagem": true
-   }
+   },
+   "modelos": [
+    {
+     "id": "pizzaria",
+     "segmento": "Pizzaria",
+     "resumo": "Banner para pizzaria: marca, pizza em destaque e botão para pedir no WhatsApp.",
+     "imagens": [
+      "/img/servicos/banner-pizzaria.webp",
+      "/img/servicos/banner-pizzaria-2.webp",
+      "/img/servicos/banner-pizzaria-3.webp"
+     ]
+    }
+   ]
   }
  ]
 }
