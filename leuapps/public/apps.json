@@ -132,28 +132,28 @@
     "preco": "3 dias grátis · planos a partir de R$ 19,90/mês",
     "planos": [
       {
-        "nome": "Mensal",
+        "nome": "👑 Mensal",
         "tipo": "assinatura",
         "preco": "R$ 19,90/mês",
-        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser · vendas, OS, estoque, clientes e financeiro",
+        "detalhe": "Cobrado todo mês no cartão, cancele quando quiser",
         "url": "/loja/comprar?app=gestacell&plano=mensal",
-        "nota": "🔄 Atualizações incluídas enquanto a assinatura estiver ativa."
+        "nota": "🔄 Com todas as atualizações."
       },
       {
-        "nome": "Anual",
+        "nome": "👑 Anual",
         "tipo": "unico",
-        "preco": "R$ 39,90/ano",
-        "detalhe": "Paga uma vez, vale 1 ano · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+        "preco": "R$ 199,00/ano",
+        "detalhe": "Paga uma vez, vale 1 ano · Pix ou cartão em até 6x",
         "url": "/loja/comprar?app=gestacell&plano=anual",
-        "nota": "🔄 Atualizações incluídas durante 1 ano."
+        "nota": "🔄 Com todas as atualizações durante 1 ano."
       },
       {
-        "nome": "Para sempre",
+        "nome": "👑 Vitalício",
         "tipo": "unico",
-        "preco": "R$ 49,90",
-        "detalhe": "Paga uma vez, é seu para sempre · vendas, OS, estoque, clientes e financeiro · Pix ou cartão em até 3x",
+        "preco": "R$ 290,00",
+        "detalhe": "Paga uma vez, é seu para sempre · Pix ou cartão em até 6x",
         "url": "/loja/comprar?app=gestacell&plano=unico",
-        "nota": "🔄 Atualizações opcionais: quando sair uma melhoria, você escolhe se quer pagar por ela."
+        "nota": "✅ Versão que você comprou, para sempre. Recursos novos ficam no mensal e no anual."
       }
     ],
     "descricao": "Sistema completo para loja de celular e assistência técnica. Funciona no celular e no computador, até sem internet.",
@@ -222,18 +222,18 @@
     "teste": 3,
     "opcoes": [
       [
-        "Mensal",
+        "👑 Mensal",
         "R$ 19,90/mês",
-        "no cartão, cancele quando quiser"
+        "no cartão, com atualizações"
       ],
       [
-        "Anual",
-        "R$ 39,90/ano",
-        "Pix ou cartão em até 3x"
+        "👑 Anual",
+        "R$ 199,00/ano",
+        "Pix ou cartão em até 6x"
       ],
       [
-        "Para sempre",
-        "R$ 49,90",
+        "👑 Vitalício",
+        "R$ 290,00",
         "paga uma vez só"
       ]
     ],

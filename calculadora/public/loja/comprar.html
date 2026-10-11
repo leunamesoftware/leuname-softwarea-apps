@@ -85,7 +85,7 @@
     const PRODUTOS = {
       gestacell: { nome: 'Gestacell', url: '/gestacell/',
         itens: ['🧾 Vendas, ordens de serviço (OS) e orçamentos', '📦 Estoque, clientes e financeiro da loja', '🔄 Funciona sem internet e sincroniza entre aparelhos'],
-        planos: { mensal: 19.9, anual: 39.9, unico: 49.9 } },
+        planos: { mensal: 19.9, anual: 199, unico: 290 }, parcelas: 6 },
       radar: { nome: 'Radar Preventivo', url: 'https://radar.leunamesoftware.com.br',
         itens: ['📅 Avisa antes de vencer documentos, contas e prazos', '🏢 Tudo da empresa organizado num lugar só', '🔔 Lembretes para nunca perder um prazo'],
         planos: { mensal: 9.9, anual: 29.9, unico: 39.9 } },
@@ -106,12 +106,12 @@
     const reais = (v) => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
     // id do plano no servidor: gestacell_mensal, gestacell_anual e gestacell (pagamento único).
     const TIPOS = {
-      mensal: { id: `${app}_mensal`, nome: 'Mensal', valor: `${reais(P.planos.mensal)}/mês`, como: 'Cartão de crédito. Renova sozinho todo mês; cancele quando quiser.',
-        nota: '💳 <b>Mensal:</b> cobrado no cartão todo mês. Se cancelar, o app continua até o fim do mês já pago.' },
-      anual: { id: `${app}_anual`, nome: 'Anual', valor: `${reais(P.planos.anual)}/ano`, como: `Dá ${reais(P.planos.anual / 12)} por mês. Pix ou cartão em até 3x.`, selo: 'Mais em conta',
-        nota: '📅 <b>Anual:</b> paga uma vez e usa por 1 ano. Não renova sozinho: perto de vencer, você escolhe se quer continuar.' },
-      unico: { id: app, nome: 'Vitalício', valor: reais(P.planos.unico), como: `Paga uma vez e é seu para sempre. Pix ou cartão em até ${P.parcelas || 3}x.`,
-        nota: '✅ <b>Vitalício:</b> paga uma vez, o app é seu para sempre.<br>🔄 <b>Atualizações opcionais:</b> quando sair uma melhoria, você escolhe se quer pagar por ela.' },
+      mensal: { id: `${app}_mensal`, nome: '👑 Mensal', valor: `${reais(P.planos.mensal)}/mês`, como: 'Cartão de crédito. Renova sozinho todo mês; cancele quando quiser.',
+        nota: '💳 <b>Mensal:</b> cobrado no cartão todo mês, com todas as atualizações. Se cancelar, o app continua até o fim do mês já pago.' },
+      anual: { id: `${app}_anual`, nome: '👑 Anual', valor: `${reais(P.planos.anual)}/ano`, como: `Dá ${reais(P.planos.anual / 12)} por mês. Pix ou cartão em até ${P.parcelas || 3}x.`, selo: 'Mais em conta',
+        nota: '📅 <b>Anual:</b> paga uma vez e usa por 1 ano, com todas as atualizações. Não renova sozinho: perto de vencer, você escolhe se quer continuar.' },
+      unico: { id: app, nome: '👑 Vitalício', valor: reais(P.planos.unico), como: `Paga uma vez e é seu para sempre. Pix ou cartão em até ${P.parcelas || 3}x.`,
+        nota: '✅ <b>Vitalício:</b> paga uma vez e o app é seu para sempre, na versão que você comprou.<br>🔄 Recursos novos ficam nos planos mensal e anual. Correções de erro continuam chegando.' },
     };
     for (const k of Object.keys(TIPOS)) if (!P.planos[k]) delete TIPOS[k]; // o app pode não ter todos os tipos
     const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : ('anual' in TIPOS ? 'anual' : 'mensal' in TIPOS ? 'mensal' : 'unico');

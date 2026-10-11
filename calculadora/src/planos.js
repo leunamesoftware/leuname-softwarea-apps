@@ -13,8 +13,8 @@ export const PLANOS = {
   mensal: { preco: 2.99, receitas: Infinity, dias: 33, assinatura: true, titulo: 'Quanto Cobrar Pro — todas as receitas + calculadora (mensal)' },
   // Outros apps da LeuApps: mensal (cartão, renova sozinho), anual ou pagamento único (é seu para sempre).
   // O acesso fica na conta do cliente (e-mail + senha); a chave é só controle interno.
-  gestacell: { app: 'gestacell', licenca: 'leuname-gestao', preco: 49.9, parcelas: 3, titulo: 'Gestacell — pagamento único (para sempre)' },
-  gestacell_anual: { app: 'gestacell', licenca: 'leuname-gestao', preco: 39.9, dias: 366, parcelas: 3, titulo: 'Gestacell — plano anual' },
+  gestacell: { app: 'gestacell', licenca: 'leuname-gestao', preco: 290, parcelas: 6, titulo: 'Gestacell — vitalício (pagamento único)' },
+  gestacell_anual: { app: 'gestacell', licenca: 'leuname-gestao', preco: 199, dias: 366, parcelas: 6, titulo: 'Gestacell — plano anual' },
   gestacell_mensal: { app: 'gestacell', licenca: 'leuname-gestao', preco: 19.9, dias: 33, assinatura: true, titulo: 'Gestacell — plano mensal' },
   radar: { app: 'radar', licenca: 'radar-preventivo', preco: 39.9, parcelas: 3, titulo: 'Radar Preventivo — pagamento único (para sempre)' },
   radar_anual: { app: 'radar', licenca: 'radar-preventivo', preco: 29.9, dias: 366, parcelas: 3, titulo: 'Radar Preventivo — plano anual' },
