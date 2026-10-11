@@ -26,15 +26,19 @@ export async function criarPedido(env, origem, d, req) {
   const email = String(d?.email || '').trim().toLowerCase().slice(0, 120);
   const plano = String(d?.plano || 'basico');
   if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano] || PLANOS[plano].foraDeVenda) return { erro: 'dados_invalidos', status: 400 };
-  if (!senhaValida(d?.senha)) return { erro: 'senha_curta', status: 400 };
   const P = PLANOS[plano];
-  // A compra fica ligada à conta (e-mail + senha): o app libera pela conta, sem chave.
-  const nova = !(await buscarConta(env, email));
-  const c = await contaParaCompra(env, email, nome, d.senha);
-  if (c.erro) return { erro: c.erro, status: 409 };
-  // Conta criada na compra (ainda sem pagar) também conta para o teste grátis único.
-  if (nova) await marcarTeste(env, c.conta.id, req, aparelhoDoPedido(req, d?.aparelho));
-  const sessao = await abrirSessao(env, c.conta.id, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t) });
+  // Site pronto (template): compra rápida só com nome e e-mail — o ZIP vai para o e-mail, não precisa de conta.
+  let c = { conta: { id: null } }, sessao = null;
+  if (!P.template) {
+    if (!senhaValida(d?.senha)) return { erro: 'senha_curta', status: 400 };
+    // A compra fica ligada à conta (e-mail + senha): o app libera pela conta, sem chave.
+    const nova = !(await buscarConta(env, email));
+    c = await contaParaCompra(env, email, nome, d.senha);
+    if (c.erro) return { erro: c.erro, status: 409 };
+    // Conta criada na compra (ainda sem pagar) também conta para o teste grátis único.
+    if (nova) await marcarTeste(env, c.conta.id, req, aparelhoDoPedido(req, d?.aparelho));
+    sessao = await abrirSessao(env, c.conta.id, req, { avisar: (x, t) => avisarAparelhoNovo(env, x, t) });
+  }
 
   const id = [...crypto.getRandomValues(new Uint8Array(18))].map((b) => b.toString(16).padStart(2, '0')).join('');
   const agora = new Date().toISOString();

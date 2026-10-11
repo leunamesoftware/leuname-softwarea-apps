@@ -28,14 +28,48 @@
     .plano:has(input:checked) { border-color: #1B3FD6; background: #F3F6FF; }
     .plano:has(input:focus-visible) { outline: 3px solid #2563EB; outline-offset: 2px; }
     .selo-plano { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 99px; background: #E8F7EE; color: #15803D; font-size: 11.5px; font-weight: 800; vertical-align: 2px; }
+    [hidden] { display: none !important; }
+    .cartao .seguro { display: none; }
+    /* ---- Checkout em 2 colunas (computador) e compacto (celular) ---- */
+    .caixa { max-width: 1040px; padding: 22px 14px 36px; }
+    .checkout { display: grid; gap: 16px; align-items: start; text-align: left; }
+    .resumo-prod { color: #fff; }
+    .resumo-topo { display: flex; align-items: center; gap: 14px; }
+    .resumo-topo .logo { width: 64px; height: 64px; margin: 0; flex: none; }
+    .resumo-topo h1 { margin: 0; font-size: 21px; line-height: 1.2; text-align: left; }
+    .resumo-prod .preco { margin: 4px 0 0; text-align: left; font-size: 15px; }
+    .banner-prod { display: none; width: 100%; border-radius: 18px; margin: 0 0 16px; box-shadow: 0 18px 40px rgba(10,20,80,.35); }
+    .resumo-prod .itens { margin: 14px 0 0; }
+    .selos-lado { display: none; }
+    .aviso-curto { margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; background: #FFF6E5; color: #6B4A00; font-size: 13px; line-height: 1.45; }
+    .aviso-curto b { color: #3B2A00; }
+    .cartao { padding: 20px; }
+    .cartao input { min-height: 50px; font-size: 16px; }
+    .botao { min-height: 56px; font-size: 17px !important; }
+    @media (min-width: 820px) {
+      .caixa { padding-top: 40px; }
+      .checkout { grid-template-columns: 1.15fr 1fr; gap: 36px; }
+      .banner-prod.tem { display: block; }
+      .resumo-topo h1 { font-size: 28px; }
+      .resumo-prod .preco { font-size: 17px; }
+      .selos-lado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+      .selos-lado span { background: rgba(255,255,255,.14); border-radius: 14px; padding: 12px; text-align: center; font-weight: 700; font-size: 13.5px; color: #fff; }
+      .cartao { padding: 26px; position: sticky; top: 20px; }
+      .cartao .selos { display: none; }
+    }
   </style>
 </head>
 <body>
-  <main class="caixa">
-    <img class="logo" id="icone" src="https://www.leunamesoftware.com.br/assets/img/icon-192.png" alt="">
-    <h1 id="titulo">LeuName Softwares</h1>
-    <p class="preco" id="resumo"></p>
-    <ul class="itens" id="itens"></ul>
+  <main class="caixa"><div class="checkout">
+    <section class="resumo-prod">
+      <img class="banner-prod" id="banner-prod" alt="">
+      <div class="resumo-topo">
+        <img class="logo" id="icone" src="https://www.leunamesoftware.com.br/assets/img/icon-192.png" alt="">
+        <div><h1 id="titulo">LeuName Softwares</h1><p class="preco" id="resumo"></p></div>
+      </div>
+      <ul class="itens" id="itens"></ul>
+      <div class="selos-lado"><span>🔒 Compra segura</span><span>🛡️ Mercado Pago</span><span>↩️ 7 dias de garantia</span></div>
+    </section>
 
     <form id="form" class="cartao" novalidate>
       <fieldset class="planos" id="planos"><legend>Escolha como quer pagar</legend></fieldset>
@@ -48,13 +82,7 @@
       <input id="senha" type="password" autocomplete="new-password" required minlength="6" maxlength="100" placeholder="Mínimo 6 caracteres">
       <p class="dica-senha">Já tem conta na LeuName? Use o mesmo e-mail e a mesma senha.</p>
       <p class="erro" id="erro" role="alert"></p>
-      <div class="aviso-recebedor">
-        <span class="atencao">⚠️ COMUNICADO</span>
-        <p class="aviso-titulo">Não estranhe o nome no pagamento</p>
-        <p class="aviso-texto">Nossa empresa é a <b>LeuName Softwares</b>. Por enquanto, o pagamento é recebido pelo CNPJ da nossa empresa, que está trocando de nome. Por isso, no Pix, aparece:</p>
-        <p class="aviso-nome">TRANS ANTUNES</p>
-        <p class="aviso-rodape">Pode pagar tranquilo ✅</p>
-      </div>
+      <p class="aviso-curto">⚠️ No Pix e na fatura aparece <b>TRANS ANTUNES</b>, o CNPJ da LeuName Softwares. Pode pagar tranquilo ✅</p>
       <button class="botao" type="submit" id="pagar">Pagar com Pix ou cartão</button>
       <div class="selos" aria-label="Segurança">
         <span class="selo-item"><b>🔒</b><span>Conexão<br>segura</span></span>
@@ -78,6 +106,7 @@
       <button class="trocar" type="button" data-trocar>Ainda não comprei</button>
     </form>
 
+    </div>
     <p class="rodape"><a href="https://www.leunamesoftware.com.br/">← Voltar ao site</a> · <a href="https://quantocobrar.leunamesoftware.com.br/privacidade">Privacidade</a> · <a href="https://quantocobrar.leunamesoftware.com.br/termos">Termos</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
   </main>
   <script>
@@ -96,7 +125,7 @@
         itens: ['🛒 Caixa com leitor de código de barras (de mão ou câmera do celular) e balança', '🧾 Cupom na impressora térmica e NFC-e', '📦 Estoque, validade, fiado e relatórios do mercado'],
         planos: { mensal: 39.9, unico: 200 }, parcelas: 6 },
       // Templates de site (ZIP no e-mail). Template novo: acrescente aqui (mesmo "plano" do templates/catalogo.json).
-      tpl_agencia: { nome: 'Site pronto: Agência de Viagens', url: '/modelos/agencia-de-viagens/', icone: '/img/modelos/agencia-de-viagens-192.png', template: true,
+      tpl_agencia: { nome: 'Site pronto: Agência de Viagens', url: '/modelos/agencia-de-viagens/', icone: '/img/modelos/agencia-de-viagens-192.png', banner: '/img/modelos/agencia-de-viagens-banner.webp', template: true,
         itens: ['🌐 Site completo e responsivo (celular, tablet e computador)', '📱 Pedidos e orçamentos direto no seu WhatsApp', '✏️ Edite tudo em um arquivo só e publique na sua hospedagem'],
         planos: { unico: 280 }, parcelas: 10 },
       leuburger: { nome: 'LeuBurger PDV', url: 'https://leuburger.leunamesoftware.com.br',
@@ -128,17 +157,21 @@
     document.getElementById('itens').innerHTML = P.itens.map((t) => `<li>${t}</li>`).join('');
     document.getElementById('testar').href = app === 'radar' ? 'https://www.leunamesoftware.com.br/producto.html?id=radar' : P.url;
     if (P.template) {
-      document.getElementById('resumo').innerHTML = `Pagamento único de <b style="white-space:nowrap">${reais(P.planos.unico)}</b><br>Pix ou até ${P.parcelas}x no cartão · ZIP no e-mail na hora`;
-      document.querySelector('label[for=senha]').textContent = 'Crie uma senha (para a sua conta na LeuName)';
+      document.getElementById('resumo').innerHTML = `<b style="white-space:nowrap;font-size:1.25em">${reais(P.planos.unico)}</b> · Pix ou até ${P.parcelas}x no cartão`;
+      // Compra rápida: só nome e e-mail (a pasta vai para o e-mail, não precisa de senha).
+      ['label[for=senha]', '#senha', '.dica-senha'].forEach((q) => { const e = document.querySelector(q); if (e) e.hidden = true; });
+      document.getElementById('banner-prod').src = P.banner; document.getElementById('banner-prod').classList.add('tem');
+      document.querySelector('label[for=email]').textContent = 'Seu e-mail (a pasta do site chega nele)';
       document.querySelector('.seguro').textContent = 'Pagamento seguro pelo Mercado Pago. A pasta do site chega no seu e-mail assim que o pagamento é aprovado. 7 dias para desistir.';
       const t = document.getElementById('testar'); t.textContent = 'Ver a demonstração antes de comprar'; t.target = '_blank';
       document.querySelector('#form [data-trocar]').hidden = true;
     }
     document.getElementById('planos').insertAdjacentHTML('beforeend', Object.entries(TIPOS).map(([k, t]) =>
       `<label class="plano"><input type="radio" name="plano" id="plano-${k}" value="${k}"${k === inicial ? ' checked' : ''}><b>${t.nome}${t.selo ? `<span class="selo-plano">${t.selo}</span>` : ''}</b><span class="valor">${t.valor}</span><small>${t.como}</small></label>`).join(''));
+    if (Object.keys(TIPOS).length === 1) document.getElementById('planos').hidden = true;
     const pagar = document.getElementById('pagar');
     const escolhido = () => TIPOS[document.querySelector('input[name=plano]:checked')?.value || inicial];
-    const textoPagar = () => { const t = escolhido(); return t === TIPOS.mensal ? `Assinar por ${t.valor} no cartão` : `Pagar ${t.valor} com Pix ou cartão`; };
+    const textoPagar = () => { const t = escolhido(); return t === TIPOS.mensal ? `Assinar por ${t.valor} no cartão` : `Pagar ${t.valor}`; };
     const mostrarPlano = () => { pagar.textContent = textoPagar(); document.getElementById('nota-plano').innerHTML = escolhido().nota; };
     document.getElementById('planos').addEventListener('change', mostrarPlano);
     mostrarPlano();
@@ -157,7 +190,7 @@
       const nome = document.getElementById('nome').value.trim(), email = document.getElementById('email').value.trim(), senha = document.getElementById('senha').value;
       if (nome.length < 2) { erro.textContent = 'Digite seu nome.'; return; }
       if (!EMAIL.test(email)) { erro.textContent = 'Confira o seu e-mail.'; return; }
-      if (senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
+      if (!P.template && senha.length < 6) { erro.textContent = 'Crie uma senha com pelo menos 6 caracteres.'; return; }
       erro.textContent = ''; pagar.disabled = true; pagar.textContent = 'Abrindo o pagamento...';
       try {
         const r = await post('/loja-api/comprar', { nome, email, senha, plano: escolhido().id });
