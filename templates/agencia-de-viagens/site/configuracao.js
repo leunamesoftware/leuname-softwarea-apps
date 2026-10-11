@@ -113,5 +113,8 @@ window.SITE = {
   ],
 
   /* Faixa amarela de aviso no topo (só para a demonstração). Deixe false. */
-  avisoDemonstracao: false
+  avisoDemonstracao: false,
+
+  /* Sua licença (1 empresa, 1 domínio). NÃO apague nem mude. */
+  licenca: ""
 };

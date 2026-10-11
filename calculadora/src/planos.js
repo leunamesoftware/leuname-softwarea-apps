@@ -1,5 +1,6 @@
 import { emitirLicenca } from './licencas.js';
 import { brindeDoEmail } from './brindes.js';
+import { TEMPLATES } from './templates_arquivos.js';
 
 // Planos à venda e o que cada um libera.
 export const RECEITAS_GRATIS = 2;
@@ -27,6 +28,10 @@ export const PLANOS = {
   leuburger: { app: 'leuburger', licenca: 'leuburger', preco: 149.9, parcelas: 6, foraDeVenda: true, titulo: 'LeuBurger PDV — pagamento único (para sempre)' },
   leuburger_mensal: { app: 'leuburger', licenca: 'leuburger', preco: 29.9, dias: 33, assinatura: true, titulo: 'LeuBurger PDV — plano mensal' },
 };
+// Templates de site (ZIP): pagamento único; o e-mail leva o link de download (templates/catalogo.json).
+for (const t of Object.values(TEMPLATES)) {
+  PLANOS[t.plano] = { app: 'template', template: t.id, licenca: 'templates-site', preco: t.preco, parcelas: t.parcelas, titulo: `Template de site — ${t.nome.replace(/^Site pronto: /, '')}` };
+}
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';
 const PLANOS_RECEITAS = Object.keys(PLANOS).filter((k) => PLANOS[k].app === 'quantocobrar');
 
@@ -153,7 +158,7 @@ export async function appsDaConta(env, contaId, email) {
     const apps = {};
     // Um app com problema na licença não pode tirar os outros do dono.
     for (const p of Object.values(PLANOS)) {
-      if (!p.licenca || apps[p.app]) continue;
+      if (!p.licenca || p.template || apps[p.app]) continue;
       try { apps[p.app] = { chave: await licencaDoDono(env, p.licenca) }; } catch (e) { console.error('licença do dono', p.licenca, e?.message); }
     }
     return apps;

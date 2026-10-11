@@ -34,6 +34,16 @@
 
     function mostrarAprovado(d) {
       try { localStorage.removeItem('loja.pedido'); } catch {}
+      if (d.template) {
+        document.getElementById('icone').src = `/img/modelos/${d.template}-192.png`;
+        el.innerHTML = `
+        <h1>Pagamento aprovado, ${esc(d.nome)}! 🎉</h1>
+        <p class="sub">Seu site pronto já está liberado. Também mandamos o link para o seu e-mail.</p>
+        <a class="botao" href="${esc(d.download)}">⬇️ Baixar meu site (ZIP)</a>
+        <p class="dica">Descompacte a pasta e abra o arquivo <b>LEIA-ME-PRIMEIRO</b>: ele ensina a colocar os seus dados e publicar.</p>
+        <p class="seguro">Licença para 1 empresa e 1 domínio. Dúvidas: WhatsApp <a href="https://wa.me/5524998721557">(24) 99872-1557</a>.</p>`;
+        return;
+      }
       const a = APPS[d.app] || { nome: 'seu app', url: '/' };
       if (APPS[d.app]) document.getElementById('icone').src = `/img/${d.app}-192.png`;
       el.innerHTML = `
@@ -58,7 +68,7 @@
         const d = await r.json();
         if (d.pago) return mostrarAprovado(d);
         if (d.status === 'rejected' || d.status === 'cancelled') {
-          el.innerHTML = `<h1>Pagamento não aprovado</h1><p class="sub">Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.</p><a class="botao" href="/loja/comprar?app=${esc(d.app || '')}">Tentar de novo</a>`;
+          el.innerHTML = `<h1>Pagamento não aprovado</h1><p class="sub">Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.</p><a class="botao" href="/loja/comprar?app=${esc(d.app === 'template' ? d.plano : d.app || '')}">Tentar de novo</a>`;
           return;
         }
         el.innerHTML = `<h1>Aguardando o pagamento</h1><p class="sub">${d.status === 'aguardando' ? 'Se você já pagou o Pix, a confirmação chega em instantes.' : 'Seu pagamento está em análise.'} Esta página atualiza sozinha.</p><div class="carregando"></div>`;

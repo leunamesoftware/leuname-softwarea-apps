@@ -6,6 +6,7 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
+import { conferirLicenca, zipDoPedido } from './templates.js';
 import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra, avisarAparelhoNovo, enviarEmail, montarEmailNovaSenha } from './email.js';
 import { PLANOS, acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido, liberarVendaDireta } from './pagamento.js';
@@ -111,6 +112,22 @@ export default {
         });
       }
       if (pathname === '/api/saude') return json({ ok: true, pagamento: Boolean(env.MP_ACCESS_TOKEN) });
+
+      // ---- templates de site ----
+      // Arquivos dos templates: só saem dentro do ZIP de quem comprou.
+      if (pathname.startsWith('/_tpl/')) return new Response('Não encontrado.', { status: 404 });
+      // O site do cliente (em qualquer domínio) pergunta se a licença vale ali.
+      if (pathname === '/api/template/licenca' && m === 'GET') {
+        const r = await conferirLicenca(env, url.searchParams.get('chave'), url.searchParams.get('dominio'));
+        return new Response(JSON.stringify(r), { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' } });
+      }
+      if (pathname === '/api/template/baixar' && m === 'GET') {
+        if (!(await limiteOk(env, req))) return json({ erro: 'muitas_tentativas' }, 429);
+        const z = await zipDoPedido(env, url.searchParams.get('p'), url.origin);
+        if (!z) return new Response('Download não encontrado. Confira o link do e-mail ou fale com a gente: wa.me/5524998721557', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+        if (z.limite) return new Response('Limite de downloads atingido. Fale com a gente: wa.me/5524998721557', { status: 429, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+        return new Response(z.zip, { headers: { 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="${z.nome}"`, 'Cache-Control': 'no-store' } });
+      }
 
       // ---- compra ----
       if (pathname === '/api/comprar' && m === 'POST') {

@@ -4,6 +4,7 @@
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
 import { avisarCompraPorEmail, marcarEmailEnviado, avisarAparelhoNovo, enviarEmailDaCompra } from './email.js';
+import { registrarLicencaTemplate } from './templates.js';
 import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
@@ -94,6 +95,7 @@ async function aplicarPagamento(env, pedido, pagamentoId, valor) {
         .bind(chave, String(pagamentoId), agora, pedido.id).run();
       primeiraVez = true;
     }
+    if (P.template) await registrarLicencaTemplate(env, pedido, chave, P.template);
     await aplicarPlano(env, chave, pedido.plano);
     // Primeiro pagamento: manda por e-mail o link para instalar (não manda de novo nas mensalidades).
     // Se não sair (sem o serviço de e-mail ou passou do limite do dia), fica na Área do Dono para mandar à mão.
@@ -189,7 +191,9 @@ export async function situacaoPedido(env, id, pagamentoId) {
   // Na volta do Mercado Pago, confere na hora (não depende de o aviso já ter chegado).
   if (pagamentoId && env.MP_ACCESS_TOKEN) await processarPagamento(env, pagamentoId).catch(() => {});
   const p = await env.DB.prepare('SELECT p.status, p.nome, p.plano, a.expira_em FROM pedidos p LEFT JOIN acessos a ON a.chave = p.chave WHERE p.id = ?').bind(id).first();
-  return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, app: PLANOS[p.plano]?.app, expiraEm: p.expira_em || null } : null;
+  const tpl = p && PLANOS[p.plano]?.template;
+  return p ? { status: p.status, pago: p.status === 'pago', nome: p.nome.split(' ')[0], plano: p.plano, app: PLANOS[p.plano]?.app, expiraEm: p.expira_em || null,
+    ...(tpl && p.status === 'pago' ? { template: tpl, download: `/loja-api/template/baixar?p=${id}` } : {}) } : null;
 }
 
 /**

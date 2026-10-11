@@ -213,6 +213,25 @@
     window.open(linkWhats(texto), "_blank", "noopener");
   });
 
+  /* Licença: o site fica registrado no 1º domínio onde for publicado. No computador e em endereços
+     grátis de teste funciona sem registrar. Sem internet ou com o servidor fora, não atrapalha nada. */
+  (function () {
+    if (S.avisoDemonstracao || !/^https?:$/.test(location.protocol)) return;
+    var host = location.hostname.toLowerCase();
+    if (/^(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.)/.test(host) || /\.(local|pages\.dev|netlify\.app|vercel\.app|github\.io)$/.test(host)) return;
+    fetch("https://www.leunamesoftware.com.br/loja-api/template/licenca?chave=" + encodeURIComponent(S.licenca || "") + "&dominio=" + encodeURIComponent(host))
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || d.ok !== false) return;
+        var aviso = document.createElement("div");
+        aviso.setAttribute("role", "alert");
+        aviso.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#b42318;color:#fff;font:600 14px/1.4 Inter,system-ui,sans-serif;text-align:center;padding:12px 16px";
+        aviso.innerHTML = "Este site não tem licença para este endereço. Licenças: <a style=\"color:#fff;text-decoration:underline\" href=\"https://www.leunamesoftware.com.br\">leunamesoftware.com.br</a>";
+        document.body.appendChild(aviso);
+      })
+      .catch(function () {});
+  })();
+
   /* Formulário: confere os campos e envia pelo WhatsApp */
   var form = document.getElementById("planForm");
   var regras = [

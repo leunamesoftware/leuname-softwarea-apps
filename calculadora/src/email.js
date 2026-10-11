@@ -18,8 +18,27 @@ export const LINKS = {
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // Curto de propósito (pedido do dono): o nome do app e um botão só, Instalar, na cor do app.
+export const linkTemplate = (pedido) => `https://www.leunamesoftware.com.br/loja-api/template/baixar?p=${pedido.id}`;
+
+// Template de site: o e-mail leva o botão para baixar o ZIP completo (com o manual e a licença do cliente).
+function montarEmailTemplate(pedido, P) {
+  const nome = String(pedido.nome || '').split(' ')[0];
+  const t = P.titulo.replace(/^Template de site — /, '');
+  const link = linkTemplate(pedido);
+  const html = `<div style="font:16px/1.5 Arial,sans-serif;color:#1A1630;max-width:520px;text-align:center;padding:8px 0">
+  <p style="margin:0 0 4px;color:#5D5A6B;font-size:14px">LeuName Softwares</p>
+  <h2 style="margin:0 0 10px">${esc(nome ? nome + ', seu ' : 'Seu ')}site pronto chegou!</h2>
+  <p style="margin:0 0 18px;color:#5D5A6B">Template <b>${esc(t)}</b> · pasta completa com o manual passo a passo.</p>
+  <a href="${link}" style="background:#1e6fd9;color:#fff;text-decoration:none;font-weight:bold;font-size:18px;padding:16px 40px;border-radius:999px;display:inline-block">Baixar meu site (ZIP)</a>
+  <p style="margin:18px 0 0;color:#5D5A6B;font-size:14px">Abra o arquivo <b>LEIA-ME-PRIMEIRO</b> que está dentro da pasta.<br>Licença para 1 empresa e 1 domínio. Guarde este e-mail.</p>
+  <p style="margin:12px 0 0;color:#5D5A6B;font-size:14px">Dúvidas: WhatsApp (24) 99872-1557</p></div>`;
+  const texto = `${nome ? nome + ', seu ' : 'Seu '}site pronto chegou!\n\nTemplate ${t} — baixe a pasta completa (ZIP):\n${link}\n\nAbra o arquivo LEIA-ME-PRIMEIRO que está dentro da pasta.\nLicença para 1 empresa e 1 domínio. Guarde este e-mail.\n\nDúvidas: WhatsApp (24) 99872-1557\nLeuName Softwares`;
+  return { assunto: `Seu site pronto: ${t}`, html, texto };
+}
+
 export function montarEmailCompra(pedido, { contaNova = false } = {}) {
   const P = PLANOS[pedido.plano] || {};
+  if (P.template && pedido.id) return montarEmailTemplate(pedido, P);
   const app = LINKS[P.app] || LINKS.quantocobrar;
   const nome = String(pedido.nome || '').split(' ')[0];
   const html = `<div style="font:16px/1.5 Arial,sans-serif;color:#1A1630;max-width:480px;text-align:center;padding:8px 0">
@@ -88,7 +107,8 @@ export async function avisarCompraPorEmail(env, pedido) {
 export async function emailsPendentes(env) {
   const { results = [] } = await env.DB.prepare("SELECT id, nome, email, plano, atualizado_em FROM pedidos WHERE status = 'pago' AND email_enviado IS NULL ORDER BY atualizado_em DESC LIMIT 200").all();
   return results.map((p) => {
-    const m = montarEmailCompra(p), app = LINKS[(PLANOS[p.plano] || {}).app] || LINKS.quantocobrar;
+    const P = PLANOS[p.plano] || {}, m = montarEmailCompra(p), app = LINKS[P.app] || LINKS.quantocobrar;
+    if (P.template) return { id: p.id, nome: p.nome, email: p.email, app: P.titulo, link: linkTemplate(p), quando: p.atualizado_em, assunto: m.assunto, texto: m.texto };
     return { id: p.id, nome: p.nome, email: p.email, app: app.nome, link: app.url, quando: p.atualizado_em, assunto: m.assunto, texto: m.texto };
   });
 }
