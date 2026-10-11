@@ -16,7 +16,49 @@
     "imagem": "/img/destaques/servico-logomarcas-v4.webp",
     "frase": "Sua marca com uma logo só sua",
     "textoNaImagem": true
-   }
+   },
+   "modelos": [
+    {
+     "id": "loja-de-celular",
+     "segmento": "Loja de celular",
+     "resumo": "Logomarca para loja de celular e assistência técnica: moderna, tecnológica e fácil de reconhecer.",
+     "imagens": [
+      "/img/servicos/logo-loja-de-celular.webp",
+      "/img/servicos/logo-loja-de-celular-2.webp",
+      "/img/servicos/logo-loja-de-celular-3.webp"
+     ]
+    },
+    {
+     "id": "confeitaria",
+     "segmento": "Confeitaria",
+     "resumo": "Logomarca para confeitaria: delicada, com cores que dão vontade de comer.",
+     "imagens": [
+      "/img/servicos/logo-confeitaria.webp",
+      "/img/servicos/logo-confeitaria-2.webp",
+      "/img/servicos/logo-confeitaria-3.webp"
+     ]
+    },
+    {
+     "id": "hortifruti",
+     "segmento": "Hortifrúti e mercado",
+     "resumo": "Logomarca para hortifrúti e mercado: fresca, colorida e cheia de vida.",
+     "imagens": [
+      "/img/servicos/logo-hortifruti.webp",
+      "/img/servicos/logo-hortifruti-2.webp",
+      "/img/servicos/logo-hortifruti-3.webp"
+     ]
+    },
+    {
+     "id": "pizzaria",
+     "segmento": "Pizzaria",
+     "resumo": "Logomarca para pizzaria: personagem marcante, pizza em destaque e cores da Itália.",
+     "imagens": [
+      "/img/servicos/logo-pizzaria.webp",
+      "/img/servicos/logo-pizzaria-2.webp",
+      "/img/servicos/logo-pizzaria-3.webp"
+     ]
+    }
+   ]
   },
   {
    "id": "templates",
