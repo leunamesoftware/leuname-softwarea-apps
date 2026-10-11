@@ -78,6 +78,16 @@
       "/img/servicos/banner-padaria-2.webp",
       "/img/servicos/banner-padaria-3.webp"
      ]
+    },
+    {
+     "id": "hamburgueria",
+     "segmento": "Hamburgueria",
+     "resumo": "Banner para hamburgueria: hambúrguer em destaque, batata, bebida e botão para pedir no WhatsApp.",
+     "imagens": [
+      "/img/servicos/banner-hamburgueria.webp",
+      "/img/servicos/banner-hamburgueria-2.webp",
+      "/img/servicos/banner-hamburgueria-3.webp"
+     ]
     }
    ]
   }
