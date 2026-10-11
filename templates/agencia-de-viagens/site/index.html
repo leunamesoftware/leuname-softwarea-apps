@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agência de Viagens</title>
+<meta name="description" content="Agência de viagens: pacotes nacionais e internacionais, lua de mel, cruzeiros e viagens sob medida, com atendimento pelo WhatsApp.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✈️%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="configuracao.js"></script>
+</head>
+<body>
+
+<div class="demo-note" id="avisoDemo" hidden>Modelo de demonstração · nomes, preços e contatos fictícios · LeuName Softwares</div>
+
+<!-- TOPO -->
+<div class="topbar">
+  <div class="container">
+    <div class="tb-left">
+      <span data-txt="endereco" data-pre="📍 "></span>
+      <a data-tel data-pre="📞 "></a>
+      <a data-mail data-pre="✉️ "></a>
+      <span class="tb-hide" data-txt="horario" data-pre="🕐 "></span>
+    </div>
+    <div class="tb-social" data-redes></div>
+  </div>
+</div>
+
+<!-- CABEÇALHO -->
+<header class="main-header">
+  <div class="container nav-inner">
+    <a href="#inicio" class="logo" data-logo></a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#inicio" class="active">Início</a>
+      <a href="#destinos">Destinos</a>
+      <a href="#tipos">Viagens</a>
+      <a href="#pacotes">Pacotes</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#dicas">Dicas</a>
+      <a href="#contato">Contato</a>
+    </nav>
+
+    <a href="#planejar" class="btn btn-coral btn-header">✈ Planejar minha viagem</a>
+
+    <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- BANNER -->
+<section class="hero" id="inicio">
+  <div class="hero-bg"><img id="bannerImg" alt=""></div>
+  <div class="hero-veil"></div>
+  <div class="container hero-content">
+    <p class="hero-script" id="bannerFrase"></p>
+    <h1 id="bannerTitulo"></h1>
+    <p class="hero-sub" id="bannerTexto"></p>
+    <div class="hero-ctas">
+      <a href="#destinos" class="btn btn-coral">🧭 Ver destinos</a>
+      <a href="#planejar" class="btn btn-glass">🧳 Planejar minha viagem</a>
+    </div>
+  </div>
+
+  <!-- BUSCA -->
+  <div class="container">
+    <form class="searchbar" id="buscaForm" novalidate>
+      <div class="sb-field">
+        <span class="sb-ic">📍</span>
+        <label for="bDestino">Destino</label>
+        <input type="text" id="bDestino" placeholder="Para onde você quer ir?">
+      </div>
+      <div class="sb-field">
+        <span class="sb-ic">📅</span>
+        <label for="bIda">Ida</label>
+        <input type="date" id="bIda">
+      </div>
+      <div class="sb-field">
+        <span class="sb-ic">📅</span>
+        <label for="bVolta">Volta</label>
+        <input type="date" id="bVolta">
+      </div>
+      <div class="sb-field">
+        <span class="sb-ic">👤</span>
+        <label for="bPessoas">Viajantes</label>
+        <select id="bPessoas">
+          <option>1 pessoa</option><option selected>2 pessoas</option>
+          <option>3 pessoas</option><option>4 pessoas</option><option>5 ou mais</option>
+        </select>
+      </div>
+      <div class="sb-field">
+        <span class="sb-ic">🏷️</span>
+        <label for="bTipo">Tipo de viagem</label>
+        <select id="bTipo" data-tipos-select></select>
+      </div>
+      <button type="submit" class="btn btn-coral sb-btn">🔍 Pedir orçamento</button>
+      <p class="sb-msg" id="bMsg" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<!-- VANTAGENS + DESTINOS -->
+<section class="mid">
+  <div class="container mid-grid">
+    <div>
+      <div class="perks">
+        <div class="perk"><span class="perk-ic">🎧</span><div><strong>Atendimento</strong><span>personalizado</span></div></div>
+        <div class="perk"><span class="perk-ic">💳</span><div><strong>Parcele</strong><span>no cartão ou Pix</span></div></div>
+        <div class="perk"><span class="perk-ic">🛡️</span><div><strong>Viagem</strong><span>100% segura</span></div></div>
+        <div class="perk"><span class="perk-ic">📱</span><div><strong>Suporte</strong><span>pelo WhatsApp</span></div></div>
+      </div>
+
+      <div class="sec-head">
+        <h2>Destinos em destaque</h2>
+        <a href="#planejar" class="link-arrow">Quero outro destino →</a>
+      </div>
+
+      <div class="dest-wrap">
+        <button class="carousel-btn prev" id="destPrev" aria-label="Anterior">‹</button>
+        <div class="dest-track" id="destTrack"></div>
+        <button class="carousel-btn next" id="destNext" aria-label="Próximo">›</button>
+      </div>
+    </div>
+
+    <aside class="side-cards" id="ofertas" data-destaques></aside>
+  </div>
+</section>
+
+<!-- NÚMEROS -->
+<section class="stats" id="destinos">
+  <div class="container stats-grid" data-numeros></div>
+</section>
+
+<!-- TIPOS + DEPOIMENTOS -->
+<section class="types-wrap" id="tipos">
+  <div class="container types-grid">
+    <div>
+      <h2 class="h2-sm">Qual é a sua viagem?</h2>
+      <div class="types" id="typeGrid"></div>
+      <p class="type-msg" id="typeMsg" role="status"></p>
+    </div>
+
+    <div id="depoimentos">
+      <div class="sec-head"><h2 class="h2-sm">O que dizem nossos viajantes</h2></div>
+      <div class="testis" data-depoimentos></div>
+    </div>
+  </div>
+</section>
+
+<!-- PACOTES -->
+<section class="packs" id="pacotes">
+  <div class="container">
+    <div class="sec-head center"><h2>Pacotes prontos para você</h2></div>
+    <div class="pack-grid" data-pacotes></div>
+  </div>
+</section>
+
+<!-- PERGUNTAS -->
+<section class="faq-sec">
+  <div class="container narrow">
+    <div class="sec-head center"><h2>Perguntas frequentes</h2></div>
+    <div data-perguntas></div>
+  </div>
+</section>
+
+<!-- PLANEJAR -->
+<section class="plan" id="planejar">
+  <div class="container plan-grid">
+    <div class="plan-intro">
+      <p class="hero-script">Conte a sua ideia</p>
+      <h2>Planeje sua viagem sob medida</h2>
+      <p>Um consultor monta uma proposta personalizada, sem compromisso, em até 24 horas.</p>
+      <ul class="plan-list">
+        <li>🧭 Roteiro feito para você</li>
+        <li>💳 Parcelamento no cartão ou Pix</li>
+        <li>📱 Atendimento pelo WhatsApp</li>
+      </ul>
+    </div>
+    <form class="plan-form" id="planForm" novalidate>
+      <div class="row">
+        <div class="fld"><label for="pNome">Nome completo *</label><input type="text" id="pNome" autocomplete="name"><span class="err"></span></div>
+        <div class="fld"><label for="pTel">WhatsApp *</label><input type="tel" id="pTel" autocomplete="tel" placeholder="(00) 00000-0000"><span class="err"></span></div>
+      </div>
+      <div class="row">
+        <div class="fld"><label for="pDestino">Destino</label><input type="text" id="pDestino" placeholder="Ex.: Nordeste, Europa, Orlando…"></div>
+        <div class="fld"><label for="pTipo">Tipo de viagem</label><select id="pTipo" data-tipos-select></select></div>
+      </div>
+      <div class="row">
+        <div class="fld"><label for="pData">Data aproximada</label><input type="date" id="pData"></div>
+        <div class="fld"><label for="pPessoas">Quantas pessoas?</label><input type="number" id="pPessoas" min="1" value="2"></div>
+      </div>
+      <div class="fld"><label for="pMsg">Conte o que você procura</label><textarea id="pMsg" rows="3" placeholder="Orçamento aproximado, crianças, preferências…"></textarea></div>
+      <button type="submit" class="btn btn-coral btn-block">📱 Enviar pelo WhatsApp</button>
+      <p class="form-ok" id="planOk" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<!-- DICAS -->
+<section class="blog" id="dicas">
+  <div class="container">
+    <div class="sec-head center"><h2>Dicas para viajar melhor</h2></div>
+    <div class="blog-grid" data-dicas></div>
+  </div>
+</section>
+
+<!-- RODAPÉ -->
+<footer id="contato">
+  <div class="container foot-grid">
+    <div>
+      <a href="#inicio" class="logo logo-foot" data-logo></a>
+      <p class="foot-about" data-txt="sobre"></p>
+      <div class="foot-social" data-redes></div>
+    </div>
+    <div><h5>Agência</h5><a href="#inicio">Início</a><a href="#destinos">Destinos</a><a href="#pacotes">Pacotes</a><a href="#depoimentos">Depoimentos</a><a href="#dicas">Dicas</a></div>
+    <div><h5>Viagens</h5><div data-tipos-links></div></div>
+    <div><h5>Atendimento</h5><a href="#planejar">Pedir orçamento</a><a data-wa>Falar no WhatsApp</a><a href="#pacotes">Ver pacotes</a><span class="foot-cad" data-cadastur></span></div>
+    <div>
+      <h5>Contato</h5>
+      <a data-txt="endereco" data-pre="📍 "></a>
+      <a data-tel data-pre="📞 "></a>
+      <a data-mail data-pre="✉️ "></a>
+      <span class="foot-hora" data-txt="horario" data-pre="🕐 "></span>
+    </div>
+  </div>
+  <div class="foot-bottom container">
+    <p data-copy></p>
+  </div>
+</footer>
+
+<a class="wa" id="waBtn" data-wa aria-label="Falar no WhatsApp" target="_blank" rel="noopener">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.4A10 10 0 1 0 12 2zm5.6 14.3c-.2.6-1.4 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4.2.5.7 1.7.8 1.9.1.2.1.4 0 .6-.1.2-.2.4-.3.5-.2.2-.3.4-.1.7.2.4.9 1.5 1.9 2.3 1.3 1.1 2.3 1.5 2.7 1.6.3.1.5.1.7-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.2.1 1.5.7 1.7.8.2.1.4.2.4.3.1.2.1.6-.1 1.2z"/>
+  </svg>
+</a>
+
+<script src="js/site.js"></script>
+</body>
+</html>
