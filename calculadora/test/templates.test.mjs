@@ -5,7 +5,7 @@ import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { montarZip, crc32 } from '../src/zip.js';
-import { conferirLicenca, zipDoPedido, dominioLimpo, registrarLicencaTemplate, TEMPLATES } from '../src/templates.js';
+import { conferirLicenca, zipDoPedido, dominioLimpo, registrarLicencaTemplate, revogarLicencaTemplate, TEMPLATES } from '../src/templates.js';
 import { PLANOS } from '../src/planos.js';
 import { montarEmailCompra } from '../src/email.js';
 
@@ -27,6 +27,8 @@ function banco() {
           if (!lic.has(a[0])) lic.set(a[0], { chave: a[0], pedido_id: a[1], template: a[2], email: a[3], dominio: null, downloads: 0 });
         } else if (sql.startsWith('UPDATE template_licencas SET dominio')) {
           const l = lic.get(a[2]); if (l && !l.dominio) l.dominio = a[0];
+        } else if (sql.startsWith('UPDATE template_licencas SET revogada')) {
+          for (const l of lic.values()) if (l.pedido_id === a[1] && !l.revogada) l.revogada = a[0];
         } else if (sql.startsWith('UPDATE template_licencas SET downloads')) {
           lic.get(a[0]).downloads++;
         }
@@ -90,4 +92,12 @@ test('ZIP só sai depois de pago, com a licença do cliente e sem a faixa de dem
   assert.match(cfg, /avisoDemonstracao: false/);
   assert.equal(env.lic.get('LEU-ZZZZ-YYYY-AB12').downloads, 1);
   assert.equal(await zipDoPedido(env, 'nao-e-id', 'https://x'), null);
+});
+
+test('compra estornada: a licença para de valer no site do cliente', async () => {
+  const env = banco();
+  await registrarLicencaTemplate(env, { id: 'p9', email: 'x@y.com' }, 'LEU-EEEE-FFFF-0011', 'agencia-de-viagens');
+  assert.equal((await conferirLicenca(env, 'LEU-EEEE-FFFF-0011', 'loja.com.br')).ok, true);
+  await revogarLicencaTemplate(env, 'p9', 'mercadopago:refunded');
+  assert.deepEqual(await conferirLicenca(env, 'LEU-EEEE-FFFF-0011', 'loja.com.br'), { ok: false, motivo: 'cancelada' });
 });

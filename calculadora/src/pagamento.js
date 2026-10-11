@@ -4,7 +4,7 @@
 import { emitirLicenca, revogarLicenca } from './licencas.js';
 import { PLANOS, aplicarPlano } from './planos.js';
 import { avisarCompraPorEmail, marcarEmailEnviado, avisarAparelhoNovo, enviarEmailDaCompra } from './email.js';
-import { registrarLicencaTemplate } from './templates.js';
+import { registrarLicencaTemplate, revogarLicencaTemplate } from './templates.js';
 import { contaParaCompra, senhaValida, abrirSessao, buscarConta, trocarSenha, aparelhoDoPedido, marcarTeste } from './contas.js';
 
 const MP = 'https://api.mercadopago.com';
@@ -121,6 +121,7 @@ export async function processarPagamento(env, pagamentoId) {
   if (p.status === 'approved' && p.currency_id === 'BRL') return aplicarPagamento(env, pedido, p.id, Number(p.transaction_amount));
   if (ESTORNO.has(p.status) && pedido.chave && !PLANOS[pedido.plano]?.assinatura) {
     await revogarLicenca(env, pedido.chave, `mercadopago:${p.status}`);
+    if (PLANOS[pedido.plano]?.template) await revogarLicencaTemplate(env, pedido.id, `mercadopago:${p.status}`);
     await env.DB.prepare('UPDATE pedidos SET status = ?, atualizado_em = ? WHERE id = ?').bind(p.status, agora, pedido.id).run();
     return;
   }

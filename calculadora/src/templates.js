@@ -16,13 +16,20 @@ export async function registrarLicencaTemplate(env, pedido, chave, template) {
     .bind(chave, pedido.id, template, String(pedido.email || '').toLowerCase(), new Date().toISOString()).run();
 }
 
+/** Compra estornada ou contestada no Mercado Pago: a licença do template para de valer. */
+export async function revogarLicencaTemplate(env, pedidoId, motivo) {
+  await env.DB.prepare('UPDATE template_licencas SET revogada = ? WHERE pedido_id = ? AND revogada IS NULL')
+    .bind(`${motivo}:${new Date().toISOString()}`, pedidoId).run();
+}
+
 /** O site do cliente pergunta se pode abrir neste domínio. Prende no primeiro domínio de verdade. */
 export async function conferirLicenca(env, chave, dominio) {
   const d = dominioLimpo(dominio);
   if (!d) return { ok: true };
   if (TESTE.test(d)) return { ok: true, teste: true };
-  const l = await env.DB.prepare('SELECT dominio FROM template_licencas WHERE chave = ?').bind(String(chave || '').trim().toUpperCase()).first();
+  const l = await env.DB.prepare('SELECT dominio, revogada FROM template_licencas WHERE chave = ?').bind(String(chave || '').trim().toUpperCase()).first();
   if (!l) return { ok: false, motivo: 'sem_licenca' };
+  if (l.revogada) return { ok: false, motivo: 'cancelada' };
   if (!l.dominio) {
     await env.DB.prepare('UPDATE template_licencas SET dominio = ?, ativado_em = ? WHERE chave = ? AND dominio IS NULL').bind(d, new Date().toISOString(), String(chave).trim().toUpperCase()).run();
     return { ok: true, registrado: d };
