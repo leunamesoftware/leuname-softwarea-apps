@@ -58,6 +58,16 @@
       "/img/servicos/banner-pizzaria-2.webp",
       "/img/servicos/banner-pizzaria-3.webp"
      ]
+    },
+    {
+     "id": "restaurante",
+     "segmento": "Restaurante",
+     "resumo": "Banner para restaurante: marca elegante, prato em destaque e as vantagens da casa.",
+     "imagens": [
+      "/img/servicos/banner-restaurante.webp",
+      "/img/servicos/banner-restaurante-2.webp",
+      "/img/servicos/banner-restaurante-3.webp"
+     ]
     }
    ]
   }
