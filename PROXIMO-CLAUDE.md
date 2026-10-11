@@ -191,12 +191,11 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   busca nome/foto/categoria/NCM (`/produto/<ean>` no worker da loja; Cosmos se o segredo `COSMOS_TOKEN` existir).
 
 ## Pendências anotadas (11/10/2026)
-- **Templates de site para vender (ZIP)**: estão na conta GitHub antiga **emanuelantunes2024-jpg**, repositório privado
-  **leuname-software** (site leuname-software.vercel.app; pastas pacotes-hotmart, receitas-renda, sabores-espana, public com
-  demos como "Fauna Pet Shop" e barbearia; loja antiga em espanhol com Stripe/Supabase — não reaproveitar a loja, só os templates).
-  Esta sessão NÃO tem acesso: o dono precisa transferir o repositório para **leunamesoftware** (Settings → Transfer ownership).
-  Depois: adaptar para o Brasil (português, WhatsApp, Mercado Pago), começando pela agência de viagens; cliente edita um arquivo
-  de configuração e troca as imagens; ZIP com instruções; página no site com prévia e download liberado após o pagamento.
+- **Templates de site para vender (ZIP)**: o repositório **leunamesoftware/leuname-software** (transferido da conta antiga em
+  11/10/2026; fica guardado lá, só consultar quando precisar) tem 36 templates prontos em `pacotes-hotmart/<nome>/site-completo`
+  (prévias em `public/demos/`), em espanhol. A loja antiga (Next/Stripe/Supabase) NÃO se aproveita. Trabalhar sempre na conta
+  **leunamesoftware** (a conta emanuelantunes2024 não se usa mais). Plano: adaptar cada um para o Brasil (português, R$, WhatsApp),
+  arquivo único de configuração, PDF de instruções, ZIP, página no site com prévia + Mercado Pago + download. Começar pela agência de viagens.
 - **Planos (modelo do dono)**: 👑 Mensal (com atualizações), 👑 Anual (com atualizações por 1 ano), 👑 Vitalício (pagamento único;
   correções grátis; recursos novos comprados à parte). Gestacell já está assim: R$ 19,90/mês, R$ 199/ano, R$ 290 (até 6x).
   Falta definir os preços dos outros apps (sugestão: anual ≈ 10 mensalidades, vitalício ≈ 15).
