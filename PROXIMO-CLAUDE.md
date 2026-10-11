@@ -133,6 +133,10 @@ Plano sugerido:
    entra com o e-mail, testa 3 dias (qualquer app) e depois paga o plano no Mercado Pago da empresa.
    Produtos do site = `js/catalogo.js`, gerado por `SITE-LEUNAMESOFTWARE-BR/ferramentas/gerar_catalogo.py <leuapps/public>`
    (categorias e "Em breve" no script e em js/products.js). App mudou no apps.json → rodar o script e dar push (publica sozinho).
+8. **Teste grátis = 3 dias em todos os apps (11/10/2026).** TESTE_DIAS e DIAS_TESTE em calculadora/src/planos.js; Pedêê DIAS_GRATIS.
+   **Trava contra trocar de e-mail:** o teste de cada app fica preso ao aparelho (cookie ln_aparelho) e à rede (IP em hash):
+   mesmo aparelho não testa o mesmo app de novo; mesma rede, no máximo 3 testes do app por mês (4G compartilha IP, por isso
+   não é bloqueio por IP puro). Migração 0016; teste em calculadora/test/testes-apps.test.mjs. Cada conta: 1 celular + 1 computador.
 7. **Pedêê (pausado pelo dono; ele vai mandar a lista completa do que falta).** Já pendente:
    - **Prazos com Score do entregador:** os prazos já aparecem (`src/regras/prazos.ts`: coleta 15 min, trajeto 5 min + 3 min/km,
      preparo da loja em Ajustes). Falta o Score 0–100 por atraso, sem multa e sem bloqueio automático; score baixo vai para o fim
