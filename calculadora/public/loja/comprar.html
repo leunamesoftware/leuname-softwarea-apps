@@ -8,11 +8,14 @@
   <link rel="icon" href="https://www.leunamesoftware.com.br/assets/img/icon-192.png">
   <link rel="stylesheet" href="/loja/compra.css">
   <style>
-    html, body { background: #5a6069; } body { background: linear-gradient(160deg, #8b929b 0%, #6c737c 45%, #545a62 100%) fixed; min-height: 100vh; }
+    html, body { background: #5a6069; } body { background: linear-gradient(160deg, #7d848e 0%, #5f666f 45%, #474d55 100%) fixed; min-height: 100vh; }
+    .resumo-prod, .resumo-prod .preco, .rodape { text-shadow: 0 1px 3px rgba(0,0,0,.45); }
+    .resumo-prod h1, .resumo-prod .preco b { color: #fff; } .resumo-prod .preco { color: #fff !important; font-weight: 600; }
+    .itens li { font-weight: 600; }
     .logo { border-radius: 26px; background: #fff; }
     h1 { text-shadow: none; }
     .preco, .sub, .rodape { color: #F1F3F6; } .preco b { color: #fff; }
-    .itens li { color: #E8EBF0; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); }
+    .itens li { color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18); }
     .rodape a { color: #fff; }
     .entrar { display: none; } .entrar.aberto { display: block; }
     .trocar { display: block; width: 100%; margin-top: 12px; background: none; border: 0; color: #1B3FD6; font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; }
@@ -48,7 +51,8 @@
     .cartao input { min-height: 50px; font-size: 16px; }
     .botao { min-height: 56px; font-size: 17px !important; }
     @media (min-width: 820px) {
-      .caixa { padding-top: 40px; }
+      /* sem buraco embaixo: o conteúdo fica no meio da tela */
+      .caixa { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: 30px; }
       .checkout { grid-template-columns: 1.15fr 1fr; gap: 36px; }
       .banner-prod.tem { display: block; }
       .resumo-topo h1 { font-size: 28px; }
