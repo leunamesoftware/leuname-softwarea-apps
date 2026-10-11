@@ -113,8 +113,8 @@
     tela.className = 'li-tela';
     tela.setAttribute('role', 'dialog');
     tela.setAttribute('aria-label', 'Instalar ' + nome);
-    tela.innerHTML = '<div class="li-barra"><button type="button" class="li-voltar" data-voltar aria-label="Voltar para a loja"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><span class="li-loja">LeuApps</span></div>'
-      + '<div class="li-meio"><div class="li-topo">' + (icone ? '<img src="' + icone + '" alt="">' : '') + '<div><h1>' + nome + '</h1><div class="li-dev">LeuName Softwares</div><div class="li-selo">Verificado pela LeuApps</div></div></div>'
+    tela.innerHTML = '<div class="li-barra"><button type="button" class="li-voltar" data-voltar aria-label="Voltar para o site"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><span class="li-loja">LeuName Softwares</span></div>'
+      + '<div class="li-meio"><div class="li-topo">' + (icone ? '<img src="' + icone + '" alt="">' : '') + '<div><h1>' + nome + '</h1><div class="li-dev">LeuName Softwares</div><div class="li-selo">Download oficial · leunamesoftware.com.br</div></div></div>'
       + '<div class="li-corpo"></div></div>';
     tela.addEventListener('click', function (e) {
       if (e.target.closest('[data-voltar]')) { if (document.referrer && history.length > 1) history.back(); else location.href = loja; return; }
