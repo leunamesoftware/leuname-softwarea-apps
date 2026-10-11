@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1B3FD6">
   <meta name="robots" content="noindex">
-  <title>Senha nova — LeuApps</title>
-  <link rel="icon" href="/img/leuapps-192.png">
+  <title>Senha nova — LeuName Softwares</title>
+  <link rel="icon" href="https://www.leunamesoftware.com.br/assets/img/icon-192.png">
   <link rel="stylesheet" href="/loja/compra.css">
   <style>
     body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
@@ -18,9 +18,9 @@
 </head>
 <body>
   <main class="caixa">
-    <img class="logo" src="/img/leuapps-192.png" alt="">
+    <img class="logo" src="https://www.leunamesoftware.com.br/assets/img/icon-192.png" alt="">
     <h1>Crie a sua senha nova</h1>
-    <p class="sub">Ela vale para a loja e para todos os apps da LeuApps.</p>
+    <p class="sub">Ela vale para todos os apps da LeuName Softwares.</p>
     <form class="cartao" id="form">
       <label for="senha">Senha nova</label>
       <input id="senha" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo 6 caracteres">
@@ -29,7 +29,7 @@
       <button class="botao" type="submit">Salvar a senha nova</button>
       <p class="erro" id="erro" role="alert"></p>
     </form>
-    <p class="rodape"><a href="/">← Voltar à loja</a></p>
+    <p class="rodape"><a href="https://www.leunamesoftware.com.br/">← Voltar ao site</a></p>
   </main>
   <script>
     const t = new URLSearchParams(location.search).get('t') || '';
@@ -44,9 +44,9 @@
       try {
         const r = await fetch('/loja-api/conta/nova-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ t, senha }) });
         if (r.ok) {
-          document.querySelector('main').innerHTML = `<img class="logo" src="/img/leuapps-192.png" alt=""><h1>Senha nova salva!</h1>
-            <p class="sub">Use a senha nova para entrar na loja e nos apps. Por segurança, os outros aparelhos foram desconectados.</p>
-            <a class="botao" href="/">Ir para a loja</a>`;
+          document.querySelector('main').innerHTML = `<img class="logo" src="https://www.leunamesoftware.com.br/assets/img/icon-192.png" alt=""><h1>Senha nova salva!</h1>
+            <p class="sub">Use a senha nova para entrar nos apps. Por segurança, os outros aparelhos foram desconectados.</p>
+            <a class="botao" href="https://www.leunamesoftware.com.br/">Ir para o site</a>`;
           return;
         }
         const d = await r.json().catch(() => ({}));

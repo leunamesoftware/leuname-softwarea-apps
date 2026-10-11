@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1B3FD6">
-  <title>Comprar — LeuApps</title>
-  <link rel="icon" href="/img/leuapps-192.png">
+  <title>Comprar — LeuName Softwares</title>
+  <link rel="icon" href="https://www.leunamesoftware.com.br/assets/img/icon-192.png">
   <link rel="stylesheet" href="/loja/compra.css">
   <style>
     body { background: radial-gradient(120% 60% at 50% 0%, #5B8CFF 0%, #2F6BFF 40%, #1B3FD6 100%); }
@@ -32,8 +32,8 @@
 </head>
 <body>
   <main class="caixa">
-    <img class="logo" id="icone" src="/img/leuapps-192.png" alt="">
-    <h1 id="titulo">LeuApps</h1>
+    <img class="logo" id="icone" src="https://www.leunamesoftware.com.br/assets/img/icon-192.png" alt="">
+    <h1 id="titulo">LeuName Softwares</h1>
     <p class="preco" id="resumo"></p>
     <ul class="itens" id="itens"></ul>
 
@@ -78,7 +78,7 @@
       <button class="trocar" type="button" data-trocar>Ainda não comprei</button>
     </form>
 
-    <p class="rodape"><a href="/">← Voltar à loja</a> · <a href="https://quantocobrar.leunamesoftware.com.br/privacidade">Privacidade</a> · <a href="https://quantocobrar.leunamesoftware.com.br/termos">Termos</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
+    <p class="rodape"><a href="https://www.leunamesoftware.com.br/">← Voltar ao site</a> · <a href="https://quantocobrar.leunamesoftware.com.br/privacidade">Privacidade</a> · <a href="https://quantocobrar.leunamesoftware.com.br/termos">Termos</a><br>LeuName Softwares · Trans Antunes Transportes Serviços e Comércio Ltda · CNPJ 36.665.546/0001-09</p>
   </main>
   <script>
     // O preço que vale é o do servidor (planos.js); aqui é só a apresentação.
@@ -115,12 +115,12 @@
     };
     for (const k of Object.keys(TIPOS)) if (!P.planos[k]) delete TIPOS[k]; // o app pode não ter todos os tipos
     const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : ('anual' in TIPOS ? 'anual' : 'mensal' in TIPOS ? 'mensal' : 'unico');
-    document.title = `Comprar ${P.nome} — LeuApps`;
+    document.title = `Comprar ${P.nome} — LeuName Softwares`;
     document.getElementById('icone').src = `/img/${app}-192.png`;
     document.getElementById('titulo').textContent = P.nome;
     document.getElementById('resumo').innerHTML = (P.planos.mensal ? `A partir de <b style="white-space:nowrap">${reais(P.planos.mensal)}/mês</b>` : `Pagamento único de <b style="white-space:nowrap">${reais(P.planos.unico)}</b>`) + '<br>3 dias grátis para testar antes de pagar';
     document.getElementById('itens').innerHTML = P.itens.map((t) => `<li>${t}</li>`).join('');
-    document.getElementById('testar').href = app === 'radar' ? '/#radar' : P.url;
+    document.getElementById('testar').href = app === 'radar' ? 'https://www.leunamesoftware.com.br/producto.html?id=radar' : P.url;
     document.getElementById('planos').insertAdjacentHTML('beforeend', Object.entries(TIPOS).map(([k, t]) =>
       `<label class="plano"><input type="radio" name="plano" id="plano-${k}" value="${k}"${k === inicial ? ' checked' : ''}><b>${t.nome}${t.selo ? `<span class="selo-plano">${t.selo}</span>` : ''}</b><span class="valor">${t.valor}</span><small>${t.como}</small></label>`).join(''));
     const pagar = document.getElementById('pagar');

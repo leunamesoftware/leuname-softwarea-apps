@@ -292,7 +292,6 @@ tbody tr:hover{background:var(--gray-25);}
   .topbar{display:none;}
   .mobile-topbar{display:flex;align-items:center;gap:10px;height:56px;padding:0 14px;background:var(--navy);color:#fff;position:sticky;top:0;z-index:25;}
   .mobile-topbar .brand-word{font-size:14px;}
-  .mobile-topbar{padding-right:112px;} /* espaço do botão "Voltar à loja" no canto */
   .mobile-topbar .brand-word span{color:#9FC0F0;}
   .content{padding:14px 14px 90px;}
   .grid-cards{grid-template-columns:repeat(2,1fr);gap:10px;}
@@ -311,8 +310,6 @@ tbody tr:hover{background:var(--gray-25);}
 }
 @media (min-width:881px) and (orientation: landscape), (min-width:1101px){
   .desktop-only{display:block;}
-  /* "Voltar à loja" no pé do menu lateral: no topo ele cobria o nome do usuário. */
-  a[aria-label^="Voltar para Meus apps"]{top:auto !important;right:auto !important;left:14px !important;bottom:96px !important;}
 }
 @media (max-width:880px), (orientation: portrait) and (max-width: 1100px){
   .desktop-only{display:none !important;}
@@ -3505,25 +3502,6 @@ window.addEventListener('online', ()=>{ syncNow().catch(()=>{}); });
 setInterval(()=>{ syncNow().catch(()=>{}); }, 90000);
 
 </script>
-  <script>
-    // Botão "Voltar à loja": sempre visível (também quando o app é aberto pelo ícone da tela inicial).
-    (function () {
-      try {
-        if (new URLSearchParams(location.search).get('leuapps') === '1') sessionStorage.setItem('leuapps', '1');
-      } catch (e) { return; }
-      var a = document.createElement('a');
-      a.href = 'https://www.leunamesoftware.com.br/#meus-apps';
-      a.setAttribute('aria-label', 'Voltar para Meus apps, na loja LeuApps');
-      // Veio da loja: volta igual à setinha do celular (para "Meus apps", sem recarregar a loja do começo).
-      a.addEventListener('click', function (e) {
-        try { if (/^https:\/\/www\.leunamesoftware\.com\.br\//.test(document.referrer) && history.length > 1) { e.preventDefault(); history.back(); } } catch (x) {}
-      });
-      a.innerHTML = '<img src="https://apps.leunamesoftware.com.br/img/leuapps-192.png" alt="" style="width:26px;height:26px;border-radius:7px;display:block"><span style="line-height:1.1;text-align:left">Voltar<br>à loja</span>';
-      a.style.cssText = 'position:fixed;right:10px;top:calc(9px + env(safe-area-inset-top));z-index:2147483647;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:12px;background:#fff;color:#C2410C;font:800 12px/1.1 Poppins,system-ui,sans-serif;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.28)';
-      function por(el) { if (document.body) document.body.appendChild(el); else addEventListener('DOMContentLoaded', function () { document.body.appendChild(el); }); }
-      por(a);
-    })();
-  </script>
   <script src="instalar.js" data-nome="Gestacell" data-icone="/img/gestacell-192.png" data-cor="#0B2545"></script>
 </body>
 </html>

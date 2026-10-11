@@ -129,7 +129,7 @@ function telaAcesso(estado = {}, modo = '') {
         <div id="a-erro" class="aviso erro" hidden></div>
         <button class="btn grande" id="a-ir">Entrar</button>
         <a href="${ESQUECI}" style="text-align:center">Esqueci a senha</a>`}
-    <p class="sub" style="text-align:center">A mesma conta de todos os apps da LeuApps.</p>
+    <p class="sub" style="text-align:center">A mesma conta de todos os apps da LeuName Softwares.</p>
   </div></div>`;
   const erro = (t) => { const b = $('#a-erro'); b.textContent = t; b.hidden = false; };
   const depois = async (querTeste) => {

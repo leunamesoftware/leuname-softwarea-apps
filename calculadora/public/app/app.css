@@ -374,7 +374,3 @@ ul.dicas { padding-left: 20px; margin: 0; } ul.dicas li { margin-bottom: 8px; fo
   main[data-aba="calcular"] > #resultado > :first-child { margin-top: 0; }
 }
 
-/* Computador: o botão "Voltar à loja" fica no pé do menu lateral (não cobre o conteúdo). */
-@media (min-width: 900px) and (orientation: landscape) {
-  body:not(.abertura) a[aria-label^="Voltar para Meus apps"] { top: auto !important; right: auto !important; left: 16px !important; bottom: 46px !important; }
-}
