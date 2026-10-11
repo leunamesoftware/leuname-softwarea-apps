@@ -199,3 +199,17 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - **Planos (modelo do dono)**: 👑 Mensal (com atualizações), 👑 Anual (com atualizações por 1 ano), 👑 Vitalício (pagamento único;
   correções grátis; recursos novos comprados à parte). Gestacell já está assim: R$ 19,90/mês, R$ 199/ano, R$ 290 (até 6x).
   Falta definir os preços dos outros apps (sugestão: anual ≈ 10 mensalidades, vitalício ≈ 15).
+
+## Templates de site à venda (ZIP no e-mail) — como funciona e como colocar um novo
+- Cliente: site → "Sites e Templates" → produto (banner, telas, preço) → "Ver demonstração ao vivo" (/modelos/<id>/)
+  → "Comprar" (/loja/comprar?app=<plano>&plano=unico, Pix ou cartão parcelado) → pagamento aprovado → e-mail automático com
+  "Baixar meu site (ZIP)" (/loja-api/template/baixar?p=<pedido>, máx. 20 downloads) e botão também na página de volta.
+- O ZIP leva LEIA-ME-PRIMEIRO.html + pasta site/ com a licença do cliente no configuracao.js. Licença = 1 empresa / 1 domínio:
+  o site pergunta /loja-api/template/licenca e fica preso ao 1º domínio real (localhost, .pages.dev, .netlify.app etc. não prendem).
+  Domínio errado → faixa vermelha "sem licença". Trocar o domínio de um cliente: apagar `dominio` em template_licencas (D1).
+- Template novo: (1) adaptar de leunamesoftware/leuname-software (pacotes-hotmart/<nome>/site-completo) para
+  templates/<id>/site (português, R$, WhatsApp, configuracao.js com `licenca: ""` e `avisoDemonstracao: false`) + fotos.html;
+  (2) acrescentar em templates/catalogo.json; (3) `python3 templates/publicar.py`; (4) acrescentar o produto em
+  calculadora/public/loja/comprar.html (PRODUTOS, mesmo "plano"); (5) imagens em leuapps/public/img/modelos/<id>-banner.webp,
+  -192.png e -tela-1..5.webp; (6) rodar o gerar_catalogo.py do site; (7) testes, publicar calculadora + leuapps + site.
+- Feitos: agencia-de-viagens (R$ 280, até 10x). Faltam ~35 do repositório antigo.
