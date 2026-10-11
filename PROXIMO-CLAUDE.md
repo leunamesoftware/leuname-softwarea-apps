@@ -129,7 +129,9 @@ Plano sugerido:
    Links para divulgar/QR Code: `www.leunamesoftware.com.br/instalar/<id>`.
 7. **Página inicial do www = site antigo (11/10/2026, pedido do dono: "do jeito que era").** `/` vai para o worker leuname-site-br
    (SITE_ANTIGO; código em Leunamesite/SITE-LEUNAMESOFTWARE-BR). A loja de apps fica em `/apps`. O dono vai dizer, por ordem,
-   o que mudar no site. Rumo combinado: sair da LeuApps; o cliente baixa/instala cada app direto do site (celular e PC),
+   o que mudar no site. **NUNCA pôr routes/custom_domain no wrangler.toml do SITE-LEUNAMESOFTWARE-BR**: cada publicação dele
+   tomava o www do leuapps e derrubava /img, /apps, /instalar e /loja (aconteceu em 11/10/2026; corrigido). Diagnóstico ao vivo:
+   workflow diagnostico-site.yml (Leunamesite). Rumo combinado: sair da LeuApps; o cliente baixa/instala cada app direto do site (celular e PC),
    entra com o e-mail, testa 3 dias (qualquer app) e depois paga o plano no Mercado Pago da empresa.
    Produtos do site = `js/catalogo.js`, gerado por `SITE-LEUNAMESOFTWARE-BR/ferramentas/gerar_catalogo.py <leuapps/public>`
    (categorias e "Em breve" no script e em js/products.js). App mudou no apps.json → rodar o script e dar push (publica sozinho).
