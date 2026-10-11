@@ -45,14 +45,14 @@ export async function acessoDaChave(env, chave) {
 }
 
 // Teste grátis único: 2 dias com 2 receitas e a calculadora, contados da criação da conta. Depois, só com compra.
-export const DIAS_TESTE = 2;
+export const DIAS_TESTE = 3;
 export const RECEITAS_POR_PACOTE = 30;
 
 /**
  * O que a conta libera agora:
  * - Pro (anual/mensal) em dia → todas as receitas;
  * - pacotes Básico (pagamento único, vitalício) → 30 receitas por pacote comprado (somam);
- * - sem compra → teste grátis de 2 dias (2 receitas); depois, bloqueado até comprar.
+ * - sem compra → teste grátis de 3 dias (2 receitas); depois, bloqueado até comprar.
  */
 export async function acessoDaConta(env, contaId) {
   const conta = await env.DB.prepare('SELECT email, criado_em, sem_teste FROM contas WHERE id = ?').bind(contaId).first();
@@ -102,8 +102,8 @@ async function licencaDoDono(env, appId) {
   return l?.chave || emitirLicenca(env, 'Dono (LeuName Softwares)', env.DONO_EMAIL, appId, 'dono');
 }
 
-// Teste grátis dos outros apps (um por conta em cada app). O Quanto Cobrar tem o teste dele (2 dias).
-export const TESTE_DIAS = { gestacell: 7, radar: 7, construgestao: 7, mercagestao: 7, leuburger: 7 };
+// Teste grátis dos outros apps (um por conta em cada app). O Quanto Cobrar tem o teste dele (3 dias).
+export const TESTE_DIAS = { gestacell: 3, radar: 3, construgestao: 3, mercagestao: 3, leuburger: 3 };
 const fimDoTeste = (inicio, app) => new Date(new Date(inicio).getTime() + TESTE_DIAS[app] * 864e5).toISOString();
 
 /** Testes que a conta já começou: { gestacell: { inicio, expiraEm, acabou } }. */
@@ -119,10 +119,31 @@ export async function testesDaConta(env, contaId) {
   return testes;
 }
 
-/** Começa o teste grátis do app (só na primeira vez; depois devolve o mesmo teste, mesmo que já tenha acabado). */
-export async function comecarTeste(env, contaId, app) {
+/** Teste por rede: folgado, porque no 4G muitas pessoas saem pelo mesmo IP da operadora. */
+const MAX_TESTES_APP_POR_REDE = 3;
+const DIAS_REDE_APP = 30;
+
+/**
+ * Começa o teste grátis do app (só na primeira vez; depois devolve o mesmo teste, mesmo que já tenha acabado).
+ * Trava contra trocar de e-mail: o mesmo aparelho só testa cada app uma vez, e a mesma rede no máximo
+ * MAX_TESTES_APP_POR_REDE vezes por mês. Negado, devolve { negado, acabou: true } (o app mostra os planos).
+ */
+export async function comecarTeste(env, contaId, app, sinais = null) {
   if (!TESTE_DIAS[app]) return null;
-  await env.DB.prepare('INSERT OR IGNORE INTO testes_apps (conta_id, app, inicio) VALUES (?, ?, ?)').bind(contaId, app, new Date().toISOString()).run();
+  const ja = (await testesDaConta(env, contaId))[app];
+  if (ja) return ja;
+  if (sinais) {
+    const marcas = sinais.aparelhos.map(() => '?').join(',') || "''";
+    const desde = new Date(Date.now() - DIAS_REDE_APP * 864e5).toISOString();
+    const r = await env.DB.prepare(`SELECT
+        (SELECT COUNT(*) FROM testes_apps WHERE app = ? AND conta_id != ? AND aparelho IN (${marcas})) AS mesmo_aparelho,
+        (SELECT COUNT(*) FROM testes_apps WHERE app = ? AND conta_id != ? AND rede = ? AND inicio > ?) AS mesma_rede`)
+      .bind(app, contaId, ...sinais.aparelhos, app, contaId, sinais.rede, desde).first();
+    if (r.mesmo_aparelho > 0) return { negado: 'aparelho', acabou: true };
+    if (r.mesma_rede >= MAX_TESTES_APP_POR_REDE) return { negado: 'rede', acabou: true };
+  }
+  await env.DB.prepare('INSERT OR IGNORE INTO testes_apps (conta_id, app, inicio, aparelho, rede) VALUES (?, ?, ?, ?, ?)')
+    .bind(contaId, app, new Date().toISOString(), sinais?.aparelho || null, sinais?.rede || null).run();
   return (await testesDaConta(env, contaId))[app] || null;
 }
 

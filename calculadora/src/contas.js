@@ -135,6 +135,12 @@ export function cookieAparelho(req, valor) {
   return `${APARELHO}=${valor}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${2 * 365 * 86400}${dominio}${seguro}`;
 }
 
+/** Sinais do aparelho e da rede deste pedido (rede em hash; o IP nunca é guardado). */
+export async function sinaisDoPedido(req, ap) {
+  return { aparelhos: [...new Set([ap.cookie, ap.app, ap.valor].filter(Boolean))], aparelho: ap.valor,
+    rede: await sha256('rede:' + (req.headers.get('CF-Connecting-IP') || 'local')) };
+}
+
 /**
  * Conta nova: anota aparelho e rede (em hash). Se o aparelho já fez teste, ou a rede já teve
  * muitos testes no último mês, a conta nasce sem teste grátis (só abre comprando).

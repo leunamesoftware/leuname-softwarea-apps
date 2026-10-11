@@ -112,13 +112,13 @@ auth.post('/entrar', async (c) => {
   return c.json({ ok: true });
 });
 
-/** Começa o teste grátis de 7 dias (conta LeuApps logada neste navegador). */
+/** Começa o teste grátis de 3 dias (conta LeuApps logada neste navegador). */
 auth.post('/teste', async (c) => {
   if (!c.env.CONTAS) throw erro(503, 'loja_indisponivel', 'Serviço indisponível.');
   const cookie = c.req.header('Cookie') || '';
   const r = await c.env.CONTAS.fetch(new Request(`${LOJA}/api/conta/teste`, { method: 'POST', headers: { Cookie: cookie, 'Content-Type': 'application/json' }, body: JSON.stringify({ app: APP }) }));
   if (r.status === 401) throw erro(401, 'sem_conta_loja', 'Entre na sua conta para começar o teste.');
-  if (r.status === 409) throw erro(402, 'teste_acabou', 'O teste grátis desta conta já terminou.');
+  if (r.status === 409) throw erro(402, 'teste_acabou', 'O teste grátis já foi usado nesta conta ou neste aparelho.');
   if (!r.ok) throw erro(502, 'loja_indisponivel', 'Não deu para começar o teste agora.');
   const loja = await acessoNaLoja(c.env, cookie);
   if (!loja?.acesso.ok) throw erro(502, 'loja_indisponivel', 'Não deu para liberar o teste agora.');

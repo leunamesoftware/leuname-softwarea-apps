@@ -62,7 +62,7 @@
         <span class="selo-item"><b>↩️</b><span>Garantia<br>7 dias</span></span>
       </div>
       <p class="seguro">Pagamento seguro pelo Mercado Pago. O app é liberado na sua conta assim que o pagamento é aprovado. 7 dias para desistir.</p>
-      <a class="trocar" id="testar" href="/">Quero testar 7 dias grátis primeiro</a>
+      <a class="trocar" id="testar" href="/">Quero testar 3 dias grátis primeiro</a>
       <button class="trocar" type="button" data-trocar>Já comprei: entrar com minha conta</button>
     </form>
 
@@ -118,7 +118,7 @@
     document.title = `Comprar ${P.nome} — LeuApps`;
     document.getElementById('icone').src = `/img/${app}-192.png`;
     document.getElementById('titulo').textContent = P.nome;
-    document.getElementById('resumo').innerHTML = (P.planos.mensal ? `A partir de <b style="white-space:nowrap">${reais(P.planos.mensal)}/mês</b>` : `Pagamento único de <b style="white-space:nowrap">${reais(P.planos.unico)}</b>`) + '<br>7 dias grátis para testar antes de pagar';
+    document.getElementById('resumo').innerHTML = (P.planos.mensal ? `A partir de <b style="white-space:nowrap">${reais(P.planos.mensal)}/mês</b>` : `Pagamento único de <b style="white-space:nowrap">${reais(P.planos.unico)}</b>`) + '<br>3 dias grátis para testar antes de pagar';
     document.getElementById('itens').innerHTML = P.itens.map((t) => `<li>${t}</li>`).join('');
     document.getElementById('testar').href = app === 'radar' ? '/#radar' : P.url;
     document.getElementById('planos').insertAdjacentHTML('beforeend', Object.entries(TIPOS).map(([k, t]) =>

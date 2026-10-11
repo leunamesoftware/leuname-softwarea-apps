@@ -931,7 +931,7 @@ function renderLicenseGate(errMsg,modo){
   <div class="auth-screen"><div class="auth-card">
     ${authBrandHTML()}
     <h2 style="font-size:17px;text-align:center;margin-top:6px;">Gestacell</h2>
-    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br>${testeAcabou?'Planos a partir de <b>R$ 19,90/mês</b>.':'<b>7 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.'}</p>
+    <p class="muted small center" style="margin:6px 0 14px;">Vendas, OS, estoque e financeiro da sua loja.<br>${testeAcabou?'Planos a partir de <b>R$ 19,90/mês</b>.':'<b>3 dias grátis</b> para testar. Depois, a partir de R$ 19,90/mês.'}</p>
     ${errMsg?`<div class="callout warn" style="margin-bottom:12px;"><span>${ic('warn',15)}</span><span>${esc(errMsg)}</span></div>`:''}
     ${criando?`
     <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Crie a sua conta para testar grátis</p>
@@ -939,9 +939,9 @@ function renderLicenseGate(errMsg,modo){
     <div class="field" style="margin-top:10px;"><label>E-mail</label><input id="cg-email" type="email" autocomplete="email" placeholder="voce@email.com"></div>
     <div class="field" style="margin-top:10px;"><label>Crie uma senha</label><input id="cg-senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
     <div id="cg-erro" class="callout warn hidden" style="margin-top:10px;"></div>
-    <button class="btn primary" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:12px;">Começar 7 dias grátis</button>
+    <button class="btn primary" id="cg-entrar" style="width:100%;justify-content:center;margin-top:12px;padding:12px;">Começar 3 dias grátis</button>
     <p class="small center" style="margin-top:12px;"><a href="#" id="cg-modo">Já tenho conta: entrar</a></p>`:`
-    ${testeAcabou?'':`<button class="btn primary" id="cg-testar" style="width:100%;justify-content:center;padding:12px;">🎁 Testar 7 dias grátis</button>`}
+    ${testeAcabou?'':`<button class="btn primary" id="cg-testar" style="width:100%;justify-content:center;padding:12px;">🎁 Testar 3 dias grátis</button>`}
     <a class="btn ${testeAcabou?'primary':'outline'}" href="${LOJA_COMPRA}" style="width:100%;justify-content:center;padding:12px;text-decoration:none;margin-top:10px;">🛒 Ver planos · a partir de R$ 19,90/mês</a>
     <div class="divider" style="margin:18px 0 12px;"></div>
     <p style="font-weight:700;font-size:14px;margin:0 0 8px;">Já tem conta? Entre</p>
@@ -957,10 +957,10 @@ function renderLicenseGate(errMsg,modo){
   // Depois de entrar ou criar a conta: libera se já tem o app; se não, começa o teste (se ainda não usou).
   const depoisDaConta=async(querTeste)=>{
     if(await chaveDaConta()) return liberar('Gestacell liberado!');
-    if(!querTeste && __testesConta?.gestacell) throw new Error(__testesConta.gestacell.acabou?'O teste grátis desta conta terminou. Escolha um plano para continuar.':'Esta conta ainda não tem o Gestacell.');
+    if(!querTeste && __testesConta?.gestacell) throw new Error(__testesConta.gestacell.acabou?'O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.':'Esta conta ainda não tem o Gestacell.');
     const t=await comecarTesteGratis();
-    if(t==='ok') return liberar('Teste grátis de 7 dias liberado!');
-    if(t==='acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+    if(t==='ok') return liberar('Teste grátis de 3 dias liberado!');
+    if(t==='acabou') return renderLicenseGate('O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.');
     throw new Error('Não deu para liberar agora. Tente de novo.');
   };
   const btn=document.getElementById('cg-entrar'), rotulo=btn.textContent;
@@ -985,10 +985,10 @@ function renderLicenseGate(errMsg,modo){
     try{
       const t=await comecarTesteGratis();
       if(t==='sem_conta') return renderLicenseGate('','criar');
-      if(t==='ok') return liberar('Teste grátis de 7 dias liberado!');
-      if(t==='acabou') return renderLicenseGate('O teste grátis desta conta terminou. Escolha um plano para continuar.');
+      if(t==='ok') return liberar('Teste grátis de 3 dias liberado!');
+      if(t==='acabou') return renderLicenseGate('O teste grátis já foi usado nesta conta ou neste aparelho. Escolha um plano para continuar.');
       throw new Error('Não deu para liberar agora. Tente de novo.');
-    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); testar.disabled=false; testar.textContent='🎁 Testar 7 dias grátis'; }
+    }catch(e){ erro(navigator.onLine?e.message:'Sem internet. Conecte-se e tente de novo.'); testar.disabled=false; testar.textContent='🎁 Testar 3 dias grátis'; }
   };
 }
 
@@ -3456,7 +3456,7 @@ async function boot(){
   try{ await openDB(); }catch(e){ console.error('Falha ao abrir banco local',e); }
   try{ await syncMigrateExisting(); }catch(e){ console.error('Falha ao preparar sincronizacao',e); }
   setupPWA();
-  // Abre com o acesso da conta da loja (teste grátis de 7 dias, mensal, anual ou pagamento único) ou chave antiga.
+  // Abre com o acesso da conta da loja (teste grátis de 3 dias, mensal, anual ou pagamento único) ou chave antiga.
   if(!(await isLicenseActivated()) || trialExpirado() || !(await acessoDaContaValendo())){
     const tinha=lsGet(LICENSE_LS_KEY);
     if(!(await chaveDaConta())){

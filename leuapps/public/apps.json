@@ -6,7 +6,7 @@
     "resumo": "Livro de receitas com custo, preço e lucro calculados na hora.",
     "icone": "/img/quantocobrar-192.webp",
     "url": "/quantocobrar/app/",
-    "preco": "2 dias grátis · planos a partir de R$ 2,99",
+    "preco": "3 dias grátis · planos a partir de R$ 2,99",
     "planos": [
       {
         "nome": "📦 Básico · 30 receitas",
@@ -129,7 +129,7 @@
     "resumo": "Vendas, ordens de serviço, estoque e financeiro da loja de celular.",
     "icone": "/img/gestacell-192.webp",
     "url": "/gestacell/",
-    "preco": "7 dias grátis · planos a partir de R$ 19,90/mês",
+    "preco": "3 dias grátis · planos a partir de R$ 19,90/mês",
     "planos": [
       {
         "nome": "Mensal",
@@ -219,7 +219,7 @@
       "coleta": "Nome e e-mail da conta, e os dados da sua loja (vendas, clientes, estoque e ordens de serviço) que você cadastra",
       "uso": "Para o sistema da sua loja funcionar e guardar o histórico com segurança"
     },
-    "teste": 7,
+    "teste": 3,
     "opcoes": [
       [
         "Mensal",
@@ -246,7 +246,7 @@
     "resumo": "Avisa antes de vencer: documentos, contas e prazos da empresa.",
     "icone": "/img/radar-192.webp",
     "url": "https://radar.leunamesoftware.com.br",
-    "preco": "7 dias grátis · planos a partir de R$ 9,90/mês",
+    "preco": "3 dias grátis · planos a partir de R$ 9,90/mês",
     "exigeCompra": true,
     "planos": [
       {
@@ -329,7 +329,7 @@
       "coleta": "Nome e e-mail da conta, e os documentos, contas e prazos que você cadastra",
       "uso": "Para avisar você antes de cada vencimento"
     },
-    "teste": 7,
+    "teste": 3,
     "opcoes": [
       [
         "Mensal",
@@ -356,9 +356,9 @@
     "resumo": "Vendas, estoque, clientes e financeiro da loja de material de construção.",
     "icone": "/img/construgestao-192.webp",
     "url": "https://construgestao.leunamesoftware.com.br",
-    "preco": "7 dias grátis · planos a partir de R$ 19,90/mês",
+    "preco": "3 dias grátis · planos a partir de R$ 19,90/mês",
     "exigeCompra": true,
-    "teste": 7,
+    "teste": 3,
     "versao": "1.0",
     "planos": [
       {
@@ -436,9 +436,9 @@
     "resumo": "Caixa com leitor de código de barras, cupom, NFC-e, estoque, validade e fiado.",
     "icone": "/img/mercagestao-192.webp",
     "url": "https://mercagestao.leunamesoftware.com.br",
-    "preco": "7 dias grátis · R$ 39,90/mês ou R$ 200 uma vez só",
+    "preco": "3 dias grátis · R$ 39,90/mês ou R$ 200 uma vez só",
     "exigeCompra": true,
-    "teste": 7,
+    "teste": 3,
     "versao": "1.0",
     "planos": [
       {
@@ -512,10 +512,10 @@
     "id": "leuburger",
     "nome": "Pedêê para Parceiros",
     "categoria": "Para lojistas",
-    "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o entregador. 30 dias grátis.",
+    "resumo": "Receba os pedidos da sua lanchonete, cadastre o cardápio e escolha o entregador. 3 dias grátis.",
     "icone": "/img/pedee-parceiro-192.webp",
     "url": "https://leuburger.leunamesoftware.com.br/parceiro/",
-    "preco": "30 dias grátis · R$ 29,90/mês",
+    "preco": "3 dias grátis · R$ 29,90/mês",
     "versao": "2.0",
     "planos": [
       {

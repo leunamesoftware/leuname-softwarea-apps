@@ -10,7 +10,7 @@ import { emailsPendentes, marcarEmailEnviado, enviarEmailDaCompra, avisarAparelh
 import { PLANOS, acessoDaChave, acessoDaConta, appsDaConta, comecarTeste, eDono, testesDaConta } from './planos.js';
 import { criarPedido, receberAviso, recuperarConta, situacaoPedido, liberarVendaDireta } from './pagamento.js';
 import { pedirNovaSenha, usarNovaSenha, trocarEmailDaConta } from './contas.js';
-import { buscarConta, senhaConfere, abrirSessao, sessaoSubstituida, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste } from './contas.js';
+import { buscarConta, senhaConfere, abrirSessao, sessaoSubstituida, contaDaSessao, fecharSessao, contaParaCompra, senhaValida, trocarSenha, EMAIL, aparelhoDoPedido, cookieAparelho, marcarTeste, sinaisDoPedido } from './contas.js';
 
 const POR_ID = new Map(RECEITAS.map((r) => [r.id, r]));
 
@@ -216,13 +216,13 @@ export default {
         }
         return json({ conta: { nome: conta.nome, email: conta.email }, acesso: await acessoDaConta(env, conta.id) });
       }
-      // Teste grátis de 7 dias do Gestacell ou do Radar (precisa estar logado; um por conta em cada app).
+      // Teste grátis de 3 dias dos apps (precisa estar logado; um por conta em cada app).
       if (pathname === '/api/conta/teste' && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const conta = await contaDaSessao(env, req);
         if (!conta) return json({ erro: 'sem_sessao' }, 401);
         const d = await corpo(req);
-        const t = await comecarTeste(env, conta.id, String(d?.app || ''));
+        const t = await comecarTeste(env, conta.id, String(d?.app || ''), await sinaisDoPedido(req, aparelhoDoPedido(req, d?.aparelho)));
         if (!t) return json({ erro: 'app_invalido' }, 400);
         if (t.acabou) return json({ erro: 'teste_acabou', ...t }, 409);
         return json({ ok: true, ...t });

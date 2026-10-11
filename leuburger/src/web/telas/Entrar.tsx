@@ -68,11 +68,11 @@ export function Entrar() {
             {erro && <div className="aviso erro" role="alert">{erro}</div>}
             <button className="btn prim grande bloco" disabled={enviando}>{enviando ? 'Entrando…' : <>Entrar <Ic n="seta" /></>}</button>
             {semAcesso ? <>
-              <button type="button" className="btn grande bloco" onClick={testar} disabled={enviando}>Testar 7 dias grátis</button>
+              <button type="button" className="btn grande bloco" onClick={testar} disabled={enviando}>Testar 3 dias grátis</button>
               <a className="btn bloco" href={`${LOJA}/#leuburger`}>Ver planos na loja LeuApps</a>
             </> : <>
               <div className="linha-ou">ou</div>
-              <a className="btn grande bloco" href={`${LOJA}/#leuburger`}><img src="/icone-32.png" alt="" width="22" height="22" style={{ borderRadius: 6 }} />Ainda não tem? Testar 7 dias grátis</a>
+              <a className="btn grande bloco" href={`${LOJA}/#leuburger`}><img src="/icone-32.png" alt="" width="22" height="22" style={{ borderRadius: 6 }} />Ainda não tem? Testar 3 dias grátis</a>
             </>}
             <p className="rodape-login">Dono: entre com o e-mail e a senha da sua conta LeuApps.<br />Funcionários: com o usuário criado pelo dono.</p>
           </form>

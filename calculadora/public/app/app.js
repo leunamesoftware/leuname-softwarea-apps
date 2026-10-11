@@ -94,7 +94,7 @@ function telaAtivacao(erro = '') {
         <button class="botao" type="submit">Entrar</button>
         <a class="capa-esqueci" href="https://www.leunamesoftware.com.br/loja/esqueci">Esqueci a senha</a>
       </form>
-      <button class="capa-teste" id="gratis">🎁 Testar grátis por 2 dias</button>
+      <button class="capa-teste" id="gratis">🎁 Testar grátis por 3 dias</button>
       ${APP_LOJA ? '' : `<div class="capa-comprar">Ainda não tem conta?<br><a href="${LINK_COMPRA}">Ver planos · a partir de R$ 2,99</a></div>`}
       <button class="capa-recuperar capa-chave" id="tenho-chave" type="button">Tenho uma chave antiga</button>
       <p class="capa-rodape">LeuName Softwares · versão ${VERSAO_APP}</p>
@@ -168,7 +168,7 @@ async function sair(motivo) {
 function telaTesteGratis() {
   const form = document.getElementById('form-entrar');
   form.innerHTML = `
-    <label for="t-nome">Teste grátis por 2 dias</label>
+    <label for="t-nome">Teste grátis por 3 dias</label>
     <p class="capa-explica">2 receitas completas + a calculadora. Depois dos 2 dias, escolha um plano para continuar.</p>
     <input id="t-nome" autocomplete="name" placeholder="Seu nome" required maxlength="80">
     <input id="t-email" type="email" inputmode="email" autocomplete="email" placeholder="Seu e-mail" required maxlength="120" style="margin-top:8px">

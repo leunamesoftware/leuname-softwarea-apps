@@ -494,7 +494,7 @@ appLoja.post('/loja-app/aceitando', async (c) => {
 });
 
 // ---------- cadastro da loja pelo próprio app (sem conta na LeuApps) ----------
-export const DIAS_GRATIS = 30;
+export const DIAS_GRATIS = 3;
 const esqCadastroLoja = z.object({
   loja: z.string().trim().min(2, 'Digite o nome da loja.').max(60),
   tipo_loja: z.enum(Object.keys(TIPOS_LOJA) as [keyof typeof TIPOS_LOJA, ...(keyof typeof TIPOS_LOJA)[]]),

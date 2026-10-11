@@ -115,14 +115,14 @@ function telaAcesso(estado = {}, modo = '') {
   const campo = (id, rot, tipo, auto) => `<label>${rot}<input id="${id}" type="${tipo}" autocomplete="${auto}"></label>`;
   raiz.innerHTML = `<div class="entrada"><div class="cartao">
     <div class="logo"><img src="/img/mercagestao-192.png" alt=""><b>MercaGestão</b>
-      <span class="sub">Caixa e gestão para mercado, mercearia e mini-mercado.<br>${estado.testeAcabou ? '<b>R$ 39,90 por mês</b> ou <b>R$ 200 uma vez só</b> (é seu para sempre).' : '<b>7 dias grátis</b> para testar. Depois, R$ 39,90/mês ou R$ 200 uma vez só.'}</span></div>
+      <span class="sub">Caixa e gestão para mercado, mercearia e mini-mercado.<br>${estado.testeAcabou ? '<b>R$ 39,90 por mês</b> ou <b>R$ 200 uma vez só</b> (é seu para sempre).' : '<b>3 dias grátis</b> para testar. Depois, R$ 39,90/mês ou R$ 200 uma vez só.'}</span></div>
     ${estado.msg ? `<div class="aviso erro">${esc(estado.msg)}</div>` : ''}
     ${estado.offline ? '<div class="aviso">Sem internet. Conecte-se uma vez para liberar o app neste aparelho.</div>' : ''}
     ${criando ? `<b>Crie a sua conta para testar grátis</b>${campo('a-nome', 'Seu nome', 'text', 'name')}${campo('a-email', 'E-mail', 'email', 'email')}${campo('a-senha', 'Crie uma senha (mín. 6)', 'password', 'new-password')}
         <div id="a-erro" class="aviso erro" hidden></div>
-        <button class="btn prim grande" id="a-ir">Começar 7 dias grátis</button>
+        <button class="btn prim grande" id="a-ir">Começar 3 dias grátis</button>
         <a href="#" id="a-modo" style="text-align:center">Já tenho conta: entrar</a>`
-      : `${estado.testeAcabou ? '' : '<button class="btn prim grande" id="a-testar">🎁 Testar 7 dias grátis</button>'}
+      : `${estado.testeAcabou ? '' : '<button class="btn prim grande" id="a-testar">🎁 Testar 3 dias grátis</button>'}
         <a class="btn ${estado.testeAcabou ? 'prim' : ''} grande" href="${LOJA_COMPRA}">🛒 Assinar ou comprar</a>
         <hr style="border:0;border-top:1px solid var(--linha);width:100%">
         <b>Já tem conta? Entre</b>${campo('a-email', 'E-mail', 'email', 'username')}${campo('a-senha', 'Senha', 'password', 'current-password')}
@@ -137,8 +137,8 @@ function telaAcesso(estado = {}, modo = '') {
     if (a.ok) return iniciar();
     if (!querTeste && a.testeAcabou) throw new Error('O teste grátis desta conta terminou. Toque em Comprar para continuar.');
     const t = await comecarTeste();
-    if (t === 'acabou') return telaAcesso({ testeAcabou: true, msg: 'O teste grátis desta conta terminou.' });
-    if (t === 'ok') { toast('Teste grátis de 7 dias liberado!'); return iniciar(); }
+    if (t === 'acabou') return telaAcesso({ testeAcabou: true, msg: 'O teste grátis já foi usado nesta conta ou neste aparelho.' });
+    if (t === 'ok') { toast('Teste grátis de 3 dias liberado!'); return iniciar(); }
     throw new Error('Não deu para liberar agora. Tente de novo.');
   };
   const bt = $('#a-ir');
@@ -169,9 +169,9 @@ function telaAcesso(estado = {}, modo = '') {
     try {
       const r = await comecarTeste();
       if (r === 'sem_conta') return telaAcesso(estado, 'criar');
-      if (r === 'acabou') return telaAcesso({ testeAcabou: true, msg: 'O teste grátis desta conta terminou.' });
-      toast('Teste grátis de 7 dias liberado!'); iniciar();
-    } catch (e) { erro(navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.'); t.disabled = false; t.textContent = '🎁 Testar 7 dias grátis'; }
+      if (r === 'acabou') return telaAcesso({ testeAcabou: true, msg: 'O teste grátis já foi usado nesta conta ou neste aparelho.' });
+      toast('Teste grátis de 3 dias liberado!'); iniciar();
+    } catch (e) { erro(navigator.onLine ? e.message : 'Sem internet. Conecte-se e tente de novo.'); t.disabled = false; t.textContent = '🎁 Testar 3 dias grátis'; }
   };
 }
 
