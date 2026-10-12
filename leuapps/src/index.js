@@ -8,6 +8,21 @@ function seguro(resp) {
   return r;
 }
 
+// Google: cada página diz qual é o endereço principal dela (canônico) e as páginas internas não entram na busca.
+const SEM_BUSCA = /^\/(carrito|checkout|confirmacion|login|mi-cuenta|registro|demo|site-antigo)(\.html)?$|^\/(modelos|loja|instalar|baixar|dono)(\/|$)/;
+function paraGoogle(url, resp) {
+  if (!SITE_HOSTS.includes(url.hostname) || !(resp.headers.get('Content-Type') || '').includes('text/html')) return resp;
+  const r = new Response(resp.body, resp);
+  if (SEM_BUSCA.test(url.pathname)) { r.headers.set('X-Robots-Tag', 'noindex, follow'); return r; }
+  let caminho = url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+  const q = ['id', 'slug', 'negocio'].filter((k) => url.searchParams.get(k)).map((k) => `${k}=${encodeURIComponent(url.searchParams.get(k))}`).join('&');
+  const canon = `https://www.leunamesoftware.com.br${caminho}${q ? '?' + q : ''}`;
+  return new HTMLRewriter()
+    .on('link[rel="canonical"]', { element: (e) => e.remove() })
+    .on('head', { element: (e) => e.append(`<link rel="canonical" href="${canon}">`, { html: true }) })
+    .transform(r);
+}
+
 // Área do Dono (/dono/): só abre para a conta do dono logada (a sessão é a do servidor de vendas, CONTAS).
 // Manifesto e ícones ficam abertos porque o celular os busca sem a sessão na hora de instalar.
 const DONO_HOST = 'dono.leunamesoftware.com.br';
@@ -240,17 +255,21 @@ export default {
     // A loja de apps fica em /apps (e no apps.leunamesoftware.com.br).
     if (url.pathname === '/apps' || url.pathname === '/apps/') return seguro(await env.ASSETS.fetch(new Request(url.origin + '/', req)));
     // Página inicial do www: o site antigo da LeuName (worker leuname-site-br), do jeito que era.
-    if (url.pathname === '/' && SITE_HOSTS.includes(url.hostname) && env.SITE_ANTIGO) return env.SITE_ANTIGO.fetch(new Request(url, req));
+    if (url.pathname === '/' && SITE_HOSTS.includes(url.hostname) && env.SITE_ANTIGO) return paraGoogle(url, await env.SITE_ANTIGO.fetch(new Request(url, req)));
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);
     // Gestacell no endereço próprio: o manifesto vai já no HTML, para a loja conseguir instalar com um toque.
     if (url.hostname === GESTACELL_HOST && arquivo.status === 200 && (arquivo.headers.get('Content-Type') || '').includes('text/html')) {
       return seguro(new HTMLRewriter().on('head', { element: (e) => e.append('<link rel="manifest" href="/app.webmanifest">', { html: true }) }).transform(arquivo));
     }
-    if (arquivo.status !== 404) return seguro(arquivo);
+    if (arquivo.status !== 404) return seguro(paraGoogle(url, arquivo));
     if (env.SITE_ANTIGO && url.hostname !== 'apps.leunamesoftware.com.br') {
-      if (url.pathname === '/site-antigo') url.pathname = '/';
-      return env.SITE_ANTIGO.fetch(new Request(url, req));
+      const pedido = new URL(url);
+      if (url.pathname === '/site-antigo') pedido.pathname = '/';
+      const r = await env.SITE_ANTIGO.fetch(new Request(pedido, req));
+      // Página antiga que não existe mais (endereço velho guardado no Google): leva para a página inicial.
+      if (r.status === 404 && SITE_HOSTS.includes(url.hostname) && /^[^.]*$|\.(html?|php)$/.test(url.pathname)) return Response.redirect(`https://www.leunamesoftware.com.br/`, 301);
+      return paraGoogle(url, r);
     }
     return new Response('Página não encontrada.', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
   },
