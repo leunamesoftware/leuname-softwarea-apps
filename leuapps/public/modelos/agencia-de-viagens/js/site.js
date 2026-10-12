@@ -223,11 +223,18 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (!d || d.ok !== false) return;
-        var aviso = document.createElement("div");
-        aviso.setAttribute("role", "alert");
-        aviso.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#b42318;color:#fff;font:600 14px/1.4 Inter,system-ui,sans-serif;text-align:center;padding:12px 16px";
-        aviso.innerHTML = "Este site não tem licença para este endereço. Licenças: <a style=\"color:#fff;text-decoration:underline\" href=\"https://www.leunamesoftware.com.br\">leunamesoftware.com.br</a>";
-        document.body.appendChild(aviso);
+        // Sem licença (compra cancelada, estornada ou outro endereço): o site inteiro fica bloqueado.
+        var motivo = d.motivo === "cancelada" ? "A licença deste site foi cancelada."
+          : d.motivo === "outro_dominio" ? "Este site está licenciado para outro endereço."
+          : "Este site não tem licença para este endereço.";
+        document.documentElement.style.overflow = "hidden";
+        var tela = document.createElement("div");
+        tela.setAttribute("role", "alert");
+        tela.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font:500 16px/1.5 Inter,system-ui,sans-serif";
+        tela.innerHTML = "<div style=\"max-width:440px\"><div style=\"font-size:44px;margin-bottom:8px\">🔒</div><h1 style=\"font:800 24px/1.2 Inter,system-ui,sans-serif;color:#fff;margin:0 0 10px\">Site bloqueado</h1><p style=\"margin:0 0 18px;opacity:.85\">" + motivo + "</p><a style=\"display:inline-block;background:#2f7dff;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:700\" href=\"https://www.leunamesoftware.com.br\">Comprar a licença</a></div>";
+        document.body.appendChild(tela);
+        // Se alguém apagar a tela pelo navegador, ela volta.
+        new MutationObserver(function () { if (!document.body.contains(tela)) document.body.appendChild(tela); }).observe(document.body, { childList: true });
       })
       .catch(function () {});
   })();
