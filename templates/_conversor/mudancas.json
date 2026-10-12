@@ -176,5 +176,6 @@
   "TransporteMax Mudanzas y Transporte. Todos los derechos reservados.": "TransporteMax Mudanças e Transportes. Todos os direitos reservados.",
   "Plantilla demostrativa · Aviso legal · Privacidad · Cookies": "Aviso legal · Privacidade · Cookies",
   "Llamar": "Ligar"
- }
+ },
+ "css_extra": "@media(max-width:1200px){.cab .env>.btn{display:none!important}}\n"
 }

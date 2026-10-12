@@ -3,7 +3,7 @@
 H=${H:-/home/claude/leuname-software/pacotes-hotmart}
 cd "$(dirname "$0")"
 while read antigo json id; do
-  python3 aplicar.py "$H/$antigo/site-completo" "$json" "$id" | head -1
+  python3 aplicar.py "$H/$antigo/site-completo" "$json" "$id" > /tmp/claude-0/conv-$id.log 2>&1 && echo "$id ok" || { echo "$id ERRO"; cat /tmp/claude-0/conv-$id.log; }
 done <<LISTA
 pizzeria-premium pizzaria.json pizzaria
 panaderia-premium padaria.json padaria

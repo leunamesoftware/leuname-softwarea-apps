@@ -169,8 +169,20 @@ footer{background:var(--blue-950);color:#a9bdde;padding-top:56px;}
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}
 .aviso-demo{background:#fff4d6;color:#3a2a00;text-align:center;padding:7px 12px;font:13px/1.4 Inter,system-ui,sans-serif}
 @media(max-width:600px){.header-right .phone,.header-right>div:first-child{display:none}.header-right .btn{padding:9px 12px;font-size:13px}.treat-grid,.team-grid{grid-template-columns:1fr}.treat-card{min-width:0}}
+.team-photo{width:128px;height:128px;aspect-ratio:auto!important;border-radius:50%!important;margin:0 auto 14px!important;font-size:52px!important}
+@media(max-width:600px){.team-grid{grid-template-columns:1fr 1fr!important;gap:22px 14px!important}.team-photo{width:96px;height:96px;font-size:40px!important}
+.band{flex-direction:column!important;align-items:flex-start!important;gap:12px!important}.band .btn{align-self:stretch;text-align:center}
+.header-right .btn{font-size:13px!important;padding:10px 12px!important;white-space:nowrap}}
+@media(max-width:600px){.header-right .btn{display:none!important}}
+header.main{position:sticky}.lp-menu-btn{display:none}
+@media(max-width:900px){.nav-inner{position:relative}.lp-menu-btn{display:inline-flex;flex-direction:column;justify-content:center;gap:5px;width:42px;height:42px;padding:0 10px;border:1px solid #d6dfec;border-radius:10px;background:#fff;color:#12305e;cursor:pointer}
+.lp-menu-btn span{display:block;height:2px;border-radius:2px;background:currentColor;transition:.2s}
+.lp-menu-btn.lp-x span:nth-child(1){transform:translateY(7px) rotate(45deg)}.lp-menu-btn.lp-x span:nth-child(2){opacity:0}.lp-menu-btn.lp-x span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+nav.links.lp-aberto{display:block!important;position:absolute;left:0;right:0;top:100%;background:#fff;box-shadow:0 18px 40px rgba(0,0,0,.15);padding:6px 0;z-index:60}
+nav.links.lp-aberto a{display:block;padding:14px 22px;font-size:15px;border-bottom:1px solid #eef2f7;color:#12305e}}
 </style>
 </head>
 <body>

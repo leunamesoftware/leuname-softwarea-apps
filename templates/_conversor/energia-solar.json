@@ -142,5 +142,5 @@
   "SolarMax. Todos los derechos reservados.": "SolarMax. Todos os direitos reservados.",
   "Plantilla demostrativa · Aviso legal · Privacidad · Cookies": "Aviso legal · Privacidade · Cookies"
  },
- "css_extra": "@media(max-width:600px){.newsletter-form{min-width:0;width:100%;max-width:none}.newsletter-form input{min-width:0;flex:1}.newsletter-form .btn{white-space:nowrap;padding-left:14px;padding-right:14px}.newsletter-ventajas{flex-direction:column;gap:8px}}\n.prod-precio{white-space:nowrap;font-size:15px!important}.prod-precio small{display:block;font-size:11px}\n"
+ "css_extra": "@media(max-width:600px){.newsletter-form{min-width:0;width:100%;max-width:none}.newsletter-form input{min-width:0;flex:1}.newsletter-form .btn{white-space:nowrap;padding-left:14px;padding-right:14px}.newsletter-ventajas{flex-direction:column;gap:8px}}\n.prod-precio{white-space:nowrap;font-size:15px!important}.prod-precio small{display:block;font-size:11px}\n@media(max-width:760px){.portada-flecha,.portada .flecha,[class*=portada] [class*=flecha]{display:none!important}}\n"
 }

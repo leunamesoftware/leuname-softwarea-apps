@@ -214,7 +214,73 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; }
 }
 
 html,body{overflow-x:hidden;max-width:100%}
+/* ===== Camada de celular das lojas (LeuName): topo, menu e busca ===== */
+.lp-menu-btn{display:none}
+@media(max-width:900px){
+  .barra-top-der{display:none!important}
+  .barra-top-izq{display:flex!important;justify-content:center;flex-wrap:nowrap!important;overflow:hidden;width:100%}
+  .barra-top-izq li{display:none!important}
+  .barra-top-izq li:first-child{display:flex!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .barra-top-int{justify-content:center!important;min-height:0!important;height:auto!important;padding-top:7px!important;padding-bottom:7px!important}
+  .cabecera{position:relative}
+  .cabecera-int{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px 12px!important;padding-top:10px!important;padding-bottom:10px!important;min-height:0!important;height:auto!important}
+  .cabecera-int>.logo{flex:1 1 auto!important;min-width:0;order:1;margin:0!important;overflow:hidden}
+  .cabecera-int>.logo .logo-txt em,.cabecera-int>.logo .estrellas{display:none!important}
+  .cabecera-int>.logo .logo-txt{min-width:0;white-space:nowrap}
+  .cabecera-int .logo img,.cabecera-int .logo svg{max-height:40px;width:auto}
+  .cabecera-acciones{order:2;display:flex!important;align-items:center;gap:4px!important;flex:0 0 auto!important;margin:0!important}
+  .cabecera-acciones .accion-item{padding:6px!important;min-width:0!important}
+  .cabecera-acciones .accion-item,.cabecera-acciones .accion-item>span{font-size:0!important;line-height:0;gap:0!important}
+  .cabecera-acciones .accion-item svg{width:22px!important;height:22px!important;display:block}
+  .cabecera-acciones .accion-item>span>i{display:none!important}
+  .cabecera-acciones .carrito-icono-wrap{display:flex!important;position:relative}
+  .cabecera-acciones .accion-item .badge{font-size:10px!important;line-height:1}
+  .cabecera-acciones .bandera,.cabecera-acciones .moneda,.cabecera-acciones .idioma{display:none!important}
+  .cabecera-acciones .boton-primario{padding:9px 12px!important;font-size:12px!important;white-space:nowrap}
+  .lp-menu-btn{color:inherit;display:inline-flex;order:3;flex-direction:column;justify-content:center;gap:5px;width:42px;height:42px;padding:0 10px;border:1px solid rgba(127,127,127,.35);border-radius:10px;background:transparent;cursor:pointer;flex:0 0 auto}
+  .lp-menu-btn span{display:block;height:2px;border-radius:2px;background:currentColor;transition:.2s}
+  .lp-menu-btn.lp-x span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .lp-menu-btn.lp-x span:nth-child(2){opacity:0}
+  .lp-menu-btn.lp-x span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .cabecera-int>.buscador{order:4;flex:1 1 100%!important;width:100%!important;max-width:none!important;margin:0!important;display:flex!important}
+  .cabecera-int>.buscador select{display:none!important}
+  .cabecera-int>.buscador input{min-width:0!important;flex:1!important}
+  .menu-principal{display:none!important}
+  .menu-principal.lp-aberto{display:block!important;position:absolute!important;left:0;right:0;top:100%;z-index:80;background:#fff!important;box-shadow:0 18px 40px rgba(0,0,0,.18);max-height:75vh;overflow:auto;padding:6px 0!important;margin:0!important;border-top:1px solid #eee}
+  .menu-principal.lp-aberto .contenedor,.menu-principal.lp-aberto .menu-int{display:block!important;padding:0!important;max-width:none!important}
+  .menu-principal.lp-aberto a{display:flex!important;align-items:center;justify-content:space-between;padding:14px 20px!important;font-size:15px!important;color:#1d2127!important;border-bottom:1px solid #f0f0f0;text-transform:none!important;white-space:normal!important;background:none!important}
+  .menu-principal.lp-aberto a::after{display:none!important}
+  .menu-principal.lp-aberto .submenu{display:none!important}
+}
+@media(max-width:600px){
+  .cabecera-acciones .accion-item:not(#botonCarrito):not(.accion-carrito),.cabecera-acciones .boton-primario{display:none!important}
+  .cabecera-int>.logo .logo-txt b{font-size:clamp(15px,4.6vw,20px)!important}
+}
+/* faixas de vantagens e vitrines de produtos */
+@media(max-width:900px){
+  .confianza-top-int{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px!important;align-items:start!important}
+  .confianza-item{flex:none!important;min-width:0}
+  .prod-carrusel{display:block!important}
+  .prod-flecha,.prod-flecha-izq,.prod-flecha-der{display:none!important}
+  .prod-fila{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;overflow:visible!important}
+  .prod-card{min-width:0!important;width:auto!important}
+  .boton-anadir{white-space:nowrap!important;font-size:12.5px!important;padding-left:8px!important;padding-right:8px!important}
+}
+@media(min-width:601px) and (max-width:900px){
+  .prod-fila{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(min-width:901px) and (max-width:1180px){
+  .prod-fila{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:640px){
+  .promo-fila-int{grid-template-columns:minmax(0,1fr)!important}
+  .promo-fila-int>*{min-width:0}
+  .pie-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .pie-grid>*{min-width:0}
+  .pie-grid>.pie-marca{grid-column:1/-1}
+}
 
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}

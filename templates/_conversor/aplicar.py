@@ -91,7 +91,8 @@ extras = raiz / '_conversor' / f'{tid}-imagens'
 if extras.exists():
     for f in extras.iterdir(): shutil.copy(f, destino / 'imagens' / f.name)
 
-regras_css = '\n.aviso-demo[hidden]{display:none!important}\n.sem-estilo{display:none!important}\n' + _comum.get('css_extra', '') + trad.get('css_extra', '')
+_loja = (Path(__file__).resolve().parent / 'loja-mobile.css').read_text(encoding='utf-8') if trad.get('loja_mobile') else ''
+regras_css = _loja + '\n.aviso-demo[hidden]{display:none!important}\n.sem-estilo{display:none!important}\n' + _comum.get('css_extra', '') + trad.get('css_extra', '')
 if not list((destino / 'css').glob('*.css')):  # site com o CSS dentro do index.html
     h = (destino / 'index.html').read_text(encoding='utf-8')
     for a, b in trad.get('bruto_css', []): h = h.replace(a, b)

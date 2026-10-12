@@ -280,6 +280,7 @@ html,body{overflow-x:hidden;max-width:100%}
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}
 /* Faixa do topo: textos em português são mais longos */
 .barra-top-int { height: auto; min-height: 34px; padding-block: 6px; }
 @media (max-width: 640px) {
@@ -288,3 +289,5 @@ html,body{overflow-x:hidden;max-width:100%}
   .barra-top-int { justify-content: center; }
 }
 @media(max-width:560px){.prod-pie{flex-wrap:wrap;gap:6px}.prod-pie .anadir{width:100%;justify-content:center}}
+@media(max-width:400px){.cab-int{gap:10px!important}.cab-int .logo{min-width:0;flex:1 1 auto}.cab-int .logo span{font-size:15px}}
+@media(max-width:400px){.cab-acc{gap:4px!important}.cab-acc>*{padding-left:4px!important;padding-right:4px!important}}

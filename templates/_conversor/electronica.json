@@ -158,5 +158,6 @@
   "Centro de ayuda": "Central de ajuda",
   "© 2025 ELECTROMAX. Todos los derechos reservados.": "© 2026 ELECTROMAX. Todos os direitos reservados."
  },
- "css_extra": "@media(min-width:1000px){.menu-principal a{padding-left:11px!important;padding-right:11px!important;font-size:14px}}\n"
+ "css_extra": "@media(min-width:1000px){.menu-principal a{padding-left:11px!important;padding-right:11px!important;font-size:14px}}\n@media(max-width:640px){.pie-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.pie-grid>*{min-width:0}.pie-grid>.pie-marca{grid-column:1/-1}}\n",
+ "loja_mobile": true
 }

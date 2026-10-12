@@ -63,7 +63,7 @@
   "Siguiente": "Próximo",
   "Abrir menú": "Abrir menu",
   "Menú": "Menu",
-  "Añadir al carrito": "Adicionar ao carrinho",
+  "Añadir al carrito": "Adicionar",
   "Añadir": "Adicionar",
   "OFERTA": "OFERTA",
   "NOVEDAD": "NOVIDADE",
@@ -124,5 +124,5 @@
   "Clínica": "Clínica",
   "Ver todas →": "Ver todas →"
  },
- "css_extra": "[class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}\n"
+ "css_extra": "[class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}\n[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}\n"
 }

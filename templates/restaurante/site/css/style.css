@@ -301,5 +301,9 @@ html,body{overflow-x:hidden;max-width:100%}
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}
 @media(max-width:760px){.barra-top{display:none}}
 .cont-rejilla>*{min-width:0}.cont-dato span{overflow-wrap:anywhere}
+.plato-txt{flex:1 1 auto;min-width:0}.plato-puntos{flex:0 1 60px}
+@media(max-width:640px){.plato-puntos{display:none}.plato{justify-content:space-between}.puntos{display:none!important}}
+@media(max-width:1200px){.cab .env>.btn{display:none!important}}

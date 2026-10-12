@@ -274,3 +274,5 @@ h3{font-size:20px;}
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+[data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:1200px){.cab .env>.btn{display:none!important}}

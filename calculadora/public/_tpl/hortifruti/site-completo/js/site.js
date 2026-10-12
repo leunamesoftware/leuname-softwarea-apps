@@ -66,7 +66,20 @@
       Array.prototype.forEach.call(document.querySelectorAll("[data-copy-ano]"), function (el) { el.textContent = new Date().getFullYear(); });
     }
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", aplicar); else aplicar();
+
+  /* Menu do celular para as lojas que não tinham (botão ☰ no topo). */
+  function menuCelular() {
+    var cab = document.querySelector(".cabecera"), menu = document.querySelector(".menu-principal");
+    if (!cab || !menu) { cab = document.querySelector("header"); menu = cab && cab.querySelector("nav"); }
+    if (!cab || !menu || document.getElementById("abrirMenu") || cab.querySelector(".lp-menu-btn")) return;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "lp-menu-btn"; b.setAttribute("aria-label", "Abrir menu");
+    b.innerHTML = "<span></span><span></span><span></span>";
+    (cab.querySelector(".cabecera-int") || menu.parentNode || cab).appendChild(b);
+    b.addEventListener("click", function () { var a = menu.classList.toggle("lp-aberto"); b.classList.toggle("lp-x", a); });
+    menu.addEventListener("click", function (e) { if (e.target.closest("a")) { menu.classList.remove("lp-aberto"); b.classList.remove("lp-x"); } });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { aplicar(); menuCelular(); }); else { aplicar(); menuCelular(); }
 
   /* ---------- Licença: o site fica registrado no 1º domínio onde for publicado ----------
      No computador e em endereços grátis de teste funciona sem registrar. Sem internet ou com o servidor fora, não atrapalha. */
@@ -146,24 +159,32 @@
     return d.body;
   }
   function forte(el, k, v) { el.style.setProperty(k, v, "important"); }
+  function claro(el) {
+    for (; el && el !== d.documentElement; el = el.parentElement) {
+      var m = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(w.getComputedStyle(el).backgroundColor);
+      if (m && (m[4] === undefined || +m[4] > 0.5)) return (0.299 * m[1] + 0.587 * m[2] + 0.114 * m[3]) > 160;
+    }
+    return true;
+  }
   function pinta() {
-    e.style.cssText = f;
+    var cl = e.parentNode ? claro(e.parentNode) : false;
+    e.style.cssText = f.replace("rgba(255,255,255,.72)", cl ? "rgba(0,0,0,.62)" : "rgba(255,255,255,.72)");
     ["display:block", "visibility:visible", "opacity:1", "position:static", "transform:none", "clip-path:none", "filter:none", "height:auto", "max-height:none", "overflow:visible", "font-size:13px"].forEach(function (r) {
       var i = r.indexOf(":"); forte(e, r.slice(0, i), r.slice(i + 1));
     });
     var a = e.querySelector("a");
-    if (a) { forte(a, "color", "#ffc21a"); forte(a, "font-weight", "700"); forte(a, "display", "inline"); forte(a, "visibility", "visible"); forte(a, "opacity", "1"); }
+    if (a) { forte(a, "color", cl ? "#9a6400" : "#ffc21a"); forte(a, "font-weight", "700"); forte(a, "display", "inline"); forte(a, "visibility", "visible"); forte(a, "opacity", "1"); }
   }
   function cria() {
-    e = d.createElement("p"); e.innerHTML = h; pinta();
-    var l = lugar(); l.appendChild(e);
+    e = d.createElement("p"); e.innerHTML = h;
+    var l = lugar(); l.appendChild(e); pinta();
   }
   function confere() {
     var s = e && w.getComputedStyle(e), a = e && e.querySelector("a");
     var ruim = !e || !d.body.contains(e) || e.innerHTML !== h || !a || a.getAttribute("href").indexOf("leunamesoftware") < 0 ||
       s.display === "none" || s.visibility !== "visible" || +s.opacity < 0.6 || parseFloat(s.fontSize) < 10 || e.offsetHeight < 8;
     if (ruim) { if (e && e.parentNode) e.parentNode.removeChild(e); cria(); return; }
-    if (e.parentNode !== lugar()) lugar().appendChild(e);
+    if (e.parentNode !== lugar()) { lugar().appendChild(e); pinta(); }
   }
   function liga() {
     cria();
