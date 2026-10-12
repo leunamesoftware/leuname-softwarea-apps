@@ -300,5 +300,6 @@ html,body{overflow-x:hidden;max-width:100%}
 
 .aviso-demo[hidden]{display:none!important}
 .sem-estilo{display:none!important}
+[class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
 @media(max-width:760px){.barra-top{display:none}}
 .cont-rejilla>*{min-width:0}.cont-dato span{overflow-wrap:anywhere}

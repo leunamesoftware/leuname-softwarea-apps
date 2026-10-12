@@ -14,6 +14,10 @@ import json, re, shutil, sys
 from pathlib import Path
 
 origem, trad, tid = Path(sys.argv[1]), json.load(open(sys.argv[2], encoding='utf-8')), sys.argv[3]
+# Dicionário comum a todos os sites (carrinho, rodapé, formas de pagamento…); o do site tem prioridade.
+_comum = json.load(open(Path(__file__).resolve().parent / 'comum.json', encoding='utf-8'))
+for _k in ('textos', 'js'): trad[_k] = {**_comum[_k], **trad.get(_k, {})}
+trad['bruto_js'] = trad.get('bruto_js', []) + _comum['bruto_js']
 raiz = Path(__file__).resolve().parent.parent
 destino = raiz / tid / 'site'
 shutil.rmtree(destino, ignore_errors=True)
@@ -25,6 +29,7 @@ if (destino / 'img').exists():
 def norm(t): return ' '.join(t.split())
 
 T = {norm(k): v for k, v in trad.get('textos', {}).items()}
+JA = set(norm(v) for v in T.values())
 faltando = set()
 
 def troca_texto(m):
@@ -34,7 +39,8 @@ def troca_texto(m):
     if n in T:
         ini = bruto[:len(bruto) - len(bruto.lstrip())]; fim = bruto[len(bruto.rstrip()):]
         return ini + T[n] + fim
-    faltando.add(n); return bruto
+    if n not in JA: faltando.add(n)
+    return bruto
 
 def troca_attr(m):
     k, aspas, v = m.group(1), m.group(2), m.group(3)
@@ -44,6 +50,7 @@ def troca_attr(m):
     return m.group(0)
 
 html = (destino / 'index.html').read_text(encoding='utf-8')
+html = html.replace('href="index.php"', 'href="index.html"')
 for a, b in trad.get('bruto', []): html = html.replace(a, b)
 # Lista de produtos do carrinho (datosCatalogo): nome, unidade e preço em R$ (trad["precos"]: {nome em espanhol: preço})
 def troca_catalogo(m):
@@ -84,16 +91,30 @@ extras = raiz / '_conversor' / f'{tid}-imagens'
 if extras.exists():
     for f in extras.iterdir(): shutil.copy(f, destino / 'imagens' / f.name)
 
+regras_css = '\n.aviso-demo[hidden]{display:none!important}\n.sem-estilo{display:none!important}\n' + _comum.get('css_extra', '') + trad.get('css_extra', '')
+if not list((destino / 'css').glob('*.css')):  # site com o CSS dentro do index.html
+    h = (destino / 'index.html').read_text(encoding='utf-8')
+    for a, b in trad.get('bruto_css', []): h = h.replace(a, b)
+    h = h.replace('</head>', '<style>' + regras_css + '</style>\n</head>', 1)
+    (destino / 'index.html').write_text(h, encoding='utf-8')
 for css in (destino / 'css').glob('*.css'):
     c = css.read_text(encoding='utf-8').replace('../img/', '../imagens/').replace('img/', 'imagens/')
     for a, b in trad.get('bruto_css', []): c = c.replace(a, b)
-    css.write_text(c + '\n.aviso-demo[hidden]{display:none!important}\n.sem-estilo{display:none!important}\n' + trad.get('css_extra', ''), encoding='utf-8')
+    css.write_text(c + regras_css, encoding='utf-8')
 
+(destino / 'js').mkdir(exist_ok=True)
 mainjs = destino / 'js' / 'main.js'
+if trad.get('js_extra'):  # código nosso (ex.: formulário que manda para o WhatsApp)
+    if not mainjs.exists():
+        mainjs.write_text('', encoding='utf-8')
+        h = (destino / 'index.html').read_text(encoding='utf-8')
+        h = h.replace('<script src="js/site.js"></script>', '<script src="js/site.js"></script>\n<script src="js/main.js"></script>', 1)
+        (destino / 'index.html').write_text(h, encoding='utf-8')
 if mainjs.exists():
     j = mainjs.read_text(encoding='utf-8').replace('img/', 'imagens/')
     for a, b in sorted(trad.get('js', {}).items(), key=lambda x: -len(x[0])): j = j.replace(a, b)
     for a, b in trad.get('bruto_js', []): j = j.replace(a, b)
+    if trad.get('js_extra'): j += '\n' + trad['js_extra'] + '\n'
     mainjs.write_text(j, encoding='utf-8')
 
 # configuracao.js

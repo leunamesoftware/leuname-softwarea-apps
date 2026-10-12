@@ -7,7 +7,8 @@
   if (S.avisoDemonstracao) { var av = document.getElementById("avisoDemo"); if (av) av.hidden = false; }
 
   /* Pedido do carrinho: o main.js lê estes dados (número do WhatsApp e nome da empresa). */
-  var envio = document.getElementById("datosEnvio");
+  ["datosEnvio", "datosReserva"].forEach(function (idDados) {
+  var envio = document.getElementById(idDados);
   if (envio) {
     try {
       var e = JSON.parse(envio.textContent || "{}");
@@ -16,6 +17,29 @@
       envio.textContent = JSON.stringify(e);
     } catch (x) {}
   }
+  });
+
+
+  /* Formulário → WhatsApp: junta os campos preenchidos (com o nome de cada campo) e abre a conversa
+     com o número do configuracao.js. Uso no HTML: onsubmit="return LeuForm(this, 'Pedido de agendamento')". */
+  window.LeuForm = function (form, titulo) {
+    var linhas = ["*" + titulo + " — " + (S.nome || "") + "*", ""];
+    Array.prototype.forEach.call(form.querySelectorAll("input, select, textarea"), function (el) {
+      if (/^(submit|button|hidden|password)$/.test(el.type) || ((el.type === "checkbox" || el.type === "radio") && !el.checked)) return;
+      var v = (el.tagName === "SELECT" && el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : el.value || "").trim(); if (!v) return;
+      if (el.type === "checkbox" || el.type === "radio") { var lr = el.closest("label") || (el.id && form.querySelector('label[for="' + el.id + '"]')); v = lr ? lr.textContent.replace(/\s+/g, " ").trim() : v; if (v.length > 60 || /privacid/i.test(el.name || "")) return; linhas.push("• " + v); return; }
+      if (el.type === "date" && /^\d{4}-\d\d-\d\d$/.test(v)) v = v.split("-").reverse().join("/");
+      var lab = el.id && form.querySelector('label[for="' + el.id + '"]');
+      lab = lab || el.closest("label") || (el.parentNode && el.parentNode.querySelector("label"));
+      var nome = lab ? lab.textContent.replace(/\s+/g, " ").replace(v, "").replace(/\s*\((opcional|optional)\)/i, "").trim() : (el.getAttribute("placeholder") || el.name || "");
+      if (el.type === "checkbox" || el.type === "radio") { linhas.push("• " + (nome || v)); return; }
+      linhas.push((nome ? nome.replace(/[:*?]\s*$/, "") + ": " : "") + v);
+    });
+    var zap = soNumeros(S.whatsapp);
+    if (zap) window.open("https://wa.me/" + zap + "?text=" + encodeURIComponent(linhas.join("\n")), "_blank", "noopener");
+    var ok = form.querySelector("[data-ok]"); if (ok) { ok.hidden = false; ok.style.display = "block"; }
+    return false;
+  };
 
   function aplicar() {
     /* Todos os links de WhatsApp vão para o número do configuracao.js. */

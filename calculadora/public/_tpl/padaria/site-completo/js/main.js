@@ -93,7 +93,7 @@
           '<button type="button" data-menos="' + id + '" aria-label="Tirar um">−</button>' +
           '<b>' + n + '</b>' +
           '<button type="button" data-mas="' + id + '" aria-label="Mais um">+</button>' +
-          '<button type="button" class="linea-quitar" data-quitar="' + id + '">Quitar</button>' +
+          '<button type="button" class="linea-quitar" data-quitar="' + id + '">Tirar</button>' +
         '</div>' +
       '</div>' +
       '<div class="linea-precio">' + euros(p.precio * n) + '</div>' +

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Premium — Seu sorriso, nossa prioridade</title>
+<meta name="description" content="Odontologia de excelência com tecnologia avançada e atendimento humano. Implantes, ortodontia, estética dental e mais. Agende sua consulta online.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue-950:#0a1e3d; --blue-800:#123a6b; --blue-600:#1d5fb8; --blue-500:#2f7de0;
+  --blue-100:#e8f1fd; --blue-50:#f4f9ff;
+  --ink:#12203a; --muted:#5c6b85; --line:#e3ebf7; --gold:#f0b429;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#fff;color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+.container{max-width:1180px;margin:0 auto;padding:0 26px;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:-0.01em;color:var(--blue-950);}
+section{padding:64px 0;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:9px;font-weight:600;font-size:14px;cursor:pointer;border:1px solid transparent;transition:.2s;}
+.btn-blue{background:var(--blue-600);color:#fff;}
+.btn-blue:hover{background:var(--blue-800);}
+.btn-outline{border-color:var(--blue-600);color:var(--blue-600);background:#fff;}
+.btn-outline:hover{background:var(--blue-50);}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-600);margin-bottom:10px;}
+
+/* topbar */
+.topbar{background:var(--blue-950);color:#cfe0fb;font-size:12.5px;}
+.topbar .container{display:flex;align-items:center;justify-content:space-between;padding:9px 26px;flex-wrap:wrap;gap:6px;}
+.topbar .left{display:flex;gap:22px;flex-wrap:wrap;}
+.topbar .icons{display:flex;gap:12px;}
+.topbar .icons a{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+/* header */
+header.main{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--line);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;max-width:1180px;margin:0 auto;gap:20px;}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Poppins';font-weight:800;font-size:19px;color:var(--blue-950);}
+.logo .tooth{width:38px;height:38px;border-radius:10px;background:var(--blue-100);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--blue-600);}
+.logo span{color:var(--blue-600);}
+nav.links{display:flex;gap:22px;flex-wrap:wrap;}
+nav.links a{font-size:13.5px;font-weight:500;color:var(--muted);}
+nav.links a.active,nav.links a:hover{color:var(--blue-600);}
+.header-right{display:flex;align-items:center;gap:16px;}
+.phone{display:flex;align-items:center;gap:8px;font-size:13px;}
+.phone strong{display:block;font-size:13.5px;color:var(--blue-950);}
+.phone span{font-size:10.5px;color:var(--muted);}
+
+/* hero */
+.hero{background:linear-gradient(180deg,var(--blue-50),#fff);padding:56px 0 60px;}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;}
+.hero h1{font-size:clamp(34px,4.4vw,50px);line-height:1.08;margin-bottom:18px;}
+.hero h1 em{font-style:normal;color:var(--blue-600);}
+.hero p{color:var(--muted);font-size:15.5px;max-width:440px;margin-bottom:24px;}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.rating{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.stars{color:var(--gold);letter-spacing:1px;}
+.hero-photo{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 30px 60px rgba(10,30,61,.18);}
+.hero-photo img{width:100%;height:340px;object-fit:cover;}
+.trust-card{position:absolute;right:18px;bottom:18px;background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 16px 32px rgba(10,30,61,.16);display:flex;gap:12px;align-items:flex-start;max-width:230px;}
+.trust-card .ic{width:38px;height:38px;border-radius:50%;background:var(--blue-100);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.trust-card strong{display:block;font-size:13px;margin-bottom:2px;}
+.trust-card p{font-size:11.5px;color:var(--muted);margin:0;}
+
+/* beneficios */
+.benefits{background:var(--blue-950);}
+/* Sobre nosotros */
+#nosotros .nos-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+#nosotros .nos-foto{position:relative;}
+#nosotros .nos-foto img{width:100%;height:400px;object-fit:cover;border-radius:18px;display:block;}
+#nosotros .nos-sello{position:absolute;right:-18px;bottom:-18px;background:var(--blue-600);color:#fff;
+  border-radius:16px;padding:18px 22px;text-align:center;box-shadow:0 14px 34px rgba(10,30,61,.22);}
+#nosotros .nos-sello strong{display:block;font-size:30px;line-height:1;}
+#nosotros .nos-sello span{font-size:12px;opacity:.88;}
+#nosotros h2{margin-bottom:14px;}
+#nosotros .nos-texto p{color:var(--muted);margin-bottom:14px;line-height:1.7;}
+#nosotros .nos-puntos{list-style:none;margin:22px 0 26px;padding:0;}
+#nosotros .nos-puntos li{display:flex;gap:11px;align-items:flex-start;margin-bottom:12px;color:var(--ink);font-size:14.5px;}
+#nosotros .nos-puntos svg{flex:0 0 20px;margin-top:2px;color:var(--blue-600);}
+@media(max-width:900px){
+  #nosotros .nos-grid{grid-template-columns:1fr;gap:34px;}
+  #nosotros .nos-foto img{height:280px;}
+  #nosotros .nos-sello{right:12px;bottom:-14px;padding:14px 18px;}
+}
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.benefit{padding:26px 22px;border-right:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);color:#fff;}
+.benefit .ic{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;}
+.benefit strong{display:block;font-size:14px;margin-bottom:4px;}
+.benefit p{font-size:12px;color:#a9bdde;margin:0;}
+
+/* tratamientos */
+.section-head{max-width:600px;margin-bottom:36px;}
+.section-head h2{font-size:clamp(24px,3vw,32px);}
+.treat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.treat-card{border:1px solid var(--line);border-radius:14px;padding:24px;transition:.2s;}
+.treat-card:hover{border-color:var(--blue-600);transform:translateY(-3px);box-shadow:0 16px 30px rgba(10,30,61,.08);}
+.treat-card .ic{width:46px;height:46px;border-radius:12px;background:var(--blue-100);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;}
+.treat-card h4{font-size:16px;margin-bottom:6px;}
+.treat-card p{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.treat-card a{font-size:12.5px;font-weight:600;color:var(--blue-600);}
+
+/* bandas */
+.bands{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px;}
+.band{border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--blue-50);}
+.band .ic{width:42px;height:42px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--blue-600);flex-shrink:0;}
+.band strong{display:block;font-size:14px;margin-bottom:2px;}
+.band p{font-size:12px;color:var(--muted);margin:0;}
+.band-left{display:flex;gap:14px;align-items:center;}
+
+/* equipo */
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.team-card{text-align:center;}
+.team-photo{aspect-ratio:1;border-radius:14px;background:linear-gradient(160deg,var(--blue-100),#dbe8fb);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:14px;color:var(--blue-500);}
+.team-card h4{font-size:14.5px;margin-bottom:2px;}
+.team-card span{display:block;font-size:12px;color:var(--blue-600);margin-bottom:10px;}
+.team-card a{font-size:12px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:2px;}
+
+/* testimonio */
+.testimonial{background:var(--blue-50);border-radius:18px;padding:40px;display:flex;gap:24px;align-items:center;}
+.testimonial .stars{font-size:16px;}
+.testimonial p{font-size:16px;font-style:italic;margin:12px 0;max-width:640px;}
+.testimonial strong{font-size:13.5px;}
+.testimonial span{font-size:12px;color:var(--muted);}
+
+/* faq */
+.faq-item{border-bottom:1px solid var(--line);padding:16px 0;}
+.faq-item summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:"+";font-size:20px;color:var(--blue-600);}
+.faq-item[open] summary::after{content:"–";}
+.faq-item p{margin-top:10px;font-size:13.5px;color:var(--muted);}
+
+/* cita */
+.booking{background:var(--blue-950);border-radius:20px;padding:44px;display:grid;grid-template-columns:1fr 1.2fr;gap:36px;color:#fff;}
+.booking h2{color:#fff;}
+.booking p{color:#a9bdde;font-size:14px;margin-top:10px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid .full{grid-column:1/-1;}
+.field label{display:block;font-size:11.5px;color:#a9bdde;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-family:inherit;font-size:13.5px;}
+.field input::placeholder{color:#7d90b3;}
+.booking .btn-blue{margin-top:6px;background:var(--gold);color:#3a2600;}
+.booking .btn-blue:hover{filter:brightness(1.08);}
+
+/* footer */
+footer{background:var(--blue-950);color:#a9bdde;padding-top:56px;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1.2fr;gap:30px;padding-bottom:36px;}
+.footer-grid h5{color:#fff;font-size:13px;margin-bottom:14px;}
+.footer-grid a{display:block;font-size:12.5px;color:#a9bdde;margin-bottom:9px;}
+.footer-grid a:hover{color:#fff;}
+.newsletter{display:flex;gap:8px;margin-top:10px;}
+.newsletter input{flex:1;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:12.5px;}
+.newsletter button{background:var(--blue-600);color:#fff;border:none;border-radius:8px;width:40px;cursor:pointer;font-size:15px;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:18px 0;text-align:center;font-size:11.5px;}
+.demo-note{background:#fff3cd;color:#7a5c00;text-align:center;font-size:12px;padding:8px;font-weight:600;}
+
+@media(max-width:900px){
+  nav.links,.phone{display:none;}
+  .hero-grid,.bands,.footer-grid,.booking{grid-template-columns:1fr;}
+  .benefits-grid,.treat-grid,.team-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+  .testimonial{flex-direction:column;text-align:center;}
+}
+</style>
+<script src="configuracao.js"></script>
+<style>
+.aviso-demo[hidden]{display:none!important}
+.sem-estilo{display:none!important}
+[class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
+.aviso-demo{background:#fff4d6;color:#3a2a00;text-align:center;padding:7px 12px;font:13px/1.4 Inter,system-ui,sans-serif}
+@media(max-width:600px){.header-right .phone,.header-right>div:first-child{display:none}.header-right .btn{padding:9px 12px;font-size:13px}.treat-grid,.team-grid{grid-template-columns:1fr}.treat-card{min-width:0}}
+</style>
+</head>
+<body>
+<div class="sem-estilo" style="font:16px/1.5 system-ui,sans-serif;padding:18px 20px;background:#fff4d6;color:#3a2a00;border-bottom:2px solid #e0b64a"><strong>O site abriu sem as cores e as fotos.</strong> Isso acontece quando o arquivo é aberto direto do ZIP ou pelo celular. Para ver o site completo, abra o <b>VER-DEMONSTRACAO.html</b>. Para publicar, envie a pasta <b>site-completo</b> para a sua hospedagem.</div>
+
+<div class="aviso-demo" id="avisoDemo" hidden>Modelo de demonstração · nomes, preços e contatos fictícios · LeuName Softwares</div>
+
+<div class="topbar">
+  <div class="container">
+    <div class="left">
+      <span>📍 <span data-cfg="endereco"><span data-cfg="endereco">Rua da Saúde, 120 · Vila Mariana, São Paulo - SP</span></span></span>
+      <span>🕐 <span data-cfg="horario"><span data-cfg="horario">Seg a sex: 9h às 20h · Sáb: 9h às 14h</span></span></span>
+    </div>
+    <div class="icons">
+      <a href="#" aria-label="Facebook">f</a>
+      <a href="#" aria-label="Instagram">ig</a>
+      <a href="#" aria-label="WhatsApp">wa</a>
+    </div>
+  </div>
+</div>
+
+<header class="main">
+  <div class="nav-inner">
+    <div class="logo"><span class="tooth">🦷</span>DENTAL <span>PREMIUM</span></div>
+    <nav class="links">
+      <a href="#inicio" class="active">Início</a>
+      <a href="#nosotros">Sobre nós</a>
+      <a href="#tratamientos">Tratamentos</a>
+      <a href="#equipo">Especialistas</a>
+      <a href="#testimonios">Depoimentos</a>
+      <a href="#contacto">Contato</a>
+    </nav>
+    <div class="header-right">
+      <div class="phone">📞 <span><strong><span data-cfg="telefone">(11) 3333-4444</span></strong><span>Ligue agora</span></span></div>
+      <a href="#cita" class="btn btn-blue">📅 Agendar consulta</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="container hero-grid">
+    <div>
+      <h1>Seu sorriso, <em>nossa prioridade</em></h1>
+      <p>Odontologia de excelência com tecnologia avançada e um atendimento humano pensado para você e sua família.</p>
+      <div class="ctas">
+        <a href="#cita" class="btn btn-blue">📅 Agendar consulta</a>
+        <a href="#tratamientos" class="btn btn-outline">Conhecer tratamentos</a>
+      </div>
+      <div class="rating"><span class="stars">★★★★★</span> <strong>4,9 de 5</strong> (320+ avaliações)</div>
+    </div>
+    <div class="hero-photo">
+      <img src="imagens/hero.jpg" alt="Paciente sorrindo durante uma consulta odontológica">
+      <div class="trust-card">
+        <span class="ic">🛡️</span>
+        <span><strong>Segurança e confiança</strong><p>Protocolos rigorosos de esterilização e biossegurança.</p></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="benefits" style="padding:0;">
+  <div class="container" style="padding:0;">
+    <div class="benefits-grid">
+      <div class="benefit"><div class="ic">⚙️</div><strong>Tecnologia avançada</strong><p>Equipamentos de última geração</p></div>
+      <div class="benefit"><div class="ic">🎓</div><strong>Especialistas qualificados</strong><p>Profissionais experientes</p></div>
+      <div class="benefit"><div class="ic">🙂</div><strong>Atendimento personalizado</strong><p>Planos feitos para você</p></div>
+      <div class="benefit"><div class="ic">📅</div><strong>Agendamento fácil</strong><p>Online, rápido e sem complicação</p></div>
+      <div class="benefit"><div class="ic">🔒</div><strong>Ambiente seguro</strong><p>Máximos protocolos de biossegurança</p></div>
+      <div class="benefit"><div class="ic">💳</div><strong>Facilidades de pagamento</strong><p>Parcelamento e condições especiais</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="nosotros">
+  <div class="container">
+    <div class="nos-grid">
+      <div class="nos-foto">
+        <img src="imagens/hero.jpg" alt="Equipe da clínica atendendo uma paciente">
+        <div class="nos-sello"><strong>+15</strong><span>anos cuidando de sorrisos</span></div>
+      </div>
+      <div class="nos-texto">
+        <div class="eyebrow">Sobre nós</div>
+        <h2>Uma clínica pensada para você vir tranquilo</h2>
+        <p>Somos uma equipe de dentistas especialistas que cuida da saúde bucal de famílias inteiras há mais de quinze anos. Aqui ninguém empurra tratamento: explicamos o que você precisa, por quê e quanto custa, e você decide.</p>
+        <p>Trabalhamos com diagnóstico digital, protocolos rígidos de esterilização e um atendimento próximo de verdade, sem pressa e sem letras miúdas.</p>
+        <ul class="nos-puntos">
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden><path d="M20 6L9 17l-5-5"/></svg><span><strong>Primeira consulta e diagnóstico sem custo</strong>, com plano de tratamento por escrito.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden><path d="M20 6L9 17l-5-5"/></svg><span><strong>Orçamento fechado</strong>: o que falamos no começo é o que você paga.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden><path d="M20 6L9 17l-5-5"/></svg><span><strong>Parcelamento em até 12x sem juros</strong> nos tratamentos longos.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden><path d="M20 6L9 17l-5-5"/></svg><span><strong>Urgência no mesmo dia</strong>, inclusive fora do horário normal.</span></li>
+        </ul>
+        <a href="#cita" class="btn btn-blue">Agendar consulta</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tratamientos">
+  <div class="container">
+    <div class="eyebrow">Nossos tratamentos</div>
+    <div class="section-head"><h2>Soluções completas para um sorriso perfeito</h2></div>
+    <div class="treat-grid">
+      <div class="treat-card"><div class="ic">🦷</div><h4>Implantes dentários</h4><p>Solução definitiva para dentes perdidos.</p><a href="#cita">Ver tratamento →</a></div>
+      <div class="treat-card"><div class="ic">😁</div><h4>Ortodontia</h4><p>Alinhamento perfeito para o seu sorriso.</p><a href="#cita">Ver tratamento →</a></div>
+      <div class="treat-card"><div class="ic">✨</div><h4>Estética dental</h4><p>Harmonia e beleza para o seu sorriso.</p><a href="#cita">Ver tratamento →</a></div>
+      <div class="treat-card"><div class="ic">⚡</div><h4>Clareamento dental</h4><p>Dentes mais brancos e um sorriso radiante.</p><a href="#cita">Ver tratamento →</a></div>
+      <div class="treat-card"><div class="ic">🩺</div><h4>Tratamento de canal</h4><p>Alívio da dor e preservação do dente.</p><a href="#cita">Ver tratamento →</a></div>
+      <div class="treat-card"><div class="ic">🧒</div><h4>Odontopediatria</h4><p>Cuidado especial para os pequenos.</p><a href="#cita">Ver tratamento →</a></div>
+    </div>
+
+    <div class="bands">
+      <div class="band">
+        <div class="band-left"><span class="ic">🕐</span><span><strong>Urgência odontológica 24h</strong><p>Atendimento rápido para aliviar a dor.</p></span></div>
+        <a href="tel:+551133334444" class="btn btn-outline">Ligar agora</a>
+      </div>
+      <div class="band">
+        <div class="band-left"><span class="ic">🏷️</span><span><strong>Promoção de boas-vindas</strong><p>Primeira consulta + avaliação por R$ 99*.</p></span></div>
+        <a href="#cita" class="btn btn-outline">Aproveitar oferta</a>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;">*Oferta válida para novos pacientes.</p>
+  </div>
+</section>
+
+<section id="equipo" style="background:var(--blue-50);">
+  <div class="container">
+    <div class="eyebrow">Nossa equipe</div>
+    <div class="section-head"><h2>Especialistas em quem você pode confiar</h2></div>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-photo">👩‍⚕️</div><h4>Dra. Laura Martins</h4><span>Clínica geral</span><a href="#contacto">Ver perfil →</a></div>
+      <div class="team-card"><div class="team-photo">👨‍⚕️</div><h4>Dr. Carlos Rodrigues</h4><span>Implantodontia</span><a href="#contacto">Ver perfil →</a></div>
+      <div class="team-card"><div class="team-photo">👩‍⚕️</div><h4>Dra. Helena Gomes</h4><span>Ortodontia</span><a href="#contacto">Ver perfil →</a></div>
+      <div class="team-card"><div class="team-photo">👩‍⚕️</div><h4>Dra. Sofia Nogueira</h4><span>Odontopediatria</span><a href="#contacto">Ver perfil →</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonios">
+  <div class="container">
+    <div class="testimonial">
+      <div>
+        <span class="stars">★★★★★</span>
+        <p>"Atendimento excepcional. Equipe muito atenciosa, clínica moderna e resultados incríveis."</p>
+        <strong>Mariana Silva</strong> <span>· Paciente</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="max-width:760px;">
+    <div class="eyebrow">Perguntas frequentes</div>
+    <div class="section-head"><h2>Tiramos suas dúvidas</h2></div>
+    <details class="faq-item"><summary>Como agendo uma consulta?</summary><p>Pelo formulário desta página, pelo WhatsApp ou ligando para a clínica.</p></details>
+    <details class="faq-item"><summary>Quais tratamentos vocês fazem?</summary><p>Implantes, ortodontia, estética dental, clareamento, canal e odontopediatria.</p></details>
+    <details class="faq-item"><summary>Vocês fazem uma avaliação inicial?</summary><p>Sim, a primeira consulta inclui uma avaliação completa.</p></details>
+    <details class="faq-item"><summary>Dá para parcelar?</summary><p>Sim, temos parcelamento adaptado a cada tratamento.</p></details>
+    <details class="faq-item"><summary>Vocês atendem crianças?</summary><p>Sim, nossa odontopediatra atende pacientes de todas as idades.</p></details>
+    <details class="faq-item"><summary>O que faço numa urgência?</summary><p>Ligue para o nosso plantão 24h, todos os dias do ano.</p></details>
+  </div>
+</section>
+
+<section id="cita">
+  <div class="container">
+    <div class="booking">
+      <div>
+        <h2>Agendar consulta</h2>
+        <p>Preencha o formulário: o pedido chega no nosso WhatsApp e confirmamos o horário com você.</p>
+      </div>
+      <form class="form-grid" onsubmit="return LeuForm(this, 'Pedido de consulta')">
+        <div class="field"><label>Nome</label><input type="text" placeholder="Seu nome" required></div>
+        <div class="field"><label>Sobrenome</label><input type="text" placeholder="Seu sobrenome" required></div>
+        <div class="field"><label>Telefone</label><input type="tel" placeholder="(11) 99999-9999" required></div>
+        <div class="field"><label>E-mail</label><input type="email" placeholder="seu@email.com" required></div>
+        <div class="field"><label>Tratamento</label>
+          <select><option>Implantes dentários</option><option>Ortodontia</option><option>Estética dental</option><option>Clareamento</option><option>Tratamento de canal</option><option>Odontopediatria</option></select>
+        </div>
+        <div class="field"><label>Data preferida</label><input type="date"></div>
+        <div class="field full"><label>Mensagem (opcional)</label><textarea rows="2" placeholder="Conte rapidamente o que você precisa"></textarea></div>
+        <div class="field full"><button type="submit" class="btn btn-blue">Enviar pelo WhatsApp</button></div>
+        <p class="confirm full" data-ok hidden style="display:none;color:#7fe3a0;font-size:13px;">✓ Abrimos o WhatsApp com o seu pedido. É só tocar em enviar.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer id="contacto">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#fff;"><span class="tooth" style="background:rgba(255,255,255,.1);color:#fff;">🦷</span>DENTAL <span style="color:var(--gold);">PREMIUM</span></div>
+        <p style="font-size:12.5px;margin-top:14px;max-width:220px;">Odontologia de excelência com tecnologia avançada e atendimento humano para você e sua família.</p>
+      </div>
+      <div><h5>Clínica</h5><a href="#nosotros">Sobre nós</a><a href="#equipo">Nossa equipe</a><a href="#">Tecnologia</a><a href="#testimonios">Depoimentos</a><a href="#">Blog</a></div>
+      <div><h5>Tratamentos</h5><a href="#tratamientos">Implantes dentários</a><a href="#tratamientos">Ortodontia</a><a href="#tratamientos">Estética dental</a><a href="#tratamientos">Clareamento</a><a href="#tratamientos">Odontopediatria</a></div>
+      <div><h5>Informações</h5><a href="#">Perguntas frequentes</a><a href="#">Preços e planos</a><a href="#">Financiamento</a><a href="#">Política de privacidade</a></div>
+      <div>
+        <h5>Contato</h5>
+        <a href="#">📍 <span data-cfg="endereco"><span data-cfg="endereco">Rua da Saúde, 120 · Vila Mariana, São Paulo - SP</span></span></a>
+        <a href="tel:+551133334444">📞 <span data-cfg="telefone"><span data-cfg="telefone">(11) 3333-4444</span></span></a>
+        <a href="mailto:contato@dentalpremium.com.br">✉️ <span data-cfg="email"><span data-cfg="email">contato@dentalpremium.com.br</span></span></a>
+        <p style="font-size:12px;margin-top:10px;">Receba nossas novidades</p>
+        <div class="newsletter"><input type="email" placeholder="Seu e-mail"><button type="button">→</button></div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Dental Premium. Todos os direitos reservados.</div>
+  </div>
+</footer>
+
+<script src="js/site.js"></script>
+</body>
+</html>

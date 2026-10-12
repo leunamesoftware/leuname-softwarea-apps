@@ -226,7 +226,8 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   (2) acrescentar em templates/catalogo.json; (3) `python3 templates/publicar.py`; (4) acrescentar o produto em
   calculadora/public/loja/comprar.html (PRODUTOS, mesmo "plano"); (5) imagens em leuapps/public/img/modelos/<id>-banner.webp,
   -192.png e -tela-1..5.webp; (6) rodar o gerar_catalogo.py do site; (7) testes, publicar calculadora + leuapps + site.
-- Feitos: agencia-de-viagens (280), burger-e-pizza = Hamburgueria (250), pizzaria (250), padaria (250), restaurante (280).
+- Feitos (15): agencia-de-viagens, restaurante, hotel, concessionaria (R$ 280); burger-e-pizza = Hamburgueria, pizzaria, padaria,
+  hortifruti, clinica-odontologica, veterinaria, pet-shop, moveis-decoracao, eletronicos, energia-solar, mudancas (R$ 250).
 - **Conversor automático (sites antigos em espanhol → nosso padrão):** `python3 templates/_conversor/aplicar.py
   /home/claude/leuname-software/pacotes-hotmart/<antigo>/site-completo templates/_conversor/<id>.json <id>`.
   O <id>.json tem textos (espanhol→português), js, bruto, bruto_js, bruto_css, css_extra, precos (R$ do carrinho), config
@@ -234,11 +235,20 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   Foto substituta: templates/_conversor/<id>-imagens/. Núcleo comum (WhatsApp, licença, demonstração, crédito): _conversor/nucleo.js.
   Sites convertidos têm "edicao": "html" no catalogo.json (o guia explica que textos e preços ficam no index.html).
   Imagens da vitrine: script Playwright (banner = topo em 1600×744; tela 1200×750; celular 540×1099; ícone = foto recortada).
-- **Próximos 🟢 (prontos para converter):** hortifrúti (fruteria), clínica odontológica (clinica-dental, sem pasta css/js),
-  veterinária, pet shop, hotel, móveis e decoração, eletrônicos, energia solar, mudanças, concessionária (há 2 cópias: usar 1).
-  🟡/🟠 precisam de fotos do dono.
+- Conversor: `templates/_conversor/todos.sh` reconverte os 13 sites antigos (rode depois de mexer em aplicar.py, nucleo.js ou comum.json).
+  comum.json = dicionário comum (carrinho, rodapé, pagamentos, preço em R$, CSS de preço). nucleo.js tem `LeuForm(form, título)`:
+  junta os campos do formulário (com o nome de cada campo) e abre o WhatsApp — usado no dentista, veterinária e mudanças.
+  Formulários antigos que só mostravam "recebido" agora mandam para o WhatsApp. Imagens da vitrine com a data fixa em 20/10 (sem o 13).
+- Faltam do repositório antigo (🟡/🟠, precisam de fotos ou revisão): aluguel de carros, boutique, advocacia, imobiliária,
+  instrumentos musicais, material de construção, obras, perfumaria (tem marca Sauvage), pesca, autopeças, motopeças, relojoaria,
+  oficina mecânica, oficina de motos.
 
 ### Melhorias anotadas nos sites prontos (fazer quando der)
+- Vários sites: links do rodapé (Quem somos, Política…) e "Minha conta/Favoritos" não abrem página (href="#"); dá para tirar ou criar páginas.
+- Hotel e Móveis: menu foi para uma 2ª linha no computador (cabia mal); Eletrônicos: nomes de produto genéricos e marcas fictícias.
+- Concessionária: carros e marcas reais (Audi, BMW…) nas fotos e nomes — normal em revenda, mas pode trocar por fotos do cliente.
+- Clínica odontológica: a mesma foto aparece no topo e no "Sobre"; equipe só com iniciais (sem fotos).
+- Veterinária: sem fotos (só ilustrações); dá para acrescentar fotos da clínica.
 - Padaria: a foto principal tem a lousa escrita em espanhol "Pan Fresco cada día" (trocar a foto).
 - Restaurante: os links "Ler mais" do blog não abrem nada; cardápio duplicado (texto no HTML e preços no datosCatalogo).
 - Hamburgueria: banner e foto de combo ainda mostram pizza.
