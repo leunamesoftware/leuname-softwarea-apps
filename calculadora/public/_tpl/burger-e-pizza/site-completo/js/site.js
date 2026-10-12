@@ -203,30 +203,65 @@
     links.forEach(function (a) { var s = document.querySelector(a.getAttribute("href")); if (s) io.observe(s); });
   }
 
-  /* ---------- Carrinho (fica guardado no aparelho do cliente) ---------- */
-  var CHAVE = "carrinho:" + soNumeros(S.whatsapp);
-  var carrinho = {};
-  try { carrinho = JSON.parse(localStorage.getItem(CHAVE) || "{}") || {}; } catch (e) { carrinho = {}; }
-  Object.keys(carrinho).forEach(function (k) { if (!porId[k] || !(carrinho[k] > 0)) delete carrinho[k]; });
+  /* ---------- Carrinho (fica guardado no aparelho do cliente) ----------
+     Cada linha: { id, q (quantidade), rem (tirar), add (adicionais pagos), obs (observação do item) }. */
+  var CHAVE = "carrinho2:" + soNumeros(S.whatsapp);
+  var catPorId = {};
+  (S.categorias || []).forEach(function (c) { catPorId[c.id] = c; });
+  function opcoes(p) {
+    var c = catPorId[p.categoria] || {};
+    return { retirar: p.retirar || c.retirar || [], adicionais: p.adicionais || c.adicionais || [] };
+  }
+  function precoAdd(p, nome) { var a = opcoes(p).adicionais.filter(function (x) { return x.nome === nome; })[0]; return a ? Number(a.preco || 0) : 0; }
+  function unitario(l) { var p = porId[l.id]; return p.preco + (l.add || []).reduce(function (s, n) { return s + precoAdd(p, n); }, 0); }
+  var carrinho = [];
+  try { carrinho = JSON.parse(localStorage.getItem(CHAVE) || "[]"); } catch (e) { carrinho = []; }
+  if (!Array.isArray(carrinho)) carrinho = [];
+  carrinho = carrinho.filter(function (l) { return l && porId[l.id] && l.q > 0; });
   function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(carrinho)); } catch (e) {} }
+  function juntar(nova) {
+    var k = JSON.stringify([nova.id, nova.rem, nova.add, nova.obs]);
+    var igual = carrinho.filter(function (l) { return JSON.stringify([l.id, l.rem, l.add, l.obs]) === k; })[0];
+    if (igual) igual.q += nova.q; else carrinho.push(nova);
+    salvar(); desenhar();
+  }
+
   var E = S.entrega || {};
   var pags = S.pagamentos && S.pagamentos.length ? S.pagamentos : ["Pix", "Cartão na entrega", "Dinheiro"];
   $("fPag").innerHTML = pags.map(function (p) { return "<option>" + esc(p) + "</option>"; }).join("");
   if (E.retirada === false) $("optRetirada").remove();
+  // Mandar junto com o pedido (guardanapo, sachês…). Com preço, soma no total.
+  var extras = (S.extrasPedido || []).map(function (x) { return typeof x === "string" ? { nome: x, preco: 0 } : x; });
+  if (extras.length) {
+    $("extrasPedido").innerHTML = "<legend>Mandar junto</legend>" + extras.map(function (x, i) {
+      return '<label class="check"><input type="checkbox" value="' + i + '"><span>' + esc(x.nome) + "</span><em>" + (x.preco ? "+ " + reais(x.preco) : "Grátis") + "</em></label>";
+    }).join("");
+  } else $("extrasPedido").remove();
+  function extrasMarcados() { return $all("#extrasPedido input:checked").map(function (c) { return extras[+c.value]; }); }
 
   function tipo() { var r = document.querySelector('input[name="tipo"]:checked'); return r ? r.value : "entrega"; }
-  function subtotal() { return Object.keys(carrinho).reduce(function (s, k) { return s + porId[k].preco * carrinho[k]; }, 0); }
+  function subtotal() {
+    return carrinho.reduce(function (s, l) { return s + unitario(l) * l.q; }, 0) + extrasMarcados().reduce(function (s, x) { return s + Number(x.preco || 0); }, 0);
+  }
   function taxa() { return tipo() === "entrega" ? Number(E.taxa || 0) : 0; }
+  function detalhes(l) {
+    var d = [];
+    if (l.rem && l.rem.length) d.push("Sem " + l.rem.join(", ").toLowerCase());
+    if (l.add && l.add.length) d.push("Com " + l.add.join(", ").toLowerCase());
+    if (l.obs) d.push("Obs.: " + l.obs);
+    return d;
+  }
 
   function desenhar() {
-    var ids = Object.keys(carrinho), qtd = ids.reduce(function (s, k) { return s + carrinho[k]; }, 0);
-    var cont = $("contador"); cont.textContent = qtd;
-    $("carVazio").hidden = !!ids.length; $("carForm").hidden = !ids.length; $("carRodape").hidden = !ids.length;
-    $("carItens").innerHTML = ids.map(function (k) {
-      var p = porId[k];
-      return '<li class="car-item"><img src="' + esc(p.imagem) + '" alt=""><div><strong>' + esc(p.nome) + "</strong><span>" + reais(p.preco * carrinho[k]) + "</span></div>" +
-        '<div class="qtd"><button type="button" data-menos="' + k + '" aria-label="Tirar um ' + esc(p.nome) + '">−</button><b>' + carrinho[k] +
-        '</b><button type="button" data-mais="' + k + '" aria-label="Mais um ' + esc(p.nome) + '">+</button></div></li>';
+    var qtd = carrinho.reduce(function (s, l) { return s + l.q; }, 0), tem = carrinho.length > 0;
+    $("contador").textContent = qtd;
+    $("carVazio").hidden = tem; $("carForm").hidden = !tem; $("carRodape").hidden = !tem;
+    $("carItens").innerHTML = carrinho.map(function (l, i) {
+      var p = porId[l.id], d = detalhes(l);
+      return '<li class="car-item"><img src="' + esc(p.imagem) + '" alt=""><div><strong>' + esc(p.nome) + "</strong>" +
+        (d.length ? '<small class="det">' + esc(d.join(" · ")) + "</small>" : "") + "<span>" + reais(unitario(l) * l.q) + "</span></div>" +
+        '<div class="qtd"><button type="button" data-menos="' + i + '" aria-label="Tirar um ' + esc(p.nome) + '">−</button><b>' + l.q +
+        '</b><button type="button" data-mais="' + i + '" aria-label="Mais um ' + esc(p.nome) + '">+</button></div></li>';
     }).join("");
     var entrega = tipo() === "entrega";
     $("campoEnd").hidden = !entrega;
@@ -240,15 +275,53 @@
     var a = $("aviso"); a.textContent = txt; a.classList.add("mostra");
     clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.classList.remove("mostra"); }, 1800);
   }
+  function pulo() { var c = $("contador"); c.classList.add("pulo"); setTimeout(function () { c.classList.remove("pulo"); }, 250); }
+
+  /* ---------- Janela "Monte do seu jeito" (tirar, adicionais, observação) ---------- */
+  var jan = $("opcoes"), janP = null, janQ = 1;
+  function totalJanela() {
+    var soma = janP.preco + $all("#opAdd input:checked").reduce(function (s, c) { return s + precoAdd(janP, c.value); }, 0);
+    $("opQtd").textContent = janQ; $("opTotal").textContent = reais(soma * janQ);
+  }
+  function abrirOpcoes(p) {
+    janP = p; janQ = 1;
+    var o = opcoes(p);
+    $("opFoto").innerHTML = '<img src="' + esc(p.imagem) + '" alt="">';
+    $("opFoto").classList.toggle("recorte", recorte(p.imagem));
+    $("opNome").textContent = p.nome; $("opDesc").textContent = p.descricao || ""; $("opPreco").textContent = reais(p.preco);
+    $("opRem").innerHTML = o.retirar.length ? "<legend>Quer tirar algum ingrediente?</legend>" + o.retirar.map(function (r) {
+      return '<label class="check"><input type="checkbox" value="' + esc(r) + '"><span>Sem ' + esc(r.toLowerCase()) + "</span><em>Grátis</em></label>";
+    }).join("") : "";
+    $("opAdd").innerHTML = o.adicionais.length ? "<legend>Adicionais</legend>" + o.adicionais.map(function (a) {
+      return '<label class="check"><input type="checkbox" value="' + esc(a.nome) + '"><span>' + esc(a.nome) + "</span><em>+ " + reais(a.preco) + "</em></label>";
+    }).join("") : "";
+    $("opRem").hidden = !o.retirar.length; $("opAdd").hidden = !o.adicionais.length;
+    $("opObs").value = "";
+    totalJanela();
+    jan.hidden = false; document.body.classList.add("travado");
+    setTimeout(function () { $("fecharOpcoes").focus(); }, 50);
+  }
+  function fecharOpcoes() { jan.hidden = true; if (!painel.classList.contains("aberto")) document.body.classList.remove("travado"); }
+  jan.addEventListener("change", totalJanela);
+  $("opMenos").addEventListener("click", function () { if (janQ > 1) { janQ--; totalJanela(); } });
+  $("opMais").addEventListener("click", function () { janQ++; totalJanela(); });
+  $("fecharOpcoes").addEventListener("click", fecharOpcoes);
+  jan.addEventListener("click", function (e) { if (e.target === jan) fecharOpcoes(); });
+  $("opAdicionar").addEventListener("click", function () {
+    juntar({ id: janP._id, q: janQ, rem: $all("#opRem input:checked").map(function (c) { return c.value; }),
+      add: $all("#opAdd input:checked").map(function (c) { return c.value; }), obs: $("opObs").value.trim().slice(0, 140) });
+    fecharOpcoes(); aviso("✓ " + janP.nome + " no carrinho"); pulo();
+  });
+
   document.addEventListener("click", function (e) {
     var add = e.target.closest("[data-add]"), mais = e.target.closest("[data-mais]"), menos = e.target.closest("[data-menos]");
     if (add) {
-      var k = add.getAttribute("data-add"); carrinho[k] = (carrinho[k] || 0) + 1; salvar(); desenhar();
-      aviso("✓ " + porId[k].nome + " no carrinho");
-      var c = $("contador"); c.classList.add("pulo"); setTimeout(function () { c.classList.remove("pulo"); }, 250);
+      var p = porId[add.getAttribute("data-add")], o = opcoes(p);
+      if (o.retirar.length || o.adicionais.length) { abrirOpcoes(p); return; }
+      juntar({ id: p._id, q: 1, rem: [], add: [], obs: "" }); aviso("✓ " + p.nome + " no carrinho"); pulo();
     }
-    if (mais) { carrinho[mais.getAttribute("data-mais")]++; salvar(); desenhar(); }
-    if (menos) { var m = menos.getAttribute("data-menos"); if (--carrinho[m] <= 0) delete carrinho[m]; salvar(); desenhar(); }
+    if (mais) { carrinho[+mais.getAttribute("data-mais")].q++; salvar(); desenhar(); }
+    if (menos) { var i = +menos.getAttribute("data-menos"); if (--carrinho[i].q <= 0) carrinho.splice(i, 1); salvar(); desenhar(); }
   });
   $("carForm").addEventListener("change", desenhar);
   $("carForm").addEventListener("input", function (e) {
@@ -264,7 +337,7 @@
   $("fecharCarrinho").addEventListener("click", fecharCarrinho);
   fundo.addEventListener("click", fecharCarrinho);
   painel.addEventListener("click", function (e) { if (e.target.closest("[data-fechar]")) fecharCarrinho(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { fecharCarrinho(); lb.hidden = true; fecharMenu(); } });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (!jan.hidden) { fecharOpcoes(); return; } fecharCarrinho(); lb.hidden = true; fecharMenu(); } });
 
   $("enviarPedido").addEventListener("click", function () {
     var msg = $("carMsg"); msg.textContent = "";
@@ -274,8 +347,16 @@
     });
     if (!ok) { msg.textContent = "Confira os campos marcados."; ($("carForm").querySelector(".bad") || nome).focus(); return; }
     if (tipo() === "entrega" && E.pedidoMinimo && subtotal() < E.pedidoMinimo) { msg.textContent = "O pedido mínimo para entrega é " + reais(E.pedidoMinimo) + "."; return; }
-    var linhas = Object.keys(carrinho).map(function (k) { return "• " + carrinho[k] + "x " + porId[k].nome + " — " + reais(porId[k].preco * carrinho[k]); });
+    var linhas = carrinho.map(function (l) {
+      var p = porId[l.id], t = "• " + l.q + "x " + p.nome + " — " + reais(unitario(l) * l.q);
+      if (l.rem && l.rem.length) t += "\n   ❌ Sem: " + l.rem.join(", ").toLowerCase();
+      if (l.add && l.add.length) t += "\n   ➕ Com: " + l.add.map(function (n) { return n.toLowerCase() + " (+" + reais(precoAdd(p, n)) + ")"; }).join(", ");
+      if (l.obs) t += "\n   📝 " + l.obs;
+      return t;
+    });
+    var ex = extrasMarcados();
     var texto = "Olá! Quero fazer um pedido:\n\n" + linhas.join("\n") +
+      (ex.length ? "\n\nMandar junto: " + ex.map(function (x) { return x.nome.toLowerCase() + (x.preco ? " (+" + reais(x.preco) + ")" : ""); }).join(", ") : "") +
       "\n\nSubtotal: " + reais(subtotal()) + (tipo() === "entrega" ? "\nEntrega: " + (taxa() ? reais(taxa()) : "grátis") : "") +
       "\n*Total: " + reais(subtotal() + taxa()) + "*" +
       "\n\nNome: " + nome.value.trim() +

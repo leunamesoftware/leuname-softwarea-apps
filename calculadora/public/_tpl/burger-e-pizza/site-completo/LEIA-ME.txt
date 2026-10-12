@@ -1,4 +1,4 @@
-Hamburgueria e Pizzaria — Site pronto
+Hamburgueria — Site pronto
 Criado por LeuName Softwares · www.leunamesoftware.com.br
 
 ═══════════════════════════════════════════════
@@ -34,6 +34,8 @@ imagens/          Fotos
 O QUE VEM NO SITE
 ═══════════════════════════════════════════════
 · Cardápio com carrinho e pedido pronto no WhatsApp
+· Cliente tira ingredientes e escolhe adicionais pagos
+· Observação por lanche, guardanapos e sachês
 · Entrega ou retirada, taxa, pedido mínimo e troco
 · Mostra 'Aberto agora' pelo seu horário
 · Funciona no celular, tablet e computador

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guia — Hamburgueria e Pizzaria</title>
+<title>Guia — Hamburgueria</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   :root{--noite:#0d1220;--carta:#151d2f;--carta2:#1b2540;--ouro:#e0b64a;--ouro-cla:#f2d68a;
@@ -72,7 +72,7 @@
   <header class="cab">
     <div class="cab-num">01</div>
     <div>
-      <h1>Guia rápido<span>Hamburgueria e Pizzaria</span></h1>
+      <h1>Guia rápido<span>Hamburgueria</span></h1>
       <p>Leia esta página antes de mexer em qualquer arquivo. Não precisa saber programar.</p>
     </div>
     <div class="cab-marca"><strong>LEUNAME</strong><span>SOFTWARES</span></div>
@@ -108,6 +108,8 @@
       <div class="passo"><div class="passo-eti"><i>✓</i><b>O que é</b></div>
       <ul class="lista">
         <li><span>Cardápio com carrinho e pedido pronto no WhatsApp</span></li>
+        <li><span>Cliente tira ingredientes e escolhe adicionais pagos</span></li>
+        <li><span>Observação por lanche, guardanapos e sachês</span></li>
         <li><span>Entrega ou retirada, taxa, pedido mínimo e troco</span></li>
         <li><span>Mostra &#x27;Aberto agora&#x27; pelo seu horário</span></li>
         <li><span>Funciona no celular, tablet e computador</span></li>
@@ -152,14 +154,14 @@
     <tr><th>Arquivo</th><th>Onde aparece</th><th>Tamanho ideal</th></tr>
     <tr><td><code>banner.jpg</code></td><td>Foto grande do topo (computador)</td><td>1920 × 720</td></tr>
     <tr><td><code>banner-celular.jpg</code></td><td>Foto do topo no celular</td><td>800 × 860</td></tr>
-    <tr><td><code>hamburguer.webp</code>, <code>pizza.webp</code>, <code>porcao.webp</code>, <code>refrigerante.webp</code></td><td>Fotos dos produtos (sem fundo ficam mais bonitas)</td><td>800 × 600, fundo transparente</td></tr>
+    <tr><td><code>hamburguer.webp</code>, <code>porcao.webp</code>, <code>refrigerante.webp</code></td><td>Fotos dos produtos (sem fundo ficam mais bonitas)</td><td>800 × 600, fundo transparente</td></tr>
     <tr><td><code>combos.jpg</code></td><td>Banner de promoções</td><td>1600 × 900</td></tr>
     <tr><td><code>sobre.jpg</code></td><td>Foto do "Sobre nós"</td><td>1400 × 875</td></tr>
     <tr><td><code>galeria-1.jpg</code> a <code>galeria-5.jpg</code></td><td>Galeria de fotos</td><td>700 × 700</td></tr>
     <tr><td><code>cliente-1.jpg</code> a <code>cliente-3.jpg</code></td><td>Fotos dos depoimentos</td><td>240 × 240</td></tr>
     <tr><td><code>logo.webp</code></td><td>Topo e rodapé</td><td>altura 150 px, fundo transparente</td></tr>
   </table>
-  <div class="dica">💡 Produto novo: no <code>configuracao.js</code>, copie uma linha de produto, troque nome, descrição, preço e foto. Para tirar um produto, apague a linha inteira. Cada produto pode usar a foto que você quiser (.jpg, .png ou .webp).</div>
+  <div class="dica">💡 Produto novo: no <code>configuracao.js</code>, copie uma linha de produto, troque nome, descrição, preço e foto. Para tirar um produto, apague a linha inteira. Cada produto pode usar a foto que você quiser (.jpg, .png ou .webp). Os itens que o cliente pode tirar e os adicionais pagos ficam em cada categoria (<code>retirar</code> e <code>adicionais</code>).</div>
   <div class="dica">💡 Os pedidos chegam prontos no seu WhatsApp: itens, total, nome, endereço, forma de pagamento e troco.</div>
 
       <div class="dica">💡 Fotos leves deixam o site rápido: antes de colocar, passe em <code>squoosh.app</code> (grátis).</div>
@@ -212,7 +214,7 @@
 
   <footer class="pie">
     <span><b>LeuName Softwares</b> · www.leunamesoftware.com.br · WhatsApp (24) 99872-1557</span>
-    <span>Pacote: Hamburgueria e Pizzaria</span>
+    <span>Pacote: Hamburgueria</span>
   </footer>
 </div>
 </body>

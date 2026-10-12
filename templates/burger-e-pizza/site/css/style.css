@@ -298,3 +298,32 @@ body.travado{overflow:hidden}
 
 /* Aviso que só aparece se o site abrir sem este arquivo de estilos. */
 .sem-estilo{display:none!important}
+
+/* Monte do seu jeito */
+.opcoes{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px}
+.op-caixa{position:relative;width:min(520px,100%);max-height:92vh;background:#121212;border:1px solid var(--linha);border-radius:22px;display:flex;flex-direction:column;overflow:hidden;animation:entra .25s ease}
+.op-fechar{position:absolute;top:12px;right:12px;z-index:2;background:rgba(0,0,0,.6)}
+.op-foto{height:200px;flex:none;background:radial-gradient(70% 70% at 50% 45%,#3a2410 0%,#160d06 70%,#0d0805 100%)}
+.op-foto img{width:100%;height:100%;object-fit:cover}
+.op-foto.recorte img{object-fit:contain;padding:14px;filter:drop-shadow(0 14px 16px rgba(0,0,0,.55))}
+.op-corpo{padding:18px 20px;overflow-y:auto;display:grid;gap:14px}
+.op-corpo h2{font-size:24px}
+.op-desc{margin:-8px 0 0;color:var(--cinza);font-size:14.5px}
+.op-preco{margin:-6px 0 0;font:800 20px var(--fonte-tit);color:var(--amarelo)}
+.grupo{border:0;margin:0;padding:0;display:grid;gap:8px}
+.grupo legend{font:700 15px var(--fonte-tit);margin-bottom:8px;padding:0}
+.check{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid #2c2c2c;border-radius:12px;background:#181818;cursor:pointer;font-size:15px}
+.check input{width:20px;height:20px;accent-color:var(--amarelo);flex:none;margin:0}
+.check span{flex:1}
+.check em{font-style:normal;font-weight:700;font-size:14px;color:var(--amarelo);white-space:nowrap}
+.check:has(input:checked){border-color:var(--amarelo);background:rgba(255,194,26,.08)}
+.op-pe{display:flex;gap:12px;align-items:center;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--linha);background:#0e0e0e}
+.op-qtd button{width:40px;height:40px;font-size:20px}
+.op-qtd b{font-size:18px;min-width:26px}
+.op-pe .btn{flex:1;padding:14px 16px}
+.car-item .det{display:block;color:var(--cinza);font-size:12.5px;line-height:1.35;margin:2px 0}
+.car-form .grupo legend{font-size:14px;color:#ddd;font-family:var(--fonte);font-weight:600}
+.car-form .check{padding:10px 12px;font-size:14px}
+@media (max-width:700px){.opcoes{align-items:flex-end;padding:0}.op-caixa{border-radius:22px 22px 0 0;max-height:94vh}.op-foto{height:170px}}
+.menu a{white-space:nowrap}
+@media (max-width:1300px){.topo .status{display:none}.menu a{padding:10px 9px}}

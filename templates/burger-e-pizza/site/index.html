@@ -189,7 +189,8 @@
       <label class="campo" id="campoEnd">Endereço de entrega<input id="fEnd" autocomplete="street-address" placeholder="Rua, número, bairro e complemento"><small class="err"></small></label>
       <label class="campo">Forma de pagamento<select id="fPag"></select></label>
       <label class="campo" id="campoTroco" hidden>Troco para quanto?<input id="fTroco" inputmode="decimal" placeholder="Ex.: 100"></label>
-      <label class="campo">Observação (opcional)<textarea id="fObs" rows="2" placeholder="Ex.: sem cebola, maionese à parte"></textarea></label>
+      <fieldset class="grupo" id="extrasPedido"></fieldset>
+      <label class="campo">Observação do pedido (opcional)<textarea id="fObs" rows="2" placeholder="Ex.: interfone quebrado, chamar no portão"></textarea></label>
     </form>
   </div>
   <div class="car-rodape" id="carRodape" hidden>
@@ -200,6 +201,26 @@
     <button type="button" class="btn btn-zap btn-largo" id="enviarPedido"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg>Enviar pedido no WhatsApp</button>
   </div>
 </aside>
+
+<!-- MONTE DO SEU JEITO (tirar, adicionais e observação do item) -->
+<div class="opcoes" id="opcoes" hidden role="dialog" aria-modal="true" aria-labelledby="opNome">
+  <div class="op-caixa">
+    <button type="button" class="fechar op-fechar" id="fecharOpcoes" aria-label="Fechar">×</button>
+    <div class="op-foto" id="opFoto"></div>
+    <div class="op-corpo">
+      <h2 id="opNome"></h2>
+      <p class="op-desc" id="opDesc"></p>
+      <p class="op-preco" id="opPreco"></p>
+      <fieldset class="grupo" id="opRem"></fieldset>
+      <fieldset class="grupo" id="opAdd"></fieldset>
+      <label class="campo">Alguma observação?<textarea id="opObs" rows="2" maxlength="140" placeholder="Ex.: carne bem passada, molho à parte"></textarea></label>
+    </div>
+    <div class="op-pe">
+      <div class="qtd op-qtd"><button type="button" id="opMenos" aria-label="Menos um">−</button><b id="opQtd">1</b><button type="button" id="opMais" aria-label="Mais um">+</button></div>
+      <button type="button" class="btn btn-amarelo" id="opAdicionar"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-carrinho"/></svg>Adicionar · <span id="opTotal"></span></button>
+    </div>
+  </div>
+</div>
 
 <!-- FOTO AMPLIADA -->
 <div class="lightbox" id="lightbox" hidden>
