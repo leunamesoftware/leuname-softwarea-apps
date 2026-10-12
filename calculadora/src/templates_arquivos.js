@@ -5,7 +5,7 @@ export const TEMPLATES = {
   "plano": "tpl_agencia",
   "nome": "Site pronto: Agência de Viagens",
   "segmento": "Agência de viagens e turismo",
-  "preco": 280,
+  "preco": 4.67,
   "parcelas": 10,
   "resumo": "Site completo para agência de viagens: destinos, pacotes, busca e pedidos direto no WhatsApp.",
   "descricao": "Site profissional e pronto para a sua agência de viagens. Destinos em destaque, pacotes com parcelamento, busca de viagem, depoimentos, perguntas frequentes e formulário: tudo manda o pedido pronto para o seu WhatsApp. Você troca nome, cores, fotos, destinos e preços em um arquivo só, sem programar, e publica na sua hospedagem ou grátis. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
