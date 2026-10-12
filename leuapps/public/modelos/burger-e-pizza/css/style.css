@@ -295,3 +295,6 @@ body.travado{overflow:hidden}
   .zap-flutuante{width:56px;height:56px;right:16px;bottom:16px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Aviso que só aparece se o site abrir sem este arquivo de estilos. */
+.sem-estilo{display:none!important}

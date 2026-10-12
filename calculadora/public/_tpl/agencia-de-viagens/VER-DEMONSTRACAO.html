@@ -292,6 +292,9 @@ html,body{overflow-x:hidden;max-width:100%}
 .dest-card .btn{width:100%;}
 .hero > .container{width:100%;}
 
+/* Aviso que só aparece se o site abrir sem este arquivo de estilos. */
+.sem-estilo{display:none!important}
+
 </style>
 <script>
 /* =====================================================================
@@ -418,6 +421,10 @@ window.SITE = {
 </script>
 </head>
 <body>
+<div class="sem-estilo" style="font:16px/1.5 system-ui,sans-serif;padding:18px 20px;background:#fff4d6;color:#3a2a00;border-bottom:2px solid #e0b64a">
+  <strong>O site abriu sem as cores e as fotos.</strong> Isso acontece quando o arquivo é aberto direto do ZIP ou pelo celular.
+  Para ver o site completo, abra o <b>VER-DEMONSTRACAO.html</b>. Para publicar, envie a pasta <b>site-completo</b> para a sua hospedagem.
+</div>
 
 <div class="demo-note" id="avisoDemo" hidden>Modelo de demonstração · nomes, preços e contatos fictícios · LeuName Softwares</div>
 

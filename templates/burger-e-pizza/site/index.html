@@ -14,6 +14,10 @@
 <script src="configuracao.js"></script>
 </head>
 <body>
+<div class="sem-estilo" style="font:16px/1.5 system-ui,sans-serif;padding:18px 20px;background:#fff4d6;color:#3a2a00;border-bottom:2px solid #e0b64a">
+  <strong>O site abriu sem as cores e as fotos.</strong> Isso acontece quando o arquivo é aberto direto do ZIP ou pelo celular.
+  Para ver o site completo, abra o <b>VER-DEMONSTRACAO.html</b>. Para publicar, envie a pasta <b>site-completo</b> para a sua hospedagem.
+</div>
 
 <div class="demo-note" id="avisoDemo" hidden>Modelo de demonstração · nomes, preços e contatos fictícios · LeuName Softwares</div>
 
@@ -28,13 +32,13 @@
       <a href="#sobre">Sobre Nós</a>
       <a href="#galeria">Galeria</a>
       <a href="#contato">Contato</a>
-      <a class="btn btn-zap menu-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg>Peça no WhatsApp</a>
+      <a class="btn btn-zap menu-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg>Peça no WhatsApp</a>
     </nav>
     <div class="topo-acoes">
       <span class="status" id="aberto" hidden></span>
-      <a class="btn btn-zap topo-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg><span>Peça no WhatsApp</span></a>
+      <a class="btn btn-zap topo-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg><span>Peça no WhatsApp</span></a>
       <button class="carrinho-btn" type="button" id="abrirCarrinho" aria-label="Abrir carrinho">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-carrinho"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-carrinho"/></svg>
         <span class="contador" id="contador">0</span>
       </button>
       <button class="menu-btn" type="button" id="menuBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
@@ -50,8 +54,8 @@
     <h1 data-banner="titulo"></h1>
     <p class="hero-txt" data-banner="texto"></p>
     <div class="hero-btns">
-      <a class="btn btn-amarelo" href="#cardapio"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-carrinho"/></svg>Ver cardápio</a>
-      <a class="btn btn-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg>Peça no WhatsApp</a>
+      <a class="btn btn-amarelo" href="#cardapio"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-carrinho"/></svg>Ver cardápio</a>
+      <a class="btn btn-zap" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg>Peça no WhatsApp</a>
     </div>
   </div>
 </section>
@@ -82,7 +86,7 @@
         <p class="olho" data-promo="frase"></p>
         <h2 data-promo="titulo"></h2>
         <p data-promo="texto"></p>
-        <a class="btn btn-amarelo" href="#combos"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-carrinho"/></svg>Ver promoções</a>
+        <a class="btn btn-amarelo" href="#combos"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-carrinho"/></svg>Ver promoções</a>
       </div>
     </div>
     <div class="combos" id="combos"></div>
@@ -97,7 +101,7 @@
       <p class="olho">Sobre nós</p>
       <h2 id="sobreTitulo"></h2>
       <p id="sobreTexto"></p>
-      <a class="btn btn-amarelo" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg>Fale com a gente</a>
+      <a class="btn btn-amarelo" data-zap target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg>Fale com a gente</a>
     </div>
   </div>
 </section>
@@ -143,10 +147,10 @@
     <div>
       <h3>Atendimento</h3>
       <ul class="rod-contato">
-        <li><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg><a data-zap target="_blank" rel="noopener">Peça no WhatsApp</a></li>
-        <li id="rodTel"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tel"/></svg><a></a></li>
-        <li id="rodEnd"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-local"/></svg><span></span></li>
-        <li id="rodHora"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-relogio"/></svg><span></span></li>
+        <li><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg><a data-zap target="_blank" rel="noopener">Peça no WhatsApp</a></li>
+        <li id="rodTel"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-tel"/></svg><a></a></li>
+        <li id="rodEnd"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-local"/></svg><span></span></li>
+        <li id="rodHora"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-relogio"/></svg><span></span></li>
       </ul>
     </div>
     <div class="mapa" id="mapa"></div>
@@ -158,7 +162,7 @@
 </footer>
 
 <!-- WHATSAPP FLUTUANTE -->
-<a class="zap-flutuante" data-zap target="_blank" rel="noopener" aria-label="Pedir pelo WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg></a>
+<a class="zap-flutuante" data-zap target="_blank" rel="noopener" aria-label="Pedir pelo WhatsApp"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg></a>
 
 <!-- AVISO "ADICIONADO" -->
 <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
@@ -172,7 +176,7 @@
   </div>
   <div class="car-corpo">
     <div class="car-vazio" id="carVazio">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-carrinho"/></svg>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-carrinho"/></svg>
       <p>Seu carrinho está vazio.</p>
       <a class="btn btn-amarelo" href="#cardapio" data-fechar>Ver cardápio</a>
     </div>
@@ -194,7 +198,7 @@
     <div class="linha" id="linhaTaxa"><span>Entrega</span><span id="carTaxa"></span></div>
     <div class="linha total"><span>Total</span><span id="carTotal"></span></div>
     <p class="car-msg" id="carMsg" role="alert"></p>
-    <button type="button" class="btn btn-zap btn-largo" id="enviarPedido"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-zap"/></svg>Enviar pedido no WhatsApp</button>
+    <button type="button" class="btn btn-zap btn-largo" id="enviarPedido"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><use href="#i-zap"/></svg>Enviar pedido no WhatsApp</button>
   </div>
 </aside>
 

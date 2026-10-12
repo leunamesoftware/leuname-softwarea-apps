@@ -281,3 +281,6 @@ html,body{overflow-x:hidden;max-width:100%}
 .foot-cad,.foot-hora{display:block;font-size:12px;opacity:.75;margin-top:6px;}
 .dest-card .btn{width:100%;}
 .hero > .container{width:100%;}
+
+/* Aviso que só aparece se o site abrir sem este arquivo de estilos. */
+.sem-estilo{display:none!important}
