@@ -90,7 +90,7 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
     <div class="brinde">
       <p id="v-robo" class="nota" style="border:0;padding:0;">Conferindo o robô de e-mail…</p>
       <form id="form-teste">
-        <select id="t-app" aria-label="App da compra de teste"><option value="leuburger">LeuBurger PDV</option><option value="mercagestao">MercaGestão</option><option value="construgestao">ConstruGestão</option><option value="gestacell">Gestacell</option><option value="radar">Radar Preventivo</option><option value="">Quanto Cobrar</option></select>
+        <select id="t-app" aria-label="App da compra de teste"><option value="leuburger">LeuBurger PDV</option><option value="mercagestao">MercaGestão</option><option value="construgestao">ConstruGestão</option><option value="gestacell">Gestacell</option><option value="radar">Radar Preventivo</option><option value="">Quanto Cobrar</option><optgroup label="Sites prontos (chega o ZIP de verdade)"><option value="tpl_agencia">Site pronto · Agência de Viagens (manda o ZIP)</option><option value="tpl_burger">Site pronto · Hamburgueria (manda o ZIP)</option><option value="tpl_pizzaria">Site pronto · Pizzaria (manda o ZIP)</option><option value="tpl_padaria">Site pronto · Padaria (manda o ZIP)</option><option value="tpl_restaurante">Site pronto · Restaurante (manda o ZIP)</option><option value="tpl_hortifruti">Site pronto · Hortifrúti (manda o ZIP)</option><option value="tpl_dentista">Site pronto · Clínica Odontológica (manda o ZIP)</option><option value="tpl_veterinaria">Site pronto · Clínica Veterinária (manda o ZIP)</option><option value="tpl_petshop">Site pronto · Pet Shop (manda o ZIP)</option><option value="tpl_hotel">Site pronto · Hotel e Pousada (manda o ZIP)</option><option value="tpl_moveis">Site pronto · Móveis e Decoração (manda o ZIP)</option><option value="tpl_eletronicos">Site pronto · Loja de Eletrônicos (manda o ZIP)</option><option value="tpl_solar">Site pronto · Energia Solar (manda o ZIP)</option><option value="tpl_mudancas">Site pronto · Mudanças e Fretes (manda o ZIP)</option><option value="tpl_concessionaria">Site pronto · Loja de Veículos (manda o ZIP)</option></optgroup></select>
         <input id="t-email" type="email" placeholder="seu@email.com" autocomplete="email" required aria-label="E-mail para receber o teste">
         <button type="submit" style="grid-column:1/-1">🧪 Compra de teste: mandar o e-mail</button>
       </form>
@@ -289,11 +289,14 @@ document.getElementById('form-teste').addEventListener('submit', async (e) => {
   const m = document.getElementById('t-msg'), b = e.target.querySelector('button');
   const dizer = (t, ok) => { m.textContent = t; m.style.color = ok ? '#15803D' : '#B91C1C'; m.hidden = false; };
   b.disabled = true; dizer('Mandando…', true);
-  const r = await fetch('/loja-api/dono/emails/teste', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: document.getElementById('t-email').value.trim(), app: document.getElementById('t-app').value }) }).catch(() => null);
+  const app = document.getElementById('t-app').value, ehSite = app.startsWith('tpl_');
+  // Site pronto: cria o pedido de teste (R$ 0, pela venda direta) para o link do ZIP funcionar de verdade.
+  const r = await fetch(ehSite ? '/loja-api/dono/liberar' : '/loja-api/dono/emails/teste', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(ehSite ? { email: document.getElementById('t-email').value.trim(), nome: 'Teste do dono', plano: app } : { email: document.getElementById('t-email').value.trim(), app }) }).catch(() => null);
   b.disabled = false;
   if (!r) return dizer('Sem internet. Tente de novo.');
   const d = await r.json().catch(() => ({}));
+  if (r.ok && ehSite) return dizer(d.emailEnviado === false ? 'Pedido criado, mas o e-mail não saiu: ele aparece na lista abaixo para mandar à mão.' : '✓ Mandado! Abra o seu e-mail (olhe também no Spam) e toque em Baixar meu site (ZIP).', d.emailEnviado !== false);
   if (r.ok) return dizer('✓ Mandado! Abra o seu e-mail (olhe também no Spam) e toque em Instalar.', true);
   dizer(d.erro === 'sem_servico' ? 'O robô ainda está desligado: falta colar a senha de app do Gmail na Cloudflare.'
     : /535|235/.test(d.erro || '') ? 'O Gmail recusou a senha. Confira a senha de app colada na Cloudflare.'
