@@ -226,4 +226,23 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   (2) acrescentar em templates/catalogo.json; (3) `python3 templates/publicar.py`; (4) acrescentar o produto em
   calculadora/public/loja/comprar.html (PRODUTOS, mesmo "plano"); (5) imagens em leuapps/public/img/modelos/<id>-banner.webp,
   -192.png e -tela-1..5.webp; (6) rodar o gerar_catalogo.py do site; (7) testes, publicar calculadora + leuapps + site.
-- Feitos: agencia-de-viagens e burger-e-pizza (R$ 280, até 10x). Imagens do dono para cada site novo; ele manda as fotos e o modelo. Faltam ~35 do repositório antigo.
+- Feitos: agencia-de-viagens (280), burger-e-pizza = Hamburgueria (250), pizzaria (250), padaria (250), restaurante (280).
+- **Conversor automático (sites antigos em espanhol → nosso padrão):** `python3 templates/_conversor/aplicar.py
+  /home/claude/leuname-software/pacotes-hotmart/<antigo>/site-completo templates/_conversor/<id>.json <id>`.
+  O <id>.json tem textos (espanhol→português), js, bruto, bruto_js, bruto_css, css_extra, precos (R$ do carrinho), config
+  (contatos), marcar (textos editáveis pelo configuracao.js) e regex. O script avisa os textos que ficaram sem tradução.
+  Foto substituta: templates/_conversor/<id>-imagens/. Núcleo comum (WhatsApp, licença, demonstração, crédito): _conversor/nucleo.js.
+  Sites convertidos têm "edicao": "html" no catalogo.json (o guia explica que textos e preços ficam no index.html).
+  Imagens da vitrine: script Playwright (banner = topo em 1600×744; tela 1200×750; celular 540×1099; ícone = foto recortada).
+- **Próximos 🟢 (prontos para converter):** hortifrúti (fruteria), clínica odontológica (clinica-dental, sem pasta css/js),
+  veterinária, pet shop, hotel, móveis e decoração, eletrônicos, energia solar, mudanças, concessionária (há 2 cópias: usar 1).
+  🟡/🟠 precisam de fotos do dono.
+
+### Melhorias anotadas nos sites prontos (fazer quando der)
+- Padaria: a foto principal tem a lousa escrita em espanhol "Pan Fresco cada día" (trocar a foto).
+- Restaurante: os links "Ler mais" do blog não abrem nada; cardápio duplicado (texto no HTML e preços no datosCatalogo).
+- Hamburgueria: banner e foto de combo ainda mostram pizza.
+- Pizzaria: combos e PDV de pizzaria (ideia do dono, depois).
+- Perfumaria antiga mostra a marca Sauvage (trocar antes de vender).
+- Categoria Delivery do site sem banner; banner "Sites prontos" da home diz "A partir de R$ 280" (agora é 250).
+- Atualização automática dos sites vendidos (versões, atualização paga opcional): o dono decide depois.
