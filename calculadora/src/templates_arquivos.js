@@ -19,6 +19,7 @@ export const TEMPLATES = {
   ],
   "arquivos": [
    "LEIA-ME-PRIMEIRO.html",
+   "VER-DEMONSTRACAO.html",
    "site/configuracao.js",
    "site/css/style.css",
    "site/imagens/banner.jpg",
@@ -51,6 +52,7 @@ export const TEMPLATES = {
   ],
   "arquivos": [
    "LEIA-ME-PRIMEIRO.html",
+   "VER-DEMONSTRACAO.html",
    "site/configuracao.js",
    "site/css/style.css",
    "site/imagens/banner-celular.jpg",
