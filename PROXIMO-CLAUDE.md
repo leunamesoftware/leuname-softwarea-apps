@@ -209,7 +209,10 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   `site-completo/` (index.html, configuracao.js, css/, js/, imagens/, LEIA-ME.txt). Tudo gerado por `templates/publicar.py`
   a partir de templates/<id>/site, templates/LEIA-ME-PRIMEIRO.html, templates/LEIA-ME.txt e templates/<id>/fotos.html.
 - A licença do cliente vai no site-completo/configuracao.js. Sem licença válida (outro domínio, compra cancelada/estornada) o site
-  inteiro fica bloqueado (tela "Site bloqueado" no site.js; volta se apagarem). Licença = 1 empresa / 1 domínio:
+  inteiro fica bloqueado (tela "Site bloqueado" no site.js; volta se apagarem).
+- Crédito "Desenvolvido por LeuName Softwares" no rodapé: NÃO fica no index.html; o bloco /* rodapé */ no fim do site.js
+  escreve o crédito (texto codificado) e põe de volta se apagarem, esconderem ou trocarem. Faz parte da licença (guia, LEIA-ME.txt, FAQ).
+  Template novo: copie esse bloco do fim do site.js. Licença = 1 empresa / 1 domínio:
   o site pergunta /loja-api/template/licenca e fica preso ao 1º domínio real (localhost, .pages.dev, .netlify.app etc. não prendem).
   Domínio errado → faixa vermelha "sem licença". Trocar o domínio de um cliente: apagar `dominio` em template_licencas (D1).
 - Template novo: (1) adaptar de leunamesoftware/leuname-software (pacotes-hotmart/<nome>/site-completo) para

@@ -116,5 +116,7 @@ window.SITE = {
   avisoDemonstracao: false,
 
   /* Sua licença (1 empresa, 1 domínio). NÃO apague nem mude. */
+  // Licença deste site (vem preenchida no ZIP da sua compra). Vale para 1 empresa e 1 domínio.
+  // O crédito "Desenvolvido por LeuName Softwares" no rodapé faz parte da licença.
   licenca: ""
 };

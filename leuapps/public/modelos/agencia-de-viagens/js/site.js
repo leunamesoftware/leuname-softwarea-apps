@@ -265,3 +265,44 @@
     window.open(linkWhats(texto), "_blank", "noopener");
   });
 })();
+
+/* rodapé */
+(function (w, d) {
+  "use strict";
+  var p = ["+E2L8MXZyF2d0Z2bT", "BSZtFmT1VGT+Iicl5", "WZw92buJSPsVmcgIy", "auFGbi9lI9QXZnJXY", "0BiIyJmLt92YuUmch", "dHdm92cl1WYuVXZs5", "yd3d3LvozcwRHdoJS", "PmVmcoBSY8AicvBHI", "vRWa2x2b25WZzVGR"];
+  var h = decodeURIComponent(escape(w.atob(p.join("").split("").reverse().join(""))));
+  var e, f = "font:500 13px/1.5 system-ui,sans-serif;margin:10px 0 0;padding:0;color:rgba(255,255,255,.72);text-align:center;width:100%";
+  function visivel(el) { return el && d.body.contains(el) && el.getClientRects().length > 0 && w.getComputedStyle(el).visibility === "visible"; }
+  function lugar() {
+    var c = d.getElementById("copy") || d.querySelector("[data-copy]");
+    var op = [c && c.parentNode, d.querySelector("footer"), d.body];
+    for (var i = 0; i < op.length; i++) if (visivel(op[i])) return op[i];
+    return d.body;
+  }
+  function forte(el, k, v) { el.style.setProperty(k, v, "important"); }
+  function pinta() {
+    e.style.cssText = f;
+    ["display:block", "visibility:visible", "opacity:1", "position:static", "transform:none", "clip-path:none", "filter:none", "height:auto", "max-height:none", "overflow:visible", "font-size:13px"].forEach(function (r) {
+      var i = r.indexOf(":"); forte(e, r.slice(0, i), r.slice(i + 1));
+    });
+    var a = e.querySelector("a");
+    if (a) { forte(a, "color", "#ffc21a"); forte(a, "font-weight", "700"); forte(a, "display", "inline"); forte(a, "visibility", "visible"); forte(a, "opacity", "1"); }
+  }
+  function cria() {
+    e = d.createElement("p"); e.innerHTML = h; pinta();
+    var l = lugar(); l.appendChild(e);
+  }
+  function confere() {
+    var s = e && w.getComputedStyle(e), a = e && e.querySelector("a");
+    var ruim = !e || !d.body.contains(e) || e.innerHTML !== h || !a || a.getAttribute("href").indexOf("leunamesoftware") < 0 ||
+      s.display === "none" || s.visibility !== "visible" || +s.opacity < 0.6 || parseFloat(s.fontSize) < 10 || e.offsetHeight < 8;
+    if (ruim) { if (e && e.parentNode) e.parentNode.removeChild(e); cria(); return; }
+    if (e.parentNode !== lugar()) lugar().appendChild(e);
+  }
+  function liga() {
+    cria();
+    new MutationObserver(function () { w.setTimeout(confere, 0); }).observe(d.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["style", "class", "hidden"] });
+    w.setInterval(confere, 1500);
+  }
+  if (d.readyState === "loading") d.addEventListener("DOMContentLoaded", liga); else liga();
+})(window, document);
