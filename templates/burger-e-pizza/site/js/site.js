@@ -13,7 +13,11 @@
   function titulo(t) { return esc(t).replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/&lt;(\/?)b&gt;/gi, "<$1b>"); }
   function soNumeros(t) { return String(t || "").replace(/\D/g, ""); }
   function reais(v) { return "R$ " + Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-  function linkWhats(texto) { return "https://wa.me/" + soNumeros(S.whatsapp) + "?text=" + encodeURIComponent(texto || S.mensagemWhatsapp || ""); }
+  function linkWhats(texto, atendimento) {
+    var num = atendimento && soNumeros(S.whatsappAtendimento) ? S.whatsappAtendimento : S.whatsapp;
+    var padrao = atendimento ? "Olá! Vi o site e tenho uma dúvida." : S.mensagemWhatsapp;
+    return "https://wa.me/" + soNumeros(num) + "?text=" + encodeURIComponent(texto || padrao || "");
+  }
   // Fotos usadas no CSS: caminho completo (senão o navegador procura dentro da pasta css).
   function urlCss(src) { try { return 'url("' + new URL(src, location.href).href + '")'; } catch (e) { return 'url("' + src + '")'; } }
   function recorte(src) { return /\.(png|webp|svg)(\?|$)/i.test(src || ""); }
@@ -58,7 +62,7 @@
   });
 
   /* ---------- Links do WhatsApp ---------- */
-  $all("[data-zap]").forEach(function (a) { a.href = linkWhats(); });
+  $all("[data-zap]").forEach(function (a) { a.href = linkWhats("", a.getAttribute("data-zap") === "atendimento"); });
 
   /* ---------- Banner ---------- */
   var B = S.banner || {};
@@ -161,7 +165,8 @@
   };
   $("redes").innerHTML = ["instagram", "facebook"].filter(function (r) { return S[r]; }).map(function (r) {
     return '<a href="' + esc(S[r]) + '" target="_blank" rel="noopener" aria-label="' + r + '">' + REDES[r] + "</a>";
-  }).join("") + '<a href="' + linkWhats() + '" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><use href="#i-zap"/></svg></a>';
+  }).join("") + '<a href="' + linkWhats("", true) + '" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><use href="#i-zap"/></svg></a>';
+  if (!soNumeros(S.whatsappAtendimento) || soNumeros(S.whatsappAtendimento) === soNumeros(S.whatsapp)) $("rodAtend").remove();
   if (S.telefone) { var t = $("rodTel").querySelector("a"); t.href = "tel:+55" + soNumeros(S.telefone); t.textContent = S.telefone; } else $("rodTel").remove();
   if (S.endereco) $("rodEnd").querySelector("span").textContent = S.endereco; else $("rodEnd").remove();
   if (S.horarioTexto) $("rodHora").querySelector("span").textContent = S.horarioTexto; else $("rodHora").remove();
@@ -393,6 +398,44 @@
       .catch(function () {});
   })();
 })();
+
+
+/* Demonstração: os botões de WhatsApp não abrem o número de exemplo. Mostram a mensagem que chegaria
+   no WhatsApp da loja e oferecem o site para quem está vendo (só quando avisoDemonstracao: true). */
+(function (w, d) {
+  "use strict";
+  var S = w.SITE || {};
+  if (!S.avisoDemonstracao) return;
+  var NOSSO = "5524998721557";
+  function eDaLoja(u) { return /wa\.me\//.test(u || "") && u.indexOf("wa.me/" + NOSSO) < 0; }
+  function texto(u) { var m = /[?&]text=([^&]*)/.exec(u || ""); try { return m ? decodeURIComponent(m[1]) : ""; } catch (e) { return ""; } }
+  function mostra(u) {
+    var t = texto(u) || "(o cliente escreve a mensagem dele)";
+    var j = d.createElement("div");
+    j.setAttribute("role", "dialog"); j.setAttribute("aria-modal", "true");
+    j.style.cssText = "position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px;font:15px/1.5 Inter,system-ui,sans-serif";
+    var nome = (d.title || "este site").split(" — ")[0];
+    j.innerHTML = '<div style="background:#fff;color:#111;border-radius:18px;max-width:440px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.4)">' +
+      '<div style="background:#128c7e;color:#fff;padding:16px 18px;border-radius:18px 18px 0 0;font-weight:700">📱 Demonstração: isto chegaria no WhatsApp da loja</div>' +
+      '<pre style="white-space:pre-wrap;margin:14px 18px;background:#e7ffdb;border-radius:12px;padding:12px 14px;font:14px/1.5 Inter,system-ui,sans-serif"></pre>' +
+      '<p style="margin:0 18px 14px;color:#444">No site da sua empresa, a mensagem vai direto para o <b>seu</b> WhatsApp.</p>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;padding:0 18px 18px">' +
+      '<a target="_blank" rel="noopener" style="flex:1;text-align:center;background:#16a34a;color:#fff;font-weight:800;padding:13px;border-radius:999px;text-decoration:none">Quero este site</a>' +
+      '<button type="button" style="flex:1;border:1.5px solid #ccc;background:#fff;font-weight:700;padding:12px;border-radius:999px;cursor:pointer">Fechar</button></div></div>';
+    j.querySelector("pre").textContent = t;
+    j.querySelector("a").href = "https://wa.me/" + NOSSO + "?text=" + encodeURIComponent("Olá, LeuName Softwares! Vi a demonstração e quero o site pronto: " + nome + ".");
+    function fecha() { j.remove(); }
+    j.querySelector("button").addEventListener("click", fecha);
+    j.addEventListener("click", function (e) { if (e.target === j) fecha(); });
+    d.body.appendChild(j);
+  }
+  var abrir = w.open;
+  w.open = function (u) { if (eDaLoja(u)) { mostra(u); return null; } return abrir.apply(w, arguments); };
+  d.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (a && eDaLoja(a.href)) { e.preventDefault(); e.stopPropagation(); mostra(a.href); }
+  }, true);
+})(window, document);
 
 /* rodapé */
 (function (w, d) {

@@ -19,7 +19,8 @@ window.SITE = {
   logo: "imagens/logo.webp",                  // deixe "" para mostrar só o nome escrito
 
   /* ---------- CONTATO ---------- */
-  whatsapp: "5511999999999",                  // DDI 55 + DDD + número, só números
+  whatsapp: "5511999999999",                  // WhatsApp dos PEDIDOS: DDI 55 + DDD + número, só números
+  whatsappAtendimento: "",                    // WhatsApp para dúvidas e "Fale com a gente" (deixe "" para usar o mesmo dos pedidos)
   mensagemWhatsapp: "Olá! Vi o site e quero fazer um pedido.",
   telefone: "(11) 99999-9999",
   endereco: "Rua das Flores, 123 — Centro, São Paulo - SP",
