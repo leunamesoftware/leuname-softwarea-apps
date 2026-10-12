@@ -303,6 +303,17 @@ export default {
         if (!e.logado) { const c = await contaDaSessao(env, req); if (c && eDono(env, c.email)) e.logado = true; }
         return json(e);
       }
+      // Dono: qual conta do Mercado Pago está recebendo as vendas (lida do próprio Mercado Pago com o token gravado).
+      if (pathname === '/api/dono/mercadopago' && m === 'GET') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (!env.MP_ACCESS_TOKEN) return json({ erro: 'sem_token' });
+        const r = await fetch('https://api.mercadopago.com/users/me', { headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}` } });
+        if (!r.ok) return json({ erro: 'mp_' + r.status });
+        const u = await r.json();
+        return json({ id: u.id, apelido: u.nickname, email: u.email, nome: [u.first_name, u.last_name].filter(Boolean).join(' '),
+          empresa: u.company?.brand_name || u.company?.corporate_name || null, documento: u.identification ? `${u.identification.type} ${String(u.identification.number || '').replace(/.(?=.{4})/g, '•')}` : null });
+      }
       // Assinatura do dono nos certificados dos cursos: desenhada na Área do Dono, guardada aqui.
       if (pathname === '/api/dono/assinatura') {
         const conta = await contaDaSessao(env, req);

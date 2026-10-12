@@ -148,6 +148,7 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
         <button type="submit" style="grid-column:1/-1">✅ Liberar e mandar o e-mail</button>
       </form>
       <p id="vd-msg" hidden></p>
+      <p id="mp-conta" class="nota" style="border:0;padding:8px 0 0;">💳 Conferindo a conta do Mercado Pago que recebe…</p>
       <p class="nota" style="border:0;padding:8px 0 0;">🧪 <b>Compra de teste com pagamento de verdade (R$ 4,67):</b> <a href="https://www.leunamesoftware.com.br/loja/comprar?app=tpl_teste&plano=unico" target="_blank" rel="noopener">abrir a compra de teste</a> — use o seu e-mail; chega o ZIP da Pizzaria.</p>
     </div>
   </section>
@@ -372,6 +373,13 @@ document.getElementById('instalar-btn').addEventListener('click', async () => {
   document.getElementById('instalar').hidden = true;
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+
+// Qual conta do Mercado Pago recebe as vendas.
+fetch('/loja-api/dono/mercadopago', { credentials: 'same-origin' }).then((r) => r.json()).then((d) => {
+  const el = document.getElementById('mp-conta'); if (!el) return;
+  el.innerHTML = d.erro ? '💳 Não deu para ler a conta do Mercado Pago (' + d.erro + ').'
+    : `💳 <b>Recebe as vendas:</b> ${[d.empresa, d.nome].filter(Boolean).join(' · ') || d.apelido} — e-mail <b>${d.email || '?'}</b>${d.documento ? ' · ' + d.documento : ''} · ID ${d.id}`;
+}).catch(() => {});
 </script>
 </body>
 </html>
