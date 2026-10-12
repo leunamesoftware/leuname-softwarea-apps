@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia — Restaurante</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--noite:#0d1220;--carta:#151d2f;--carta2:#1b2540;--ouro:#e0b64a;--ouro-cla:#f2d68a;
+    --ouro-esc:#a8832a;--texto:#e9edf5;--apagado:#93a0b8;--linha:rgba(224,182,74,.22)}
+  body{background:var(--noite);color:var(--texto);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:15px;line-height:1.6}
+  .folha{max-width:1000px;margin:0 auto;padding:30px 24px 60px}
+  .cab{display:flex;align-items:center;gap:22px;flex-wrap:wrap;border:1px solid var(--linha);border-radius:14px;
+    padding:24px 26px;background:linear-gradient(120deg,var(--carta),var(--noite))}
+  .cab-num{width:64px;height:64px;flex-shrink:0;border-radius:12px;background:linear-gradient(135deg,var(--ouro),var(--ouro-esc));
+    color:#1a1405;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800}
+  .cab h1{font-size:21px;font-weight:800;line-height:1.25}
+  .cab h1 span{display:block;color:var(--ouro);font-size:24px}
+  .cab p{color:var(--apagado);font-size:13.5px;margin-top:5px}
+  .cab-marca{margin-left:auto;text-align:right}
+  .cab-marca strong{display:block;font-size:16px;letter-spacing:.16em;color:var(--ouro-cla)}
+  .cab-marca span{font-size:10px;letter-spacing:.3em;color:var(--apagado)}
+  .destaque{display:flex;gap:14px;margin-top:16px;padding:16px 20px;border:1px solid var(--linha);
+    border-left:4px solid var(--ouro);border-radius:10px;background:rgba(224,182,74,.07)}
+  .destaque strong{color:var(--ouro-cla)}
+  .bloco{margin-top:26px;border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;background:var(--carta)}
+  .bloco-cab{display:flex;align-items:center;gap:16px;padding:18px 22px;background:var(--carta2);
+    border-bottom:1px solid rgba(255,255,255,.07)}
+  .bloco-num{width:42px;height:42px;flex-shrink:0;border-radius:9px;border:1px solid var(--ouro);color:var(--ouro);
+    display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800}
+  .bloco-cab h2{font-size:16px;font-weight:800;text-transform:uppercase}
+  .bloco-cab p{font-size:12.5px;color:var(--apagado);margin-top:2px}
+  .passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:rgba(255,255,255,.07)}
+  .passo{background:var(--carta);padding:20px}
+  .passo-eti{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .passo-eti i{width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--ouro);color:#1a1405;
+    font-style:normal;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .passo-eti b{font-size:12.5px;font-weight:800;text-transform:uppercase;color:var(--ouro-cla)}
+  .passo p{font-size:13.5px;color:var(--apagado)}
+  .passo p+p{margin-top:8px}
+  code{background:rgba(224,182,74,.13);color:var(--ouro-cla);padding:2px 7px;border-radius:5px;font-size:12.5px;
+    font-family:ui-monospace,Menlo,Consolas,monospace}
+  .caixa{margin-top:11px;padding:12px 14px;border-radius:8px;background:rgba(0,0,0,.28);
+    border:1px solid rgba(255,255,255,.08);font-size:13px}
+  .lista{list-style:none;margin-top:9px}
+  .lista li{display:flex;gap:9px;font-size:13px;color:var(--apagado);margin-bottom:7px}
+  .lista li::before{content:"";flex-shrink:0;width:7px;height:7px;margin-top:7px;border-radius:2px;background:var(--ouro)}
+  .lista li b{color:var(--texto)}
+  .problemas{margin-top:26px}
+  .problema{border:1px solid rgba(255,255,255,.09);border-radius:11px;padding:16px 20px;margin-bottom:10px;background:var(--carta)}
+  .problema b{display:block;color:#e2b13c;font-size:14px;margin-bottom:5px}
+  .problema p{font-size:13.5px;color:var(--apagado)}
+  .pie{margin-top:30px;padding-top:20px;border-top:1px solid var(--linha);display:flex;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--apagado)}
+  .pie b{color:var(--ouro-cla)}
+
+  .tabela{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:4px}
+  .tabela th,.tabela td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}
+  .tabela th{color:var(--ouro-cla);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .tabela td{color:var(--apagado)}
+  .fotos{padding:18px 20px;background:var(--carta)}
+  .fotos table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .fotos th,.fotos td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top;color:var(--apagado)}
+  .fotos th{color:var(--ouro-cla);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .dica{margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(224,182,74,.08);border:1px solid var(--linha);font-size:13px;color:var(--texto)}
+  @media (max-width:560px){.cab-marca{margin-left:0;text-align:left}.folha{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="folha">
+  <header class="cab">
+    <div class="cab-num">01</div>
+    <div>
+      <h1>Guia rápido<span>Restaurante</span></h1>
+      <p>Leia esta página antes de mexer em qualquer arquivo. Não precisa saber programar.</p>
+    </div>
+    <div class="cab-marca"><strong>LEUNAME</strong><span>SOFTWARES</span></div>
+  </header>
+
+  <div class="destaque">
+    <div><strong>Antes de tudo: extraia o ZIP.</strong>
+    <p>Se você abrir os arquivos de dentro do .zip, a página pode aparecer sem estilo ou sem fotos.
+    Clique com o botão direito no .zip &rsaquo; <b>Extrair tudo</b>, e trabalhe a partir da pasta extraída.
+    No celular, abra o <code>VER-DEMONSTRACAO.html</code>, que funciona sozinho.</p></div>
+  </div>
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">01</div>
+      <div><h2>O que tem dentro do pacote</h2><p>Uma pasta é só para olhar; a outra é a que você publica.</p></div>
+    </div>
+    <div class="passos">
+      <div class="passo"><div class="passo-eti"><i>1</i><b>VER-DEMONSTRACAO.html</b></div>
+      <p>O site inteiro em um único arquivo, com as fotos já embutidas. Dê dois cliques e ele abre no
+      navegador, funcionando de verdade. Abre até no celular.</p></div>
+      <div class="passo"><div class="passo-eti"><i>2</i><b>site-completo/</b></div>
+      <p><b style="color:var(--ouro-cla)">É esta pasta que você publica</b> na sua hospedagem. Tem o
+      <code>index.html</code>, o <code>configuracao.js</code> e as pastas <code>css/</code>, <code>js/</code>
+      e <code>imagens/</code>.</p></div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">02</div>
+      <div><h2>O que vem no site</h2><p>Tudo funcionando, sem mensalidade.</p></div>
+    </div>
+    <div class="passos">
+      <div class="passo"><div class="passo-eti"><i>✓</i><b>O que é</b></div>
+      <ul class="lista">
+        <li><span>Reserva de mesa pelo WhatsApp</span></li>
+        <li><span>Cardápio com entradas, pratos e sobremesas</span></li>
+        <li><span>Galeria, depoimentos e blog</span></li>
+        <li><span>Funciona no celular, tablet e computador</span></li>
+        <li><span>Contatos em um arquivo só</span></li>
+        <li><span>Licença para 1 empresa e 1 domínio</span></li>
+      </ul></div>
+      <div class="passo"><div class="passo-eti"><i>✕</i><b>O que não é</b></div>
+      <ul class="lista">
+        <li><span>Não tem <b>painel administrativo</b> visual. Trocar textos, preços e fotos é feito em
+        <b>um arquivo só</b>, o <code>configuracao.js</code>, com o Bloco de Notas.</span></li>
+        <li><span>Os pedidos e contatos chegam no seu <b>WhatsApp</b> (não há pagamento online dentro do site).</span></li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">03</div>
+      <div><h2>Personalizar</h2><p>Contatos no <code>configuracao.js</code>; textos e preços no <code>index.html</code>.</p></div>
+    </div>
+    <div class="passos">
+      <div class="passo"><div class="passo-eti"><i>1</i><b>Contatos e WhatsApp</b></div>
+      <p>Abra o <code>configuracao.js</code> no Bloco de Notas e troque o que está <b>entre aspas</b>: nome, WhatsApp,
+      telefone, e-mail, endereço e horário. Eles mudam no site inteiro. O WhatsApp vai só com números:
+      <code>5511987654321</code>. Os pedidos do carrinho chegam nesse número.</p></div>
+      <div class="passo"><div class="passo-eti"><i>2</i><b>Textos e produtos</b></div>
+      <p>Abra o <code>index.html</code> no Bloco de Notas e use <b>Localizar e substituir</b> (Ctrl+H) para trocar
+      textos, nomes dos produtos e descrições pelos seus.</p></div>
+      <div class="passo"><div class="passo-eti"><i>3</i><b>Preços</b></div>
+      <p>Troque o preço em <b>dois lugares</b> do <code>index.html</code>: no texto do produto (ex.: <code>R$ 39,90</code>)
+      e no fim do arquivo, na lista <code>datosCatalogo</code> (ex.: <code>"precio":39.9</code>, com ponto). A taxa
+      de entrega e o pedido mínimo ficam em <code>datosEnvio</code> (<code>"coste"</code> e <code>"minimo"</code>).</p></div>
+      <div class="passo"><div class="passo-eti"><i>4</i><b>Cores e conferir</b></div>
+      <p>As cores ficam no topo do <code>css/style.css</code>, dentro de <code>:root{ }</code>. Salve e abra o
+      <code>index.html</code> no navegador para ver como ficou.</p></div>
+    </div>
+  </section>
+
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">04</div>
+      <div><h2>Trocar as fotos</h2><p>Na pasta <code>site-completo/imagens/</code>, troque cada foto por uma sua com o <b>mesmo nome</b>.</p></div>
+    </div>
+    <div class="fotos">
+  <table>
+    <tr><th>Arquivo</th><th>Onde aparece</th><th>Tamanho ideal</th></tr>
+    <tr><td><code>hero.jpg</code>, <code>plato.jpg</code>, <code>sala.jpg</code></td><td>Banner do topo (fotos que passam)</td><td>1920 × 1080</td></tr>
+    <tr><td><code>chef.jpg</code>, <code>vinos.jpg</code>, <code>postre.jpg</code>, <code>barra.jpg</code>, <code>eventos.jpg</code></td><td>Cartões e galeria</td><td>800 × 600</td></tr>
+  </table>
+  <div class="dica">💡 O pedido de reserva chega pronto no seu WhatsApp: nome, telefone, e-mail, dia, hora e número de pessoas.</div>
+
+      <div class="dica">💡 Fotos leves deixam o site rápido: antes de colocar, passe em <code>squoosh.app</code> (grátis).</div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">05</div>
+      <div><h2>Publicar</h2><p>Só HTML, CSS e JS: funciona em qualquer hospedagem.</p></div>
+    </div>
+    <div class="passos">
+      <div class="passo"><div class="passo-eti"><i>A</i><b>Hospedagem paga</b></div>
+      <p>Envie <b>o conteúdo</b> de <code>site-completo/</code> para a pasta pública
+      (<code>public_html</code>), não a pasta inteira. Ex.: Hostinger, HostGator, Locaweb.</p></div>
+      <div class="passo"><div class="passo-eti"><i>B</i><b>Grátis</b></div>
+      <p>Arraste a pasta <code>site-completo/</code> para <code>app.netlify.com/drop</code>
+      e o site fica no ar em segundos. Depois, ligue o seu domínio.</p></div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="bloco-cab"><div class="bloco-num">06</div>
+      <div><h2>Licença</h2><p>Sua compra vale para 1 empresa e 1 domínio.</p></div>
+    </div>
+    <div class="passos">
+      <div class="passo"><div class="passo-eti"><i>1</i><b>Como funciona</b></div>
+      <p>A licença já vem dentro do <code>configuracao.js</code>. Na primeira vez que o site abrir no seu domínio
+      de verdade, ele fica registrado nesse endereço. No computador e em endereços de teste
+      (Netlify, Vercel, GitHub Pages) funciona sem registrar.</p></div>
+      <div class="passo"><div class="passo-eti"><i>2</i><b>Atenção</b></div>
+      <p>Não apague o campo <code>licenca</code>. Em outro domínio, ou se a compra for cancelada ou estornada,
+      o site fica <b>bloqueado</b>. Para outra empresa, compre outra licença.</p>
+      <p>O crédito <b>"Desenvolvido por LeuName Softwares"</b> no rodapé faz parte da licença e precisa ficar no site (a não ser que você tenha comprado a versão <b>sem o crédito</b>).</p></div>
+    </div>
+  </section>
+
+  <section class="problemas">
+    <h2 style="font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:14px;color:var(--ouro-cla)">
+      Se algo não funcionar</h2>
+    <div class="problema"><b>A página abre em branco, sem cores nem fotos</b>
+    <p>Você está abrindo de dentro do .zip. Extraia primeiro e abra a partir da pasta extraída.</p></div>
+    <div class="problema"><b>Depois que editei, uma parte do site sumiu</b>
+    <p>Provavelmente faltou uma vírgula ou aspas no <code>configuracao.js</code>. Desfaça a última mudança (Ctrl+Z) e salve de novo.</p></div>
+    <div class="problema"><b>O botão de WhatsApp não abre a conversa certa</b>
+    <p>No campo <code>whatsapp</code>, use só números: código do país + DDD + número, sem espaços,
+    sem parênteses e sem o sinal <b>+</b>.</p></div>
+    <div class="problema"><b>Apareceu "Site bloqueado"</b>
+    <p>O site foi publicado num domínio diferente do registrado. Fale com a gente no WhatsApp (24) 99872-1557 para trocar o domínio.</p></div>
+  </section>
+
+  <footer class="pie">
+    <span><b>LeuName Softwares</b> · www.leunamesoftware.com.br · WhatsApp (24) 99872-1557</span>
+    <span>Pacote: Restaurante</span>
+  </footer>
+</div>
+</body>
+</html>

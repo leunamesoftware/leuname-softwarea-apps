@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurante Premium — Cozinha autoral</title>
+<meta name="description" content="Restaurante de cozinha autoral. Menu degustação, carta de vinhos, experiências gastronômicas e eventos privados. Reserve sua mesa online.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="configuracao.js"></script>
+</head>
+<body>
+<div class="sem-estilo" style="font:16px/1.5 system-ui,sans-serif;padding:18px 20px;background:#fff4d6;color:#3a2a00;border-bottom:2px solid #e0b64a"><strong>O site abriu sem as cores e as fotos.</strong> Isso acontece quando o arquivo é aberto direto do ZIP ou pelo celular. Para ver o site completo, abra o <b>VER-DEMONSTRACAO.html</b>. Para publicar, envie a pasta <b>site-completo</b> para a sua hospedagem.</div>
+
+<div class="aviso-demo" id="avisoDemo" hidden>Modelo de demonstração · nomes, preços e contatos fictícios · LeuName Softwares</div>
+
+<!-- Barra superior -->
+<div class="barra-top">
+  <div class="env">
+    <div class="izq">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.2 7-11.1A7 7 0 1 0 5 10.4c0 4.9 7 11.1 7 11.1z"/><circle cx="12" cy="10" r="2.6"/></svg>São Paulo - SP</span>
+      <a href="tel:+551133334444"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16.5v2.6a1.9 1.9 0 0 1-2.1 1.9 18.8 18.8 0 0 1-8.2-2.9 18.4 18.4 0 0 1-5.7-5.7A18.8 18.8 0 0 1 2.1 4.1 1.9 1.9 0 0 1 4 2h2.6a1.9 1.9 0 0 1 1.9 1.6c.1.9.3 1.8.7 2.7a1.9 1.9 0 0 1-.4 2L7.6 9.5a15 15 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.3 1.8.6 2.7.7A1.9 1.9 0 0 1 21 16.5z"/></svg><span data-cfg="telefone">(11) 3333-4444</span></a>
+      <a href="mailto:reservas@restaurantepremium.es"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M2.5 7 12 13.5 21.5 7"/></svg><span data-cfg="email">reservas@restaurantepremium.com.br</span></a>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.3 2"/></svg>Terça a domingo: 12:00 - 00:00</span>
+      <span>Segunda: fechado</span>
+    </div>
+    <div class="der">
+      <div class="redes-top">
+                  <a href="#" aria-label="Facebook" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 8.5V6.8c0-.8.2-1.3 1.5-1.3h1.5V2.6c-.3 0-1.2-.1-2.2-.1-2.2 0-3.8 1.4-3.8 3.9v2.1H9v3h2.5v7.5h3V11.5h2.5l.4-3z"/></svg></a>
+                  <a href="#" aria-label="Instagram" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+                  <a href="#" aria-label="Tripadvisor" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="12" r="2.4"/><circle cx="15.5" cy="12" r="2.4"/></svg></a>
+              </div>
+      <span>PT <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+  </div>
+</div>
+
+<!-- Cabecera -->
+<header class="cab">
+  <div class="env">
+    <a href="#inicio" class="marca">
+      <svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="26" r="13" stroke="#c9a227" stroke-width="1.6"/><circle cx="24" cy="26" r="7.5" fill="#c1462f"/><path d="M10 12v9a3 3 0 0 0 6 0v-9M13 21v15" stroke="#c9a227" stroke-width="1.6" stroke-linecap="round"/><path d="M38 12c-2.4 2.4-3.4 5.2-3.4 8.6 0 2.4 1.2 4 3.4 4.6V36" stroke="#c9a227" stroke-width="1.6" stroke-linecap="round"/></svg>      <span class="marca-txt">
+        <strong>Restaurante</strong>
+        <span>· Premium ·</span>
+      </span>
+    </a>
+    <nav class="menu">
+      <a href="#inicio">Início</a><a href="#nosotros">Sobre nós</a><a href="#carta">Cardápio</a><a href="#experiencias">Experiências</a><a href="#eventos">Eventos</a><a href="#galeria">Galeria</a><a href="#blog">Blog</a><a href="#contacto">Contato</a>    </nav>
+    <a href="#contacto" class="btn btn-terra btn-peq"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>Reservar mesa</a>
+    <button class="abrir-menu" id="abrirMenu" aria-expanded="false" aria-label="Abrir menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <nav class="menu-movil" id="menuMovil">
+    <a href="#inicio">Início</a><a href="#nosotros">Sobre nós</a><a href="#carta">Cardápio</a><a href="#experiencias">Experiências</a><a href="#eventos">Eventos</a><a href="#galeria">Galeria</a><a href="#blog">Blog</a><a href="#contacto">Contato</a>    <a href="#contacto" class="btn btn-terra">Reservar mesa</a>
+  </nav>
+</header>
+
+<!-- Portada -->
+<section class="portada" id="inicio">
+  <div class="portada-lienzo" id="lienzo">
+          <img src="imagens/hero.jpg" alt="">
+          <img src="imagens/plato.jpg" alt="">
+          <img src="imagens/chef.jpg" alt="">
+          <img src="imagens/eventos.jpg" alt="">
+      </div>
+  <div class="portada-vel"></div>
+  <button class="flecha izq" id="antes" aria-label="Anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+  <button class="flecha der" id="despues" aria-label="Próximo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+  <div class="env">
+    <div class="portada-in">
+      <span class="rotulo">Gastronomia que emociona</span>
+      <h1>Uma experiência que<em>começa na primeira garfada</em></h1>
+      <div class="filete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17.5 4.5 7l4.5 4L12 5l3 6 4.5-4L21 17.5z"/><path d="M3 20.5h18"/></svg></div>
+      <p>Cozinha autoral, ingredientes selecionados e um ambiente único para momentos inesquecíveis.</p>
+      <div class="portada-botones">
+        <a href="#contacto" class="btn btn-terra"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>Reservar mesa</a>
+        <a href="#carta" class="btn btn-linea"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5h6.5A2.5 2.5 0 0 1 12 7v13a2 2 0 0 0-2-2H3z"/><path d="M21 4.5h-6.5A2.5 2.5 0 0 0 12 7v13a2 2 0 0 1 2-2h7z"/></svg>Ver cardápio</a>
+      </div>
+    </div>
+  </div>
+  <div class="puntos" id="puntos"></div>
+</section>
+
+<!-- Buscador de reserva -->
+<div class="reserva-barra">
+  <div class="env">
+    <form class="reserva-caja" id="formBuscar">
+      <div class="reserva-campo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>        <div style="flex:1"><label for="rFecha">Data</label><input type="date" id="rFecha" name="fecha"></div>
+      </div>
+      <div class="reserva-campo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.3 2"/></svg>        <div style="flex:1"><label for="rHora">Hora</label>
+          <select id="rHora" name="hora">
+                          <option>13:00</option>
+                          <option>13:30</option>
+                          <option>14:00</option>
+                          <option>14:30</option>
+                          <option>15:00</option>
+                          <option selected>20:00</option>
+                          <option>20:30</option>
+                          <option>21:00</option>
+                          <option>21:30</option>
+                          <option>22:00</option>
+                      </select>
+        </div>
+      </div>
+      <div class="reserva-campo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20.5c0-3.7 3.4-6.5 7.5-6.5s7.5 2.8 7.5 6.5"/></svg>        <div style="flex:1"><label for="rPersonas">Pessoas</label>
+          <select id="rPersonas" name="personas">
+                          <option>1 pessoa</option>
+                          <option selected>2 pessoas</option>
+                          <option>3 pessoas</option>
+                          <option>4 pessoas</option>
+                          <option>5 pessoas</option>
+                          <option>6 pessoas</option>
+                          <option>7 pessoas</option>
+                          <option>8 pessoas</option>
+                          <option>9 pessoas</option>
+                          <option>10 pessoas</option>
+                          <option>11 pessoas</option>
+                          <option>12 pessoas</option>
+                        <option>Mais de 12</option>
+          </select>
+        </div>
+      </div>
+      <div class="reserva-campo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 11 3.8V3H4v7h.8l9.6 9.6a1.5 1.5 0 0 0 2.1 0l4.1-4.1a1.5 1.5 0 0 0 0-2.1z"/><circle cx="7.5" cy="6.5" r="1"/></svg>        <div style="flex:1"><label for="rTipo">Tipo de reserva</label>
+          <select id="rTipo" name="tipo">
+            <option>Jantar</option><option>Almoço</option>
+            <option>Menu degustação</option><option>Evento privado</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-terra"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Ver disponibilidade</button>
+    </form>
+  </div>
+</div>
+
+<!-- Virtudes -->
+<section class="virtudes">
+  <div class="env" style="padding:0">
+    <div class="virtudes-rejilla">
+              <div class="virtud">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 18h19M4.5 15a7.5 7.5 0 0 1 15 0"/><circle cx="12" cy="5" r="1.3"/><path d="M12 7.5V6.3"/></svg>          <div>
+            <strong>Cozinha autoral</strong>
+            <span>Sabor e criatividade</span>
+          </div>
+        </div>
+              <div class="virtud">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20c0-8 5-14 16-15 0 9-5 14-13 14.5"/><path d="M4 20c2-5 5-8 9-10"/></svg>          <div>
+            <strong>Ingredientes frescos</strong>
+            <span>Seleção diária</span>
+          </div>
+        </div>
+              <div class="virtud">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h11l-.7 5.2a4.8 4.8 0 0 1-9.6 0z"/><path d="M12 13.5V20M8.5 20h7"/></svg>          <div>
+            <strong>Carta de vinhos</strong>
+            <span>Harmonizações exclusivas</span>
+          </div>
+        </div>
+              <div class="virtud">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8.5" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M2.5 19.5c0-3.2 2.5-5.5 5.5-5.5s5.5 2.3 5.5 5.5"/><path d="M14.5 19.5c0-2.6 1.6-4.4 4-4.4 1.6 0 2.8.8 3.5 2"/></svg>          <div>
+            <strong>Ambiente único</strong>
+            <span>Elegância e conforto</span>
+          </div>
+        </div>
+              <div class="virtud">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>          <div>
+            <strong>Reserva fácil</strong>
+            <span>Rápida e segura</span>
+          </div>
+        </div>
+          </div>
+  </div>
+</section>
+
+<!-- Tarjetas de sección -->
+<section class="secciones" id="experiencias">
+  <div class="env">
+    <div class="tarjetas">
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/sala.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 18h19M4.5 15a7.5 7.5 0 0 1 15 0"/><circle cx="12" cy="5" r="1.3"/><path d="M12 7.5V6.3"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Restaurante</h3>
+            <p>Um espaço pensado para aproveitar cada momento.</p>
+            <a href="#contacto" class="enlace">Conheça →</a>
+          </div>
+        </article>
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/plato.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5h6.5A2.5 2.5 0 0 1 12 7v13a2 2 0 0 0-2-2H3z"/><path d="M21 4.5h-6.5A2.5 2.5 0 0 0 12 7v13a2 2 0 0 1 2-2h7z"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Cardápio</h3>
+            <p>Descubra nossa seleção de pratos e bebidas.</p>
+            <a href="#contacto" class="enlace">Ver cardápio →</a>
+          </div>
+        </article>
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/vinos.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h11l-.7 5.2a4.8 4.8 0 0 1-9.6 0z"/><path d="M12 13.5V20M8.5 20h7"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Experiências</h3>
+            <p>Experiências gastronômicas para lembrar sempre.</p>
+            <a href="#contacto" class="enlace">Descobrir →</a>
+          </div>
+        </article>
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/chef.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20.5h10v-6h1.5a3.5 3.5 0 0 0 .8-6.9 4 4 0 0 0-7.3-2.6 4 4 0 0 0-7.3 2.6A3.5 3.5 0 0 0 5.5 14.5H7z"/><path d="M7 17.5h10"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Chef e equipe</h3>
+            <p>Paixão, talento e dedicação em cada detalhe.</p>
+            <a href="#contacto" class="enlace">Saiba mais →</a>
+          </div>
+        </article>
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/eventos.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Eventos</h3>
+            <p>Comemorações e eventos privados sob medida.</p>
+            <a href="#contacto" class="enlace">Pedir informações →</a>
+          </div>
+        </article>
+              <article class="tarjeta">
+          <div class="tarjeta-foto">
+            <img src="imagens/postre.jpg" alt="" loading="lazy">            <div class="tarjeta-icono"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 11 3.8V3H4v7h.8l9.6 9.6a1.5 1.5 0 0 0 2.1 0l4.1-4.1a1.5 1.5 0 0 0 0-2.1z"/><circle cx="7.5" cy="6.5" r="1"/></svg></div>
+          </div>
+          <div class="tarjeta-cuerpo">
+            <h3>Ofertas especiais</h3>
+            <p>Conheça nossas ofertas exclusivas da estação.</p>
+            <a href="#contacto" class="enlace">Ver ofertas →</a>
+          </div>
+        </article>
+          </div>
+  </div>
+</section>
+
+<!-- Detalle, cifras y opinión -->
+<section class="detalle" id="nosotros">
+  <div class="env">
+    <div class="detalle-rejilla">
+      <div class="detalle-txt">
+        <span class="rotulo">Uma experiência diferente</span>
+        <h2>Cada detalhe é pensado para surpreender você</h2>
+        <p>Unimos tradição, criatividade e os melhores ingredientes para oferecer uma experiência gastronômica única.</p>
+        <a href="#contacto" class="btn btn-linea btn-peq">Conhecer nossa história</a>
+      </div>
+
+      <div class="cifras-rejilla">
+                  <div class="cifra">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V9"/><path d="M12 9C9 9 6.5 6.5 6.5 3 10 3 12 5.5 12 9zM12 9c3 0 5.5-2.5 5.5-6C14 3 12 5.5 12 9z"/><path d="M12 14c-2.5 0-4.5-2-4.5-4.5M12 14c2.5 0 4.5-2 4.5-4.5"/><path d="M8.5 21h7"/></svg>            <strong>12+</strong>
+            <span>Anos de experiência</span>
+          </div>
+                  <div class="cifra">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 18h19M4.5 15a7.5 7.5 0 0 1 15 0"/><circle cx="12" cy="5" r="1.3"/><path d="M12 7.5V6.3"/></svg>            <strong>35+</strong>
+            <span>Pratos no cardápio</span>
+          </div>
+                  <div class="cifra">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.6l6.5-.9z"/></svg>            <strong>20+</strong>
+            <span>Experiências gastronômicas</span>
+          </div>
+                  <div class="cifra">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.4 2.9-5.8 6.5-5.8s6.5 2.4 6.5 5.8"/><path d="M16.5 6.4a3 3 0 0 1 0 5.4M18.5 14.6c1.9.7 3 2.2 3 4.1"/></svg>            <strong>98%</strong>
+            <span>Clientes satisfeitos</span>
+          </div>
+                  <div class="cifra">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>            <strong>7</strong>
+            <span>Dias de experiências especiais</span>
+          </div>
+              </div>
+
+            <div class="opinion">
+        <div class="opinion-comillas">&ldquo;</div>
+        <div class="estrellas">★★★★★</div>
+        <div id="opinionCuerpo">
+          <p id="opinionTexto">Uma experiência espetacular. Cada prato é cheio de sabor e criatividade. O atendimento é impecável.</p>
+          <div class="opinion-quien">
+            <div class="opinion-ini" id="opinionIni"></div>
+            <div>
+              <strong id="opinionNombre">Laura Martins</strong>
+              <span id="opinionLugar">Curitiba - PR</span>
+            </div>
+          </div>
+        </div>
+        <script type="application/json" id="datosOpiniones">[{"texto":"Uma experiência espetacular. Cada prato é cheio de sabor e criatividade. O atendimento é impecável.","nombre":"Laura Martins","lugar":"Curitiba - PR"},{"texto":"Reservamos para um aniversário e cuidaram de cada detalhe. A harmonização do menu degustação foi o melhor da noite.","nombre":"Diego Ferreira","lugar":"São Paulo - SP"},{"texto":"Voltamos três vezes em um mês. O cardápio muda com a estação e sempre tem algo novo para provar.","nombre":"Ana Ribeiro","lugar":"Rio de Janeiro - RJ"}]</script>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- Carta -->
+<section class="carta" id="carta">
+  <div class="env">
+    <div class="cab-sec centro">
+      <span class="rotulo">Nosso cardápio</span>
+      <h2>Cardápio</h2>
+      <div class="filete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17.5 4.5 7l4.5 4L12 5l3 6 4.5-4L21 17.5z"/><path d="M3 20.5h18"/></svg></div>
+      <p>O cardápio muda com a estação. Estes são os pratos que nunca saem.</p>
+    </div>
+    <div class="carta-grupos">
+              <div class="carta-grupo">
+          <h3>Entradas</h3>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Steak tartare de carne maturada</strong>
+                <span>Gema curada, mostarda antiga e pão de fermentação natural</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 79</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Carpaccio de camarão</strong>
+                <span>Cítricos, azeite extravirgem e flor de sal</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 89</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Alcachofras confitadas</strong>
+                <span>Presunto cru crocante e creme de trufa</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 62</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Croquetes da casa</strong>
+                <span>Meia dúzia, receita da avó do chef</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 48</div>
+            </div>
+                  </div>
+              <div class="carta-grupo">
+          <h3>Pratos principais</h3>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Carré de cordeiro</strong>
+                <span>Batata confitada, pimentões assados e molho de alecrim</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 139</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Robalo na brasa</strong>
+                <span>Legumes da estação e beurre blanc de açafrão</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 118</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Arroz cremoso de camarão</strong>
+                <span>Mínimo duas pessoas, preço por pessoa</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 109</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Filé mignon</strong>
+                <span>Foie gras grelhado e redução de vinho do Porto</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 145</div>
+            </div>
+                  </div>
+              <div class="carta-grupo">
+          <h3>Sobremesas e vinhos</h3>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Petit gâteau de chocolate</strong>
+                <span>Sorvete de baunilha e frutas vermelhas</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 39</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Cheesecake assado</strong>
+                <span>Cremoso, com geleia de figo</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 36</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Harmonização de 5 taças</strong>
+                <span>Seleção do sommelier para o menu degustação</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 159</div>
+            </div>
+                      <div class="plato">
+              <div class="plato-txt">
+                <strong>Menu degustação</strong>
+                <span>Nove tempos, a cozinha do chef do começo ao fim</span>
+              </div>
+              <div class="plato-puntos"></div>
+              <div class="plato-precio">R$ 320</div>
+            </div>
+                  </div>
+          </div>
+  </div>
+</section>
+
+<!-- Galería -->
+<section id="galeria" style="background:var(--negro-2)">
+  <div class="env">
+    <div class="cab-sec centro">
+      <span class="rotulo">Galeria</span>
+      <h2>O restaurante por dentro</h2>
+      <div class="filete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17.5 4.5 7l4.5 4L12 5l3 6 4.5-4L21 17.5z"/><path d="M3 20.5h18"/></svg></div>
+    </div>
+    <div class="galeria">
+              <div class="galeria-celda"><img src="imagens/sala.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/plato.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/vinos.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/chef.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/eventos.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/postre.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/hero.jpg" alt="" loading="lazy"></div>
+              <div class="galeria-celda"><img src="imagens/barra.jpg" alt="" loading="lazy"></div>
+          </div>
+  </div>
+</section>
+
+<!-- Blog -->
+<section id="blog">
+  <div class="env">
+    <div class="cab-sec centro">
+      <span class="rotulo">Blog</span>
+      <h2>Da cozinha à mesa</h2>
+      <div class="filete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17.5 4.5 7l4.5 4L12 5l3 6 4.5-4L21 17.5z"/><path d="M3 20.5h18"/></svg></div>
+    </div>
+    <div class="blog-rejilla">
+              <article class="post">
+          <span class="post-tag">Estação</span>
+          <h3>Alcachofra: por que só servimos três meses por ano</h3>
+          <p>Nosso chef explica por que prefere esperar o ingrediente estar no ponto em vez de tê-lo o ano todo no cardápio.</p>
+          <a href="#contacto" class="enlace-flecha">Ler mais →</a>
+        </article>
+              <article class="post">
+          <span class="post-tag">Harmonização</span>
+          <h3>Cinco vinhos que você precisa provar neste inverno</h3>
+          <p>Nosso sommelier escolhe cinco rótulos fora do comum, todos abaixo de R$ 150.</p>
+          <a href="#contacto" class="enlace-flecha">Ler mais →</a>
+        </article>
+              <article class="post">
+          <span class="post-tag">Cozinha</span>
+          <h3>Como preparamos o steak tartare na mesa</h3>
+          <p>O passo a passo do prato mais pedido, e por que montamos na frente do cliente.</p>
+          <a href="#contacto" class="enlace-flecha">Ler mais →</a>
+        </article>
+          </div>
+  </div>
+</section>
+
+<!-- Reserva -->
+<section class="contacto" id="contacto">
+  <div class="env">
+    <div class="cont-rejilla">
+      <div>
+        <span class="rotulo">Reservas e eventos</span>
+        <h2 style="margin-bottom:14px">Reserve sua mesa</h2>
+        <p style="color:var(--apagado);margin-bottom:30px">Conte quantas pessoas são e quando querem vir. O pedido de reserva chega no nosso WhatsApp e confirmamos rapidinho.</p>
+        <div class="cont-dato"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.5s7-6.2 7-11.1A7 7 0 1 0 5 10.4c0 4.9 7 11.1 7 11.1z"/><circle cx="12" cy="10" r="2.6"/></svg><div><strong>Endereço</strong><span><span data-cfg="endereco">Rua da Gastronomia, 24 · Jardins, São Paulo - SP</span></span></div></div>
+        <div class="cont-dato"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16.5v2.6a1.9 1.9 0 0 1-2.1 1.9 18.8 18.8 0 0 1-8.2-2.9 18.4 18.4 0 0 1-5.7-5.7A18.8 18.8 0 0 1 2.1 4.1 1.9 1.9 0 0 1 4 2h2.6a1.9 1.9 0 0 1 1.9 1.6c.1.9.3 1.8.7 2.7a1.9 1.9 0 0 1-.4 2L7.6 9.5a15 15 0 0 0 5.7 5.7l1.2-1.2a1.9 1.9 0 0 1 2-.4c.9.3 1.8.6 2.7.7A1.9 1.9 0 0 1 21 16.5z"/></svg><div><strong>Telefone</strong><span><span data-cfg="telefone">(11) 3333-4444</span></span></div></div>
+        <div class="cont-dato"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M2.5 7 12 13.5 21.5 7"/></svg><div><strong>E-mail</strong><span><span data-cfg="email">reservas@restaurantepremium.com.br</span></span></div></div>
+        <div class="cont-dato"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.3 2"/></svg><div><strong>Horário</strong><span>Terça a domingo: 12:00 - 00:00<br>Segunda: fechado</span></div></div>
+      </div>
+
+      <form class="formulario" id="formReserva" novalidate>
+        <div class="dos">
+          <div class="campo"><label for="nombre">Nome completo</label><input type="text" id="nombre" name="nombre" autocomplete="name"></div>
+          <div class="campo"><label for="telefono">Telefone</label><input type="tel" id="telefono" name="telefono" autocomplete="tel"></div>
+        </div>
+        <div class="campo"><label for="email">E-mail</label><input type="email" id="email" name="email" autocomplete="email"></div>
+        <div class="dos">
+          <div class="campo"><label for="fecha">Data</label><input type="date" id="fecha" name="fecha"></div>
+          <div class="campo"><label for="personas">Pessoas</label>
+            <select id="personas" name="personas">
+              <option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>              <option>Mais de 12</option>
+            </select>
+          </div>
+        </div>
+        <div class="campo"><label for="mensaje">Alergias, comemorações ou qualquer detalhe</label><textarea id="mensaje" name="mensaje" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-terra" style="width:100%"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>Pedir reserva pelo WhatsApp</button>
+        <div class="aviso-form" id="avisoForm" role="status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Franja terracota -->
+<section class="franja" id="eventos">
+  <div class="env">
+    <div class="franja-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg><div><strong>Reserva online</strong><span>Rápido, fácil e seguro</span></div></div>
+    <div class="franja-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.4 2.9-5.8 6.5-5.8s6.5 2.4 6.5 5.8"/><path d="M16.5 6.4a3 3 0 0 1 0 5.4M18.5 14.6c1.9.7 3 2.2 3 4.1"/></svg><div><strong>Atendimento personalizado</strong><span>Nossa equipe ajuda você</span></div></div>
+    <div class="franja-item"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="8" width="19" height="4" rx="1"/><path d="M4.5 12v8.5h15V12M12 8v12.5"/><path d="M12 8S10.5 3.5 8 4.5 9.5 8 12 8zM12 8s1.5-4.5 4-3.5S14.5 8 12 8z"/></svg><div><strong>Presenteie experiências</strong><span>Vale-presente disponível</span></div></div>
+    <a href="#contacto" class="btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16.5" rx="2"/><path d="M3 10h18M8 2.5v5M16 2.5v5"/><path d="M9 14.5l2 2 4-4"/></svg>Reservar mesa agora</a>
+  </div>
+</section>
+
+<!-- Pie -->
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div>
+        <div class="marca" style="margin-bottom:16px">
+          <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="26" r="13" stroke="#c9a227" stroke-width="1.6"/><circle cx="24" cy="26" r="7.5" fill="#c1462f"/><path d="M10 12v9a3 3 0 0 0 6 0v-9M13 21v15" stroke="#c9a227" stroke-width="1.6" stroke-linecap="round"/><path d="M38 12c-2.4 2.4-3.4 5.2-3.4 8.6 0 2.4 1.2 4 3.4 4.6V36" stroke="#c9a227" stroke-width="1.6" stroke-linecap="round"/></svg>          <span class="marca-txt">
+            <strong>Restaurante</strong>
+            <span>· Premium ·</span>
+          </span>
+        </div>
+        <p><span data-cfg="endereco">Rua da Gastronomia, 24 · Jardins, São Paulo - SP</span><br><span data-cfg="telefone">(11) 3333-4444</span><br><span data-cfg="email">reservas@restaurantepremium.com.br</span></p>
+      </div>
+      <div>
+        <h4>O restaurante</h4>
+        <a href="#nosotros">Sobre nós</a><a href="#carta">Cardápio</a>
+        <a href="#experiencias">Experiências</a><a href="#galeria">Galeria</a>
+      </div>
+      <div>
+        <h4>Reservas</h4>
+        <a href="#contacto">Reservar mesa</a><a href="#eventos">Eventos privados</a>
+        <a href="#contacto">Vale-presente</a><a href="#blog">Blog</a>
+      </div>
+      <div>
+        <h4>Horário</h4>
+        <p>Terça a domingo: 12:00 - 00:00<br>Segunda: fechado</p>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span>© <span id="anio">2026</span> Restaurante Premium. Todos os direitos reservados.</span>
+      <span>Aviso legal · Privacidade · Cookies</span>
+    </div>
+  </div>
+</footer>
+
+  <a class="wa" href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Gostaria%20de%20reservar%20uma%20mesa." target="_blank" rel="noopener" aria-label="WhatsApp"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.4-4.3A8.5 8.5 0 1 1 20.5 11.6z"/><path d="M8.9 8.4c.3-.7.6-.7.9-.7h.6c.2 0 .5 0 .7.5l.8 1.9c.1.2 0 .4-.1.6l-.4.5c-.1.2-.3.4-.1.7.2.4.9 1.4 1.9 2 1.2.7 1.4.5 1.7.5.2-.1.6-.5.7-.7.2-.2.3-.2.5-.1l1.8.9c.3.1.4.2.5.4 0 .2 0 .9-.3 1.3-.4.5-1.1.9-1.6.9-1.1.1-2.6-.3-4.4-1.5-2.1-1.4-3.4-3.5-3.5-3.7-.1-.2-.8-1.2-.8-2.3 0-1 .5-1.5.7-1.7z"/></svg></a>
+
+<script src="js/site.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

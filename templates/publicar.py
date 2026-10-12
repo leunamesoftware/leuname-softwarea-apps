@@ -28,12 +28,17 @@ def demo_unica(site):
         return f'data:{tipo};base64,' + base64.b64encode(f.read_bytes()).decode()
     fotos = lambda txt: re.sub(r'imagens/[\w.\-]+', lambda m: dado(m.group(0)), txt)
     html = (site / 'index.html').read_text()
-    css = fotos((site / 'css' / 'style.css').read_text())
-    cfg = fotos((site / 'configuracao.js').read_text()).replace('avisoDemonstracao: false', 'avisoDemonstracao: true')
-    js = (site / 'js' / 'site.js').read_text()
-    html = html.replace('<link rel="stylesheet" href="css/style.css">', '<style>\n' + css.replace('</style', '<\\/style') + '\n</style>')
-    html = html.replace('<script src="configuracao.js"></script>', '<script>\n' + cfg.replace('</script', '<\\/script') + '\n</script>')
-    html = html.replace('<script src="js/site.js"></script>', '<script>\n' + js.replace('</script', '<\\/script') + '\n</script>')
+    def css_inline(m):
+        f = site / m.group(1)
+        return '<style>\n' + fotos(f.read_text()).replace('../imagens/', 'imagens/').replace('</style', '<\\/style') + '\n</style>' if f.is_file() else m.group(0)
+    def js_inline(m):
+        f = site / m.group(1)
+        if not f.is_file(): return m.group(0)
+        t = f.read_text()
+        if f.name == 'configuracao.js': t = fotos(t).replace('avisoDemonstracao: false', 'avisoDemonstracao: true')
+        return '<script>\n' + t.replace('</script', '<\\/script') + '\n</script>'
+    html = re.sub(r'<link rel="stylesheet" href="([^":]+\.css)">', css_inline, html)
+    html = re.sub(r'<script src="([^":]+\.js)"></script>', js_inline, html)
     return fotos(html)
 
 for t in catalogo:
@@ -52,7 +57,8 @@ for t in catalogo:
         .replace('{{INCLUI_TXT}}', '\n'.join('· ' + r for r in t.get('recursos', []))))
     (venda / 'VER-DEMONSTRACAO.html').write_text(demo_unica(site))
     fotos = (raiz / tid / 'fotos.html').read_text() if (raiz / tid / 'fotos.html').exists() else ''
-    (venda / 'LEIA-ME-PRIMEIRO.html').write_text(leia.replace('{{NOME}}', t['nome'].replace('Site pronto: ', '')).replace('{{FOTOS}}', fotos).replace('{{INCLUI}}', inclui.rstrip()))
+    (venda / 'LEIA-ME-PRIMEIRO.html').write_text(leia.replace('{{NOME}}', t['nome'].replace('Site pronto: ', '')).replace('{{FOTOS}}', fotos).replace('{{INCLUI}}', inclui.rstrip())
+        .replace('{{PERSONALIZAR}}', (raiz / '_conversor' / ('personalizar-html.html' if t.get('edicao') == 'html' else 'personalizar-config.html')).read_text()))
     lista[tid] = sorted(str(p.relative_to(venda)) for p in venda.rglob('*') if p.is_file())
     print(tid, len(lista[tid]), 'arquivos')
 saida = repo / 'calculadora' / 'src' / 'templates_arquivos.js'

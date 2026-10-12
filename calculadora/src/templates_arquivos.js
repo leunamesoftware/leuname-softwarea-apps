@@ -78,5 +78,113 @@ export const TEMPLATES = {
    "site-completo/index.html",
    "site-completo/js/site.js"
   ]
+ },
+ "pizzaria": {
+  "id": "pizzaria",
+  "plano": "tpl_pizzaria",
+  "nome": "Site pronto: Pizzaria",
+  "segmento": "Pizzaria",
+  "preco": 250,
+  "parcelas": 10,
+  "edicao": "html",
+  "resumo": "Site completo para pizzaria: cardápio, carrinho e pedido pronto no WhatsApp, com entrega ou retirada.",
+  "descricao": "Site profissional e pronto para a sua pizzaria, com cara de pizzaria italiana. Cardápio com as pizzas mais pedidas, combo família, carrinho de compras, entrega ou retirada com taxa e pedido mínimo, dia e hora do pedido: tudo chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, pizzas e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "recursos": [
+   "Carrinho com pedido pronto no WhatsApp",
+   "Entrega ou retirada, taxa e pedido mínimo",
+   "Cliente escolhe dia e hora do pedido",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "arquivos": [
+   "LEIA-ME-PRIMEIRO.html",
+   "VER-DEMONSTRACAO.html",
+   "site-completo/LEIA-ME.txt",
+   "site-completo/configuracao.js",
+   "site-completo/css/style.css",
+   "site-completo/imagens/hero.jpg",
+   "site-completo/imagens/menu-familiar.jpg",
+   "site-completo/imagens/prod-bufala.jpg",
+   "site-completo/imagens/prod-diavola.jpg",
+   "site-completo/imagens/prod-funghi.jpg",
+   "site-completo/imagens/prod-margherita.jpg",
+   "site-completo/index.html",
+   "site-completo/js/main.js",
+   "site-completo/js/site.js"
+  ]
+ },
+ "padaria": {
+  "id": "padaria",
+  "plano": "tpl_padaria",
+  "nome": "Site pronto: Padaria",
+  "segmento": "Padaria",
+  "preco": 250,
+  "parcelas": 10,
+  "edicao": "html",
+  "resumo": "Site completo para padaria e confeitaria: 16 produtos, carrinho e encomendas pelo WhatsApp.",
+  "descricao": "Site profissional e pronto para a sua padaria. Categorias (pães, doces, bolos, salgados e bebidas), 16 produtos com foto, preço e unidade, carrinho de compras, encomendas especiais, entrega ou retirada, horário da loja e história da padaria: o pedido chega pronto e somado no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, produtos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "recursos": [
+   "16 produtos com filtro por categoria",
+   "Carrinho com pedido pronto no WhatsApp",
+   "Encomendas, entrega ou retirada",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "arquivos": [
+   "LEIA-ME-PRIMEIRO.html",
+   "VER-DEMONSTRACAO.html",
+   "site-completo/LEIA-ME.txt",
+   "site-completo/configuracao.js",
+   "site-completo/css/style.css",
+   "site-completo/imagens/bebidas.jpg",
+   "site-completo/imagens/bolleria.jpg",
+   "site-completo/imagens/bolsa.jpg",
+   "site-completo/imagens/hero.jpg",
+   "site-completo/imagens/panes.jpg",
+   "site-completo/imagens/pasteleria.jpg",
+   "site-completo/imagens/salados.jpg",
+   "site-completo/index.html",
+   "site-completo/js/main.js",
+   "site-completo/js/site.js"
+  ]
+ },
+ "restaurante": {
+  "id": "restaurante",
+  "plano": "tpl_restaurante",
+  "nome": "Site pronto: Restaurante",
+  "segmento": "Restaurante",
+  "preco": 280,
+  "parcelas": 10,
+  "edicao": "html",
+  "resumo": "Site elegante para restaurante: cardápio, galeria, blog e reserva de mesa pelo WhatsApp.",
+  "descricao": "Site profissional e elegante para o seu restaurante. Banner com fotos que passam sozinhas, cardápio com entradas, pratos e sobremesas, menu degustação, galeria, depoimentos, blog e reserva de mesa: o pedido de reserva (nome, dia, hora e número de pessoas) chega pronto no seu WhatsApp. Você troca nome, WhatsApp e contatos em um arquivo só, e os textos, pratos e preços direto no site. Recebe a pasta completa (ZIP) no e-mail logo depois do pagamento.",
+  "recursos": [
+   "Reserva de mesa pelo WhatsApp",
+   "Cardápio com entradas, pratos e sobremesas",
+   "Galeria, depoimentos e blog",
+   "Funciona no celular, tablet e computador",
+   "Contatos em um arquivo só",
+   "Licença para 1 empresa e 1 domínio"
+  ],
+  "arquivos": [
+   "LEIA-ME-PRIMEIRO.html",
+   "VER-DEMONSTRACAO.html",
+   "site-completo/LEIA-ME.txt",
+   "site-completo/configuracao.js",
+   "site-completo/css/style.css",
+   "site-completo/imagens/barra.jpg",
+   "site-completo/imagens/chef.jpg",
+   "site-completo/imagens/eventos.jpg",
+   "site-completo/imagens/hero.jpg",
+   "site-completo/imagens/plato.jpg",
+   "site-completo/imagens/postre.jpg",
+   "site-completo/imagens/sala.jpg",
+   "site-completo/imagens/vinos.jpg",
+   "site-completo/index.html",
+   "site-completo/js/main.js",
+   "site-completo/js/site.js"
+  ]
  }
 };

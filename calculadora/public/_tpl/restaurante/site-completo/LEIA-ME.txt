@@ -1,0 +1,53 @@
+Restaurante — Site pronto
+Criado por LeuName Softwares · www.leunamesoftware.com.br
+
+═══════════════════════════════════════════════
+COMO PUBLICAR SEU SITE (3 passos)
+═══════════════════════════════════════════════
+
+1. ABRIR
+   Dê dois cliques em "index.html" para ver o site no navegador.
+
+2. PERSONALIZAR
+   Abra o arquivo "configuracao.js" com o Bloco de Notas (ou VS Code)
+   e troque só o que está entre aspas:
+     · Nome, WhatsApp, telefone e endereço
+     · Cores, textos, produtos e preços
+     · As fotos: substitua os arquivos da pasta "imagens/"
+       mantendo os mesmos nomes
+
+3. PUBLICAR
+   Envie TODO o conteúdo desta pasta para a sua hospedagem
+   (Hostinger, HostGator, cPanel, Netlify…).
+   O arquivo principal precisa se chamar "index.html".
+
+═══════════════════════════════════════════════
+CONTEÚDO
+═══════════════════════════════════════════════
+index.html        Página completa
+configuracao.js   O ÚNICO arquivo que você edita
+css/style.css     Estilos
+js/site.js        Funcionamento do site (não precisa mexer)
+imagens/          Fotos
+
+═══════════════════════════════════════════════
+O QUE VEM NO SITE
+═══════════════════════════════════════════════
+· Reserva de mesa pelo WhatsApp
+· Cardápio com entradas, pratos e sobremesas
+· Galeria, depoimentos e blog
+· Funciona no celular, tablet e computador
+· Contatos em um arquivo só
+· Licença para 1 empresa e 1 domínio
+
+═══════════════════════════════════════════════
+AVISO
+═══════════════════════════════════════════════
+Todo o conteúdo de exemplo (nome, textos, preços, depoimentos e
+contatos) é DEMONSTRATIVO e fictício. Troque pelo da sua empresa
+antes de publicar.
+
+Licença de uso para 1 (uma) empresa e 1 (um) domínio.
+O crédito "Desenvolvido por LeuName Softwares" no rodapé faz parte
+da licença e precisa ficar no site.
+Suporte: WhatsApp (24) 99872-1557
