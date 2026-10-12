@@ -155,8 +155,12 @@
         nota: '✅ <b>Vitalício:</b> paga uma vez, é seu para sempre.<br>🛠️ Correções sempre grátis.<br>🔄 Recursos novos: compre só a atualização, quando quiser.' },
     };
     for (const k of Object.keys(TIPOS)) if (!P.planos[k]) delete TIPOS[k]; // o app pode não ter todos os tipos
-    if (P.template) Object.assign(TIPOS.unico, { nome: 'Pagamento único', como: `Pix ou cartão em até ${P.parcelas}x.`,
+    if (P.template) Object.assign(TIPOS.unico, { nome: 'Site completo', como: `Com a linha “Desenvolvido por LeuName Softwares” no rodapé. Pix ou cartão em até ${P.parcelas}x.`,
       nota: '📦 Você recebe a <b>pasta completa (ZIP)</b> no e-mail logo depois do pagamento, com o manual passo a passo.<br>🔑 Licença para 1 empresa e 1 domínio.' });
+    // Site pronto: extra opcional para sair sem o crédito "Desenvolvido por LeuName Softwares" (R$ 50 a mais; servidor: <app>_semcredito).
+    if (P.template) TIPOS.semcredito = { id: `${app}_semcredito`, nome: 'Sem o crédito no rodapé', valor: reais(P.planos.unico + 50),
+      como: `Sem a linha “Desenvolvido por LeuName Softwares”. Pix ou cartão em até ${P.parcelas}x.`,
+      nota: '📦 Você recebe a <b>pasta completa (ZIP)</b> no e-mail logo depois do pagamento, com o manual passo a passo.<br>✨ O site vai <b>sem</b> a linha “Desenvolvido por LeuName Softwares” no rodapé.<br>🔑 Licença para 1 empresa e 1 domínio.' };
     const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : ('anual' in TIPOS ? 'anual' : 'mensal' in TIPOS ? 'mensal' : 'unico');
     document.title = `Comprar ${P.nome} — LeuName Softwares`;
     document.getElementById('icone').src = P.icone || `/img/${app}-192.png`;

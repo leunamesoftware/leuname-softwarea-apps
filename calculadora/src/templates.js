@@ -2,6 +2,7 @@
 // Arquivos de cada template ficam em public/_tpl/<id>/ (bloqueados para acesso direto) e a lista em templates_arquivos.js.
 import { TEMPLATES } from './templates_arquivos.js';
 import { montarZip } from './zip.js';
+import { PLANOS } from './planos.js';
 
 export { TEMPLATES };
 const MAX_DOWNLOADS = 20;
@@ -40,7 +41,7 @@ export async function conferirLicenca(env, chave, dominio) {
 /** Monta o ZIP do cliente: arquivos do template + a licença dele no configuracao.js. */
 export async function zipDoPedido(env, pedidoId, origem) {
   if (!/^[0-9a-f]{36}$/.test(String(pedidoId || ''))) return null;
-  const l = await env.DB.prepare("SELECT t.chave, t.template, t.downloads FROM template_licencas t JOIN pedidos p ON p.id = t.pedido_id WHERE t.pedido_id = ? AND p.status = 'pago'").bind(pedidoId).first();
+  const l = await env.DB.prepare("SELECT t.chave, t.template, t.downloads, p.plano FROM template_licencas t JOIN pedidos p ON p.id = t.pedido_id WHERE t.pedido_id = ? AND p.status = 'pago'").bind(pedidoId).first();
   const T = l && TEMPLATES[l.template];
   if (!T) return null;
   if (l.downloads >= MAX_DOWNLOADS) return { limite: true };
@@ -52,6 +53,11 @@ export async function zipDoPedido(env, pedidoId, origem) {
     if (nome === 'site-completo/configuracao.js') {
       const txt = new TextDecoder().decode(dados).replace('licenca: ""', `licenca: "${l.chave}"`).replace('avisoDemonstracao: true', 'avisoDemonstracao: false');
       dados = new TextEncoder().encode(txt);
+    }
+    // Comprou o extra "sem crédito": o site vai sem o bloco que escreve o crédito no rodapé.
+    if (nome === 'site-completo/js/site.js' && PLANOS[l.plano]?.semCredito) {
+      const txt = new TextDecoder().decode(dados), i = txt.indexOf('\n/* rodapé */');
+      if (i >= 0) dados = new TextEncoder().encode(txt.slice(0, i) + '\n');
     }
     arquivos.push({ nome: `${T.id}/${nome}`, dados });
   }

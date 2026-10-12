@@ -212,7 +212,9 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   inteiro fica bloqueado (tela "Site bloqueado" no site.js; volta se apagarem).
 - Crédito "Desenvolvido por LeuName Softwares" no rodapé: NÃO fica no index.html; o bloco /* rodapé */ no fim do site.js
   escreve o crédito (texto codificado) e põe de volta se apagarem, esconderem ou trocarem. Faz parte da licença (guia, LEIA-ME.txt, FAQ).
-  Template novo: copie esse bloco do fim do site.js. Licença = 1 empresa / 1 domínio:
+  Template novo: copie esse bloco do fim do site.js.
+- Extra pago "Sem o crédito no rodapé" (+R$ 50, EXTRA_SEM_CREDITO em planos.js): plano <plano>_semcredito; o zipDoPedido tira o bloco
+  /* rodapé */ do site.js desse cliente (a licença continua). Opção aparece sozinha no comprar.html de todo template. Licença = 1 empresa / 1 domínio:
   o site pergunta /loja-api/template/licenca e fica preso ao 1º domínio real (localhost, .pages.dev, .netlify.app etc. não prendem).
   Domínio errado → faixa vermelha "sem licença". Trocar o domínio de um cliente: apagar `dominio` em template_licencas (D1).
 - Template novo: (1) adaptar de leunamesoftware/leuname-software (pacotes-hotmart/<nome>/site-completo) para

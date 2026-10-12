@@ -94,6 +94,24 @@ test('ZIP só sai depois de pago, com a licença do cliente e sem a faixa de dem
   assert.equal(await zipDoPedido(env, 'nao-e-id', 'https://x'), null);
 });
 
+test('extra "sem crédito": o ZIP vai sem o bloco do crédito; o normal vai com ele', async () => {
+  const ler = async (plano, id) => {
+    const env = banco();
+    await registrarLicencaTemplate(env, { id, email: 'c@x.com' }, 'LEU-CRED-' + id.slice(0, 4), 'burger-e-pizza');
+    env.lic.get('LEU-CRED-' + id.slice(0, 4)).plano = plano;
+    env.ASSETS = { fetch: async (req) => new Response(readFileSync(new URL('../public' + new URL(req.url).pathname, import.meta.url))) };
+    env.pedidos.set(id, 'pago');
+    const z = await zipDoPedido(env, id, 'https://x');
+    const dir = mkdtempSync(join(tmpdir(), 'cred-'));
+    writeFileSync(join(dir, 't.zip'), z.zip);
+    return execFileSync('python3', ['-c', `import zipfile,sys;print(zipfile.ZipFile(sys.argv[1]).read('burger-e-pizza/site-completo/js/site.js').decode())`, join(dir, 't.zip')]).toString();
+  };
+  assert.ok((await ler('tpl_burger', 'c'.repeat(36))).includes('/* rodapé */'), 'compra normal leva o crédito');
+  const sem = await ler('tpl_burger_semcredito', 'd'.repeat(36));
+  assert.ok(!sem.includes('/* rodapé */') && sem.includes('Site bloqueado'), 'sem crédito: tira só o crédito, a licença continua');
+  assert.equal(PLANOS.tpl_burger_semcredito.preco, PLANOS.tpl_burger.preco + 50);
+});
+
 test('compra estornada: a licença para de valer no site do cliente', async () => {
   const env = banco();
   await registrarLicencaTemplate(env, { id: 'p9', email: 'x@y.com' }, 'LEU-EEEE-FFFF-0011', 'agencia-de-viagens');

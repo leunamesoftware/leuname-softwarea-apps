@@ -28,9 +28,13 @@ export const PLANOS = {
   leuburger: { app: 'leuburger', licenca: 'leuburger', preco: 149.9, parcelas: 6, foraDeVenda: true, titulo: 'LeuBurger PDV — pagamento único (para sempre)' },
   leuburger_mensal: { app: 'leuburger', licenca: 'leuburger', preco: 29.9, dias: 33, assinatura: true, titulo: 'LeuBurger PDV — plano mensal' },
 };
+export const EXTRA_SEM_CREDITO = 50;
 // Templates de site (ZIP): pagamento único; o e-mail leva o link de download (templates/catalogo.json).
 for (const t of Object.values(TEMPLATES)) {
   PLANOS[t.plano] = { app: 'template', template: t.id, licenca: 'templates-site', preco: t.preco, parcelas: t.parcelas, titulo: `Template de site — ${t.nome.replace(/^Site pronto: /, '')}` };
+  // Extra: o mesmo site sem o crédito "Desenvolvido por LeuName Softwares" no rodapé (R$ 50 a mais).
+  PLANOS[t.plano + '_semcredito'] = { app: 'template', template: t.id, licenca: 'templates-site', preco: t.preco + EXTRA_SEM_CREDITO, parcelas: t.parcelas, semCredito: true,
+    titulo: `Template de site — ${t.nome.replace(/^Site pronto: /, '')} (sem crédito no rodapé)` };
 }
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';
 const PLANOS_RECEITAS = Object.keys(PLANOS).filter((k) => PLANOS[k].app === 'quantocobrar');
