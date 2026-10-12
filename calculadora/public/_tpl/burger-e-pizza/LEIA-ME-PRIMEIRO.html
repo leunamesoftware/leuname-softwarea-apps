@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leia-me primeiro — Site pronto: Hamburgueria e Pizzaria</title>
+<style>
+  :root{--tinta:#14213d;--suave:#5b6478;--linha:#e3e7ef;--azul:#1e6fd9;--fundo:#f5f7fb;}
+  *{box-sizing:border-box} body{margin:0;background:var(--fundo);color:var(--tinta);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:820px;margin:0 auto;padding:28px 18px 60px}
+  header{background:#0a2647;color:#fff;border-radius:16px;padding:24px 26px;margin-bottom:22px}
+  header small{opacity:.75;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+  header h1{margin:6px 0 4px;font-size:26px;line-height:1.2} header p{margin:0;opacity:.85}
+  section{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+  h2{margin:0 0 10px;font-size:19px} h2 span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--azul);color:#fff;font-size:15px;margin-right:8px}
+  code{background:#eef2f8;border-radius:6px;padding:2px 6px;font-size:14px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px} td,th{border-bottom:1px solid var(--linha);padding:8px 6px;text-align:left;vertical-align:top}
+  .dica{background:#eaf7ef;border-radius:10px;padding:12px 14px;color:#145c33;margin-top:10px}
+  .alerta{background:#fff6e5;border-radius:10px;padding:12px 14px;color:#7a5200;margin-top:10px}
+  ol,ul{padding-left:22px;margin:6px 0} li{margin-bottom:6px}
+  a{color:var(--azul)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <small>LeuName Softwares · Template de site</small>
+  <h1>Site pronto: Hamburgueria e Pizzaria</h1>
+  <p>Obrigado pela compra! Siga estes passos e o seu site fica no ar ainda hoje.</p>
+</header>
+
+<section>
+  <h2><span>1</span>Veja o site no seu computador</h2>
+  <ol>
+    <li>Descompacte o arquivo ZIP (botão direito → <b>Extrair tudo</b>).</li>
+    <li>Abra a pasta <code>site</code> e dê dois cliques no <code>index.html</code>. O site abre no navegador.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span>2</span>Coloque os dados da sua empresa</h2>
+  <p>Tudo o que muda fica em <b>um arquivo só</b>: <code>site/configuracao.js</code>.</p>
+  <ol>
+    <li>Clique com o botão direito no <code>configuracao.js</code> → <b>Abrir com</b> → <b>Bloco de Notas</b> (no Mac: TextEdit).</li>
+    <li>Troque só o que está <b>entre aspas</b>: nome, WhatsApp, telefone, endereço, cores, produtos, preços, fotos e depoimentos.</li>
+    <li>Salve e atualize o <code>index.html</code> no navegador para ver como ficou.</li>
+  </ol>
+  <div class="alerta">⚠️ Não apague vírgulas, aspas, chaves <code>{ }</code> nem colchetes <code>[ ]</code>. Se algo sumir do site, desfaça a última mudança (Ctrl+Z) e salve de novo.</div>
+  <div class="dica">💡 O WhatsApp vai assim: <code>55</code> + DDD + número, só números. Ex.: <code>5511999999999</code>. Todos os botões e formulários do site mandam o pedido direto para esse WhatsApp.</div>
+</section>
+
+<section>
+  <h2><span>3</span>Troque as fotos e o logo</h2>
+  <p>Na pasta <code>site/imagens</code>, substitua cada foto por uma sua <b>com o mesmo nome</b>.</p>
+  <table>
+    <tr><th>Arquivo</th><th>Onde aparece</th><th>Tamanho ideal</th></tr>
+    <tr><td><code>banner.jpg</code></td><td>Foto grande do topo (computador)</td><td>1920 × 720</td></tr>
+    <tr><td><code>banner-celular.jpg</code></td><td>Foto do topo no celular</td><td>800 × 860</td></tr>
+    <tr><td><code>hamburguer.webp</code>, <code>pizza.webp</code>, <code>porcao.webp</code>, <code>refrigerante.webp</code></td><td>Fotos dos produtos (sem fundo ficam mais bonitas)</td><td>800 × 600, fundo transparente</td></tr>
+    <tr><td><code>combos.jpg</code></td><td>Banner de promoções</td><td>1600 × 900</td></tr>
+    <tr><td><code>sobre.jpg</code></td><td>Foto do "Sobre nós"</td><td>1400 × 875</td></tr>
+    <tr><td><code>galeria-1.jpg</code> a <code>galeria-5.jpg</code></td><td>Galeria de fotos</td><td>700 × 700</td></tr>
+    <tr><td><code>cliente-1.jpg</code> a <code>cliente-3.jpg</code></td><td>Fotos dos depoimentos</td><td>240 × 240</td></tr>
+    <tr><td><code>logo.webp</code></td><td>Topo e rodapé</td><td>altura 150 px, fundo transparente</td></tr>
+  </table>
+  <div class="dica">💡 Produto novo: no <code>configuracao.js</code>, copie uma linha de produto, troque nome, descrição, preço e foto. Para tirar um produto, apague a linha inteira. Cada produto pode usar a foto que você quiser (.jpg, .png ou .webp).</div>
+  <div class="dica">💡 Os pedidos chegam prontos no seu WhatsApp: itens, total, nome, endereço, forma de pagamento e troco.</div>
+
+  <div class="dica">💡 Fotos leves deixam o site rápido: antes de colocar, passe em <a href="https://squoosh.app" target="_blank" rel="noopener">squoosh.app</a> (grátis).</div>
+</section>
+
+<section>
+  <h2><span>4</span>Coloque o site no ar</h2>
+  <p><b>Opção A — Hospedagem paga</b> (Hostinger, HostGator, Locaweb, KingHost…):</p>
+  <ol>
+    <li>No painel da hospedagem, abra o <b>Gerenciador de Arquivos</b>.</li>
+    <li>Entre na pasta <code>public_html</code>.</li>
+    <li>Envie <b>tudo o que está dentro</b> da pasta <code>site</code> (não a pasta em si): <code>index.html</code>, <code>configuracao.js</code> e as pastas <code>css</code>, <code>js</code> e <code>imagens</code>.</li>
+  </ol>
+  <p><b>Opção B — Grátis</b> (Cloudflare Pages ou Netlify):</p>
+  <ol>
+    <li>Crie a conta em <a href="https://pages.cloudflare.com" target="_blank" rel="noopener">pages.cloudflare.com</a> ou <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a>.</li>
+    <li>Arraste a pasta <code>site</code> para a página. Em poucos segundos o site está no ar.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span>5</span>Ligue o seu domínio</h2>
+  <ol>
+    <li>Compre o domínio (ex.: <code>suaempresa.com.br</code>) no <a href="https://registro.br" target="_blank" rel="noopener">registro.br</a> ou na própria hospedagem.</li>
+    <li>Na hospedagem, procure <b>Domínios</b> → <b>Adicionar domínio</b> e siga o passo a passo dela (ela mostra o que colocar no registro.br).</li>
+    <li>Em algumas horas o site abre no seu endereço.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span>6</span>Sua licença</h2>
+  <p>Este template é licenciado para <b>1 empresa e 1 domínio</b>. A sua chave já está dentro do <code>configuracao.js</code> (campo <code>licenca</code>) — não apague.</p>
+  <ul>
+    <li>Na primeira vez que o site abrir no seu domínio, ele fica registrado nele automaticamente.</li>
+    <li>Testes no seu computador e em endereços grátis de teste (como <code>.pages.dev</code> e <code>.netlify.app</code>) funcionam normalmente.</li>
+    <li>Vai trocar de domínio? Fale com a gente no WhatsApp que liberamos.</li>
+  </ul>
+  <div class="alerta">É proibido revender, repassar ou usar este template em outros sites. Cada empresa precisa da sua própria licença.</div>
+</section>
+
+<section>
+  <h2><span>?</span>Precisa de ajuda?</h2>
+  <p>Fale com a LeuName Softwares no WhatsApp: <a href="https://wa.me/5524998721557" target="_blank" rel="noopener">(24) 99872-1557</a>.<br>
+  Prefere que a gente faça tudo (dados, fotos e publicação)? Peça um orçamento pelo mesmo WhatsApp.</p>
+</section>
+</main>
+</body>
+</html>
