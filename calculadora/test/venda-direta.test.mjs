@@ -34,3 +34,13 @@ test('venda direta: libera o app para o e-mail, mesmo antes de o cliente ter con
   assert.equal(apps.construgestao.chave, p.chave);
   assert.equal(apps.construgestao.expiraEm, null, 'vitalício');
 });
+
+test('venda direta de site pronto (também a compra de teste do dono): registra a licença e libera o ZIP', async () => {
+  const { env, db } = ambiente();
+  db.exec('CREATE TABLE template_licencas (chave TEXT PRIMARY KEY, pedido_id TEXT, template TEXT, email TEXT, dominio TEXT, ativado_em TEXT, revogada TEXT, downloads INTEGER DEFAULT 0, criado_em TEXT)');
+  const r = await liberarVendaDireta(env, { email: 'dono@x.com', nome: 'Teste', plano: 'tpl_pizzaria' });
+  assert.equal(r.ok, true);
+  const p = db.prepare('SELECT * FROM pedidos').get();
+  const l = db.prepare('SELECT * FROM template_licencas').get();
+  assert.equal(l.pedido_id, p.id); assert.equal(l.template, 'pizzaria'); assert.equal(l.chave, p.chave);
+});

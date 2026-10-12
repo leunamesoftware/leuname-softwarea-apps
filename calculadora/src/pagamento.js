@@ -219,8 +219,10 @@ export async function liberarVendaDireta(env, d) {
   const agora = new Date().toISOString();
   await env.DB.prepare("INSERT INTO pedidos (id, nome, email, status, plano, conta_id, chave, pagamento_id, criado_em, atualizado_em) VALUES (?, ?, ?, 'pago', ?, ?, ?, ?, ?, ?)")
     .bind(id, nome, email, plano, conta?.id || null, chave, 'venda-direta:' + id.slice(0, 8), agora, agora).run();
+  // Site pronto (template): registra a licença e o e-mail leva o botão de baixar o ZIP desta compra.
+  if (P.template) await registrarLicencaTemplate(env, { id, email }, chave, P.template);
   await aplicarPlano(env, chave, plano);
-  const r = await enviarEmailDaCompra(env, { email, nome, plano }, { contaNova: !conta });
+  const r = await enviarEmailDaCompra(env, { id, email, nome, plano }, { contaNova: !conta });
   if (r.ok) await marcarEmailEnviado(env, id, 'auto');
   return { ok: true, contaExiste: Boolean(conta), emailEnviado: r.ok };
 }
