@@ -95,9 +95,9 @@
   "9,90€": "R$ 59,90",
   "Collar Antiparasitario para Perros": "Coleira antipulgas para cães",
   "15,90 €": "R$ 89,90",
-  "Cama Suave para Mascotas": "Caminha macia para pets",
+  "Cama Suave para Mascotas": "Caixa de transporte para pets",
   "29,90 €": "R$ 149,90",
-  "Arena Aglomerante para Gatos": "Areia higiênica para gatos",
+  "Arena Aglomerante para Gatos": "Suplemento vitamínico para pets",
   "12,90 €": "R$ 39,90",
   "16,90€": "R$ 46,90",
   "Productos para tu mascota": "Produtos para o seu pet",
@@ -126,5 +126,6 @@
   "Cerrar sesión": "Sair",
   "© 2025 PET SHOP Premium. Todos los derechos reservados.": "© 2026 PET SHOP Premium. Todos os direitos reservados."
  },
- "loja_mobile": true
+ "loja_mobile": true,
+ "css_extra": ".cat-foto{background:#f7f3ee!important}.cat-foto img{mix-blend-mode:multiply}.prod-foto{background:#f7f3ee;border-radius:10px;overflow:hidden}.prod-foto img{mix-blend-mode:multiply}img[src*=\"cat-accesorios\"],img[src*=\"cat-juguetes\"],img[src*=\"cat-transporte\"],img[src*=\"prod-collar\"],img[src*=\"prod-cama\"],img[src*=\"prod-kong\"]{object-fit:cover!important;object-position:left center!important}\n.prod-foto img[src*=\"prod-kong\"]{object-fit:contain!important}\n"
 }

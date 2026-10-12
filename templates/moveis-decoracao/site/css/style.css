@@ -316,3 +316,4 @@ html,body{overflow-x:hidden;max-width:100%}
 @media(min-width:900px){:has(> .menu-principal){flex-wrap:wrap;row-gap:4px}.menu-principal{order:3;flex:1 1 100%!important;justify-content:center;flex-wrap:wrap}.menu-principal a{white-space:nowrap}}
 @media(min-width:901px){.cabecera-int{height:auto!important;min-height:76px;padding-top:12px!important;padding-bottom:10px!important}}
 @media(max-width:640px){.categorias-int{grid-template-columns:repeat(2,minmax(0,1fr))!important}.cat-card{min-width:0}}
+.prod-foto,.pie-ig-item{background:#f5f1ea!important}.prod-foto img,.pie-ig-item img,.linea-foto img{mix-blend-mode:multiply}.prod-foto img[src*="prod-aparador"]{object-position:left center!important}.prod-foto img[src*="prod-alfombra"],.prod-foto img[src*="prod-sillon"],.pie-ig-item img[src*="prod-sillon"]{object-position:left top!important}

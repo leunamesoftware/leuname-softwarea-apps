@@ -284,3 +284,5 @@ html,body{overflow-x:hidden;max-width:100%}
 .sem-estilo{display:none!important}
 [class*=precio]>b,[class*=precio]>s,[class*=precio]>strong,[class*=precio]>span,[class*=precio]>del{white-space:nowrap}[class*=precios]{flex-wrap:wrap}
 [data-cfg=email],a[href^='mailto:']{overflow-wrap:anywhere;word-break:break-word}
+.cat-foto{background:#f7f3ee!important}.cat-foto img{mix-blend-mode:multiply}.prod-foto{background:#f7f3ee;border-radius:10px;overflow:hidden}.prod-foto img{mix-blend-mode:multiply}img[src*="cat-accesorios"],img[src*="cat-juguetes"],img[src*="cat-transporte"],img[src*="prod-collar"],img[src*="prod-cama"],img[src*="prod-kong"]{object-fit:cover!important;object-position:left center!important}
+.prod-foto img[src*="prod-kong"]{object-fit:contain!important}
