@@ -191,6 +191,10 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   busca nome/foto/categoria/NCM (`/produto/<ean>` no worker da loja; Cosmos se o segredo `COSMOS_TOKEN` existir).
 
 ## Pendências anotadas (11/10/2026)
+- **Sites prontos com atualização automática (combinado com o dono, fazer depois):** o site do cliente puxa o núcleo (site.js:
+  carrinho, licença, crédito) do nosso servidor em versões (v1, v2…), com cópia reserva na pasta (se o servidor cair, nada para).
+  O servidor entrega a versão que a licença pagou: correções grátis para todos; recursos novos só para quem comprou a atualização
+  (sugestão R$ 49 cada) ou o plano com atualizações (sugestão R$ 9,90/mês ou R$ 99/ano). O dono ainda vai decidir os preços.
 - **Templates de site para vender (ZIP)**: o repositório **leunamesoftware/leuname-software** (transferido da conta antiga em
   11/10/2026; fica guardado lá, só consultar quando precisar) tem 36 templates prontos em `pacotes-hotmart/<nome>/site-completo`
   (prévias em `public/demos/`), em espanhol. A loja antiga (Next/Stripe/Supabase) NÃO se aproveita. Trabalhar sempre na conta
