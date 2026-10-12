@@ -45,10 +45,10 @@ test('venda direta de site pronto (também a compra de teste do dono): registra 
   assert.equal(l.pedido_id, p.id); assert.equal(l.template, 'pizzaria'); assert.equal(l.chave, p.chave);
 });
 
-test('compra de teste do site (R$ 1) só aceita o e-mail do dono', async () => {
+test('compra de teste do site só aceita o e-mail do dono', async () => {
   const { criarPedido } = await import('../src/pagamento.js');
   const { PLANOS } = await import('../src/planos.js');
-  assert.equal(PLANOS.tpl_teste.preco, 1); assert.equal(PLANOS.tpl_teste.template, 'pizzaria');
+  assert.equal(PLANOS.tpl_teste.preco, 4.67); assert.equal(PLANOS.tpl_teste.template, 'pizzaria');
   const { env } = ambiente(); env.MP_ACCESS_TOKEN = 'x';
   const r = await criarPedido(env, 'https://x', { nome: 'Fulano', email: 'outro@x.com', plano: 'tpl_teste' }, new Request('https://x'));
   assert.equal(r.erro, 'dados_invalidos');
