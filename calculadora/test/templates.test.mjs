@@ -59,7 +59,7 @@ test('cada template do catálogo vira um plano à venda, com preço e e-mail de 
     const m = montarEmailCompra({ id: 'a'.repeat(36), nome: 'Ana', email: 'a@b.com', plano: t.plano });
     assert.match(m.texto, /loja-api\/template\/baixar\?p=a{36}/);
   }
-  assert.equal(PLANOS.tpl_agencia.preco, 4.67); // TEMPORÁRIO (compra de teste do dono): voltar para 280
+  assert.equal(PLANOS.tpl_agencia.preco, 280);
 });
 
 test('licença prende no primeiro domínio de verdade; testes e www não contam', async () => {
