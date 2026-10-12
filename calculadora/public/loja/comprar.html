@@ -136,6 +136,9 @@
       tpl_burger: { nome: 'Site pronto: Hamburgueria', url: '/modelos/burger-e-pizza/', icone: '/img/modelos/burger-e-pizza-192.png', banner: '/img/modelos/burger-e-pizza-banner.webp', template: true,
         itens: ['🍔 Cliente monta o lanche: tira cebola, põe bacon, maionese extra…', '📲 Pedido pronto e somado no seu WhatsApp, com entrega ou retirada', '✏️ Edite tudo em um arquivo só e publique na sua hospedagem'],
         planos: { unico: 250 }, parcelas: 10 },
+      tpl_teste: { nome: 'Compra de teste (só o dono)', url: '/modelos/pizzaria/', icone: '/img/modelos/pizzaria-192.png', banner: '/img/modelos/pizzaria-banner.webp', template: true, teste: true,
+        itens: ['🧪 Teste do caminho todo: pagamento, e-mail e ZIP', '📧 Use o e-mail do dono', '🍕 Entrega o site da Pizzaria'],
+        planos: { unico: 1 }, parcelas: 1 },
       tpl_pizzaria: { nome: 'Site pronto: Pizzaria', url: '/modelos/pizzaria/', icone: '/img/modelos/pizzaria-192.png', banner: '/img/modelos/pizzaria-banner.webp', template: true,
         itens: ['🍕 Carrinho: o pedido chega pronto e somado no seu WhatsApp', '🛵 Entrega ou retirada, taxa, pedido mínimo, dia e hora', '✏️ Contatos em um arquivo só; publique na sua hospedagem'],
         planos: { unico: 250 }, parcelas: 10 },
@@ -197,7 +200,7 @@
     if (P.template) Object.assign(TIPOS.unico, { nome: 'Site completo', como: `Com a linha “Desenvolvido por LeuName Softwares” no rodapé. Pix ou cartão em até ${P.parcelas}x.`,
       nota: '📦 Você recebe a <b>pasta completa (ZIP)</b> no e-mail logo depois do pagamento, com o manual passo a passo.<br>🔑 Licença para 1 empresa e 1 domínio.' });
     // Site pronto: extra opcional para sair sem o crédito "Desenvolvido por LeuName Softwares" (R$ 50 a mais; servidor: <app>_semcredito).
-    if (P.template) TIPOS.semcredito = { id: `${app}_semcredito`, nome: 'Sem o crédito no rodapé', valor: reais(P.planos.unico + 50),
+    if (P.template && !P.teste) TIPOS.semcredito = { id: `${app}_semcredito`, nome: 'Sem o crédito no rodapé', valor: reais(P.planos.unico + 50),
       como: `Sem a linha “Desenvolvido por LeuName Softwares”. Pix ou cartão em até ${P.parcelas}x.`,
       nota: '📦 Você recebe a <b>pasta completa (ZIP)</b> no e-mail logo depois do pagamento, com o manual passo a passo.<br>✨ O site vai <b>sem</b> a linha “Desenvolvido por LeuName Softwares” no rodapé.<br>🔑 Licença para 1 empresa e 1 domínio.' };
     const inicial = busca.get('plano') in TIPOS ? busca.get('plano') : ('anual' in TIPOS ? 'anual' : 'mensal' in TIPOS ? 'mensal' : 'unico');

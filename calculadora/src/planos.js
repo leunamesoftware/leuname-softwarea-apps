@@ -36,6 +36,9 @@ for (const t of Object.values(TEMPLATES)) {
   PLANOS[t.plano + '_semcredito'] = { app: 'template', template: t.id, licenca: 'templates-site', preco: t.preco + EXTRA_SEM_CREDITO, parcelas: t.parcelas, semCredito: true,
     titulo: `Template de site — ${t.nome.replace(/^Site pronto: /, '')} (sem crédito no rodapé)` };
 }
+// Compra de teste do dono (R$ 1, o mínimo seguro no Mercado Pago): passa por todo o caminho real — pagamento, e-mail e ZIP.
+// Só aceita o e-mail do dono (criarPedido); entrega o site da Pizzaria.
+PLANOS.tpl_teste = { app: 'template', template: 'pizzaria', licenca: 'templates-site', preco: 1, parcelas: 1, soDono: true, titulo: 'Template de site — TESTE (Pizzaria)' };
 for (const p of Object.values(PLANOS)) p.app ||= 'quantocobrar';
 const PLANOS_RECEITAS = Object.keys(PLANOS).filter((k) => PLANOS[k].app === 'quantocobrar');
 

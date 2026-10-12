@@ -27,6 +27,7 @@ export async function criarPedido(env, origem, d, req) {
   const plano = String(d?.plano || 'basico');
   if (nome.length < 2 || !EMAIL.test(email) || !PLANOS[plano] || PLANOS[plano].foraDeVenda) return { erro: 'dados_invalidos', status: 400 };
   const P = PLANOS[plano];
+  if (P.soDono && email !== String(env.DONO_EMAIL || '').toLowerCase()) return { erro: 'dados_invalidos', status: 400 };
   // Site pronto (template): compra rápida só com nome e e-mail — o ZIP vai para o e-mail, não precisa de conta.
   let c = { conta: { id: null } }, sessao = null;
   if (!P.template) {
