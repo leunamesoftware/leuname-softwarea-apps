@@ -49,7 +49,7 @@ export async function zipDoPedido(env, pedidoId, origem) {
     const r = await env.ASSETS.fetch(new Request(`${origem}/_tpl/${T.id}/${nome}`));
     if (!r.ok) throw new Error(`template ${T.id}: falta ${nome}`);
     let dados = new Uint8Array(await r.arrayBuffer());
-    if (nome === 'site/configuracao.js') {
+    if (nome === 'site-completo/configuracao.js') {
       const txt = new TextDecoder().decode(dados).replace('licenca: ""', `licenca: "${l.chave}"`).replace('avisoDemonstracao: true', 'avisoDemonstracao: false');
       dados = new TextEncoder().encode(txt);
     }

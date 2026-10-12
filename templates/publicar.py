@@ -12,6 +12,7 @@ raiz = Path(__file__).resolve().parent
 repo = raiz.parent
 catalogo = json.loads((raiz / 'catalogo.json').read_text())
 leia = (raiz / 'LEIA-ME-PRIMEIRO.html').read_text()
+leia_txt = (raiz / 'LEIA-ME.txt').read_text()
 lista = {}
 
 
@@ -44,10 +45,14 @@ for t in catalogo:
     cfg.write_text(cfg.read_text().replace('avisoDemonstracao: false', 'avisoDemonstracao: true'))
     venda = repo / 'calculadora' / 'public' / '_tpl' / tid
     shutil.rmtree(venda, ignore_errors=True)
-    shutil.copytree(site, venda / 'site')
+    shutil.copytree(site, venda / 'site-completo')
+    import html as _h
+    inclui = ''.join(f'        <li><span>{_h.escape(r)}</span></li>\n' for r in t.get('recursos', []))
+    (venda / 'site-completo' / 'LEIA-ME.txt').write_text(leia_txt.replace('{{NOME}}', t['nome'].replace('Site pronto: ', ''))
+        .replace('{{INCLUI_TXT}}', '\n'.join('· ' + r for r in t.get('recursos', []))))
     (venda / 'VER-DEMONSTRACAO.html').write_text(demo_unica(site))
     fotos = (raiz / tid / 'fotos.html').read_text() if (raiz / tid / 'fotos.html').exists() else ''
-    (venda / 'LEIA-ME-PRIMEIRO.html').write_text(leia.replace('{{NOME}}', t['nome']).replace('{{FOTOS}}', fotos))
+    (venda / 'LEIA-ME-PRIMEIRO.html').write_text(leia.replace('{{NOME}}', t['nome'].replace('Site pronto: ', '')).replace('{{FOTOS}}', fotos).replace('{{INCLUI}}', inclui.rstrip()))
     lista[tid] = sorted(str(p.relative_to(venda)) for p in venda.rglob('*') if p.is_file())
     print(tid, len(lista[tid]), 'arquivos')
 saida = repo / 'calculadora' / 'src' / 'templates_arquivos.js'

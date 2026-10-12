@@ -55,7 +55,7 @@ test('cada template do catálogo vira um plano à venda, com preço e e-mail de 
     const P = PLANOS[t.plano];
     assert.equal(P.template, t.id);
     assert.equal(P.preco, t.preco);
-    assert.ok(t.arquivos.includes('site/index.html') && t.arquivos.includes('site/configuracao.js') && t.arquivos.includes('LEIA-ME-PRIMEIRO.html'));
+    assert.ok(t.arquivos.includes('site-completo/index.html') && t.arquivos.includes('site-completo/configuracao.js') && t.arquivos.includes('VER-DEMONSTRACAO.html') && t.arquivos.includes('site-completo/LEIA-ME.txt') && t.arquivos.includes('LEIA-ME-PRIMEIRO.html'));
     const m = montarEmailCompra({ id: 'a'.repeat(36), nome: 'Ana', email: 'a@b.com', plano: t.plano });
     assert.match(m.texto, /loja-api\/template\/baixar\?p=a{36}/);
   }
@@ -87,7 +87,7 @@ test('ZIP só sai depois de pago, com a licença do cliente e sem a faixa de dem
   assert.equal(z.nome, 'agencia-de-viagens.zip');
   const dir = mkdtempSync(join(tmpdir(), 'tpl-'));
   writeFileSync(join(dir, 't.zip'), z.zip);
-  const cfg = execFileSync('python3', ['-c', `import zipfile,sys;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;print(len(z.namelist()));print(z.read('agencia-de-viagens/site/configuracao.js').decode())`, join(dir, 't.zip')]).toString();
+  const cfg = execFileSync('python3', ['-c', `import zipfile,sys;z=zipfile.ZipFile(sys.argv[1]);assert z.testzip() is None;print(len(z.namelist()));print(z.read('agencia-de-viagens/site-completo/configuracao.js').decode())`, join(dir, 't.zip')]).toString();
   assert.match(cfg, /licenca: "LEU-ZZZZ-YYYY-AB12"/);
   assert.match(cfg, /avisoDemonstracao: false/);
   assert.equal(env.lic.get('LEU-ZZZZ-YYYY-AB12').downloads, 1);

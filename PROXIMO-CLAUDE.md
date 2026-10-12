@@ -204,7 +204,12 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - Cliente: site → "Sites e Templates" → produto (banner, telas, preço) → "Ver demonstração ao vivo" (/modelos/<id>/)
   → "Comprar" (/loja/comprar?app=<plano>&plano=unico, Pix ou cartão parcelado) → pagamento aprovado → e-mail automático com
   "Baixar meu site (ZIP)" (/loja-api/template/baixar?p=<pedido>, máx. 20 downloads) e botão também na página de volta.
-- O ZIP leva LEIA-ME-PRIMEIRO.html + pasta site/ com a licença do cliente no configuracao.js. Licença = 1 empresa / 1 domínio:
+- **Formato do pacote (padrão do dono, igual aos pacotes antigos, em português):** `LEIA-ME-PRIMEIRO.html` (guia escuro/dourado,
+  blocos numerados) + `VER-DEMONSTRACAO.html` (site inteiro num arquivo, fotos embutidas, abre até no celular) + pasta
+  `site-completo/` (index.html, configuracao.js, css/, js/, imagens/, LEIA-ME.txt). Tudo gerado por `templates/publicar.py`
+  a partir de templates/<id>/site, templates/LEIA-ME-PRIMEIRO.html, templates/LEIA-ME.txt e templates/<id>/fotos.html.
+- A licença do cliente vai no site-completo/configuracao.js. Sem licença válida (outro domínio, compra cancelada/estornada) o site
+  inteiro fica bloqueado (tela "Site bloqueado" no site.js; volta se apagarem). Licença = 1 empresa / 1 domínio:
   o site pergunta /loja-api/template/licenca e fica preso ao 1º domínio real (localhost, .pages.dev, .netlify.app etc. não prendem).
   Domínio errado → faixa vermelha "sem licença". Trocar o domínio de um cliente: apagar `dominio` em template_licencas (D1).
 - Template novo: (1) adaptar de leunamesoftware/leuname-software (pacotes-hotmart/<nome>/site-completo) para
@@ -212,4 +217,4 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   (2) acrescentar em templates/catalogo.json; (3) `python3 templates/publicar.py`; (4) acrescentar o produto em
   calculadora/public/loja/comprar.html (PRODUTOS, mesmo "plano"); (5) imagens em leuapps/public/img/modelos/<id>-banner.webp,
   -192.png e -tela-1..5.webp; (6) rodar o gerar_catalogo.py do site; (7) testes, publicar calculadora + leuapps + site.
-- Feitos: agencia-de-viagens (R$ 280, até 10x). Faltam ~35 do repositório antigo.
+- Feitos: agencia-de-viagens e burger-e-pizza (R$ 280, até 10x). Imagens do dono para cada site novo; ele manda as fotos e o modelo. Faltam ~35 do repositório antigo.
