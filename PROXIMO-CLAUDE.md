@@ -243,13 +243,16 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
   instrumentos musicais, material de construção, obras, perfumaria (tem marca Sauvage), pesca, autopeças, motopeças, relojoaria,
   oficina mecânica, oficina de motos.
 
+- Revisão 12/10: fotos limpas e ampliadas com Real-ESRGAN (scratchpad sr/limpar.py → templates/_conversor/<id>-imagens/),
+  camada de celular das lojas em _conversor/loja-mobile.css (opção "loja_mobile" no json), menu ☰ automático no nucleo.js,
+  crédito muda de cor sozinho em rodapé claro. Auditoria: 0 rolagem lateral, 0 itens cortados, 0 fotos tortas/quebradas em 6 telas.
+
 ### Melhorias anotadas nos sites prontos (fazer quando der)
 - Vários sites: links do rodapé (Quem somos, Política…) e "Minha conta/Favoritos" não abrem página (href="#"); dá para tirar ou criar páginas.
 - Hotel e Móveis: menu foi para uma 2ª linha no computador (cabia mal); Eletrônicos: nomes de produto genéricos e marcas fictícias.
 - Concessionária: carros e marcas reais (Audi, BMW…) nas fotos e nomes — normal em revenda, mas pode trocar por fotos do cliente.
 - Clínica odontológica: a mesma foto aparece no topo e no "Sobre"; equipe só com iniciais (sem fotos).
 - Veterinária: sem fotos (só ilustrações); dá para acrescentar fotos da clínica.
-- Padaria: a foto principal tem a lousa escrita em espanhol "Pan Fresco cada día" (trocar a foto).
 - Restaurante: os links "Ler mais" do blog não abrem nada; cardápio duplicado (texto no HTML e preços no datosCatalogo).
 - Hamburgueria: banner e foto de combo ainda mostram pizza.
 - Pizzaria: combos e PDV de pizzaria (ideia do dono, depois).
