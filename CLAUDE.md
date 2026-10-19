@@ -86,3 +86,8 @@
     apagada (serviço de localização). APK pelo workflow leuapps-android.yml (job entregador) → /baixar/pedee-entregador.apk;
     subir `android.versao` no apps.json para o versionCode novo (run_number + 1). Entregador↔cliente só avisos prontos
     (src/regras/mensagens.ts); entregador↔loja conversa livre (mensagens_loja).
+22. Site www (Leunamesite/SITE-LEUNAMESOFTWARE-BR): estado, ordem da página inicial e pendências no fim de `PROXIMO-CLAUDE.md`.
+    Sites prontos (templates ZIP, R$ 280): `templates/` + `python3 templates/publicar.py`; venda e licença em calculadora/src/templates.js.
+    Ficamos só na conta GitHub **leunamesoftware** (a conta emanuelantunes2024 não se usa mais).
+23. Planos dos apps: 👑 Mensal (com atualizações) / 👑 Anual / 👑 Vitalício (pagamento único; correções grátis, recursos novos à parte).
+

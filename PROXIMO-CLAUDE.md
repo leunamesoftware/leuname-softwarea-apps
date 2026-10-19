@@ -81,18 +81,11 @@ Cursos: `leuapps/public/cursos.json`, com 4 cursos. Campos: `id`, `nome`, `nomeC
 **Padrão do dono, sempre:** curto e objetivo. A tela de instalar e o e-mail têm **um botão só**, Instalar,
 na cor do app. **Nada que clica e não funciona.** Se uma parte não ficou pronta, esconda até ficar.
 
-## 4. Produtos que não são app (templates de site, logomarcas, pastas): ainda não existe, falta fazer
-O dono quer vender também **arquivos**: um template, que é uma pasta para o cliente montar o site, ou uma logomarca.
-A ideia combinada é usar o mesmo caminho: comprar na loja → e-mail.
-Plano sugerido:
-1. Na vitrine, `apps.json` ganha `"tipo": "arquivo"`, com a página de detalhe igual e o botão **Comprar**, sem Instalar.
-2. O arquivo (.zip) fica num bucket R2 privado (ex.: `leuapps-arquivos`). Nunca num link público fixo.
-3. Depois do pagamento, o e-mail traz **um botão só: Baixar**.
-   - O link aponta para `/loja-api/conta/baixar?item=<id>`.
-   - O servidor confere se a conta comprou e entrega o arquivo do R2.
-   - Pode exigir login: o cliente toca e, se não estiver logado, entra com o e-mail e a senha.
-4. Em **Minha conta**, o item aparece com o botão **Baixar**, para baixar de novo.
-5. Planos: pagamento único (`PLANOS.<id>: { app: '<id>', preco, licenca: '<id>' }`).
+## 4. Sites prontos (templates ZIP): FEITO e no ar (detalhes no fim deste arquivo)
+- Venda automática: página do produto → demonstração ao vivo (/modelos/<id>/) → checkout (só nome + e-mail, sem senha)
+  → Mercado Pago → e-mail com "Baixar meu site (ZIP)" + botão na página de volta. Licença = 1 domínio; estorno revoga.
+- Conferido no ar em 19/10/2026: o diagnóstico (`diagnostico-site.yml`, linha "compra-template") recebeu o link do Mercado Pago.
+- Logomarcas e banners continuam como serviço com orçamento no WhatsApp (não são arquivo para baixar).
 
 ## 5. Buracos conhecidos (pendências, em ordem de importância)
 1. **ConstruGestão: partes escondidas.** São 63 botões sem função e a aba **Financeiro**, escondidos pelo
@@ -259,3 +252,47 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - Perfumaria antiga mostra a marca Sauvage (trocar antes de vender).
 - Categoria Delivery do site sem banner; banner "Sites prontos" da home diz "A partir de R$ 280" (agora é 250).
 - Atualização automática dos sites vendidos (versões, atualização paga opcional): o dono decide depois.
+
+## Estado do site www.leunamesoftware.com.br (19/10/2026)
+- Código: repositório **Leunamesite**, pasta `SITE-LEUNAMESOFTWARE-BR`, branch `claude/leuname-github-setup-qwkedw`
+  (push publica sozinho pelo `deploy-site-br-cloudflare.yml`). NUNCA pôr routes/custom_domain no wrangler.toml dele.
+- Produtos vêm de `js/catalogo.js`, gerado por `python3 ferramentas/gerar_catalogo.py /home/user/leuname-softwarea-apps/leuapps/public`
+  (lê apps.json, servicos.json, cursos.json e templates/catalogo.json; também gera sitemap.xml). Nunca editar catalogo.js à mão.
+- Celular: layout de celular de verdade (viewport device-width). Muitos acessos do dono usam "Site para computador" ligado:
+  conferir as telas em 412px E em 980px.
+- Página inicial (ordem): banners principais (passam sozinhos a cada 4,5 s; `js/main.js`) → categorias (3 por linha no celular)
+  → banner "Sites prontos para sua loja" + carrossel `sitesGrid` (kind 'template') → Sistemas prontos → promos → Novidades.
+- Página "Sites prontos" (categoria `sites`): banner "Seu site sob medida" (imagem do dono, abre WhatsApp com orçamento) em cima,
+  sites prontos embaixo. "Site sob encomenda" não é mais produto.
+- Cards têm botão de ação (`acaoDoCard` em js/products.js). Produto template: preço uma vez + parcelas, "Comprar agora",
+  "Ver demonstração ao vivo"; telas em pé no celular (`photosCel`) e deitadas no computador.
+- Cursos grátis rodam no próprio site (`curso.html` + `js/curso.js`, conteúdo em /cursos.json da loja). /apps (LeuApps antiga)
+  só existe para quem já tinha; tem noindex.
+- Checkout (`calculadora/public/loja/comprar.html`): fundo grafite gelo, 2 colunas no computador (centralizado), compacto no celular.
+- Gestacell na Microsoft Store (9NQ9BWWVLGHM): selo oficial no rodapé e na página do Gestacell (`MS_STORE` em js/producto.js).
+  Quando o 2º app for aprovado: rodapé vira "Nossos apps também na" com link para a página da desenvolvedora.
+
+## Pendências (em ordem)
+1. **Pagamento bonito dentro do site** (Checkout Transparente/Bricks do Mercado Pago: Pix com QR na nossa página e cartão
+   com parcelas). O dono quer. Falta ele mandar a **Public Key** (APP_USR-..., é pública; não confundir com o Access Token,
+   que é segredo e fica só no GitHub/Cloudflare). Criar pagamento pelo servidor (/v1/payments) e manter o webhook atual.
+2. **Mais sites prontos**: 15 já à venda; os que faltam estão listados em "Faltam do repositório antigo" acima
+   (prioridade: material de construção, que fecha combo com o ConstruGestão; depois oficinas e autopeças).
+   Use o conversor (`templates/_conversor/`) e confira as "Melhorias anotadas nos sites prontos".
+3. **Combos (PDV + site pronto)**: aba "Combos" com banner; uma compra libera o app na conta + manda o ZIP. Preço com desconto
+   (ex.: Gestacell vitalício R$ 290 + site R$ 280 → combo R$ 449). Depende do item 2.
+4. **Banner entre os banners principais e as categorias**: o dono pediu; falta ele escolher o assunto
+   (sugestões: "3 dias grátis em todos os apps", "Cursos grátis", "A gente cria. Você só vende." — imagem pronta em
+   scratchpad não fica salva; refazer a partir de /root/.claude/uploads se ainda existir, senão pedir a imagem de novo).
+5. **Preços dos outros apps** no modelo 👑 Mensal / Anual / Vitalício (vitalício: correções grátis, recursos novos à parte).
+   Gestacell já está assim. Sugestão: anual ≈ 10 mensalidades, vitalício ≈ 15.
+6. Google Search Console (dono cadastra e manda a tag HTML; mandar o sitemap.xml).
+7. PDV completo de hospedagem (hotel/pousada) — o dono citou; confirmar com ele o que é antes de começar.
+8. Serviço "site sob medida com mensalidade" foi DESCARTADO pelo dono (não quer ficar preso). Só orçamento avulso.
+
+## Cuidados técnicos (erros que já aconteceram)
+- Nunca rodar `pkill -f "http.server ..."` na mesma linha de outros comandos: ele mata o próprio comando (sai com 144 e o resto
+  não roda). Rodar sozinho ou usar outra porta.
+- O diagnóstico só mostra 10 avisos por etapa: o que é importante vai primeiro na lista. Endereço com `&` sempre entre aspas.
+- Depois de `git push` no Leunamesite, esperar o deploy terminar antes de disparar o diagnóstico (senão testa a versão velha).
+- Mudou arquivo de app/loja: subir a versão do sw.js do app (cache), senão o celular mostra a versão antiga.
