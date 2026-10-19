@@ -250,7 +250,7 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - Hamburgueria: banner e foto de combo ainda mostram pizza.
 - Pizzaria: combos e PDV de pizzaria (ideia do dono, depois).
 - Perfumaria antiga mostra a marca Sauvage (trocar antes de vender).
-- Categoria Delivery do site sem banner; banner "Sites prontos" da home diz "A partir de R$ 280" (agora é 250).
+- Categoria Delivery do site sem banner; (feito 19/10: banner "Sites prontos" da home agora diz "A partir de R$ 250", arquivo sites-prontos-v2.webp).
 - Atualização automática dos sites vendidos (versões, atualização paga opcional): o dono decide depois.
 
 ## Estado do site www.leunamesoftware.com.br (19/10/2026)
