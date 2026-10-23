@@ -47,7 +47,7 @@ PRODUTOS = {
         'ing': 'Fubá de milho e urucum em pó.',
         'gluten': 'NÃO CONTÉM GLÚTEN.',
         'tapar_frente': [], 'tapar_verso': [(666, 137, 17)],
-        'coluna': (1240, 80, 1745, 820), 'limpar': [(1120, 680, 1745, 820)],
+        'coluna': (1262, 80, 1745, 820), 'limpar': [(1120, 690, 1745, 820)], 'col_mm': (77.3, 20.9),
     },
 }
 
@@ -106,7 +106,8 @@ def frente(c, x, y, pasta):
 
 def verso(c, x, y, pasta, cfg):
     c.drawImage(ImageReader(str(pasta / '.verso-arte.png')), x, y, W, H)
-    cx, cw = x + 73.4 * mm, 25 * mm
+    ox, ow = cfg.get('col_mm', (73.4, 25))
+    cx, cw = x + ox * mm, ow * mm
     yy = caixa_texto(c, cx, y + H - 2.2 * mm, cw, 'INGREDIENTES:', cfg['ing'] + f"<br/><font name='P-ExtraBold'>{cfg['gluten']}</font>")
     caixa_texto(c, cx, yy - 1.2 * mm, cw, 'CONSERVAÇÃO:', CONSERVACAO)
     c.setStrokeColor(CREME); c.setLineWidth(0.4); meia = (cw - 1 * mm) / 2
