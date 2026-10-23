@@ -17,7 +17,7 @@ const P = (nome, linha, cor, desc, usos, tam, emb = 'pouch', tag = '') => ({ nom
 const T = ['50 g', '100 g', '500 g', '1 kg'];
 const PRODUTOS = [
   // puros
-  P('Colorau', 'puros', '#D8401E', 'Urucum moído que dá cor vermelha viva e sabor suave.', 'Arroz, feijão, frango, moquecas e ensopados.', T, 'pouch', 'Mais procurado'),
+  P('Colorau', 'puros', '#D8401E', 'Fubá de milho e urucum: cor vermelha viva e sabor suave.', 'Arroz, feijão, frango, moquecas e ensopados.', ['10 g'], 'pouch', 'Mais procurado'),
   P('Pimenta-do-reino moída', 'puros', '#3A3330', 'Moída na nossa fábrica, com aroma forte e picância na medida.', 'Carnes, molhos, saladas e finalização de pratos.', T, 'pouch', 'Mais procurado'),
   P('Pimenta-do-reino em grão', 'puros', '#2C2624', 'Grãos inteiros e selecionados, para moer na hora.', 'Moedores, conservas e caldos.', T),
   P('Cominho moído', 'puros', '#A9762E', 'Sabor marcante da cozinha nordestina.', 'Feijão, carne moída, quibe e carnes.', T),
