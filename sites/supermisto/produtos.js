@@ -114,39 +114,39 @@ function embalagem(p, peso) {
   // cada linha cabe na largura do rótulo: diminui a letra se a palavra for comprida
   const largura = p.emb === 'garrafa' ? 54 : p.emb === 'pote' ? 96 : 72;
   const tamLinha = (l) => Math.min(fs, largura / (l.length * 0.6));
-  const textoNome = (cx, y0) => nomes.map((l, i) => `<text x="${cx}" y="${y0 + i * (fs + 2)}" text-anchor="middle" font-size="${tamLinha(l).toFixed(1)}" font-weight="800" fill="#3E0F63">${escapar(l)}</text>`).join('');
-  const marca = (cx, y) => `<text x="${cx}" y="${y}" text-anchor="middle" font-size="9" font-weight="800" fill="#FFC21A" letter-spacing=".5">SUPER</text><text x="${cx}" y="${y + 15}" text-anchor="middle" font-size="16" font-weight="800" font-style="italic" fill="#fff">MISTO</text>`;
+  const textoNome = (cx, y0) => nomes.map((l, i) => `<text x="${cx}" y="${y0 + i * (fs + 2)}" text-anchor="middle" font-size="${tamLinha(l).toFixed(1)}" font-weight="800" fill="#142A1F">${escapar(l)}</text>`).join('');
+  const marca = (cx, y) => `<text x="${cx}" y="${y}" text-anchor="middle" font-size="9" font-weight="800" fill="#E9A56A" letter-spacing=".5">SUPER</text><text x="${cx}" y="${y + 15}" text-anchor="middle" font-size="16" font-weight="800" font-style="italic" fill="#fff">MISTO</text>`;
   const grao = `<pattern id="${id}g" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#000" opacity=".18"/><circle cx="5.5" cy="5" r=".9" fill="#fff" opacity=".18"/></pattern>`;
   const defs = `<defs>${grao}<linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".12"/><stop offset=".25" stop-color="#fff" stop-opacity=".12"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient></defs>`;
   let corpo;
   if (p.emb === 'pote') {
-    corpo = `<rect x="34" y="14" width="92" height="26" rx="6" fill="#3E0F63"/><rect x="34" y="34" width="92" height="6" fill="#2A0845"/>
+    corpo = `<rect x="34" y="14" width="92" height="26" rx="6" fill="#142A1F"/><rect x="34" y="34" width="92" height="6" fill="#0E1F16"/>
       <path d="M30 44 h100 a8 8 0 0 1 8 8 v118 a14 14 0 0 1 -14 14 h-88 a14 14 0 0 1 -14 -14 v-118 a8 8 0 0 1 8 -8z" fill="${p.cor}"/>
       <path d="M30 44 h100 a8 8 0 0 1 8 8 v118 a14 14 0 0 1 -14 14 h-88 a14 14 0 0 1 -14 -14 v-118 a8 8 0 0 1 8 -8z" fill="url(#${id}g)"/>
-      <rect x="30" y="72" width="108" height="86" rx="6" fill="#fff"/><rect x="30" y="72" width="108" height="30" rx="6" fill="#5B1E8C"/>
-      ${marca(84, 85)}${textoNome(84, 118)}<text x="84" y="152" text-anchor="middle" font-size="10" font-weight="700" fill="#E1251B">${escapar(peso)}</text>
+      <rect x="30" y="72" width="108" height="86" rx="6" fill="#fff"/><rect x="30" y="72" width="108" height="30" rx="6" fill="#1E3A2B"/>
+      ${marca(84, 85)}${textoNome(84, 118)}<text x="84" y="152" text-anchor="middle" font-size="10" font-weight="700" fill="#C4562A">${escapar(peso)}</text>
       <path d="M30 44 h100 a8 8 0 0 1 8 8 v118 a14 14 0 0 1 -14 14 h-88 a14 14 0 0 1 -14 -14 v-118 a8 8 0 0 1 8 -8z" fill="url(#${id}b)"/>`;
   } else if (p.emb === 'garrafa') {
-    corpo = `<rect x="70" y="8" width="20" height="16" rx="3" fill="#3E0F63"/><path d="M72 24 h16 v18 c0 10 22 16 22 34 v94 a12 12 0 0 1 -12 12 h-36 a12 12 0 0 1 -12 -12 v-94 c0 -18 22 -24 22 -34z" fill="${p.cor}"/>
-      <rect x="50" y="86" width="60" height="78" rx="6" fill="#fff"/><rect x="50" y="86" width="60" height="28" rx="6" fill="#5B1E8C"/>
-      ${marca(80, 98)}${textoNome(80, 128)}<text x="80" y="158" text-anchor="middle" font-size="9" font-weight="700" fill="#E1251B">${escapar(peso)}</text>
+    corpo = `<rect x="70" y="8" width="20" height="16" rx="3" fill="#142A1F"/><path d="M72 24 h16 v18 c0 10 22 16 22 34 v94 a12 12 0 0 1 -12 12 h-36 a12 12 0 0 1 -12 -12 v-94 c0 -18 22 -24 22 -34z" fill="${p.cor}"/>
+      <rect x="50" y="86" width="60" height="78" rx="6" fill="#fff"/><rect x="50" y="86" width="60" height="28" rx="6" fill="#1E3A2B"/>
+      ${marca(80, 98)}${textoNome(80, 128)}<text x="80" y="158" text-anchor="middle" font-size="9" font-weight="700" fill="#C4562A">${escapar(peso)}</text>
       <path d="M72 24 h16 v18 c0 10 22 16 22 34 v94 a12 12 0 0 1 -12 12 h-36 a12 12 0 0 1 -12 -12 v-94 c0 -18 22 -24 22 -34z" fill="url(#${id}b)"/>`;
   } else if (p.emb === 'saco') {
-    corpo = `<path d="M30 20 l10 -8 h80 l10 8 v150 a8 8 0 0 1 -8 8 h-84 a8 8 0 0 1 -8 -8z" fill="#fff"/><path d="M30 20 l10 -8 h80 l10 8 v10 h-100z" fill="#5B1E8C"/>
-      <rect x="30" y="30" width="100" height="44" fill="#5B1E8C"/>${marca(80, 47)}
+    corpo = `<path d="M30 20 l10 -8 h80 l10 8 v150 a8 8 0 0 1 -8 8 h-84 a8 8 0 0 1 -8 -8z" fill="#fff"/><path d="M30 20 l10 -8 h80 l10 8 v10 h-100z" fill="#1E3A2B"/>
+      <rect x="30" y="30" width="100" height="44" fill="#1E3A2B"/>${marca(80, 47)}
       <rect x="44" y="118" width="72" height="44" rx="8" fill="${p.cor}"/><rect x="44" y="118" width="72" height="44" rx="8" fill="url(#${id}g)"/>
-      ${textoNome(80, 90)}<text x="80" y="174" text-anchor="middle" font-size="9" font-weight="700" fill="#E1251B">${escapar(peso)}</text>
+      ${textoNome(80, 90)}<text x="80" y="174" text-anchor="middle" font-size="9" font-weight="700" fill="#C4562A">${escapar(peso)}</text>
       <path d="M30 20 l10 -8 h80 l10 8 v150 a8 8 0 0 1 -8 8 h-84 a8 8 0 0 1 -8 -8z" fill="url(#${id}b)"/>`;
   } else {
     // sachê stand-up: lacre serrilhado em cima, laterais abrindo e fundo arredondado
     const forma = 'M40 14 h80 l3 12 c5 40 9 90 9 142 a10 10 0 0 1 -10 10 h-84 a10 10 0 0 1 -10 -10 c0 -52 4 -102 9 -142 z';
-    corpo = `<path d="${forma}" fill="#5B1E8C"/><path d="M40 14 h80 l3 12 h-86z" fill="#3E0F63"/>
-      <path d="M43 20 h74" stroke="#FFC21A" stroke-width="1.2" stroke-dasharray="3 3" opacity=".7"/>
+    corpo = `<path d="${forma}" fill="#1E3A2B"/><path d="M40 14 h80 l3 12 h-86z" fill="#142A1F"/>
+      <path d="M43 20 h74" stroke="#E9A56A" stroke-width="1.2" stroke-dasharray="3 3" opacity=".7"/>
       ${marca(80, 46)}
       <rect x="44" y="64" width="72" height="46" rx="8" fill="#fff"/>${textoNome(80, 81)}
       <path d="M46 118 h68 c4 18 6 34 6 46 a8 8 0 0 1 -8 8 h-64 a8 8 0 0 1 -8 -8 c0 -12 2 -28 6 -46z" fill="${p.cor}"/>
       <path d="M46 118 h68 c4 18 6 34 6 46 a8 8 0 0 1 -8 8 h-64 a8 8 0 0 1 -8 -8 c0 -12 2 -28 6 -46z" fill="url(#${id}g)"/>
-      <text x="80" y="164" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff" stroke="#3E0F63" stroke-width="2.5" paint-order="stroke">${escapar(peso)}</text>
+      <text x="80" y="164" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff" stroke="#142A1F" stroke-width="2.5" paint-order="stroke">${escapar(peso)}</text>
       <path d="${forma}" fill="url(#${id}b)"/>`;
   }
   return `<svg viewBox="0 0 160 190" role="img" aria-label="${escapar(p.nome)} Super Misto" font-family="Poppins, Arial, sans-serif">${defs}<ellipse cx="80" cy="184" rx="58" ry="5" fill="#000" opacity=".12"/>${corpo}</svg>`;

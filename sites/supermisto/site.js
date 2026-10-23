@@ -86,6 +86,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#mod
 /* ---------- receitas ---------- */
 const produtoPorNome = (n) => PRODUTOS.find((p) => p.nome === n);
 function capaReceita(r, grande = false) {
+  if (r.foto) return `<div class="rc-capa rc-foto${grande ? ' grande' : ''}" style="background-image:url(img/receitas/${r.foto}.webp)"></div>`;
   const pacotes = r.usa.slice(0, grande ? 4 : 3).map(produtoPorNome).filter(Boolean)
     .map((p, i) => `<span class="rc-p rc-p${i}">${embalagem(p, p.tam[1] || p.tam[0])}</span>`).join('');
   return `<div class="rc-capa${grande ? ' grande' : ''}" style="--c:${r.cor}"><span class="rc-prato">${r.emoji}</span>${pacotes}</div>`;
@@ -121,7 +122,7 @@ function redes() {
 }
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
-    <div><img src="img/logo.svg" alt="Super Misto Temperos" width="120" height="86" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
+    <div><img src="img/logo-claro.svg" alt="Super Misto Temperos" width="230" height="55" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
     <div><b>Linhas</b>${LINHAS.map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}</div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
     <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span>${redes()}</div>
@@ -149,14 +150,16 @@ function inicio() {
   $('#num-prod').textContent = PRODUTOS.length + '+';
   const nomes = PRODUTOS.map((p) => p.nome);
   $('#letreiro').innerHTML = [...nomes, ...nomes].map((n) => `<span>${n}</span>`).join('<i>✦</i>');
+  const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'sais', 'churrasco', 'molhos'];
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}" style="--c:${l.cor}"><span class="linha-emoji">${l.emoji}</span><b>${l.nome}</b><small>${l.desc}</small><em>${qtd} produtos →</em></a>`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp)` : `background:linear-gradient(160deg,${l.cor},#142A1F)`;
+    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<span class="linha-emoji">${l.emoji}</span>`}<b>${l.nome}</b><em>${qtd} produtos →</em></a>`;
   }).join('');
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.tag === 'Mais procurado').slice(0, 8);
   $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('');
   ligarCartoes($('#favoritos'));
-  receitasLista($('#receitas-home'), RECEITAS.slice(0, 3));
+  receitasLista($('#receitas-home'), RECEITAS.filter((r) => r.foto).slice(0, 4));
   $('#kits-lista').innerHTML = KITS.map((k) => `<div class="kit aparece"><span class="kit-ico">${k.ico}</span><div><b>${k.nome}</b><small>${k.itens}</small></div>
     <a class="btn btn-amarelo" href="${linkWhats(`Olá! Tenho interesse no ${k.nome} Super Misto.`)}" target="_blank" rel="noopener">Quero</a></div>`).join('');
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));

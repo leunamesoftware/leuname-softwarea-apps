@@ -8,27 +8,26 @@
 <meta property="og:title" content="Super Misto Temperos">
 <meta property="og:description" content="Temperos de verdade desde 2011. Varejo, atacado, licitações e marca própria.">
 <meta property="og:image" content="img/hero-temperos.webp">
-<meta name="theme-color" content="#5B1E8C">
+<meta name="theme-color" content="#1E3A2B">
 <link rel="icon" href="img/icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:ital,wght@0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
 
-<div class="faixa-topo"><div class="caixa">🏭 Fábrica própria desde 2011 · Atacado, revenda, licitações e marca própria · <a data-whats="Olá! Quero falar com a Super Misto.">Fale no WhatsApp</a></div></div>
 <header class="topo" id="topo">
   <div class="caixa topo-in">
-    <a href="index.html" class="marca" aria-label="Super Misto Temperos, início"><img src="img/logo.svg" alt="Super Misto Temperos" width="96" height="69"></a>
+    <a href="index.html" class="marca" aria-label="Super Misto Temperos, início"><img src="img/logo-claro.svg" alt="Super Misto Temperos" width="285" height="68"></a>
     <nav class="menu" id="menu">
       <a href="catalogo.html">Produtos</a>
       <a href="receitas.html">Receitas</a>
       <a href="#empresas">Para empresas</a>
       <a href="#processo">Como fazemos</a>
-      <a href="#sobre">Quem somos</a>
+      <a href="#sobre">Nossa história</a>
       <a href="#contato">Contato</a>
     </nav>
-    <a class="btn btn-amarelo topo-cta" href="index.html#empresas">Seja um revendedor</a>
+    <a class="btn btn-amarelo topo-cta" href="index.html#onde">Onde comprar 📍</a>
     <button class="hamb" id="hamb" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
@@ -38,8 +37,8 @@
   <div class="hero-img" style="background-image:url(img/hero-temperos.webp)"></div>
   <div class="caixa hero-in">
     <div class="hero-txt">
-      <span class="selo-topo">Fábrica própria em Xerém (RJ) · desde 2011</span>
-      <h1>O sabor que a sua comida <em>estava esperando.</em></h1>
+      <span class="kicker">Temperos, molhos e blends · desde 2011</span>
+      <h1>Tempero de verdade.<br><em>Sabor de casa.</em></h1>
       <p>Temperos moídos e misturados na hora, molhos, conservas, doces e farofas. Tudo produzido na nossa fábrica, com cor de verdade, aroma de verdade e o cuidado de quem faz tempero há 15 anos.</p>
       <div class="hero-btns">
         <a class="btn btn-amarelo" href="catalogo.html">Ver todos os produtos</a>
@@ -55,12 +54,21 @@
   </div>
 </section>
 
+<section class="beneficios"><div class="caixa ben-grid">
+  <div><span>🌿</span><b>Ingredientes<br>selecionados</b></div>
+  <div><span>⚙️</span><b>Moído em<br>pequenos lotes</b></div>
+  <div><span>🏭</span><b>Fábrica própria<br>em Xerém (RJ)</b></div>
+  <div><span>🛡️</span><b>Lote e validade<br>em cada embalagem</b></div>
+  <div><span>❤️</span><b>Tradição<br>desde 2011</b></div>
+</div></section>
 <div class="letreiro" aria-hidden="true"><div class="letreiro-in" id="letreiro"></div></div>
 
 <section class="sec" id="linhas">
   <div class="caixa">
-    <div class="sec-cab"><span class="sobre-tit">Nossas linhas</span><h2>Da especiaria pura à farofa pronta</h2><p>Nove linhas de produto para o dia a dia, para o churrasco e para quem cozinha em grande quantidade.</p></div>
-    <div class="linhas-grid" id="linhas-grid"></div>
+    <div class="dupla">
+      <div class="dupla-txt"><span class="sobre-tit">Nossos produtos</span><h2>Conheça nossas linhas</h2><p>Da especiaria pura à farofa pronta: nove linhas para o dia a dia, o churrasco e quem cozinha em quantidade.</p><a class="btn btn-amarelo" href="catalogo.html">Ver todos os produtos →</a></div>
+      <div class="linhas-grid" id="linhas-grid"></div>
+    </div>
   </div>
 </section>
 
@@ -74,9 +82,10 @@
 
 <section class="sec receitas-home">
   <div class="caixa">
-    <div class="sec-cab"><span class="sobre-tit">Receitas</span><h2>Vamos temperar com Super Misto?</h2><p>Receitas simples para o dia a dia, com os temperos certos para cada prato.</p></div>
-    <div class="rec-grid" id="receitas-home"></div>
-    <div class="centro"><a class="btn btn-roxo" href="receitas.html">Ver todas as receitas</a></div>
+    <div class="dupla">
+      <div class="dupla-txt"><span class="sobre-tit">Receitas</span><h2>Receitas para inspirar o seu dia</h2><p>Pratos simples ou caprichados, sempre com o toque especial da Super Misto.</p><a class="btn btn-amarelo" href="receitas.html">Ver todas as receitas →</a></div>
+      <div class="rec-grid rec-4" id="receitas-home"></div>
+    </div>
   </div>
 </section>
 
@@ -120,20 +129,29 @@
   </div>
 </section>
 
-<section class="sec sobre" id="sobre">
-  <div class="caixa sobre-in">
-    <div class="sobre-logo"><img src="img/logo.svg" alt="" width="360" height="259" loading="lazy"></div>
-    <div>
-      <span class="sobre-tit">Quem somos</span>
-      <h2>Uma fábrica de Xerém com tempero para o Brasil inteiro</h2>
-      <p>A <b>Super Misto Temperos</b> nasceu em 2011, em Xerém, Duque de Caxias (RJ), com uma ideia simples: tempero bom é tempero fresco, bem moído e feito com cuidado.</p>
-      <p>Hoje produzimos temperos, molhos, conservas, doces, polvilhos e farofas, sempre com a mesma regra: só sai da fábrica o que a gente colocaria na comida da nossa família.</p>
-      <ul class="check">
-        <li>Fábrica própria, com CNPJ ativo desde 2011</li>
-        <li>Produção em pequenos lotes, com lote e validade</li>
-        <li>Varejo, atacado, licitações e marca própria</li>
-      </ul>
-    </div>
+<section class="historia" id="sobre">
+  <div class="hist-foto" style="background-image:url(img/historia/campo.webp)"></div>
+  <div class="hist-txt">
+    <span class="sobre-tit">Nossa história</span>
+    <h2>Mais que temperos, fazemos parte da sua história</h2>
+    <p>A <b>Super Misto</b> nasceu em 2011, em Xerém, Duque de Caxias (RJ), da paixão por sabores reais. Compramos a matéria-prima, moemos, misturamos e embalamos tudo na nossa fábrica, para levar cor, aroma e sabor de verdade para a sua mesa.</p>
+    <p>A regra é simples: só sai da fábrica o que a gente colocaria na comida da nossa família.</p>
+  </div>
+  <div class="hist-foto2" style="background-image:url(img/historia/maos.webp)"></div>
+  <ul class="valores">
+    <li><span>💎</span><b>Qualidade</b><small>em cada detalhe</small></li>
+    <li><span>🌱</span><b>Respeito</b><small>aos ingredientes</small></li>
+    <li><span>❤️</span><b>Tradição</b><small>que alimenta</small></li>
+    <li><span>⭐</span><b>Inovação</b><small>sempre presente</small></li>
+  </ul>
+</section>
+
+<section class="onde" id="onde">
+  <div class="caixa onde-in">
+    <div class="onde-box"><span class="onde-pin">📍</span><div><h2>Onde comprar</h2><p>Encontre a Super Misto perto de você ou leve para o seu mercado.</p></div>
+      <a class="btn btn-amarelo" data-whats="Olá! Onde encontro os produtos Super Misto perto de mim?">Ver pontos de venda →</a></div>
+    <div class="onde-box"><span class="onde-pin">🤝</span><div><h2>Seja um revendedor</h2><p>Mercados, açougues e lojas: receba a tabela de atacado.</p></div>
+      <a class="btn btn-vazado" data-whats="Olá! Quero revender os produtos Super Misto. Pode me mandar a tabela de atacado?">Quero revender →</a></div>
   </div>
 </section>
 

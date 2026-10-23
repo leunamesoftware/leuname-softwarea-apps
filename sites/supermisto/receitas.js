@@ -1,6 +1,14 @@
 /* Receitas Super Misto: textos próprios. "usa" = nomes exatos de produtos do catálogo (produtos.js). */
 const RECEITAS = [
   {
+    id: 'macarrao-alho-ervas', foto: 'macarrao-alho-ervas', emoji: '🍝', cor: '#C99A3B', tempo: '20 min', rende: '4 porções',
+    titulo: 'Macarrão cremoso com alho e ervas',
+    resumo: 'Prato rápido de dia de semana, cremoso e perfumado.',
+    usa: ['Alho em pó', 'Ervas finas', 'Pimenta-do-reino moída', 'Noz-moscada moída'],
+    ingredientes: ['500 g de macarrão curto', '2 colheres (sopa) de manteiga', '1 colher (chá) de Alho em pó Super Misto', '1 caixinha de creme de leite', '1/2 xícara de queijo ralado', '1 colher (chá) de Ervas finas', 'Pimenta-do-reino e noz-moscada a gosto'],
+    preparo: ['Cozinhe o macarrão em água com sal até ficar al dente e reserve um pouco da água.', 'Derreta a manteiga, junte o alho em pó e mexa por 30 segundos.', 'Acrescente o creme de leite, o queijo, as ervas, a pimenta e uma pitada de noz-moscada.', 'Misture o macarrão e ajuste a cremosidade com a água do cozimento.'],
+  },
+  {
     id: 'feijao-3-jeitos', emoji: '🫘', cor: '#7A3E1D', tempo: '1h30', rende: '6 porções',
     titulo: '3 jeitos de temperar o feijão de todo dia',
     resumo: 'O mesmo feijão, três sabores diferentes: o tradicional de casa, o defumado e o baiano.',
@@ -10,7 +18,7 @@ const RECEITAS = [
     variacoes: [['Tradicional', 'Louro + 1/2 colher (chá) de cominho no refogado.'], ['Defumado', '1 colher (chá) de páprica defumada e cubinhos de bacon.'], ['Baiano', '1 colher (chá) de tempero baiano e cheiro-verde no final.']],
   },
   {
-    id: 'arroz-4-temperos', emoji: '🍚', cor: '#C9A44E', tempo: '25 min', rende: '4 porções',
+    id: 'arroz-4-temperos', foto: 'arroz-4-temperos', emoji: '🍚', cor: '#C9A44E', tempo: '25 min', rende: '4 porções',
     titulo: '4 temperos para o arroz de todo dia ficar do seu jeito',
     resumo: 'Arroz branco não precisa ser sem graça: veja como mudar o sabor com uma colher de tempero.',
     usa: ['Tempero para arroz', 'Alho em pó', 'Açafrão-da-terra (cúrcuma)', 'Ervas finas', 'Colorau'],
@@ -27,7 +35,7 @@ const RECEITAS = [
     preparo: ['Tempere a carne com o Tempero completo e a páprica e deixe descansar 15 minutos.', 'Doure a carne em panela bem quente, aos poucos, para não soltar água.', 'Junte o tomate e a água, tampe e cozinhe por 30 minutos em fogo baixo.', 'Finalize com a salsa e sirva com arroz, farofa e ovo frito.'],
   },
   {
-    id: 'frango-assado-dourado', emoji: '🍗', cor: '#C76B22', tempo: '1h10', rende: '5 porções',
+    id: 'frango-assado-dourado', foto: 'frango-assado-dourado', emoji: '🍗', cor: '#C76B22', tempo: '1h10', rende: '5 porções',
     titulo: 'Frango assado dourado e suculento',
     resumo: 'Pele crocante por fora, carne macia por dentro, com tempero que penetra de verdade.',
     usa: ['Tempero para frango', 'Páprica doce', 'Alho em pó', 'Alecrim'],
@@ -35,7 +43,7 @@ const RECEITAS = [
     preparo: ['Misture todos os temperos com o limão e o azeite.', 'Esfregue no frango, inclusive embaixo da pele, e deixe na geladeira por pelo menos 2 horas.', 'Asse coberto com papel-alumínio a 200 °C por 40 minutos.', 'Retire o papel e asse mais 20 minutos para dourar.'],
   },
   {
-    id: 'churrasco-perfeito', emoji: '🔥', cor: '#5E2416', tempo: '40 min', rende: '6 porções',
+    id: 'churrasco-perfeito', foto: 'churrasco-perfeito', emoji: '🔥', cor: '#5E2416', tempo: '40 min', rende: '6 porções',
     titulo: 'Churrasco perfeito: sal de parrilla, chimichurri e farofa',
     resumo: 'O trio que transforma qualquer churrasco de domingo.',
     usa: ['Sal de parrilla', 'Chimichurri', 'Farofa pronta tradicional', 'Pimenta biquinho em conserva'],
