@@ -1,4 +1,4 @@
-/* Super Misto Temperos: configuração do site. Troque aqui o WhatsApp, o e-mail e as redes sociais. */
+/* Supermisto Temperos: configuração do site. Troque aqui o WhatsApp, o e-mail e as redes sociais. */
 const CONFIG = {
   whatsapp: '5524998721557',       // DDI + DDD + número, só números
   fone: '(24) 99872-1557',
@@ -20,7 +20,7 @@ const KITS = [
 const FOTOS = new Set(['tempero-completo', 'colorau']);
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function midia(p, peso) {
-  return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Super Misto" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Supermisto" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -57,7 +57,7 @@ function abrir(p) {
       <button class="modal-x" data-fechar aria-label="Fechar">×</button>
       <div class="modal-img" style="--c:${linhaDe(p.linha).cor}">${midia(p, tam)}</div>
       <div class="modal-txt">
-        <small class="prod-linha">${linhaDe(p.linha).emoji} ${linhaDe(p.linha).nome}</small>
+        <small class="prod-linha">${linhaDe(p.linha).nome}</small>
         <h2 id="m-tit">${escapar(p.nome)}</h2>
         <p>${escapar(p.desc)}</p>
         <p class="modal-usos"><b>Combina com:</b> ${escapar(p.usos)}</p>
@@ -65,8 +65,8 @@ function abrir(p) {
         <div class="modal-tam">${p.tam.map((t) => `<button class="${t === tam ? 'ativo' : ''}" data-tam="${t}">${t}</button>`).join('')}</div>
         <small class="modal-nota">Vendemos para mercados, açougues, restaurantes e revendedores.</small>
         <div class="modal-btns">
-          <a class="btn btn-roxo" href="${linkWhats(`Olá! Tenho interesse em ${p.nome} Super Misto (${tam}). Pode me passar valores e condições?`)}" target="_blank" rel="noopener">Pedir orçamento</a>
-          <a class="btn btn-amarelo" href="${linkWhats(`Olá! Quero revender ${p.nome} Super Misto. Pode me mandar a tabela de atacado?`)}" target="_blank" rel="noopener">Quero revender</a>
+          <a class="btn btn-roxo" href="${linkWhats(`Olá! Tenho interesse em ${p.nome} Supermisto (${tam}). Pode me passar valores e condições?`)}" target="_blank" rel="noopener">Pedir orçamento</a>
+          <a class="btn btn-amarelo" href="${linkWhats(`Olá! Quero revender ${p.nome} Supermisto. Pode me mandar a tabela de atacado?`)}" target="_blank" rel="noopener">Quero revender</a>
         </div>
         
       </div>
@@ -94,23 +94,23 @@ function capaReceita(r, grande = false) {
 }
 function cartaoReceita(r) {
   return `<a class="rec aparece" href="receita.html?id=${r.id}">${capaReceita(r)}
-    <div class="rec-corpo"><small>⏱ ${r.tempo} · ${r.rende}</small><h3>${r.titulo}</h3><p>${r.resumo}</p><span class="saiba">Saiba mais →</span></div></a>`;
+    <div class="rec-corpo"><small>${r.tempo} · ${r.rende}</small><h3>${r.titulo}</h3><p>${r.resumo}</p><span class="saiba">Saiba mais →</span></div></a>`;
 }
 function receitasLista(el, lista) { el.innerHTML = lista.map(cartaoReceita).join(''); }
 function receitaDetalhe() {
   const r = RECEITAS.find((x) => x.id === new URLSearchParams(location.search).get('id')) || RECEITAS[0];
-  document.title = r.titulo + ' | Super Misto Temperos';
+  document.title = r.titulo + ' | Supermisto Temperos';
   const usados = r.usa.map((n) => [produtoPorNome(n), PRODUTOS.findIndex((p) => p.nome === n)]).filter(([p]) => p);
   $('#receita').innerHTML = `<header class="rc-topo" style="--c:${r.cor}"><div class="caixa rc-topo-in">
       <div><a class="voltar" href="receitas.html">← Todas as receitas</a><h1>${r.titulo}</h1><p>${r.resumo}</p>
-      <div class="rc-info"><span>⏱ ${r.tempo}</span><span>🍽 ${r.rende}</span></div></div>${capaReceita(r, true)}</div></header>
+      <div class="rc-info"><span>${r.tempo}</span><span>${r.rende}</span></div></div>${capaReceita(r, true)}</div></header>
     <div class="caixa rc-corpo">
       <div class="rc-col"><h2>Ingredientes</h2><ul class="rc-ing">${r.ingredientes.map((i) => `<li>${i}</li>`).join('')}</ul>
         <h2>Modo de preparo</h2><ol class="rc-modo">${r.preparo.map((i) => `<li>${i}</li>`).join('')}</ol>
         ${r.variacoes ? `<h2>Varie o sabor</h2><div class="rc-var">${r.variacoes.map(([t, d]) => `<div><b>${t}</b><p>${d}</p></div>`).join('')}</div>` : ''}</div>
-      <aside class="rc-lado"><h3>Produtos Super Misto desta receita</h3><div class="rc-prods">${usados.map(([p, i]) =>
+      <aside class="rc-lado"><h3>Produtos Supermisto desta receita</h3><div class="rc-prods">${usados.map(([p, i]) =>
         `<button class="rc-prod" data-i="${i}">${embalagem(p, p.tam[1] || p.tam[0])}<span>${p.nome}</span></button>`).join('')}</div>
-        <a class="btn btn-roxo" href="${linkWhats('Olá! Vi a receita "' + r.titulo + '" no site e quero os temperos Super Misto.')}" target="_blank" rel="noopener">Quero estes temperos</a></aside>
+        <a class="btn btn-roxo" href="${linkWhats('Olá! Vi a receita "' + r.titulo + '" no site e quero os temperos Supermisto.')}" target="_blank" rel="noopener">Quero estes temperos</a></aside>
     </div>`;
   $('#receita').addEventListener('click', (e) => { const b = e.target.closest('.rc-prod'); if (b) abrir(PRODUTOS[b.dataset.i]); });
   receitasLista($('#receitas-mais'), RECEITAS.filter((x) => x.id !== r.id).slice(0, 3));
@@ -122,13 +122,11 @@ function redes() {
   return r.length ? `<div class="redes">${r.map(([k, n]) => `<a href="${CONFIG[k]}" target="_blank" rel="noopener">${n}</a>`).join('')}</div>` : '';
 }
 function rodape() {
-  $('#rodape').innerHTML = `<div class="rod-cta"><div class="caixa"><div><b>Quer Supermisto no seu mercado?</b><span>Receba a tabela de atacado e condições para revenda.</span></div>
-    <a class="btn" data-whats="Olá! Quero revender os produtos Supermisto. Pode me mandar a tabela de atacado?">Quero revender →</a></div></div>
-  <div class="caixa rod-grid">
+  $('#rodape').innerHTML = `<div class="caixa rod-grid">
     <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="62" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p>${redes()}</div>
     <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
-    <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span>📱</span><span data-fone></span></a><a data-mail-link><span>✉️</span><span data-mail-txt></span></a><span><span>📍</span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
+    <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
   </div>
   <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Supermisto</span></div>`;
 }
@@ -155,20 +153,18 @@ function inicio() {
   $('#vitrine').innerHTML = [['Molho de pimenta vermelha', 'v1'], ['Colorau', 'v2 real'], ['Pimenta biquinho em conserva', 'v3'], ['Tempero completo', 'v4 real']]
     .map(([n, c]) => `<div class="vit ${c}">${vit(n)}</div>`).join('') + '<div class="vit-blob"></div>';
   $('#num-prod').textContent = PRODUTOS.length + '+';
-  const nomes = PRODUTOS.map((p) => p.nome);
-  $('#letreiro').innerHTML = [...nomes, ...nomes].map((n) => `<span>${n}</span>`).join('<i>✦</i>');
   const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'sais', 'churrasco', 'molhos'];
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
     const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp)` : `background:linear-gradient(160deg,${l.cor},#142A1F)`;
-    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<span class="linha-emoji">${l.emoji}</span>`}<b>${l.nome}</b><em>${qtd} produtos →</em></a>`;
+    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}"><span class="linha-foto" style="${fundo}"></span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
-  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.tag === 'Mais procurado').slice(0, 8);
-  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('');
+  // só produtos com foto real (os outros entram quando a foto chegar)
+  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome)));
+  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') +
+    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Pimenta-do-reino, cominho, chimichurri, orégano e muito mais chegando.</span><em>Ver catálogo completo →</em></a>`;
   ligarCartoes($('#favoritos'));
   receitasLista($('#receitas-home'), RECEITAS.filter((r) => r.foto).slice(0, 4));
-  $('#kits-lista').innerHTML = KITS.map((k) => `<div class="kit aparece"><span class="kit-ico">${k.ico}</span><div><b>${k.nome}</b><small>${k.itens}</small></div>
-    <a class="btn btn-amarelo" href="${linkWhats(`Olá! Tenho interesse no ${k.nome} Super Misto.`)}" target="_blank" rel="noopener">Quero</a></div>`).join('');
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));
   $('#form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -183,11 +179,12 @@ function catalogo() {
   let linha = LINHAS.some((l) => l.id === url.get('linha')) ? url.get('linha') : 'todos';
   const busca = $('#busca');
   const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  $('#filtros').innerHTML = `<button data-f="todos">Todos</button>` + LINHAS.map((l) => `<button data-f="${l.id}">${l.emoji} ${l.nome}</button>`).join('');
+  $('#filtros').innerHTML = `<button data-f="todos">Todos</button>` + LINHAS.map((l) => `<button data-f="${l.id}">${l.nome}</button>`).join('');
   const desenhar = () => {
     $$('#filtros button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === linha));
     const q = norm(busca.value.trim());
-    const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)));
+    const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
+      .sort(([a], [b]) => FOTOS.has(slug(b.nome)) - FOTOS.has(slug(a.nome)));
     $('#conta').textContent = lista.length ? `${lista.length} produto${lista.length > 1 ? 's' : ''}` : 'Nenhum produto encontrado. Chame no WhatsApp: a gente pode produzir!';
     $('#catalogo').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
     observar();

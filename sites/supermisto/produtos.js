@@ -17,8 +17,8 @@ const P = (nome, linha, cor, desc, usos, tam, emb = 'pouch', tag = '') => ({ nom
 const T = ['50 g', '100 g', '500 g', '1 kg'];
 const PRODUTOS = [
   // puros
-  P('Colorau', 'puros', '#D8401E', 'Fubá de milho e urucum: cor vermelha viva e sabor suave.', 'Arroz, feijão, frango, moquecas e ensopados.', ['10 g'], 'pouch', 'Mais procurado'),
-  P('Pimenta-do-reino moída', 'puros', '#3A3330', 'Moída na nossa fábrica, com aroma forte e picância na medida.', 'Carnes, molhos, saladas e finalização de pratos.', T, 'pouch', 'Mais procurado'),
+  P('Colorau', 'puros', '#D8401E', 'Fubá de milho e urucum: cor vermelha viva e sabor suave.', 'Arroz, feijão, frango, moquecas e ensopados.', ['10 g'], 'pouch', ''),
+  P('Pimenta-do-reino moída', 'puros', '#3A3330', 'Moída na nossa fábrica, com aroma forte e picância na medida.', 'Carnes, molhos, saladas e finalização de pratos.', T, 'pouch', ''),
   P('Pimenta-do-reino em grão', 'puros', '#2C2624', 'Grãos inteiros e selecionados, para moer na hora.', 'Moedores, conservas e caldos.', T),
   P('Cominho moído', 'puros', '#A9762E', 'Sabor marcante da cozinha nordestina.', 'Feijão, carne moída, quibe e carnes.', T),
   P('Páprica doce', 'puros', '#E2572B', 'Sabor suave e cor intensa.', 'Frango, batatas, molhos e ovos.', T),
@@ -34,7 +34,7 @@ const PRODUTOS = [
   P('Gengibre em pó', 'puros', '#D9B26A', 'Picante e refrescante.', 'Carnes, peixes, chás e doces.', T),
   P('Mostarda em grão', 'puros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
   // misturas
-  P('Tempero completo', 'misturas', '#C99A3B', 'Sal, alho, cebola, salsa, colorau, pimentão e ervas: mais sabor em uma colher.', 'Carnes, aves, peixes, saladas, legumes e sopas.', ['10 g'], 'pouch', 'Mais procurado'),
+  P('Tempero completo', 'misturas', '#C99A3B', 'Sal, alho, cebola, salsa, colorau, pimentão e ervas: mais sabor em uma colher.', 'Carnes, aves, peixes, saladas, legumes e sopas.', ['10 g'], 'pouch', ''),
   P('Tempero baiano', 'misturas', '#D96A1E', 'Mistura de especiarias com cor e sabor da Bahia.', 'Carnes, frango, peixes e feijão.', T),
   P('Lemon pepper', 'misturas', '#E3C34A', 'Limão e pimenta-do-reino na medida certa.', 'Peixes, frango, saladas e legumes.', T),
   P('Ervas finas', 'misturas', '#7C9A48', 'Salsa, cebolinha, manjericão, orégano e alecrim.', 'Massas, molhos, pães e carnes brancas.', T),
@@ -47,13 +47,13 @@ const PRODUTOS = [
   P('Tempero para pizza', 'misturas', '#8FA34D', 'Orégano, manjericão e alho.', 'Pizzas, molhos de tomate e bruschettas.', T),
   P('Tempero para carne moída', 'misturas', '#A65A2E', 'Equilíbrio de cominho, páprica e alho.', 'Carne moída, recheios e hambúrgueres.', T),
   // churrasco
-  P('Chimichurri', 'churrasco', '#6E8B3D', 'Ervas, alho e pimenta: o clássico da parrilla.', 'Carnes na brasa, pães e legumes grelhados.', T, 'pouch', 'Mais procurado'),
+  P('Chimichurri', 'churrasco', '#6E8B3D', 'Ervas, alho e pimenta: o clássico da parrilla.', 'Carnes na brasa, pães e legumes grelhados.', T, 'pouch', ''),
   P('Tempero para churrasco', 'churrasco', '#B5512F', 'Sal, alho, pimenta e especiarias para carne vermelha.', 'Picanha, maminha, costela e linguiça.', T),
   P('Sal de parrilla', 'churrasco', '#D9CFC0', 'Sal grosso moído no ponto certo para a grelha.', 'Carnes vermelhas e cortes nobres.', ['500 g', '1 kg']),
   P('Dry rub defumado', 'churrasco', '#7A2E1A', 'Mistura de páprica defumada, açúcar mascavo e especiarias.', 'Costela, porco e frango no estilo americano.', T),
   P('Tempero para costela', 'churrasco', '#8C3B22', 'Receita para costela macia e saborosa.', 'Costela bovina e suína.', T),
   // ervas
-  P('Orégano', 'ervas', '#6F7F3A', 'Folhas selecionadas com perfume marcante.', 'Pizzas, molhos, saladas e carnes.', T, 'pouch', 'Mais procurado'),
+  P('Orégano', 'ervas', '#6F7F3A', 'Folhas selecionadas com perfume marcante.', 'Pizzas, molhos, saladas e carnes.', T, 'pouch', ''),
   P('Salsa desidratada', 'ervas', '#4F7A2A', 'Cor verde viva e sabor fresco.', 'Arroz, sopas, molhos e peixes.', T),
   P('Cebolinha desidratada', 'ervas', '#5B8A33', 'Sabor suave de cebola verde.', 'Omeletes, sopas, patês e arroz.', T),
   P('Manjericão', 'ervas', '#3F6E2B', 'Aroma doce e fresco.', 'Molho de tomate, massas e pizzas.', T),
@@ -66,14 +66,14 @@ const PRODUTOS = [
   P('Sal de ervas', 'sais', '#C9CFA4', 'Sal com ervas finas, com menos sódio no prato.', 'Saladas, carnes, ovos e legumes.', ['100 g', '500 g', '1 kg']),
   P('Sal grosso temperado', 'sais', '#D7C9AE', 'Sal grosso com alho e pimenta.', 'Churrasco e carnes assadas.', ['500 g', '1 kg']),
   // molhos
-  P('Molho de pimenta vermelha', 'molhos', '#B3170F', 'Pimenta vermelha com vinagre e sal, ardência equilibrada.', 'Pastéis, feijão, carnes e petiscos.', ['150 ml', '500 ml', '1 L'], 'garrafa', 'Mais procurado'),
+  P('Molho de pimenta vermelha', 'molhos', '#B3170F', 'Pimenta vermelha com vinagre e sal, ardência equilibrada.', 'Pastéis, feijão, carnes e petiscos.', ['150 ml', '500 ml', '1 L'], 'garrafa', ''),
   P('Molho de pimenta malagueta', 'molhos', '#C9341A', 'Malagueta curtida no estilo tradicional.', 'Feijoada, peixes e moquecas.', ['150 ml', '500 ml', '1 L'], 'garrafa'),
   P('Molho de alho', 'molhos', '#E9E2CC', 'Cremoso e com muito sabor de alho.', 'Churrasco, lanches e batatas.', ['200 g', '1 kg'], 'pote'),
   P('Tempero pastoso de alho e sal', 'molhos', '#E6DDBE', 'Alho e sal batidos, prontos para o refogado.', 'Arroz, feijão, carnes e legumes.', ['300 g', '1 kg'], 'pote'),
   P('Tempero verde pastoso', 'molhos', '#5C8A2E', 'Salsa, cebolinha, alho e cebola batidos.', 'Carnes, peixes, ovos e refogados.', ['300 g', '1 kg'], 'pote'),
   P('Molho barbecue', 'molhos', '#5A1E10', 'Agridoce e defumado.', 'Costelinha, hambúrgueres e frango.', ['300 ml', '1 L'], 'garrafa'),
   // conservas
-  P('Pimenta biquinho em conserva', 'conservas', '#D63A1C', 'Pimenta doce e crocante, quase sem ardor.', 'Petiscos, saladas e tábuas de frios.', ['200 g', '500 g'], 'pote', 'Mais procurado'),
+  P('Pimenta biquinho em conserva', 'conservas', '#D63A1C', 'Pimenta doce e crocante, quase sem ardor.', 'Petiscos, saladas e tábuas de frios.', ['200 g', '500 g'], 'pote', ''),
   P('Pimenta dedo-de-moça em conserva', 'conservas', '#B5160E', 'Pimentas inteiras curtidas no vinagre.', 'Feijão, carnes e molhos.', ['200 g', '500 g'], 'pote'),
   P('Ovos de codorna em conserva', 'conservas', '#E8DCC0', 'Ovos de codorna cozidos e temperados.', 'Petiscos, saladas e espetinhos.', ['300 g', '1 kg'], 'pote'),
   P('Picles de pepino', 'conservas', '#8BA34A', 'Pepinos crocantes em conserva agridoce.', 'Lanches, saladas e petiscos.', ['300 g', '1 kg'], 'pote'),
@@ -93,7 +93,7 @@ const PRODUTOS = [
   P('Polvilho azedo', 'amidos', '#EFEAE0', 'Fermentado naturalmente, ideal para pão de queijo crocante.', 'Pão de queijo e biscoito de polvilho.', ['500 g', '1 kg'], 'saco'),
   P('Fécula de mandioca', 'amidos', '#F5F1E8', 'Amido puro de mandioca.', 'Engrossar caldos, molhos, tapiocas e bolos.', ['500 g', '1 kg'], 'saco'),
   P('Farinha de mandioca temperada', 'amidos', '#E2C27E', 'Farinha torrada com alho e cebola.', 'Farofas, carnes e feijoada.', ['500 g', '1 kg'], 'saco'),
-  P('Farofa pronta tradicional', 'amidos', '#D9A64E', 'Farofa crocante com bacon e temperos.', 'Churrasco, frango e feijoada.', ['250 g', '500 g'], 'saco', 'Mais procurado'),
+  P('Farofa pronta tradicional', 'amidos', '#D9A64E', 'Farofa crocante com bacon e temperos.', 'Churrasco, frango e feijoada.', ['250 g', '500 g'], 'saco', ''),
   P('Farofa de alho', 'amidos', '#E3C98A', 'Farofa dourada com alho frito.', 'Churrasco, carnes e arroz.', ['250 g', '500 g'], 'saco'),
 ];
 

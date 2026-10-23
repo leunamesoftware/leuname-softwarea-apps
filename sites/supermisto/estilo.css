@@ -716,3 +716,30 @@ body{background:#fff}
 @media (max-width:520px){.prod-img .foto-prod{padding:6px}}
 .prod-img .foto-prod{padding:34px 12px 8px}
 @media (max-width:520px){.prod-img .foto-prod{padding:28px 6px 4px}}
+
+/* ===================== LIMPEZA (estilo marca de supermercado) ===================== */
+/* linhas: foto em cima, nome embaixo em fundo branco */
+.linhas-grid{grid-template-columns:repeat(5,1fr);gap:14px}
+.linha{min-height:0;padding:0;background:#fff!important;color:#1F2A22;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 14px rgba(0,60,25,.08);border:0}
+.linha::after{display:none}
+.linha-foto{display:block;aspect-ratio:4/3;background-size:cover;background-position:center}
+.linha b{color:#1F2A22;font-size:15px;text-shadow:none;padding:12px 12px 2px;text-align:center}
+.linha em{color:#F57C00;font-size:12.5px;padding:0 12px 12px;text-align:center;margin:0}
+/* empresas sem ícone: barrinha laranja no topo */
+.emp{border-top:4px solid #F57C00}
+.emp h3{margin-top:0}
+/* história: valores com marcador */
+.valores li{grid-template-columns:1fr;padding-left:14px;border-left:3px solid #F57C00}
+.valores span{display:none}
+/* seções com mais respiro */
+.sec{padding:84px 0}
+.sec-cab{margin-bottom:40px}
+@media (max-width:1120px){.linhas-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){.linhas-grid{grid-template-columns:1fr 1fr;gap:10px}.linha b{font-size:13.5px;padding:10px 8px 2px}.sec{padding:60px 0}}
+#favoritos{display:flex;flex-wrap:wrap;justify-content:center;gap:22px}
+#favoritos>.prod{width:280px}
+.prod-breve{background:linear-gradient(160deg,#017130,#0A8A3F);color:#fff;padding:28px;display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:420px;cursor:pointer}
+.prod-breve b{font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;line-height:1.1}
+.prod-breve span{opacity:.9;font-size:15px}
+.prod-breve em{font-style:normal;font-weight:700;color:#FFB547}
+@media (max-width:620px){#favoritos{display:grid;grid-template-columns:1fr 1fr;gap:12px}#favoritos>.prod{width:auto}.prod-breve{grid-column:1/-1;min-height:0;padding:22px}.prod-breve b{font-size:20px}}
