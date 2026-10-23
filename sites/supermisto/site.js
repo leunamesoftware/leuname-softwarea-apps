@@ -122,7 +122,7 @@ function redes() {
 }
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
-    <div><img src="img/logo-claro.svg" alt="Super Misto Temperos" width="230" height="55" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
+    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="230" height="75" loading="lazy" style="width:230px;height:auto"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
     <div><b>Linhas</b>${LINHAS.map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}</div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
     <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span>${redes()}</div>
