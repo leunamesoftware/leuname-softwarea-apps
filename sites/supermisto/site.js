@@ -17,7 +17,7 @@ const KITS = [
 
 /* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
    Produto sem foto aparece com a embalagem desenhada. */
-const FOTOS = new Set(['tempero-completo', 'colorau']);
+const FOTOS = new Set(['tempero-completo', 'colorau', 'pimenta-do-reino-em-grao']);
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function midia(p, peso) {
   return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Supermisto" loading="lazy">` : embalagem(p, peso);
