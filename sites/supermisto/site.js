@@ -1,6 +1,5 @@
-/* Super Misto Temperos: configuração do site. Troque aqui o link da Shopee, o WhatsApp e o e-mail. */
+/* Super Misto Temperos: configuração do site. Troque aqui o WhatsApp, o e-mail e as redes sociais. */
 const CONFIG = {
-  shopee: 'https://shopee.com.br/', // link da loja "Super misto temperos" na Shopee
   whatsapp: '5524998721557',       // DDI + DDD + número, só números
   fone: '(24) 99872-1557',
   email: 'contato@supermistotemperos.com.br',
@@ -57,10 +56,10 @@ function abrir(p) {
         <b class="modal-rot">Tamanhos</b>
         <div class="modal-tam">${p.tam.map((t) => `<button class="${t === tam ? 'ativo' : ''}" data-tam="${t}">${t}</button>`).join('')}</div>
         <div class="modal-btns">
-          <a class="btn btn-roxo" href="${linkWhats(`Olá! Tenho interesse em ${p.nome} Super Misto (${tam}). Pode me passar o valor?`)}" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
-          <a class="btn btn-amarelo" href="${CONFIG.shopee}" target="_blank" rel="noopener">Ver na Shopee</a>
+          <a class="btn btn-roxo" href="${linkWhats(`Olá! Tenho interesse em ${p.nome} Super Misto (${tam}). Pode me passar valores e condições?`)}" target="_blank" rel="noopener">Pedir orçamento</a>
+          <a class="btn btn-amarelo" href="${linkWhats(`Olá! Quero revender ${p.nome} Super Misto. Pode me mandar a tabela de atacado?`)}" target="_blank" rel="noopener">Quero revender</a>
         </div>
-        <small class="modal-nota">Atacado e quantidades maiores: peça a tabela no WhatsApp.</small>
+        <small class="modal-nota">Vendemos para mercados, açougues, restaurantes e revendedores.</small>
       </div>
     </div>`;
   };
@@ -117,12 +116,11 @@ function rodape() {
     <div><img src="img/logo.svg" alt="Super Misto Temperos" width="120" height="86" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
     <div><b>Linhas</b>${LINHAS.map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}</div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
-    <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span><a data-shopee href="#" target="_blank" rel="noopener">Loja na Shopee</a>${redes()}</div>
+    <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span>${redes()}</div>
   </div>
   <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Super Misto Temperos</span></div>`;
 }
 function ligacoes() {
-  $$('[data-shopee]').forEach((a) => { a.href = CONFIG.shopee; });
   $$('[data-whats]').forEach((a) => { a.href = linkWhats(a.dataset.whats); a.target = '_blank'; a.rel = 'noopener'; });
   $$('[data-fone]').forEach((a) => { a.textContent = CONFIG.fone; });
   $$('[data-mail]').forEach((a) => { a.href = 'mailto:' + CONFIG.email; a.textContent = CONFIG.email; });
