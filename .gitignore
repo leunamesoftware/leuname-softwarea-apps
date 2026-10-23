@@ -49,3 +49,4 @@ app.*.map.json
 
 # vídeos gerados (ficam no branch dados-videos do Leunamesite)
 entregas/**/*.mp4
+entregas/super-misto/solapa-tc/.*
