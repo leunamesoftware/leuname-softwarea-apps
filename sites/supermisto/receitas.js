@@ -1,0 +1,53 @@
+/* Receitas Super Misto: textos próprios. "usa" = nomes exatos de produtos do catálogo (produtos.js). */
+const RECEITAS = [
+  {
+    id: 'feijao-3-jeitos', emoji: '🫘', cor: '#7A3E1D', tempo: '1h30', rende: '6 porções',
+    titulo: '3 jeitos de temperar o feijão de todo dia',
+    resumo: 'O mesmo feijão, três sabores diferentes: o tradicional de casa, o defumado e o baiano.',
+    usa: ['Louro em folha', 'Cominho moído', 'Tempero para feijão', 'Páprica defumada', 'Tempero baiano'],
+    ingredientes: ['500 g de feijão carioca ou preto', '2 folhas de louro', '1 colher (sopa) de óleo', '1 colher (chá) de Tempero para feijão Super Misto', 'Sal a gosto'],
+    preparo: ['Deixe o feijão de molho por 8 horas e troque a água.', 'Cozinhe na pressão com as folhas de louro por 30 minutos.', 'Refogue o óleo com o Tempero para feijão, junte duas conchas de feijão, amasse e volte para a panela.', 'Deixe engrossar por 10 minutos e acerte o sal.'],
+    variacoes: [['Tradicional', 'Louro + 1/2 colher (chá) de cominho no refogado.'], ['Defumado', '1 colher (chá) de páprica defumada e cubinhos de bacon.'], ['Baiano', '1 colher (chá) de tempero baiano e cheiro-verde no final.']],
+  },
+  {
+    id: 'arroz-4-temperos', emoji: '🍚', cor: '#C9A44E', tempo: '25 min', rende: '4 porções',
+    titulo: '4 temperos para o arroz de todo dia ficar do seu jeito',
+    resumo: 'Arroz branco não precisa ser sem graça: veja como mudar o sabor com uma colher de tempero.',
+    usa: ['Tempero para arroz', 'Alho em pó', 'Açafrão-da-terra (cúrcuma)', 'Ervas finas', 'Colorau'],
+    ingredientes: ['2 xícaras de arroz', '4 xícaras de água quente', '1 colher (sopa) de óleo', '1 colher (chá) de Tempero para arroz Super Misto', 'Sal a gosto'],
+    preparo: ['Aqueça o óleo e refogue o Tempero para arroz por 30 segundos.', 'Junte o arroz e mexa até os grãos ficarem brilhantes.', 'Coloque a água quente e o sal, tampe e cozinhe em fogo baixo até secar.', 'Desligue e deixe abafado por 5 minutos antes de soltar com o garfo.'],
+    variacoes: [['Dourado', '1/2 colher (chá) de cúrcuma: cor amarela e sabor suave.'], ['Avermelhado', '1/2 colher (chá) de colorau: perfeito com frango.'], ['De ervas', '1 colher (chá) de ervas finas no final.'], ['Alho em dobro', '1 colher (chá) de alho em pó no refogado.']],
+  },
+  {
+    id: 'picadinho-carioca', emoji: '🥩', cor: '#8C2F1B', tempo: '50 min', rende: '4 porções',
+    titulo: 'Picadinho carioca com 3 temperos',
+    resumo: 'O clássico dos botecos do Rio, com molho encorpado e muito sabor.',
+    usa: ['Tempero completo', 'Páprica doce', 'Salsa desidratada'],
+    ingredientes: ['600 g de patinho ou alcatra em cubos', '1 colher (sopa) de Tempero completo Super Misto', '1 colher (chá) de Páprica doce', '1 tomate picado', '1 xícara de água', 'Salsa desidratada para finalizar'],
+    preparo: ['Tempere a carne com o Tempero completo e a páprica e deixe descansar 15 minutos.', 'Doure a carne em panela bem quente, aos poucos, para não soltar água.', 'Junte o tomate e a água, tampe e cozinhe por 30 minutos em fogo baixo.', 'Finalize com a salsa e sirva com arroz, farofa e ovo frito.'],
+  },
+  {
+    id: 'frango-assado-dourado', emoji: '🍗', cor: '#C76B22', tempo: '1h10', rende: '5 porções',
+    titulo: 'Frango assado dourado e suculento',
+    resumo: 'Pele crocante por fora, carne macia por dentro, com tempero que penetra de verdade.',
+    usa: ['Tempero para frango', 'Páprica doce', 'Alho em pó', 'Alecrim'],
+    ingredientes: ['1 kg de coxa e sobrecoxa', '2 colheres (sopa) de Tempero para frango Super Misto', '1 colher (chá) de Páprica doce', '1 colher (chá) de Alho em pó', 'Suco de 1 limão', '2 colheres (sopa) de azeite', 'Alecrim a gosto'],
+    preparo: ['Misture todos os temperos com o limão e o azeite.', 'Esfregue no frango, inclusive embaixo da pele, e deixe na geladeira por pelo menos 2 horas.', 'Asse coberto com papel-alumínio a 200 °C por 40 minutos.', 'Retire o papel e asse mais 20 minutos para dourar.'],
+  },
+  {
+    id: 'churrasco-perfeito', emoji: '🔥', cor: '#5E2416', tempo: '40 min', rende: '6 porções',
+    titulo: 'Churrasco perfeito: sal de parrilla, chimichurri e farofa',
+    resumo: 'O trio que transforma qualquer churrasco de domingo.',
+    usa: ['Sal de parrilla', 'Chimichurri', 'Farofa pronta tradicional', 'Pimenta biquinho em conserva'],
+    ingredientes: ['1,2 kg de picanha', 'Sal de parrilla Super Misto', '3 colheres (sopa) de Chimichurri', '6 colheres (sopa) de azeite', 'Farofa pronta Super Misto', 'Pimenta biquinho para servir'],
+    preparo: ['Corte a picanha em bifes grossos e salgue com o sal de parrilla 30 minutos antes.', 'Asse na brasa forte, primeiro do lado da gordura.', 'Misture o chimichurri com o azeite e deixe hidratar 15 minutos.', 'Fatie a carne e sirva com o chimichurri por cima, farofa e pimenta biquinho.'],
+  },
+  {
+    id: 'pao-de-queijo', emoji: '🧀', cor: '#E2B04A', tempo: '45 min', rende: '30 unidades',
+    titulo: 'Pão de queijo mineiro com polvilho azedo',
+    resumo: 'Crocante por fora e puxa-puxa por dentro, do jeito que tem que ser.',
+    usa: ['Polvilho azedo', 'Polvilho doce'],
+    ingredientes: ['250 g de Polvilho azedo Super Misto', '250 g de Polvilho doce Super Misto', '1 xícara de leite', '1/2 xícara de óleo', '2 ovos', '200 g de queijo meia cura ralado', '1 colher (chá) de sal'],
+    preparo: ['Ferva o leite com o óleo e o sal e escalde os polvilhos, mexendo bem.', 'Espere amornar, junte os ovos e sove até ficar liso.', 'Acrescente o queijo e faça bolinhas com as mãos untadas.', 'Asse a 200 °C por 25 a 30 minutos, até dourar.'],
+  },
+];

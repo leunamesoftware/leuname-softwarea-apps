@@ -4,6 +4,10 @@ const CONFIG = {
   whatsapp: '5524998721557',       // DDI + DDD + número, só números
   fone: '(24) 99872-1557',
   email: 'contato@supermistotemperos.com.br',
+  instagram: '', // ex.: https://instagram.com/supermistotemperos (vazio = não aparece)
+  facebook: '',
+  tiktok: '',
+  youtube: '',
 };
 
 const KITS = [
@@ -71,15 +75,51 @@ function abrir(p) {
 function fechar() { const m = $('#modal'); m.hidden = true; m.innerHTML = ''; document.body.style.overflow = ''; }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#modal').hidden) fechar(); });
 
+
+/* ---------- receitas ---------- */
+const produtoPorNome = (n) => PRODUTOS.find((p) => p.nome === n);
+function capaReceita(r, grande = false) {
+  const pacotes = r.usa.slice(0, grande ? 4 : 3).map(produtoPorNome).filter(Boolean)
+    .map((p, i) => `<span class="rc-p rc-p${i}">${embalagem(p, p.tam[1] || p.tam[0])}</span>`).join('');
+  return `<div class="rc-capa${grande ? ' grande' : ''}" style="--c:${r.cor}"><span class="rc-prato">${r.emoji}</span>${pacotes}</div>`;
+}
+function cartaoReceita(r) {
+  return `<a class="rec aparece" href="receita.html?id=${r.id}">${capaReceita(r)}
+    <div class="rec-corpo"><small>⏱ ${r.tempo} · ${r.rende}</small><h3>${r.titulo}</h3><p>${r.resumo}</p><span class="saiba">Saiba mais →</span></div></a>`;
+}
+function receitasLista(el, lista) { el.innerHTML = lista.map(cartaoReceita).join(''); }
+function receitaDetalhe() {
+  const r = RECEITAS.find((x) => x.id === new URLSearchParams(location.search).get('id')) || RECEITAS[0];
+  document.title = r.titulo + ' | Super Misto Temperos';
+  const usados = r.usa.map((n) => [produtoPorNome(n), PRODUTOS.findIndex((p) => p.nome === n)]).filter(([p]) => p);
+  $('#receita').innerHTML = `<header class="rc-topo" style="--c:${r.cor}"><div class="caixa rc-topo-in">
+      <div><a class="voltar" href="receitas.html">← Todas as receitas</a><h1>${r.titulo}</h1><p>${r.resumo}</p>
+      <div class="rc-info"><span>⏱ ${r.tempo}</span><span>🍽 ${r.rende}</span></div></div>${capaReceita(r, true)}</div></header>
+    <div class="caixa rc-corpo">
+      <div class="rc-col"><h2>Ingredientes</h2><ul class="rc-ing">${r.ingredientes.map((i) => `<li>${i}</li>`).join('')}</ul>
+        <h2>Modo de preparo</h2><ol class="rc-modo">${r.preparo.map((i) => `<li>${i}</li>`).join('')}</ol>
+        ${r.variacoes ? `<h2>Varie o sabor</h2><div class="rc-var">${r.variacoes.map(([t, d]) => `<div><b>${t}</b><p>${d}</p></div>`).join('')}</div>` : ''}</div>
+      <aside class="rc-lado"><h3>Produtos Super Misto desta receita</h3><div class="rc-prods">${usados.map(([p, i]) =>
+        `<button class="rc-prod" data-i="${i}">${embalagem(p, p.tam[1] || p.tam[0])}<span>${p.nome}</span></button>`).join('')}</div>
+        <a class="btn btn-roxo" href="${linkWhats('Olá! Vi a receita "' + r.titulo + '" no site e quero os temperos Super Misto.')}" target="_blank" rel="noopener">Quero estes temperos</a></aside>
+    </div>`;
+  $('#receita').addEventListener('click', (e) => { const b = e.target.closest('.rc-prod'); if (b) abrir(PRODUTOS[b.dataset.i]); });
+  receitasLista($('#receitas-mais'), RECEITAS.filter((x) => x.id !== r.id).slice(0, 3));
+}
+
 /* ---------- partes comuns ---------- */
+function redes() {
+  const r = [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['tiktok', 'TikTok'], ['youtube', 'YouTube']].filter(([k]) => CONFIG[k]);
+  return r.length ? `<div class="redes">${r.map(([k, n]) => `<a href="${CONFIG[k]}" target="_blank" rel="noopener">${n}</a>`).join('')}</div>` : '';
+}
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
     <div><img src="img/logo.svg" alt="Super Misto Temperos" width="120" height="86" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
     <div><b>Linhas</b>${LINHAS.map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}</div>
-    <div><b>Empresa</b><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
-    <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span><a data-shopee href="#" target="_blank" rel="noopener">Loja na Shopee</a></div>
+    <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
+    <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span><a data-shopee href="#" target="_blank" rel="noopener">Loja na Shopee</a>${redes()}</div>
   </div>
-  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span>© ${new Date().getFullYear()} Super Misto Temperos</span></div>`;
+  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Super Misto Temperos</span></div>`;
 }
 function ligacoes() {
   $$('[data-shopee]').forEach((a) => { a.href = CONFIG.shopee; });
@@ -110,6 +150,7 @@ function inicio() {
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.tag === 'Mais procurado').slice(0, 8);
   $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('');
   ligarCartoes($('#favoritos'));
+  receitasLista($('#receitas-home'), RECEITAS.slice(0, 3));
   $('#kits-lista').innerHTML = KITS.map((k) => `<div class="kit aparece"><span class="kit-ico">${k.ico}</span><div><b>${k.nome}</b><small>${k.itens}</small></div>
     <a class="btn btn-amarelo" href="${linkWhats(`Olá! Tenho interesse no ${k.nome} Super Misto.`)}" target="_blank" rel="noopener">Quero</a></div>`).join('');
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));
@@ -145,6 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
   rodape();
   if ($('#vitrine')) inicio();
   if ($('#catalogo')) catalogo();
+  if ($('#receitas-lista')) receitasLista($('#receitas-lista'), RECEITAS);
+  if ($('#receita')) receitaDetalhe();
   ligacoes();
   observar();
   const hamb = $('#hamb'), menu = $('#menu');

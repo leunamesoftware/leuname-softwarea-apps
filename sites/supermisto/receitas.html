@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receitas | Super Misto Temperos</title>
+<meta name="description" content="Receitas fáceis com temperos Super Misto: feijão, arroz, picadinho, frango assado, churrasco e pão de queijo.">
+<meta property="og:title" content="Super Misto Temperos">
+<meta property="og:description" content="Temperos de verdade desde 2011. Varejo, atacado, licitações e marca própria.">
+<meta property="og:image" content="img/hero-temperos.webp">
+<meta name="theme-color" content="#5B1E8C">
+<link rel="icon" href="img/icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topo" id="topo">
+  <div class="caixa topo-in">
+    <a href="index.html" class="marca" aria-label="Super Misto Temperos, início"><img src="img/logo.svg" alt="Super Misto Temperos" width="96" height="69"></a>
+    <nav class="menu" id="menu">
+      <a href="catalogo.html">Produtos</a>
+      <a href="receitas.html">Receitas</a>
+      <a href="index.html#empresas">Para empresas</a>
+      <a href="index.html#processo">Como fazemos</a>
+      <a href="index.html#sobre">Quem somos</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-amarelo topo-cta" data-shopee href="index.html#" target="_blank" rel="noopener">Comprar na Shopee</a>
+    <button class="hamb" id="hamb" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<main>
+<section class="cat-topo"><div class="caixa"><span class="sobre-tit amarelo">Receitas</span><h1>Vamos temperar com Super Misto?</h1><p class="cat-sub">Receitas do dia a dia e dicas para tirar o máximo de cada tempero.</p></div></section>
+<section class="sec"><div class="caixa"><div class="rec-grid" id="receitas-lista"></div></div></section>
+</main>
+<footer class="rodape" id="rodape"></footer>
+<div class="modal" id="modal" hidden></div>
+<a class="whats-flutua" data-whats="Olá! Vim pelo site da Super Misto." aria-label="WhatsApp"></a>
+
+<script src="produtos.js"></script>
+<script src="receitas.js"></script>
+<script src="site.js"></script>
+</body>
+</html>
