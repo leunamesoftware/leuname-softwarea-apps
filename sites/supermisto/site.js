@@ -63,11 +63,12 @@ function abrir(p) {
         <p class="modal-usos"><b>Combina com:</b> ${escapar(p.usos)}</p>
         <b class="modal-rot">Tamanhos</b>
         <div class="modal-tam">${p.tam.map((t) => `<button class="${t === tam ? 'ativo' : ''}" data-tam="${t}">${t}</button>`).join('')}</div>
+        <small class="modal-nota">Vendemos para mercados, açougues, restaurantes e revendedores.</small>
         <div class="modal-btns">
           <a class="btn btn-roxo" href="${linkWhats(`Olá! Tenho interesse em ${p.nome} Super Misto (${tam}). Pode me passar valores e condições?`)}" target="_blank" rel="noopener">Pedir orçamento</a>
           <a class="btn btn-amarelo" href="${linkWhats(`Olá! Quero revender ${p.nome} Super Misto. Pode me mandar a tabela de atacado?`)}" target="_blank" rel="noopener">Quero revender</a>
         </div>
-        <small class="modal-nota">Vendemos para mercados, açougues, restaurantes e revendedores.</small>
+        
       </div>
     </div>`;
   };
