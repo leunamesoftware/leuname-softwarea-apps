@@ -125,11 +125,11 @@ def verso(c, x, y):
     meia = (cw - 1 * mm) / 2
     for i, rot in enumerate(['LOTE:', 'VAL.:']):
         bx = cx + i * (meia + 1 * mm)
-        c.roundRect(bx, y + 8 * mm, meia, 3.4 * mm, 1 * mm, stroke=1, fill=0)
-        c.setFillColor(white); c.setFont('P-Bold', 4.6); c.drawString(bx + 1 * mm, y + 9.1 * mm, rot)
+        c.roundRect(bx, y + 8.4 * mm, meia, 3.4 * mm, 1 * mm, stroke=1, fill=0)
+        c.setFillColor(white); c.setFont('P-Bold', 4.6); c.drawString(bx + 1 * mm, y + 9.5 * mm, rot)
     c.setFillColor(white); c.setFont('P-SemiBold', 3.55)
     for i, l in enumerate(EMPRESA):
-        c.drawString(x + 51 * mm, y + 5.6 * mm - i * 1.45 * mm, l)
+        c.drawRightString(x + W - 2.2 * mm, y + 6.0 * mm - i * 1.45 * mm, l)
 
 
 
