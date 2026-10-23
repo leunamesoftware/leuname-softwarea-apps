@@ -743,3 +743,21 @@ body{background:#fff}
 .prod-breve span{opacity:.9;font-size:15px}
 .prod-breve em{font-style:normal;font-weight:700;color:#FFB547}
 @media (max-width:620px){#favoritos{display:grid;grid-template-columns:1fr 1fr;gap:12px}#favoritos>.prod{width:auto}.prod-breve{grid-column:1/-1;min-height:0;padding:22px}.prod-breve b{font-size:20px}}
+
+/* ===== abertura limpa (sem foto de fundo cortada) e sem botão flutuante ===== */
+.whats-flutua{display:none!important}
+.hero{background:linear-gradient(135deg,#017130 0%,#0B8A40 100%);color:#fff}
+.hero-img{display:none}
+.hero h1{color:#fff}
+.hero h1 em{color:#FFB547}
+.hero p{color:rgba(255,255,255,.92)}
+.kicker{color:#FFB547}
+.hero .btn-vazado{border-color:#fff;color:#fff}
+.hero .btn-vazado:hover{background:#fff;color:#017130}
+.hero-numeros b{color:#FFB547}
+.hero-numeros span{color:rgba(255,255,255,.85)}
+.vit-blob{background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,0) 66%)}
+.vit{animation:none}
+.hero::after{content:"";position:absolute;right:-120px;bottom:-160px;width:520px;height:520px;border-radius:50%;background:rgba(255,181,71,.18);pointer-events:none}
+.rod-base .nw{white-space:nowrap}
+@media (max-width:620px){.rod-base{padding-bottom:28px}}

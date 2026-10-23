@@ -125,10 +125,10 @@ function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
     <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="62" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p>${redes()}</div>
     <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
-    <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
+    <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
     <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
   </div>
-  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Supermisto</span></div>`;
+  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · <span class="nw">CNPJ 13.580.397/0001-80</span></span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Supermisto. Todos os direitos reservados.</span></div>`;
 }
 function ligacoes() {
   $$('[data-whats]').forEach((a) => { a.href = linkWhats(a.dataset.whats); a.target = '_blank'; a.rel = 'noopener'; });
