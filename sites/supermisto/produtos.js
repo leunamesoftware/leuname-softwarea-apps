@@ -115,7 +115,7 @@ function embalagem(p, peso) {
   const largura = p.emb === 'garrafa' ? 54 : p.emb === 'pote' ? 96 : 72;
   const tamLinha = (l) => Math.min(fs, largura / (l.length * 0.6));
   const textoNome = (cx, y0) => nomes.map((l, i) => `<text x="${cx}" y="${y0 + i * (fs + 2)}" text-anchor="middle" font-size="${tamLinha(l).toFixed(1)}" font-weight="800" fill="#005A24">${escapar(l)}</text>`).join('');
-  const marca = (cx, y) => `<rect x="${cx - 34}" y="${y - 6}" width="68" height="22" rx="9" fill="#fff" transform="rotate(-4 ${cx} ${y + 5})"/><text x="${cx}" y="${y + 10}" text-anchor="middle" font-size="14" font-weight="800" fill="#017130" transform="rotate(-4 ${cx} ${y + 5})">Supermisto</text>`;
+  const marca = (cx, y) => `<rect x="${cx - 32}" y="${y - 5}" width="64" height="19" rx="8" fill="#fff" transform="rotate(-4 ${cx} ${y + 5})"/><text x="${cx}" y="${y + 9}" text-anchor="middle" font-size="12" font-weight="800" fill="#017130" textLength="54" lengthAdjust="spacingAndGlyphs" transform="rotate(-4 ${cx} ${y + 5})">Supermisto</text>`;
   const grao = `<pattern id="${id}g" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#000" opacity=".18"/><circle cx="5.5" cy="5" r=".9" fill="#fff" opacity=".18"/></pattern>`;
   const defs = `<defs>${grao}<linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".12"/><stop offset=".25" stop-color="#fff" stop-opacity=".12"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient></defs>`;
   let corpo;
