@@ -121,18 +121,22 @@ function redes() {
   return r.length ? `<div class="redes">${r.map(([k, n]) => `<a href="${CONFIG[k]}" target="_blank" rel="noopener">${n}</a>`).join('')}</div>` : '';
 }
 function rodape() {
-  $('#rodape').innerHTML = `<div class="caixa rod-grid">
-    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="230" height="75" loading="lazy" style="width:230px;height:auto"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p></div>
-    <div><b>Linhas</b>${LINHAS.map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}</div>
-    <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Quem somos</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
-    <div><b>Contato</b><a data-whats="Olá! Vim pelo site da Super Misto." data-fone></a><a data-mail></a><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span>${redes()}</div>
+  $('#rodape').innerHTML = `<div class="rod-cta"><div class="caixa"><div><b>Quer Supermisto no seu mercado?</b><span>Receba a tabela de atacado e condições para revenda.</span></div>
+    <a class="btn" data-whats="Olá! Quero revender os produtos Supermisto. Pode me mandar a tabela de atacado?">Quero revender →</a></div></div>
+  <div class="caixa rod-grid">
+    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="62" loading="lazy"><p>Temperos de verdade desde 2011. Fábrica própria em Xerém, Duque de Caxias (RJ).</p>${redes()}</div>
+    <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
+    <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#processo">Como fazemos</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
+    <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span>📱</span><span data-fone></span></a><a data-mail-link><span>✉️</span><span data-mail-txt></span></a><span><span>📍</span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
   </div>
-  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Super Misto Temperos</span></div>`;
+  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80</span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Supermisto</span></div>`;
 }
 function ligacoes() {
   $$('[data-whats]').forEach((a) => { a.href = linkWhats(a.dataset.whats); a.target = '_blank'; a.rel = 'noopener'; });
   $$('[data-fone]').forEach((a) => { a.textContent = CONFIG.fone; });
   $$('[data-mail]').forEach((a) => { a.href = 'mailto:' + CONFIG.email; a.textContent = CONFIG.email; });
+  $$('[data-mail-link]').forEach((a) => { a.href = 'mailto:' + CONFIG.email; });
+  $$('[data-mail-txt]').forEach((a) => { a.textContent = CONFIG.email; });
   const w = $('.whats-flutua'); if (w) w.innerHTML = WHATS_SVG;
 }
 let obs;
