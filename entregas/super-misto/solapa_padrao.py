@@ -11,7 +11,7 @@ Para um produto novo: salve artes/<id>-frente.png e artes/<id>-verso.png e acres
 """
 import math, sys
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from reportlab.lib.colors import HexColor, white
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -36,6 +36,14 @@ CONSERVACAO = 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, ma
 # tapar: círculos (x, y, raio) em pixels da arte original, para sumir com o ®.
 # coluna: retângulo (x1, y1, x2, y2) da arte do verso onde ficam os textos legais (é coberto e redesenhado).
 PRODUTOS = {
+    'pimenta-do-reino': {
+        'ing': 'Pimenta-do-reino preta moída.',
+        'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'tapar_frente': [], 'tapar_verso': [],
+        'logo_frente': (410, 160, 1000), 'logo_verso': (14, 48, 748),
+        'coluna': (1255, 100, 1745, 572), 'limpar': [],
+        'estender': True, 'cor_titulo': '#0B6E33', 'so_coluna': True, 'col_mm': (72.3, 27),
+    },
     'tempero-completo': {
         'ing': 'Sal, alho desidratado, cebola desidratada, salsa desidratada, colorífico (fubá de milho e urucum), '
                'pimentão desidratado, pimenta-do-reino, orégano e cebolinha desidratada.',
@@ -65,14 +73,43 @@ def tapa(im, cx, cy, r):
     ImageDraw.Draw(im).ellipse((cx - r, cy - r, cx + r, cy + r), fill=cor)
 
 
-def encaixa(im):
-    """Corta a borda branca e ajusta para 2:1 (10 x 5 cm), sem distorcer."""
+def encaixa(im, estender=False):
+    """Corta a borda branca e ajusta para 2:1 (10 x 5 cm), sem distorcer.
+    estender=True: arte larga demais ganha altura (cópia borrada das bordas de cima e de baixo) em vez de perder a direita."""
     caixa = ImageOps.invert(im.convert('L')).point(lambda v: 255 if v > 25 else 0).getbbox()
     im = im.crop(caixa); w, h = im.size
+    if estender and w / h > 2:
+        m = 22  # tira a quina arredondada branca da arte antes de esticar
+        im = im.crop((m, m, w - m, h - m)); w, h = im.size
+        falta = w // 2 - h; cima = falta // 2; baixo = falta - cima
+        nova = Image.new('RGB', (w, w // 2))
+        def tira(box, alto):
+            t = im.crop(box); px = t.load(); cores = sorted((px[x, y] for x in range(0, t.width, 7) for y in range(t.height)), key=sum)
+            med = cores[len(cores) // 2]
+            for y in range(t.height):  # sem branco (furo de pendurar, quinas) na faixa esticada
+                for x in range(t.width):
+                    if sum(px[x, y]) > 600: px[x, y] = med
+            return t.resize((w, alto)).filter(ImageFilter.GaussianBlur(10))
+        tira_c = tira((0, 0, w, 10), cima); tira_b = tira((0, h - 10, w, h), baixo)
+        nova.paste(tira_c, (0, 0)); nova.paste(im, (0, cima)); nova.paste(tira_b, (0, cima + h))
+        k = 2000 / w
+        mapa = lambda x, y, lw: (round((x - caixa[0] - m) * k), round((y - caixa[1] - m + cima) * k), round(lw * k))
+        return nova.resize((2000, 1000), Image.LANCZOS), mapa
     # sobra de largura sai pela direita (onde a coluna de textos é redesenhada), para não cortar a arte da esquerda
-    if w / h > 2: im = im.crop((0, 0, 2 * h, h))
-    else: im = im.crop((0, (h - w // 2) // 2, w, (h - w // 2) // 2 + w // 2))
-    return im.resize((2000, 1000), Image.LANCZOS), caixa
+    if w / h > 2: im = im.crop((0, 0, 2 * h, h)); dy = 0; k = 2000 / (2 * h)
+    else: dy = (h - w // 2) // 2; im = im.crop((0, dy, w, dy + w // 2)); k = 2000 / w
+    mapa = lambda x, y, lw: (round((x - caixa[0]) * k), round((y - caixa[1] - dy) * k), round(lw * k))
+    return im.resize((2000, 1000), Image.LANCZOS), mapa
+
+
+LOGO = AQUI / 'logo-nova' / 'logo-supermisto.png'
+
+
+def troca_logo(im, caixa):
+    """Cola a logo oficial (vetorizada) por cima da logo que veio na arte; caixa = (x, y, largura) em pixels da arte."""
+    x, y, w = caixa
+    logo = Image.open(LOGO).convert('RGBA'); logo = logo.resize((w, round(w * logo.height / logo.width)), Image.LANCZOS)
+    im.paste(logo, (x, y), logo)
 
 
 def prepara(pid, cfg):
@@ -85,16 +122,19 @@ def prepara(pid, cfg):
     fundo = mediana_anel(v.load(), (x1 + x2) // 2, (y1 + y2) // 2, 1)
     fundo = v.getpixel((x1 - 6, (y1 + y2) // 2))
     for r in [cfg['coluna']] + cfg['limpar']: d.rectangle(r, fill=fundo)
-    f, _ = encaixa(f); v, cv = encaixa(v)
+    f, mf = encaixa(f, cfg.get('estender', False)); v, mv = encaixa(v, cfg.get('estender', False))
+    if cfg.get('logo_frente'): troca_logo(f, mf(*cfg['logo_frente']))
+    if cfg.get('logo_verso'): troca_logo(v, mv(*cfg['logo_verso']))
+    cv = None
     f.save(pasta / '.frente-arte.png'); v.save(pasta / '.verso-arte.png')
     return pasta, cv
 
 
-def caixa_texto(c, x, y, w, titulo, texto, fs=4.25):
+def caixa_texto(c, x, y, w, titulo, texto, fs=4.25, cor=None):
     par = Paragraph(texto, ParagraphStyle('b', fontName='P-SemiBold', fontSize=fs, leading=fs * 1.25, textColor=HexColor('#1B2A20')))
     _, h = par.wrap(w - 3 * mm, 40 * mm); alto = h + 6 * mm
     c.setFillColor(CREME); c.roundRect(x, y - alto, w, alto, 1.6 * mm, stroke=0, fill=1)
-    c.setFillColor(LARANJA); c.roundRect(x, y - 4 * mm, w, 4 * mm, 1.6 * mm, stroke=0, fill=1); c.rect(x, y - 4 * mm, w, 1.6 * mm, stroke=0, fill=1)
+    c.setFillColor(cor or LARANJA); c.roundRect(x, y - 4 * mm, w, 4 * mm, 1.6 * mm, stroke=0, fill=1); c.rect(x, y - 4 * mm, w, 1.6 * mm, stroke=0, fill=1)
     c.setFillColor(white); c.setFont('P-ExtraBold', 5.4); c.drawString(x + 1.5 * mm, y - 2.8 * mm, titulo)
     par.drawOn(c, x + 1.5 * mm, y - 4.8 * mm - h)
     return y - alto
@@ -108,8 +148,11 @@ def verso(c, x, y, pasta, cfg):
     c.drawImage(ImageReader(str(pasta / '.verso-arte.png')), x, y, W, H)
     ox, ow = cfg.get('col_mm', (73.4, 25))
     cx, cw = x + ox * mm, ow * mm
-    yy = caixa_texto(c, cx, y + H - 2.2 * mm, cw, 'INGREDIENTES:', cfg['ing'] + f"<br/><font name='P-ExtraBold'>{cfg['gluten']}</font>")
-    caixa_texto(c, cx, yy - 1.2 * mm, cw, 'CONSERVAÇÃO:', CONSERVACAO)
+    cor = HexColor(cfg['cor_titulo']) if cfg.get('cor_titulo') else None
+    yy = caixa_texto(c, cx, y + H - 2.2 * mm, cw, 'INGREDIENTES:', cfg['ing'] + f"<br/><font name='P-ExtraBold'>{cfg['gluten']}</font>", cor=cor)
+    caixa_texto(c, cx, yy - 1.2 * mm, cw, 'CONSERVAÇÃO:', CONSERVACAO, cor=cor)
+    if cfg.get('so_coluna'):  # lote, validade e empresa já vêm certos na arte
+        return
     c.setStrokeColor(CREME); c.setLineWidth(0.4); meia = (cw - 1 * mm) / 2
     for i, rot in enumerate(['LOTE:', 'VAL.:']):
         bx = cx + i * (meia + 1 * mm)
