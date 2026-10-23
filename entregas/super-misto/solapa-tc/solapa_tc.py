@@ -29,8 +29,8 @@ VERDE, VERDE_ESC, LARANJA, AMARELO, CREME = HexColor('#017130'), HexColor('#014F
 
 PRODUTO = {
     'nome1': 'Tempero', 'nome2': 'Completo', 'peso': '10 g',
-    'ing': 'Alho, cebola, pimentão, cenoura, salsa, cebolinha e orégano desidratados.',
-    'cons': 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, conservar bem fechado.',
+    'ing': 'Sal, alho desidratado, cebola desidratada, salsa desidratada, colorífico (fubá de milho e urucum), pimentão desidratado, pimenta-do-reino, orégano e cebolinha desidratada.',
+    'cons': 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, manter bem fechado.',
     'gluten': 'NÃO CONTÉM GLÚTEN.',
 }
 EMPRESA = ['Produzido e embalado por: SUPER MISTO TEMPEROS LTDA', 'CNPJ 13.580.397/0001-80 · Estrada de Xerém, 484',
@@ -102,7 +102,7 @@ def frente(c, x, y):
 
 
 
-def caixa(c, x, y, w, titulo, texto, fs=4.9):
+def caixa(c, x, y, w, titulo, texto, fs=4.25):
     from reportlab.platypus import Paragraph
     from reportlab.lib.styles import ParagraphStyle
     par = Paragraph(texto, ParagraphStyle('b', fontName='P-SemiBold', fontSize=fs, leading=fs * 1.25, textColor=HexColor('#1B2A20')))
@@ -110,7 +110,7 @@ def caixa(c, x, y, w, titulo, texto, fs=4.9):
     alto = h + 6.2 * mm
     c.setFillColor(CREME); c.roundRect(x, y - alto, w, alto, 1.6 * mm, stroke=0, fill=1)
     c.setFillColor(LARANJA); c.roundRect(x, y - 4 * mm, w, 4 * mm, 1.6 * mm, stroke=0, fill=1); c.rect(x, y - 4 * mm, w, 1.6 * mm, stroke=0, fill=1)
-    c.setFillColor(white); c.setFont('P-ExtraBold', 6); c.drawString(x + 1.5 * mm, y - 2.9 * mm, titulo)
+    c.setFillColor(white); c.setFont('P-ExtraBold', 5.4); c.drawString(x + 1.5 * mm, y - 2.8 * mm, titulo)
     par.drawOn(c, x + 1.5 * mm, y - 4.9 * mm - h)
     return y - alto
 
@@ -118,7 +118,7 @@ def caixa(c, x, y, w, titulo, texto, fs=4.9):
 def verso(c, x, y):
     c.drawImage(ImageReader(str(ARTE_V)), x, y, W, H)
     # coluna direita: ingredientes, conservação, lote/validade e dados da empresa
-    cx, cw = x + 72 * mm, 26 * mm
+    cx, cw = x + 71.3 * mm, 27 * mm
     yy = caixa(c, cx, y + H - 2.2 * mm, cw, 'INGREDIENTES:', PRODUTO['ing'] + f"<br/><font name='P-ExtraBold'>{PRODUTO['gluten']}</font>")
     yy = caixa(c, cx, yy - 1.2 * mm, cw, 'CONSERVAÇÃO:', PRODUTO['cons'])
     c.setStrokeColor(CREME); c.setLineWidth(0.4)
