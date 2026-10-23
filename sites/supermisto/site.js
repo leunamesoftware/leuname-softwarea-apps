@@ -149,8 +149,10 @@ function observar() {
 /* ---------- página inicial ---------- */
 function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
-  $('#vitrine').innerHTML = [['Molho de pimenta vermelha', 'v1'], ['Colorau', 'v2'], ['Pimenta biquinho em conserva', 'v3'], ['Chimichurri', 'v4']]
-    .map(([n, c]) => `<div class="vit ${c}">${embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0])}</div>`).join('') + '<div class="vit-blob"></div>';
+  // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
+  const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
+  $('#vitrine').innerHTML = [['Molho de pimenta vermelha', 'v1'], ['Colorau', 'v2 real'], ['Pimenta biquinho em conserva', 'v3'], ['Tempero completo', 'v4 real']]
+    .map(([n, c]) => `<div class="vit ${c}">${vit(n)}</div>`).join('') + '<div class="vit-blob"></div>';
   $('#num-prod').textContent = PRODUTOS.length + '+';
   const nomes = PRODUTOS.map((p) => p.nome);
   $('#letreiro').innerHTML = [...nomes, ...nomes].map((n) => `<span>${n}</span>`).join('<i>✦</i>');

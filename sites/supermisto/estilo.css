@@ -663,3 +663,11 @@ body{background:#fff}
   .rod-base{flex-direction:column;text-align:center;padding-bottom:90px}
 }
 @media (max-width:520px){.kicker{font-size:11px;letter-spacing:1.2px}.kicker::after{display:none}}
+.vit img{width:100%;height:auto;display:block}
+.vit.real{width:230px}
+.v2.real{left:22%;top:0;width:250px;transform:rotate(-4deg)}
+.v4.real{left:40%;top:40%;width:240px;transform:rotate(5deg);z-index:5}
+.v1{left:0;top:30%}
+.v3{left:72%;top:18%;width:150px}
+@media (max-width:860px){.v2.real{width:170px;left:18%}.v4.real{width:165px;left:42%;top:42%}.v3{width:105px;left:76%}}
+@media (max-width:520px){.v2.real{width:140px}.v4.real{width:135px}.v3{width:88px}.v1{width:70px}}
