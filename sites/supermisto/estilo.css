@@ -367,3 +367,39 @@ details p{color:var(--suave);padding:0 0 16px;font-size:14.5px}
   .rec-grid,.rc-var{grid-template-columns:1fr}
   .rc-capa.grande{height:230px}.rc-capa.grande .rc-prato{font-size:100px}.rc-capa.grande .rc-p{width:84px}
 }
+
+/* ===== acabamento: tipografia, menu e proporções ===== */
+body{font-family:'Inter',system-ui,sans-serif;font-size:16px;letter-spacing:-.005em}
+h1,h2,h3,.btn,.menu a,.selo-topo,.sobre-tit,.prod-linha,.hero-numeros b,.letreiro,.filtros button,.modal-tam button,summary,.linha b,.kit b,.emp-faixa b,.rec-corpo h3,.passos b,.dicas b,.rc-modo li::before,.prod-tag{font-family:'Poppins',system-ui,sans-serif}
+.caixa{width:min(1200px,100% - 40px)}
+.topo-in{gap:20px}
+.menu{gap:22px}
+.menu a{white-space:nowrap;font-size:14.5px}
+.topo-cta{white-space:nowrap}
+.check li{font-weight:600;font-size:15px}
+.sobre-in{grid-template-columns:.7fr 1.3fr}
+.sobre-logo{padding:36px;aspect-ratio:1/1;max-width:400px}
+.sec h2{letter-spacing:-.5px}
+.hero h1{letter-spacing:-1px}
+.dicas b{display:flex;gap:8px;align-items:center}
+.btn{white-space:nowrap}
+@media (max-width:1120px){
+  .menu{position:fixed;top:76px;left:0;right:0;flex-direction:column;gap:0;background:var(--roxo-esc);padding:8px 20px 18px;transform:translateY(-130%);transition:transform .25s;margin:0;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+  .menu.aberto{transform:none}
+  .menu a{padding:14px 4px;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px}
+  .menu a::after{display:none}
+  .hamb{display:block}
+  .topo-cta{margin-left:auto}
+  .hamb{margin-left:0}
+  .hamb[aria-expanded=true] span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+  .hamb[aria-expanded=true] span:nth-child(2){opacity:0}
+  .hamb[aria-expanded=true] span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+}
+@media (max-width:520px){
+  .topo-cta{display:none}
+  .hamb{margin-left:auto}
+  .btn{white-space:normal;text-align:center}
+  .sobre-logo{max-width:280px;margin:0 auto}
+}
+.foto-prod{width:100%;height:100%;object-fit:cover}
+.modal-img .foto-prod{border-radius:18px;max-height:380px}

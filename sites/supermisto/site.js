@@ -15,6 +15,14 @@ const KITS = [
   { ico: '🎁', nome: 'Kit Presente Gourmet', itens: 'Geleia de pimenta, pimenta biquinho, lemon pepper e ervas finas' },
 ];
 
+/* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
+   Produto sem foto aparece com a embalagem desenhada. */
+const FOTOS = new Set([]);
+const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function midia(p, peso) {
+  return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Super Misto" loading="lazy">` : embalagem(p, peso);
+}
+
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const linkWhats = (msg) => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
@@ -24,7 +32,7 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 /* ---------- cartões de produto ---------- */
 function cartao(p, i) {
   return `<article class="prod aparece" data-i="${i}" tabindex="0" role="button" aria-label="Ver ${escapar(p.nome)}">
-    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${embalagem(p, p.tam[1] || p.tam[0])}</div>
+    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, p.tam[1] || p.tam[0])}</div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -47,7 +55,7 @@ function abrir(p) {
     m.innerHTML = `<div class="modal-fundo" data-fechar></div>
     <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="m-tit">
       <button class="modal-x" data-fechar aria-label="Fechar">×</button>
-      <div class="modal-img" style="--c:${linhaDe(p.linha).cor}">${embalagem(p, tam)}</div>
+      <div class="modal-img" style="--c:${linhaDe(p.linha).cor}">${midia(p, tam)}</div>
       <div class="modal-txt">
         <small class="prod-linha">${linhaDe(p.linha).emoji} ${linhaDe(p.linha).nome}</small>
         <h2 id="m-tit">${escapar(p.nome)}</h2>
