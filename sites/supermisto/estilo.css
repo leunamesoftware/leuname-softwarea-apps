@@ -566,3 +566,8 @@ body{background:#fff}
 .cat-topo,.rc-topo{background:linear-gradient(135deg,#005A24,#017130)}
 @media (max-width:1120px){.menu{top:84px;background:#fff}.menu a{color:#005A24;border-bottom-color:#E6EEE8}}
 @media (max-width:520px){.marca img{height:44px}.topo-in{height:72px}.menu{top:72px}}
+
+.foto-prod{object-fit:contain;background:#fff;padding:8px}
+.prod-img:has(.foto-prod){background:#fff}
+.modal-img:has(.foto-prod){background:#fff}
+.prod-img .foto-prod{position:absolute;inset:0;width:100%;height:100%}

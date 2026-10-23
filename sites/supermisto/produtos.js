@@ -34,7 +34,7 @@ const PRODUTOS = [
   P('Gengibre em pó', 'puros', '#D9B26A', 'Picante e refrescante.', 'Carnes, peixes, chás e doces.', T),
   P('Mostarda em grão', 'puros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
   // misturas
-  P('Tempero completo', 'misturas', '#C99A3B', 'Alho, cebola, sal e ervas: o refogado pronto em uma colher.', 'Arroz, feijão, carnes e legumes.', T, 'pouch', 'Mais procurado'),
+  P('Tempero completo', 'misturas', '#C99A3B', 'Alho, cebola, pimentão, cenoura e ervas desidratados: mais sabor em uma colher.', 'Carnes, aves, peixes, saladas, legumes e sopas.', ['10 g'], 'pouch', 'Mais procurado'),
   P('Tempero baiano', 'misturas', '#D96A1E', 'Mistura de especiarias com cor e sabor da Bahia.', 'Carnes, frango, peixes e feijão.', T),
   P('Lemon pepper', 'misturas', '#E3C34A', 'Limão e pimenta-do-reino na medida certa.', 'Peixes, frango, saladas e legumes.', T),
   P('Ervas finas', 'misturas', '#7C9A48', 'Salsa, cebolinha, manjericão, orégano e alecrim.', 'Massas, molhos, pães e carnes brancas.', T),
