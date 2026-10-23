@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Super Misto Temperos | Temperos de verdade desde 2011</title>
-<meta name="description" content="Super Misto Temperos: colorau, pimenta-do-reino, cominho, chimichurri, tempero completo e kits. Fábrica em Xerém, Duque de Caxias (RJ), desde 2011. Varejo, atacado e empresas.">
+<title>Super Misto Temperos | Temperos, molhos, conservas e doces desde 2011</title>
+<meta name="description" content="Fábrica de temperos em Xerém, Duque de Caxias (RJ), desde 2011. Temperos puros e misturas, linha churrasco, ervas, sais temperados, molhos, conservas, doces, polvilhos e farofas. Varejo, atacado, licitações e marca própria.">
 <meta property="og:title" content="Super Misto Temperos">
-<meta property="og:description" content="Temperos de verdade desde 2011. Varejo, atacado e empresas.">
+<meta property="og:description" content="Temperos de verdade desde 2011. Varejo, atacado, licitações e marca própria.">
 <meta property="og:image" content="img/hero-temperos.webp">
+<meta name="theme-color" content="#5B1E8C">
 <link rel="icon" href="img/icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
@@ -15,13 +16,15 @@
 </head>
 <body>
 
+<div class="faixa-topo"><div class="caixa">🚚 Enviamos para todo o Brasil · 🏭 Atacado, licitações e marca própria · <a data-whats="Olá! Quero falar com a Super Misto.">Fale no WhatsApp</a></div></div>
 <header class="topo" id="topo">
   <div class="caixa topo-in">
-    <a href="#inicio" class="marca" aria-label="Super Misto Temperos"><img src="img/logo.svg" alt="Super Misto Temperos" width="96" height="69"></a>
+    <a href="index.html" class="marca" aria-label="Super Misto Temperos, início"><img src="img/logo.svg" alt="Super Misto Temperos" width="96" height="69"></a>
     <nav class="menu" id="menu">
-      <a href="#produtos">Produtos</a>
-      <a href="#kits">Kits</a>
+      <a href="catalogo.html">Produtos</a>
+      <a href="#linhas">Linhas</a>
       <a href="#empresas">Para empresas</a>
+      <a href="#processo">Como fazemos</a>
       <a href="#sobre">Quem somos</a>
       <a href="#contato">Contato</a>
     </nav>
@@ -31,114 +34,125 @@
 </header>
 
 <main>
-<!-- HERO -->
 <section class="hero" id="inicio">
   <div class="hero-img" style="background-image:url(img/hero-temperos.webp)"></div>
   <div class="caixa hero-in">
-    <span class="selo-topo">🌶️ Fábrica de temperos desde 2011</span>
-    <h1>Tempero de verdade,<br><em>sabor que marca.</em></h1>
-    <p>Colorau, pimenta-do-reino, cominho, chimichurri e temperos completos moídos e embalados na nossa fábrica, em Xerém (RJ). Mais aroma, mais cor e mais sabor na sua comida.</p>
-    <div class="hero-btns">
-      <a class="btn btn-amarelo" data-shopee href="#" target="_blank" rel="noopener">Comprar na Shopee</a>
-      <a class="btn btn-vazado" data-whats="Olá! Vim pelo site da Super Misto e quero saber mais sobre os temperos.">Falar no WhatsApp</a>
+    <div class="hero-txt">
+      <span class="selo-topo">Fábrica própria em Xerém (RJ) · desde 2011</span>
+      <h1>O sabor que a sua comida <em>estava esperando.</em></h1>
+      <p>Temperos moídos e misturados na hora, molhos, conservas, doces e farofas. Tudo produzido na nossa fábrica, com cor de verdade, aroma de verdade e o cuidado de quem faz tempero há 15 anos.</p>
+      <div class="hero-btns">
+        <a class="btn btn-amarelo" href="catalogo.html">Ver todos os produtos</a>
+        <a class="btn btn-vazado" data-whats="Olá! Vim pelo site da Super Misto e quero saber mais sobre os produtos.">Falar no WhatsApp</a>
+      </div>
+      <ul class="hero-numeros">
+        <li><b>15</b><span>anos de fábrica</span></li>
+        <li><b id="num-prod">70+</b><span>produtos</span></li>
+        <li><b>9</b><span>linhas</span></li>
+      </ul>
     </div>
-    <ul class="hero-numeros">
-      <li><b>15</b><span>anos de mercado</span></li>
-      <li><b>100%</b><span>moído e embalado aqui</span></li>
-      <li><b>RJ</b><span>e todo o Brasil</span></li>
-    </ul>
+    <div class="hero-vitrine" id="vitrine" aria-hidden="true"></div>
   </div>
 </section>
 
-<!-- VANTAGENS -->
-<section class="vantagens">
-  <div class="caixa vant-grid">
-    <div class="vant"><span>🌿</span><div><b>Ingredientes selecionados</b><small>Matéria-prima escolhida a dedo</small></div></div>
-    <div class="vant"><span>⚙️</span><div><b>Moído na hora</b><small>Mais aroma e frescor</small></div></div>
-    <div class="vant"><span>📦</span><div><b>Envio para todo o Brasil</b><small>Compre pela Shopee</small></div></div>
-    <div class="vant"><span>🏭</span><div><b>Atacado e empresas</b><small>Restaurantes e licitações</small></div></div>
-  </div>
-</section>
+<div class="letreiro" aria-hidden="true"><div class="letreiro-in" id="letreiro"></div></div>
 
-<!-- PRODUTOS -->
-<section class="sec" id="produtos">
+<section class="sec" id="linhas">
   <div class="caixa">
-    <div class="sec-cab">
-      <span class="sobre-tit">Nossa linha</span>
-      <h2>Temperos que fazem a diferença</h2>
-      <p>Embalagens de 100 g para o dia a dia e de 1 kg para quem cozinha muito.</p>
-    </div>
-    <div class="filtros" id="filtros">
-      <button class="ativo" data-f="todos">Todos</button>
-      <button data-f="puros">Puros</button>
-      <button data-f="misturas">Misturas</button>
-      <button data-f="churrasco">Churrasco</button>
-    </div>
-    <div class="grade" id="grade"></div>
+    <div class="sec-cab"><span class="sobre-tit">Nossas linhas</span><h2>Da especiaria pura à farofa pronta</h2><p>Nove linhas de produto para o dia a dia, para o churrasco e para quem cozinha em grande quantidade.</p></div>
+    <div class="linhas-grid" id="linhas-grid"></div>
   </div>
 </section>
 
-<!-- KITS -->
+<section class="sec destaque-sec">
+  <div class="caixa">
+    <div class="sec-cab"><span class="sobre-tit">Os favoritos</span><h2>Os mais procurados da Super Misto</h2></div>
+    <div class="grade" id="favoritos"></div>
+    <div class="centro"><a class="btn btn-roxo" href="catalogo.html">Ver o catálogo completo</a></div>
+  </div>
+</section>
+
 <section class="sec kits" id="kits">
   <div class="caixa kits-in">
     <div class="kits-txt">
-      <span class="sobre-tit amarelo">Kits Super Misto</span>
+      <span class="sobre-tit amarelo">Kits e presentes</span>
       <h2>Monte a cozinha completa de uma vez</h2>
-      <p>Os temperos mais usados juntos, com preço melhor do que comprar separado. Ótimo para presentear.</p>
+      <p>Os temperos que mais combinam, juntos numa caixa. Perfeitos para presentear no Natal, no Dia dos Pais e no churrasco da firma.</p>
       <div class="kit-lista" id="kits-lista"></div>
     </div>
     <div class="kits-foto"><img src="img/sachets.webp" alt="Sachês de temperos Super Misto" loading="lazy"></div>
   </div>
 </section>
 
-<!-- EMPRESAS -->
-<section class="sec" id="empresas">
+<section class="sec" id="processo">
   <div class="caixa">
-    <div class="sec-cab">
-      <span class="sobre-tit">Para empresas</span>
-      <h2>Fornecemos para quem cozinha em grande quantidade</h2>
-    </div>
-    <div class="emp-grid">
-      <article class="emp"><span>🍽️</span><h3>Restaurantes e marmitarias</h3><p>Embalagens de 1 kg com preço de atacado e entrega programada.</p></article>
-      <article class="emp"><span>🥩</span><h3>Açougues e mercados</h3><p>Temperos para revenda com a nossa marca, com margem boa para o seu negócio.</p></article>
-      <article class="emp"><span>🏛️</span><h3>Órgãos públicos</h3><p>Empresa regularizada, com CNPJ desde 2011, para licitações e merenda escolar.</p></article>
-      <article class="emp"><span>🏷️</span><h3>Envase para terceiros</h3><p>Moemos, misturamos e embalamos o tempero da sua marca.</p></article>
-    </div>
-    <div class="emp-cta"><a class="btn btn-roxo" data-whats="Olá! Sou empresa e quero um orçamento de temperos no atacado.">Pedir orçamento no atacado</a></div>
+    <div class="sec-cab"><span class="sobre-tit">Como fazemos</span><h2>Do grão ao seu prato</h2><p>A diferença está no processo: nada de tempero parado meses na prateleira.</p></div>
+    <ol class="passos">
+      <li><span>1</span><b>Seleção</b><p>Compramos a matéria-prima direto de produtores e atacadistas, escolhendo cor, aroma e frescor.</p></li>
+      <li><span>2</span><b>Moagem na hora</b><p>Moemos em pequenos lotes, para o óleo natural das especiarias não se perder.</p></li>
+      <li><span>3</span><b>Receita própria</b><p>Misturamos cada blend com receitas desenvolvidas e testadas na nossa cozinha.</p></li>
+      <li><span>4</span><b>Embalado e lacrado</b><p>Embalagem fechada, com lote e validade, pronta para chegar fresca até você.</p></li>
+    </ol>
   </div>
 </section>
 
-<!-- SOBRE -->
+<section class="sec empresas" id="empresas">
+  <div class="caixa">
+    <div class="sec-cab"><span class="sobre-tit">Para empresas</span><h2>Um fornecedor de verdade para o seu negócio</h2><p>Empresa regularizada desde 2011, com nota fiscal, preço de atacado e entrega programada.</p></div>
+    <div class="emp-grid">
+      <article class="emp"><span>🍽️</span><h3>Restaurantes e food service</h3><p>Embalagens de 1 kg e maiores, com preço de atacado e fornecimento mensal sem faltar.</p></article>
+      <article class="emp"><span>🛒</span><h3>Mercados, açougues e revenda</h3><p>Produtos com a nossa marca para a sua prateleira, com boa margem e reposição fácil.</p></article>
+      <article class="emp"><span>🏛️</span><h3>Licitações e órgãos públicos</h3><p>Fornecemos para prefeituras, escolas (merenda), hospitais e instituições.</p></article>
+      <article class="emp"><span>🏷️</span><h3>Marca própria e envase</h3><p>Moemos, misturamos e embalamos o tempero com a <b>sua</b> marca.</p></article>
+    </div>
+    <div class="emp-faixa">
+      <div><b>Quer revender Super Misto?</b><span>Mande uma mensagem e receba a tabela de atacado.</span></div>
+      <a class="btn btn-amarelo" data-whats="Olá! Quero revender os produtos Super Misto. Pode me mandar a tabela de atacado?">Quero a tabela de atacado</a>
+    </div>
+  </div>
+</section>
+
 <section class="sec sobre" id="sobre">
   <div class="caixa sobre-in">
     <div class="sobre-logo"><img src="img/logo.svg" alt="" width="360" height="259" loading="lazy"></div>
     <div>
       <span class="sobre-tit">Quem somos</span>
-      <h2>Uma fábrica de temperos de Xerém para o Brasil</h2>
+      <h2>Uma fábrica de Xerém com tempero para o Brasil inteiro</h2>
       <p>A <b>Super Misto Temperos</b> nasceu em 2011, em Xerém, Duque de Caxias (RJ), com uma ideia simples: tempero bom é tempero fresco, bem moído e feito com cuidado.</p>
-      <p>Compramos a matéria-prima, moemos, misturamos e embalamos tudo na nossa fábrica. Assim conseguimos garantir o aroma, a cor e o sabor que fazem a sua comida ficar diferente.</p>
+      <p>Hoje produzimos temperos, molhos, conservas, doces, polvilhos e farofas, sempre com a mesma regra: só sai da fábrica o que a gente colocaria na comida da nossa família.</p>
       <ul class="check">
-        <li>Fábrica própria, com CNPJ desde 2011</li>
-        <li>Produção artesanal com padrão de qualidade</li>
-        <li>Varejo, atacado e empresas</li>
+        <li>Fábrica própria, com CNPJ ativo desde 2011</li>
+        <li>Produção em pequenos lotes, com lote e validade</li>
+        <li>Varejo, atacado, licitações e marca própria</li>
       </ul>
     </div>
   </div>
 </section>
 
-<!-- DICAS -->
 <section class="sec dicas">
   <div class="caixa">
-    <div class="sec-cab"><span class="sobre-tit">Dicas da cozinha</span><h2>Como usar melhor os seus temperos</h2></div>
+    <div class="sec-cab"><span class="sobre-tit">Dicas da cozinha</span><h2>Como tirar o máximo de cada tempero</h2></div>
     <div class="dicas-grid">
-      <article><b>🥩 Churrasco</b><p>Use chimichurri na carne já assada e pimenta-do-reino moída na hora antes de servir: o aroma fica muito mais forte.</p></article>
-      <article><b>🍚 Arroz e feijão</b><p>Uma colher de chá de tempero completo no refogado já dá sabor para a panela toda, sem precisar de caldo pronto.</p></article>
-      <article><b>🫙 Conservação</b><p>Guarde em pote bem fechado, longe do fogão e da luz. Assim o tempero mantém a cor e o aroma por muito mais tempo.</p></article>
+      <article><b>🥩 Churrasco perfeito</b><p>Sal de parrilla 30 minutos antes de ir para a brasa e chimichurri só na carne já assada: o aroma das ervas fica muito mais vivo.</p></article>
+      <article><b>🍚 Arroz e feijão de mãe</b><p>Uma colher de chá de tempero completo no refogado já dá sabor para a panela toda, sem precisar de caldo pronto.</p></article>
+      <article><b>🫙 Tempero sempre fresco</b><p>Guarde em pote bem fechado, longe do fogão e da luz. Assim a cor e o aroma duram muito mais.</p></article>
     </div>
   </div>
 </section>
 
-<!-- CONTATO -->
+<section class="sec faq">
+  <div class="caixa faq-in">
+    <div><span class="sobre-tit">Dúvidas</span><h2>Perguntas frequentes</h2><p>Não achou a sua resposta? Chame no WhatsApp.</p></div>
+    <div class="faq-lista">
+      <details><summary>Como compro os produtos?</summary><p>Pela nossa loja na Shopee, com envio para todo o Brasil, ou direto pelo WhatsApp para pedidos maiores e atacado.</p></details>
+      <details><summary>Vocês vendem no atacado?</summary><p>Sim. Temos embalagens de 1 kg e maiores e tabela especial para restaurantes, mercados, açougues e revendedores.</p></details>
+      <details><summary>Participam de licitações?</summary><p>Sim. Somos empresa regularizada desde 2011 e fornecemos para órgãos públicos, escolas e instituições.</p></details>
+      <details><summary>Fazem tempero com a marca de outra empresa?</summary><p>Sim. Desenvolvemos a receita, produzimos e embalamos com a sua marca (marca própria / envase).</p></details>
+      <details><summary>Qual a validade dos temperos?</summary><p>Cada embalagem traz lote e validade. Temperos secos bem guardados mantêm a qualidade por vários meses.</p></details>
+    </div>
+  </div>
+</section>
+
 <section class="sec contato" id="contato">
   <div class="caixa cont-in">
     <div>
@@ -165,18 +179,11 @@
 </section>
 </main>
 
-<footer class="rodape">
-  <div class="caixa rod-in">
-    <img src="img/logo.svg" alt="Super Misto Temperos" width="110" height="79" loading="lazy">
-    <p>SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80<br>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</p>
-    <p class="rod-copy">© <span id="ano"></span> Super Misto Temperos. Todos os direitos reservados.</p>
-  </div>
-</footer>
+<footer class="rodape" id="rodape"></footer>
+<div class="modal" id="modal" hidden></div>
+<a class="whats-flutua" data-whats="Olá! Vim pelo site da Super Misto." aria-label="WhatsApp"></a>
 
-<a class="whats-flutua" data-whats="Olá! Vim pelo site da Super Misto." aria-label="WhatsApp">
-  <svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7c-2 0-3.9-.5-5.6-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.6.7.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.3z"/></svg>
-</a>
-
+<script src="produtos.js"></script>
 <script src="site.js"></script>
 </body>
 </html>
