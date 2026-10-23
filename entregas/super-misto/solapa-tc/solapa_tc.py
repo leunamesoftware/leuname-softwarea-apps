@@ -99,7 +99,7 @@ def frente(c, x, y):
     c.setFillColor(VERDE); c.roundRect(bx, by, bw, bh, 3 * mm, stroke=0, fill=1)
     c.setFillColor(white); c.setFont('P-Bold', 4.2); c.drawCentredString(bx + bw / 2, by + bh - 2.3 * mm, 'PESO LÍQ.')
     c.setFont('P-ExtraBold', 10); c.drawCentredString(bx + bw / 2, by + 1.3 * mm, PRODUTO['peso'])
-    furo(c, x, y)
+
 
 
 def caixa(c, x, y, w, titulo, texto, fs=4.9):
@@ -130,7 +130,7 @@ def verso(c, x, y):
     c.setFillColor(white); c.setFont('P-SemiBold', 3.55)
     for i, l in enumerate(EMPRESA):
         c.drawString(x + 51 * mm, y + 5.6 * mm - i * 1.45 * mm, l)
-    furo(c, x, y)
+
 
 
 def solapa(c, x, y):
@@ -156,7 +156,7 @@ if __name__ == '__main__':
             x, y = mx + col * (W + 6 * mm), my + lin * (2 * H + 6 * mm)
             solapa(c, x, y); marcas(c, x, y, W, 2 * H)
     c.setFont('P-SemiBold', 7); c.setFillColor(HexColor('#777777'))
-    c.drawCentredString(A4[0] / 2, 8 * mm, 'Imprimir em 100% (tamanho real). Cortar nas marcas, dobrar no tracejado, furar no oval tracejado e grampear sobre o saquinho.')
+    c.drawCentredString(A4[0] / 2, 8 * mm, 'Imprimir em 100% (tamanho real). Cortar nas marcas, dobrar no tracejado, furar na forma branca de cima e grampear sobre o saquinho.')
     c.showPage(); c.save()
     for nome, fn in (('frente', frente), ('verso', verso)):
         c = canvas.Canvas(str(AQUI / f'.{nome}.pdf'), pagesize=(W, H)); fn(c, 0, 0); c.showPage(); c.save()
