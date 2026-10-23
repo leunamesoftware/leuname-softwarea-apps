@@ -708,3 +708,11 @@ body{background:#fff}
   .modal-img .foto-prod,.modal-img svg{max-height:100%;height:auto;width:auto;max-width:100%;border-radius:12px;padding:0}
   .modal-nota{display:none}
 }
+/* fotos reais: mesmo tamanho para todos os pacotes */
+.prod-img:has(.foto-prod){background:radial-gradient(circle at 50% 60%,#FFF4E6 0%,#F4F8F5 72%)}
+.prod-img .foto-prod{padding:10px;background:transparent;object-fit:contain;filter:drop-shadow(0 10px 14px rgba(0,0,0,.18))}
+.modal-img:has(.foto-prod){background:radial-gradient(circle at 50% 55%,#FFF4E6 0%,#F4F8F5 75%)}
+.modal-img .foto-prod{background:transparent;filter:drop-shadow(0 14px 18px rgba(0,0,0,.2))}
+@media (max-width:520px){.prod-img .foto-prod{padding:6px}}
+.prod-img .foto-prod{padding:34px 12px 8px}
+@media (max-width:520px){.prod-img .foto-prod{padding:28px 6px 4px}}
