@@ -1,5 +1,5 @@
 # Supermisto: prompts dos fundos (todos)
-Copie UM bloco por vez no ChatGPT. Quando a imagem sair, salve e me mande dizendo o número (ex.: "1 Colorau").
+Copie UM bloco por vez no ChatGPT. Quando a imagem sair, salve e me mande dizendo o número (ex.: "1 Colorau"). A numeração pula o 13.
 Se a imagem vier com texto, logo ou furo, peça: "Refaça sem nenhuma palavra, logo ou furo, só a foto e o fundo."
 
 ## 1. Colorau
@@ -122,12 +122,22 @@ Crie uma imagem horizontal EXATAMENTE 2:1 (2000 x 1000 pixels) para ser a FRENTE
 - NÃO escreva nenhuma palavra, letra ou número. NÃO coloque logotipo, selo, etiqueta, furo, faixa ou ícone. Só a foto e o fundo.
 ```
 
-## 13. Canela em Pó
+## 14. Canela em Pó
 ```
 Crie uma imagem horizontal EXATAMENTE 2:1 (2000 x 1000 pixels) para ser a FRENTE de uma solapa de embalagem de tempero. Fotografia profissional de alimento, alta definição, estilo de embalagem de supermercado premium.
 
 - Fundo liso marrom-canela (#6B3A1E), com leve degradê e textura suave de folhas bem apagadas. Sem bordas, sem moldura, sem cantos arredondados, sem margem branca.
 - Lado ESQUERDO (só até 40% da largura): uma tigela de madeira cheia de canela em pó, com paus de canela em volta, sobre uma bancada de madeira que aparece só na faixa de baixo.
+- Do centro até a direita (60% da imagem): deixe o fundo LIVRE, só a cor de fundo, sem objetos. É onde vão a logo, o nome e o peso.
+- NÃO escreva nenhuma palavra, letra ou número. NÃO coloque logotipo, selo, etiqueta, furo, faixa ou ícone. Só a foto e o fundo.
+```
+
+## 15. Tempero Baiano
+```
+Crie uma imagem horizontal EXATAMENTE 2:1 (2000 x 1000 pixels) para ser a FRENTE de uma solapa de embalagem de tempero. Fotografia profissional de alimento, alta definição, estilo de embalagem de supermercado premium.
+
+- Fundo liso ocre-avermelhado (#A0521C), com leve degradê e textura suave de folhas bem apagadas. Sem bordas, sem moldura, sem cantos arredondados, sem margem branca.
+- Lado ESQUERDO (só até 40% da largura): uma tigela de madeira cheia de tempero baiano em pó, com pimentas vermelhas secas, cúrcuma, cominho e folhas de louro em volta, sobre uma bancada de madeira que aparece só na faixa de baixo.
 - Do centro até a direita (60% da imagem): deixe o fundo LIVRE, só a cor de fundo, sem objetos. É onde vão a logo, o nome e o peso.
 - NÃO escreva nenhuma palavra, letra ou número. NÃO coloque logotipo, selo, etiqueta, furo, faixa ou ícone. Só a foto e o fundo.
 ```
