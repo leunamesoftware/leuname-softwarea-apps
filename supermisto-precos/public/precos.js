@@ -11,7 +11,7 @@ export const FORMATOS = [
 ];
 
 export const CONFIG_PADRAO = {
-  taxa_pct: 20, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.35, emb_kit: 0.5, emb_50: 0.8, emb_100: 1, etiqueta: 0.1,
+  taxa_pct: 20, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.25, emb_kit: 0.3, emb_50: 0.15, emb_100: 0.2, etiqueta: 0.05,
 };
 
 const r2 = (v) => Math.round(v * 100) / 100;

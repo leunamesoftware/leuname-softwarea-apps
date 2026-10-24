@@ -12,7 +12,7 @@ test('custo por grama segue a receita', () => {
 });
 
 test('custo do kit 10: 100 g + 10 sachês com etiqueta + saquinho do kit', () => {
-  assert.equal(custoFormato(kit10, 0.02, cfg), 2 + 3.5 + 1 + 0.5);
+  assert.equal(custoFormato(kit10, 0.02, cfg), 2 + 10 * (cfg.emb_sache + cfg.etiqueta) + cfg.emb_kit);
 });
 
 test('preço mínimo paga taxa e lucro', () => {
