@@ -19,7 +19,6 @@ const PRODUTOS = [
   // puros
   P('Colorau', 'puros', '#D8401E', 'Fubá de milho e urucum: cor vermelha viva e sabor suave.', 'Arroz, feijão, frango, moquecas e ensopados.', ['10 g'], 'pouch', ''),
   P('Pimenta-do-reino moída', 'puros', '#3A3330', 'Moída na nossa fábrica, com aroma forte e picância na medida.', 'Carnes, aves, peixes, saladas, sopas e molhos.', ['10 g'], 'pouch', ''),
-  P('Pimenta-do-reino em grão', 'puros', '#2C2624', 'Grãos inteiros e selecionados, para moer na hora.', 'Moedores, conservas e caldos.', ['100 g']),
   P('Cominho moído', 'puros', '#A9762E', 'Sabor marcante da cozinha nordestina.', 'Feijão, carne moída, quibe e carnes.', T),
   P('Páprica doce', 'puros', '#E2572B', 'Sabor suave e cor intensa.', 'Frango, batatas, molhos e ovos.', T),
   P('Páprica defumada', 'puros', '#A8341C', 'Aroma de defumado sem precisar de churrasqueira.', 'Carnes, feijão tropeiro, hambúrgueres e caldos.', T),

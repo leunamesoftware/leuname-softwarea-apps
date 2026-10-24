@@ -163,7 +163,7 @@ function inicio() {
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome)));
   // "Mais sabores" só completa a fileira quando sobra espaço
   $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') + (fav.length % 4 ?
-    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Pimenta-do-reino em grão, cominho, chimichurri, orégano e muito mais chegando.</span><em>Ver catálogo completo →</em></a>` : '');
+    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Cominho, chimichurri, orégano e muito mais chegando.</span><em>Ver catálogo completo →</em></a>` : '');
   ligarCartoes($('#favoritos'));
   receitasLista($('#receitas-home'), RECEITAS.filter((r) => r.foto).slice(0, 4));
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));
