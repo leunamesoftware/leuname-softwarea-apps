@@ -43,22 +43,12 @@ export function gerarAnuncio({ produto, un, g, preco, brinde }) {
   titulo = titulo.slice(0, 120);
   const porCem = (preco / total) * 100;
   const descricao = [
-    `🌿 ${sortido ? 'Kit de temperos naturais Supermisto' : produto.nome + ' Supermisto'}: sabor de verdade para a sua cozinha.`,
-    '',
-    un > 1 ? `✅ ${un} sachês de ${g} g = ${pesoTxt(total)} de tempero${total >= 950 ? ' (o quilo completo)' : ''}` : `✅ Pacote de ${pesoTxt(g)}`,
+    un > 1 ? `🌿 ${un} sachês de ${g} g = ${pesoTxt(total)} de tempero${total >= 950 ? ' (o quilo completo)' : ''}${sortido ? ', sabores variados' : ''}.` : `🌿 Pacote de ${pesoTxt(g)}.`,
     '✅ 100% natural, sem conservantes',
-    '✅ Moído e embalado na hora: cheiro e cor de verdade',
-    un > 1 ? '✅ Sachês práticos: abre só o que vai usar e o resto fica fresquinho' : '✅ Embalagem bem fechada, mantém o aroma',
+    '✅ Moído e embalado na hora',
     `✅ Sai a R$ ${porCem.toFixed(2).replace('.', ',')} a cada 100 g`,
-    '',
-    `📦 O que vem: ${un > 1 ? `${un} sachês de ${g} g` : `1 pacote de ${pesoTxt(g)}`}${sortido ? ' em sabores variados (a seleção pode variar conforme o estoque)' : ''}.`,
-    ...(brinde ? ['🎁 Brinde: 1 sachê extra de tempero em todo pedido.'] : []),
-    `🍽️ Ideal para: ${IDEAL[produto.id] || IDEAL.sortido}.`,
-    '',
-    '🧾 Conservação: manter em local seco, fresco e ao abrigo da luz. Após aberto, manter bem fechado.',
-    '📮 Enviamos rápido e bem embalado.',
-    '',
-    'Produzido por SUPER MISTO TEMPEROS LTDA · CNPJ 13.580.397/0001-80 · Indústria Brasileira.',
+    ...(brinde ? ['🎁 Brinde: 1 sachê extra em todo pedido'] : []),
+    `🍽️ Ideal para ${IDEAL[produto.id] || IDEAL.sortido}.`,
   ].join('\n');
   const foto = [un > 1 ? `${un} SACHÊS = ${pesoTxt(total).toUpperCase()}${total >= 950 ? ' COMPLETO' : ''}` : pesoTxt(g).toUpperCase(), '100% NATURAL · SEM CONSERVANTES', ...(brinde ? ['+ BRINDE'] : [])];
   const prompt = `Foto profissional de produto para anúncio de marketplace, quadrada (1:1), alta definição. ${un > 1
