@@ -96,3 +96,16 @@ test('leitura calcula o total pelas unidades', () => {
   const r = lerResposta('{"itens":[{"anuncio":"Kit 30 sachês 30g","produto":"colorau","unidades":30,"gramas_unidade":30,"preco":33}]}', ['colorau']);
   assert.equal(r.itens[0].gramas, 900); assert.equal(r.itens[0].unidades, 30); assert.equal(r.itens[0].gramas_unidade, 30);
 });
+
+test('mesmo 1 kg em montagens diferentes: compara preço por kg e escolhe a que mais sobra', async () => {
+  const { montagensPorPeso, pesoRedondo } = await import('../public/precos.js');
+  assert.equal(pesoRedondo(900), 1000); assert.equal(pesoRedondo(1000), 1000); assert.equal(pesoRedondo(700), null);
+  const lista = [
+    { preco: 28.7, unidades: 10, gramas_unidade: 100, vendidos: 7000 },
+    { preco: 33, unidades: 20, gramas_unidade: 50, vendidos: 9000 },
+  ];
+  const [g] = montagensPorPeso(lista, 0.008, cfg);
+  assert.equal(g.peso, 1000); assert.equal(g.linhas.length, 2);
+  assert.equal(g.linhas[0].un, 20); assert.equal(g.linhas[0].porKg, 33);
+  assert.ok(g.melhor);
+});

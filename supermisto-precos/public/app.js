@@ -1,4 +1,4 @@
-import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99 } from './precos.js';
+import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99, montagensPorPeso } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -351,7 +351,21 @@ function desenharDuelo() {
   }
   const ordem = [...grupos.values()].sort((a, b) => Math.max(...b.itens.map((c) => c.vendidos || 0)) - Math.max(...a.itens.map((c) => c.vendidos || 0)));
   const sem = lista.filter((c) => !tamanhoDe(c));
-  $('#du-lista').innerHTML = ordem.map((gr) => {
+  // Mesmo peso total, montagens diferentes: o cliente vê "20 pacotinhos" e não percebe que é o mesmo 1 kg.
+  const comparar = montagensPorPeso(lista, cpg, D.config).filter((p) => p.linhas.length > 1);
+  const blocoPeso = comparar.map((p) => {
+    const caro = p.linhas[0], barato = p.linhas[p.linhas.length - 1], m = p.melhor;
+    return `<div class="card peso"><h3>🧠 Tudo dá ${kgOuG(p.peso)}: montagens diferentes</h3>
+      <p class="alerta info">💡 O cliente olha a quantidade de pacotinhos e não a conta do quilo. <b>${caro.un} × ${caro.g} g</b> sai a <b>${brl(caro.porKg)} o kg</b> e <b>${barato.un} × ${barato.g} g</b> sai a <b>${brl(barato.porKg)} o kg</b>, mas é o mesmo ${kgOuG(p.peso)}.</p>
+      <table class="tab-peso"><tr><th>Montagem</th><th>Ele cobra</th><th>Por kg</th><th>Vendas</th><th>Você</th></tr>
+      ${p.linhas.map((l) => `<tr class="${l === m ? 'melhor' : ''}"><td><b>${l.un} × ${l.g} g</b></td><td>${brl(l.top.preco)}</td><td>${brl(l.porKg)}</td>
+        <td>${l.vendidos ? mil(l.vendidos) : '–'}</td><td>${brl(l.nossoPreco)}<br><small class="${l.pode ? 'ok-txt' : 'ruim-txt'}">sobra ${brl(l.nossaSobra)}</small></td></tr>`).join('')}
+      </table>
+      <p class="estr-dica">🎯 <b>Melhor para você:</b> montar em <b>${m.un} pacotinhos de ${m.g} g</b> e vender por <b>${brl(m.nossoPreco)}</b>${m.pode ? `: sobra <b>${brl(m.nossaSobra)}</b> por kit.` : '. Com os custos de hoje ainda não sobra; veja quanto o tempero pode custar no Duelo abaixo.'}
+      Mais pacotinhos chamam mais atenção na foto, mas gastam mais saquinho e etiqueta: o app já desconta isso.</p>
+    </div>`;
+  }).join('');
+  $('#du-lista').innerHTML = blocoPeso + ordem.map((gr) => {
     const porPreco = [...gr.itens].sort((a, b) => a.preco - b.preco);
     const porVenda = [...gr.itens].sort((a, b) => (b.vendidos || 0) - (a.vendidos || 0));
     const barato = porPreco[0], caro = porPreco[porPreco.length - 1], top = porVenda[0].vendidos ? porVenda[0] : barato;
@@ -367,8 +381,8 @@ function desenharDuelo() {
       ${gr.itens.length > 1 ? `<details><summary>Todos os ${gr.itens.length} deste kit</summary><ol class="rank">${porVenda.map((c, i) => `<li><span class="pos">${MEDALHA[i] || i + 1 + 'º'}</span>
         <span class="nome">${esc(c.anuncio)}<small>${c.loja ? esc(c.loja) : ''}</small></span><span class="val"><b>${brl(c.preco)}</b><small>${c.vendidos ? mil(c.vendidos) + ' vend.' : '–'}</small></span></li>`).join('')}</ol></details>` : ''}
     </div>`;
-  }).join('') + (sem.length ? `<p class="aviso">⚠️ ${sem.length} anúncio(s) sem peso ficaram de fora. Na aba 📷 Prints, coloque quantos pacotinhos e quantos gramas cada.</p>` : '')
-    || '<p class="suave">Os anúncios deste produto estão sem peso. Corrija na aba 📷 Prints.</p>';
+  }).join('') + (sem.length ? `<p class="aviso">⚠️ ${sem.length} anúncio(s) sem peso ficaram de fora. Na aba 📷 Prints, coloque quantos pacotinhos e quantos gramas cada.</p>` : '');
+  if (!$('#du-lista').innerHTML) $('#du-lista').innerHTML = '<p class="suave">Os anúncios deste produto estão sem peso. Corrija na aba 📷 Prints.</p>';
 }
 $('#du-prod').addEventListener('change', desenharDuelo);
 $('#rk-prod').addEventListener('change', () => { $('#rk-faixa').value = ''; desenharRanking(); });

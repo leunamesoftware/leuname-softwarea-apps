@@ -90,3 +90,5 @@ details{margin-top:8px}details summary{cursor:pointer;font-size:14px;font-weight
 .duelo .teto{color:var(--verde);font-size:15px}
 .grade-manual{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.grade-manual .largo{grid-column:1/-1}
 #manual summary{font-size:15px}
+.tab-peso td,.tab-peso th{padding:6px 3px;font-size:13px}.tab-peso tr.melhor td{background:#EEF8F1}.tab-peso tr.melhor td:first-child{box-shadow:inset 3px 0 0 var(--verde)}
+.ok-txt{color:var(--verde)}.ruim-txt{color:var(--vermelho)}.estr-dica{font-size:14px;margin-top:8px}

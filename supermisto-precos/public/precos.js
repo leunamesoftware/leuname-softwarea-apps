@@ -204,3 +204,38 @@ export function espelho(c, cpg, cfg) {
     brinde: sobraBrinde >= cfg.lucro_min ? { custo: custoBrinde, sobra: sobraBrinde } : null,
   };
 }
+
+/* ---------- Mesmo peso, montagens diferentes (10 × 100 g × 20 × 50 g …) ---------- */
+const PESOS = [100, 250, 500, 1000, 2000];
+/** Peso "redondo" do kit (900 g e 1 kg caem juntos em ~1 kg). */
+export const pesoRedondo = (g) => PESOS.find((p) => g >= p * 0.85 && g <= p * 1.15) || null;
+
+/**
+ * Agrupa os kits pelo peso total e compara as montagens: preço por kg, vendas,
+ * o nosso preço (um pouco abaixo do mais vendido daquela montagem) e quanto sobra para nós.
+ */
+export function montagensPorPeso(lista, cpg, cfg) {
+  const porPeso = new Map();
+  for (const c of lista) {
+    const { un, g } = montagem(c);
+    const peso = g ? pesoRedondo(un * g) : null;
+    if (!peso || !(c.preco > 0)) continue;
+    if (!porPeso.has(peso)) porPeso.set(peso, new Map());
+    const k = `${un}x${g}`, m = porPeso.get(peso);
+    if (!m.has(k)) m.set(k, { un, g, itens: [] });
+    m.get(k).itens.push(c);
+  }
+  return [...porPeso.entries()].map(([peso, mapa]) => {
+    const linhas = [...mapa.values()].map((mt) => {
+      const top = [...mt.itens].sort((a, b) => (b.vendidos || 0) - (a.vendidos || 0) || a.preco - b.preco)[0];
+      const e = espelho(top, cpg, cfg);
+      return {
+        ...mt, top, porKg: r2((top.preco / (mt.un * mt.g)) * 1000), vendidos: mt.itens.reduce((s, c) => s + (c.vendidos || 0), 0),
+        nossoPreco: e.preco, nossaSobra: e.sobra, pode: e.pode, embalagens: e.embalagens,
+      };
+    }).sort((a, b) => b.porKg - a.porKg);
+    const viaveis = linhas.filter((l) => l.pode);
+    const melhor = (viaveis.length ? viaveis : linhas).slice().sort((a, b) => b.nossaSobra - a.nossaSobra || b.vendidos - a.vendidos)[0];
+    return { peso, linhas, melhor };
+  }).filter((g) => g.linhas.length).sort((a, b) => b.linhas.length - a.linhas.length || b.peso - a.peso);
+}
