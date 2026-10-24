@@ -1,0 +1,31 @@
+# Precificador Supermisto: prints da Shopee → IA lê os preços → tabela de preços com a nossa matéria-prima.
+# Publicado pelo workflow supermisto-precos.yml (repositório Leunamesite), que cria o banco D1 na primeira vez.
+name = "supermisto-precos"
+main = "src/worker.js"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "BANCO"
+database_name = "supermisto_precos"
+database_id = "ID_DO_BANCO"
+migrations_dir = "migracoes"
+
+# Login do dono pelo servidor de contas da loja LeuApps (senha da Área do Dono).
+[[services]]
+binding = "CONTAS"
+service = "calculadora-receitas"
+
+[vars]
+DONO_EMAIL = "leunamesoftware@gmail.com"
+
+[[routes]]
+pattern = "precos.supermistotemperos.com.br"
+custom_domain = true

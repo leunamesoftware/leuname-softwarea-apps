@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B6E33">
+<meta name="robots" content="noindex">
+<title>Precificador Supermisto</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topo"><b>Precificador</b><span>Supermisto</span><button id="sair" class="link" hidden>Sair</button></header>
+
+<main id="login" class="caixa" hidden>
+  <h1>Entrar</h1>
+  <p class="suave">Use a senha da Área do Dono.</p>
+  <form id="f-login">
+    <label>Senha<input type="password" id="senha" autocomplete="current-password" required></label>
+    <button class="btn">Entrar</button>
+    <p id="erro-login" class="erro"></p>
+  </form>
+</main>
+
+<main id="app" hidden>
+  <nav class="abas">
+    <button data-aba="prints" class="ativo">📷 Prints</button>
+    <button data-aba="tabela">💰 Tabela</button>
+    <button data-aba="custos">🧾 Custos</button>
+  </nav>
+
+  <section id="aba-prints" class="caixa">
+    <h2>Jogue os prints da Shopee</h2>
+    <p class="suave">Pode escolher vários de uma vez. O robô lê cada anúncio (produto, peso, preço e vendidos) e guarda.</p>
+    <label>Loja (opcional, vale para os prints escolhidos)<input id="loja" placeholder="ex.: Casa dos Temperos"></label>
+    <label class="btn grande">Escolher prints<input type="file" id="arquivos" accept="image/*" multiple hidden></label>
+    <p id="progresso" class="suave"></p>
+    <h3>Anúncios lidos <small id="qtd"></small></h3>
+    <p class="suave">Confira: se o produto ou o peso vier errado, corrija aqui. Anúncio sem produto não entra na tabela.</p>
+    <div id="lidos"></div>
+    <button id="limpar" class="link perigo">Apagar todos os anúncios lidos</button>
+  </section>
+
+  <section id="aba-tabela" class="caixa" hidden>
+    <h2>Tabela de preços</h2>
+    <p class="suave">Preço sugerido = 3% abaixo do concorrente mais barato, sem nunca ficar abaixo do seu preço mínimo (custo + taxa da Shopee + lucro mínimo).</p>
+    <div id="resumo"></div>
+    <div id="tabela"></div>
+  </section>
+
+  <section id="aba-custos" class="caixa" hidden>
+    <h2>Matéria-prima (R$ por kg)</h2>
+    <p class="suave">Troque pelos preços da CEASA. A tabela recalcula sozinha.</p>
+    <div id="insumos" class="grade-campos"></div>
+    <h2>Embalagem e Shopee</h2>
+    <div id="config" class="grade-campos"></div>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
