@@ -1,4 +1,4 @@
-import { CONFIG_PADRAO, tabelaProduto } from './precos.js';
+import { CONFIG_PADRAO, tabelaProduto, precoKgReal } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -63,10 +63,10 @@ $('#arquivos').addEventListener('change', async (e) => {
     $('#progresso').textContent = `Lendo print ${i + 1} de ${lista.length}…`;
     try {
       const r = await post('/api/ler-print', { imagem: await reduzir(lista[i]), loja });
-      D.concorrentes.unshift(...r.itens); novos += r.itens.length; desenharLidos();
+      D.concorrentes.unshift(...r.itens); novos += r.itens.length; desenharLidos(); desenharTabela();
     } catch (er) { if (er.message === 'sessao') return; falhas++; }
   }
-  $('#progresso').textContent = `Pronto: ${novos} anúncio(s) lido(s)` + (falhas ? `, ${falhas} print(s) não leram (tente de novo).` : '.');
+  $('#progresso').innerHTML = `✅ Pronto: <b>${novos} anúncio(s)</b> lido(s) e guardado(s) aqui embaixo` + (falhas ? `, ${falhas} print(s) não leram (tente de novo).` : '.') + ' Veja o resultado na aba <b>💰 Tabela</b>.';
 });
 
 function desenharLidos() {
@@ -80,7 +80,7 @@ function desenharLidos() {
         <label>Gramas<input name="gramas" inputmode="decimal" value="${c.gramas ?? ''}"></label>
         <label>Preço R$<input name="preco" inputmode="decimal" value="${c.preco ?? ''}"></label>
         <button class="x" title="Apagar">×</button>
-      </div>
+      </div>${c.gramas > 0 ? '' : '<div class="aviso">⚠️ Sem peso: digite as gramas totais (ex.: kit 20 × 50 g = 1000) para entrar na conta.</div>'}
     </div>`).join('') || '<p class="suave">Nenhum print lido ainda.</p>';
 }
 $('#lidos').addEventListener('change', async (e) => {
@@ -104,38 +104,68 @@ $('#limpar').addEventListener('click', async () => {
 /* ---------- tabela ---------- */
 function desenharTabela() {
   const linhas = D.produtos.map((p) => tabelaProduto(p, D.insumos, D.config, D.concorrentes, D.produtos));
-  const todos = linhas.flatMap((l) => l.formatos.filter((f) => f.formato !== 'sache'));
-  const conta = (s) => todos.filter((f) => f.situacao === s).length;
-  $('#resumo').innerHTML = `<div class="resumo"><div><b>${conta('mais_barato')}</b><span>dá p/ ser o mais barato</span></div>
-    <div><b>${conta('acima')}</b><span>concorrente abaixo do nosso mínimo</span></div><div><b>${conta('sem_concorrente')}</b><span>sem concorrente lido</span></div></div>`;
-  $('#tabela').innerHTML = linhas.map((l) => {
-    const barato = l.formatos.map((f) => f.maisBarato).filter(Boolean).sort((a, b) => a.preco / a.gramas - b.preco / b.gramas)[0];
+  const disputa = linhas.flatMap((l) => l.formatos.filter((f) => f.concorrentes));
+  const ganha = disputa.filter((f) => f.situacao === 'mais_barato').length;
+  $('#resumo').innerHTML = disputa.length ? `<div class="resumo dois"><div class="bom"><b>${ganha}</b><span>dá para vender mais barato que todos</span></div>
+    <div class="ruim"><b>${disputa.length - ganha}</b><span>concorrente mais barato que o seu custo</span></div></div>` : '';
+  const g = (n) => (n >= 1000 ? `${n / 1000} kg` : `${n} g`);
+  // Comparação em frases: o que o concorrente cobra, quanto custa para você e o veredito.
+  const frase = (f) => {
+    const c = f.maisBarato;
+    const ok = f.situacao === 'mais_barato';
+    return `<div class="comp ${ok ? 'bom' : 'ruim'}">
+      <div class="comp-tit">${f.nome}</div>
+      <p>🏷️ Concorrente mais barato: <b>${brl(c.preco)}</b> por ${g(c.gramas)}${c.gramas !== f.gramas ? ` (= ${brl(c.equivalente)} por ${g(f.gramas)})` : ''}${c.loja ? ' · ' + esc(c.loja) : ''}</p>
+      <p>🧾 Para você fazer ${g(f.gramas)}: <b>${brl(f.custo)}</b> (matéria-prima + embalagem)</p>
+      <p>💸 Menor preço sem prejuízo: <b>${brl(f.minimo)}</b> (já paga a Shopee e deixa ${brl(D.config.lucro_min)})</p>
+      <p class="veredito">${ok ? `✅ Venda por <b>${brl(f.preco)}</b>: fica mais barato que todos e sobra <b>${brl(f.lucro)}</b>.`
+        : `❌ Não dá para bater: o concorrente vende abaixo do seu custo. Se vender por ${brl(f.preco)}, sobra ${brl(f.lucro)}, mas fica mais caro que ele.`}</p></div>`;
+  };
+  const cartao = (l) => {
+    const disp = l.formatos.filter((f) => f.concorrentes), outros = l.formatos.filter((f) => !f.concorrentes);
     return `<div class="card"><h3>${esc(l.produto.nome)}</h3>
-      <div class="info">Custo da matéria-prima: ${brl(l.custo10g)} a cada 10 g · ${l.total} anúncio(s) da concorrência
-      ${barato ? `<br>Mais barato do mercado: ${brl(barato.preco)} por ${barato.gramas} g${barato.loja ? ' (' + esc(barato.loja) + ')' : ''}` : ''}</div>
-      <table><tr><th>Formato</th><th>Concorrência</th><th>Vender por</th><th>Sobra</th></tr>
-      ${l.formatos.map((f) => `<tr><td>${f.nome}<br><span class="tag t-${f.situacao}">${SITUACAO[f.situacao]}</span></td>
-        <td>${f.maisBarato ? `de ${brl(f.maisBarato.equivalente)}<br>a ${brl(f.maisCaro.equivalente)}` : '–'}</td>
-        <td><b>${brl(f.preco)}</b><br><small class="suave">mín. ${brl(f.minimo)}</small></td>
-        <td>${brl(f.lucro)}<br><small class="suave">custo ${brl(f.custo)}</small></td></tr>`).join('')}
-      </table></div>`;
-  }).join('');
+      <div class="info">${l.total} anúncio(s) da concorrência · sua matéria-prima: ${brl(l.custo10g * 10)} a cada 100 g</div>
+      ${disp.map(frase).join('')}
+      ${outros.length ? `<div class="sub">${disp.length ? 'Outros formatos (sem concorrente para comparar)' : 'Preço pelo seu custo (sem concorrente para comparar)'}</div>
+      <table><tr><th>Formato</th><th>Vender por</th><th>Sobra p/ você</th></tr>
+      ${outros.map((f) => `<tr><td>${f.nome}</td><td><b>${brl(f.preco)}</b></td><td>${brl(f.lucro)}</td></tr>`).join('')}</table>` : ''}
+    </div>`;
+  };
+  const com = linhas.filter((l) => l.total), sem = linhas.filter((l) => !l.total);
+  $('#tabela').innerHTML = (com.length ? com.map(cartao).join('') : '<p class="suave">Ainda não há anúncios lidos. Jogue prints na aba 📷 Prints.</p>')
+    + (sem.length ? `<details class="card"><summary>Produtos sem concorrente lido (${sem.length}): toque para ver o preço pelo seu custo</summary>${sem.map(cartao).join('')}</details>` : '');
 }
 
 /* ---------- custos ---------- */
-const NOMES_CFG = { taxa_pct: 'Comissão Shopee (%)', taxa_fixa: 'Taxa fixa Shopee por item (R$)', lucro_min: 'Lucro mínimo por venda (R$)', emb_sache: 'Embalagem sachê 10 g (R$)', emb_kit: 'Saquinho que junta o kit (R$)', emb_50: 'Embalagem pacote 50 g (R$)', emb_100: 'Embalagem pacote 100 g (R$)' };
+const NOMES_CFG = { taxa_pct: 'Comissão Shopee (%)', taxa_fixa: 'Taxa fixa Shopee por item (R$)', lucro_min: 'Lucro mínimo por venda (R$)', emb_sache: 'Embalagem sachê 10 g (R$)', emb_kit: 'Saquinho que junta o kit (R$)', emb_50: 'Embalagem pacote 50 g (R$)', emb_100: 'Embalagem pacote 100 g (R$)', etiqueta: 'Adesivo/etiqueta por pacote (R$)' };
+const resultadoInsumo = (i) => `Sai a <b>${brl(i.preco_kg)}</b> o kg pronto · <b>${brl(i.preco_kg / 10)}</b> cada 100 g · ${brl(i.preco_kg / 100)} cada 10 g`;
 function desenharCustos() {
-  $('#insumos').innerHTML = D.insumos.map((i) => `<label>${esc(i.nome)}<input data-insumo="${esc(i.nome)}" inputmode="decimal" value="${i.preco_kg}"></label>`).join('');
+  $('#insumos').innerHTML = D.insumos.map((i) => `<div class="ins" data-insumo="${esc(i.nome)}"><b>${esc(i.nome)}</b>
+    <div class="ins-campos">
+      <label>Paguei (R$)<input name="pago" inputmode="decimal" value="${i.pago ?? ''}" placeholder="ex.: 20"></label>
+      <label>Comprei (kg)<input name="comprado_kg" inputmode="decimal" value="${i.comprado_kg ?? ''}" placeholder="ex.: 2"></label>
+      <label>Rendeu (kg)<input name="rendeu_kg" inputmode="decimal" value="${i.rendeu_kg ?? ''}" placeholder="ex.: 1"></label>
+    </div><div class="ins-res">${i.pago == null ? 'Estimativa: ' : ''}${resultadoInsumo(i)}</div></div>`).join('');
   $('#config').innerHTML = Object.entries(NOMES_CFG).map(([k, n]) => `<label>${n}<input data-cfg="${k}" inputmode="decimal" value="${D.config[k]}"></label>`).join('');
 }
+const num = (v) => (String(v).trim() === '' ? null : Number(String(v).replace(',', '.')));
+async function salvarInsumo(e) {
+  const el = e.target.closest('.ins'); if (!el) return;
+  const nome = el.dataset.insumo, d = { nome };
+  ['pago', 'comprado_kg', 'rendeu_kg'].forEach((k) => { d[k] = num(el.querySelector(`[name=${k}]`).value); });
+  if (precoKgReal(d.pago, d.comprado_kg, d.rendeu_kg) == null) return; // ainda falta preencher
+  const r = await post('/api/insumo', d).catch((er) => { alert(er.message); return null; });
+  if (!r) return;
+  const i = D.insumos.find((x) => x.nome === nome); Object.assign(i, d, { preco_kg: r.preco_kg });
+  el.querySelector('.ins-res').innerHTML = resultadoInsumo(i);
+}
 async function salvarCampo(e) {
-  const v = Number(String(e.target.value).replace(',', '.'));
+  const v = num(e.target.value);
   if (!(v >= 0)) { e.target.value = ''; return; }
-  if (e.target.dataset.insumo) { const n = e.target.dataset.insumo; await post('/api/insumo', { nome: n, preco_kg: v }); D.insumos.find((i) => i.nome === n).preco_kg = v; }
-  if (e.target.dataset.cfg) { const k = e.target.dataset.cfg; await post('/api/config', { [k]: v }); D.config[k] = v; }
+  const k = e.target.dataset.cfg; await post('/api/config', { [k]: v }); D.config[k] = v;
   e.target.style.borderColor = 'var(--verde)';
 }
-$('#insumos').addEventListener('change', salvarCampo);
+$('#insumos').addEventListener('change', salvarInsumo);
 $('#config').addEventListener('change', salvarCampo);
 
 iniciar();

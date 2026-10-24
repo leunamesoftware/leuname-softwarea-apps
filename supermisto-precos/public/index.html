@@ -33,7 +33,12 @@
 
   <section id="aba-prints" class="caixa">
     <h2>Jogue os prints da Shopee</h2>
-    <p class="suave">Pode escolher vários de uma vez. O robô lê cada anúncio (produto, peso, preço e vendidos) e guarda.</p>
+    <ol class="passos">
+      <li>Na Shopee, pesquise (ex.: "colorau 10g", "kit temperos") e tire prints da lista.</li>
+      <li>Toque em <b>Escolher prints</b> e selecione vários de uma vez.</li>
+      <li>O robô lê cada anúncio (produto, peso, preço, vendidos) e lista aqui embaixo. Corrija se algo vier errado.</li>
+      <li>Abra a aba <b>💰 Tabela</b>: lá está por quanto vender cada produto e quanto sobra.</li>
+    </ol>
     <label>Loja (opcional, vale para os prints escolhidos)<input id="loja" placeholder="ex.: Casa dos Temperos"></label>
     <label class="btn grande">Escolher prints<input type="file" id="arquivos" accept="image/*" multiple hidden></label>
     <p id="progresso" class="suave"></p>
@@ -45,16 +50,17 @@
 
   <section id="aba-tabela" class="caixa" hidden>
     <h2>Tabela de preços</h2>
-    <p class="suave">Preço sugerido = 3% abaixo do concorrente mais barato, sem nunca ficar abaixo do seu preço mínimo (custo + taxa da Shopee + lucro mínimo).</p>
+    <p class="suave">Para cada produto: quanto o concorrente cobra, quanto custa para você fazer e se dá para vender mais barato sem ter prejuízo. Os custos vêm da aba 🧾 Custos.</p>
     <div id="resumo"></div>
     <div id="tabela"></div>
   </section>
 
   <section id="aba-custos" class="caixa" hidden>
-    <h2>Matéria-prima (R$ por kg)</h2>
-    <p class="suave">Troque pelos preços da CEASA. A tabela recalcula sozinha.</p>
+    <h2>Matéria-prima</h2>
+    <p class="suave">Coloque o que você pagou, quantos kg comprou e quanto <b>sobrou pronto</b> depois de moer e secar. O app desconta a perda sozinho. Exemplo: paguei R$ 20 em 2 kg, rendeu 1 kg pronto = R$ 20 o kg (R$ 2,00 cada 100 g).</p>
     <div id="insumos" class="grade-campos"></div>
-    <h2>Embalagem e Shopee</h2>
+    <h2>Embalagem, etiqueta e Shopee</h2>
+    <p class="suave">Valor de cada unidade. A taxa da Shopee e o lucro mínimo entram na conta de todos os preços.</p>
     <div id="config" class="grade-campos"></div>
   </section>
 </main>

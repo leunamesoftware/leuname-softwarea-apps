@@ -11,7 +11,7 @@ Extraia CADA anúncio visível no print. Responda SOMENTE com JSON, sem texto an
             "produto": "um destes ids: ${produtos.map((p) => `${p.id} (${p.nome})`).join(', ')}; use sortido para kit com vários sabores diferentes; ou null se não for nenhum deles",
             "gramas_total": peso TOTAL do anúncio em gramas (kit 10 sachês de 10 g = 100; 1 kg = 1000),
             "preco": preço em reais mostrado (se for faixa, o menor),
-            "vendidos": quantidade vendida mostrada ou null}]}
+            "vendidos": quantidade vendida mostrada, em número (7mil+ = 7000; 100mil+ = 100000) ou null}]}
 Exemplo: "Kit 10 temperos 100 g cada" = gramas_total 1000. "Kit 20 unidades" sem peso = null.
 Coloque TODOS os anúncios num único JSON (um só objeto com a lista "itens"); se houver lojas diferentes, use o campo "loja" dentro de cada item.
 Não invente anúncios. Se o peso não aparecer, use null.`;
@@ -54,7 +54,7 @@ export function lerResposta(texto, ids) {
       produto_id: ids.includes(i.produto) ? i.produto : null,
       gramas: numero(i.gramas_total),
       preco: numero(i.preco),
-      vendidos: numero(i.vendidos),
+      vendidos: (() => { const v = numero(i.vendidos); return v > 2e6 ? Math.round(v / 1000) : v; })(),
       ...(i.loja ? { loja: String(i.loja).slice(0, 80) } : {}),
     }))
     .filter((i) => i.preco > 0 && i.preco < 10000);

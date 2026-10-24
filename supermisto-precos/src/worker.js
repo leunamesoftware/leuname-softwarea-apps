@@ -1,6 +1,7 @@
 // Precificador Supermisto: o dono joga prints da Shopee, a IA lê os preços e a página monta a tabela de preços.
 // Login: e-mail do dono (DONO_EMAIL) + senha da Área do Dono (conferida no servidor de contas, como no painel do Pedêê).
 import { lerPrint } from './leitura.js';
+import { precoKgReal } from '../public/precos.js';
 
 const COOKIE = 'sp_sessao', LOJA = 'https://www.leunamesoftware.com.br', DIAS = 30;
 
@@ -48,7 +49,7 @@ async function produtos(env) {
 async function dados(env) {
   const [cfg, ins, prods, conc] = await Promise.all([
     env.BANCO.prepare('SELECT chave, valor FROM config').all(),
-    env.BANCO.prepare('SELECT nome, preco_kg, atualizado_em FROM insumos ORDER BY nome').all(),
+    env.BANCO.prepare('SELECT nome, preco_kg, pago, comprado_kg, rendeu_kg, atualizado_em FROM insumos ORDER BY nome').all(),
     produtos(env),
     env.BANCO.prepare('SELECT * FROM concorrentes ORDER BY id DESC LIMIT 2000').all(),
   ]);
@@ -105,14 +106,17 @@ async function api(env, req, path) {
   }
   if (path === '/api/insumo' && m === 'POST') {
     const d = await req.json().catch(() => ({}));
-    const preco = Number(d.preco_kg);
-    if (!d.nome || !(preco >= 0)) return json({ erro: 'Preço inválido.' }, 400);
-    await env.BANCO.prepare('UPDATE insumos SET preco_kg = ?, atualizado_em = ? WHERE nome = ?').bind(preco, agora(), String(d.nome)).run();
-    return json({ ok: true });
+    const n = (v) => (v === '' || v == null || !(Number(v) >= 0) ? null : Number(v));
+    const pago = n(d.pago), comprado = n(d.comprado_kg), rendeu = n(d.rendeu_kg);
+    const preco = precoKgReal(pago, comprado, rendeu) ?? n(d.preco_kg);
+    if (!d.nome || preco == null) return json({ erro: 'Preencha quanto pagou e quantos kg.' }, 400);
+    await env.BANCO.prepare('UPDATE insumos SET preco_kg = ?, pago = ?, comprado_kg = ?, rendeu_kg = ?, atualizado_em = ? WHERE nome = ?')
+      .bind(preco, pago, comprado, rendeu, agora(), String(d.nome)).run();
+    return json({ ok: true, preco_kg: preco });
   }
   if (path === '/api/config' && m === 'POST') {
     const d = await req.json().catch(() => ({}));
-    const ok = ['taxa_pct', 'taxa_fixa', 'lucro_min', 'emb_sache', 'emb_kit', 'emb_50', 'emb_100'];
+    const ok = ['taxa_pct', 'taxa_fixa', 'lucro_min', 'emb_sache', 'emb_kit', 'emb_50', 'emb_100', 'etiqueta'];
     const st = env.BANCO.prepare('UPDATE config SET valor = ? WHERE chave = ?');
     const lista = Object.entries(d).filter(([k, v]) => ok.includes(k) && Number(v) >= 0).map(([k, v]) => st.bind(Number(v), k));
     if (lista.length) await env.BANCO.batch(lista);

@@ -11,8 +11,8 @@ test('custo por grama segue a receita', () => {
   assert.equal(custoPorGrama({ receita: [{ insumo: 'Colorau', pct: 50 }, { insumo: 'Sal', pct: 50 }] }, insumos), 0.0115);
 });
 
-test('custo do kit 10: 100 g + 10 sachês + saquinho do kit', () => {
-  assert.equal(custoFormato(kit10, 0.02, cfg), 2 + 3.5 + 0.5);
+test('custo do kit 10: 100 g + 10 sachês com etiqueta + saquinho do kit', () => {
+  assert.equal(custoFormato(kit10, 0.02, cfg), 2 + 3.5 + 1 + 0.5);
 });
 
 test('preço mínimo paga taxa e lucro', () => {
@@ -54,4 +54,11 @@ test('produto desconhecido vira nulo e item sem preço é descartado', () => {
 test('junta vários objetos JSON que a IA manda separados', () => {
   const r = lerResposta('```json\n{"loja":"A","itens":[{"anuncio":"Kit 10 temperos 100g","produto":"sortido","gramas_total":1000,"preco":28.7}]}\n,\n{"loja":"B","itens":[{"anuncio":"Colorau","produto":"colorau","gramas_total":100,"preco":"9,90"}]}```', ['colorau', 'sortido']);
   assert.equal(r.itens.length, 2); assert.equal(r.itens[0].loja, 'A'); assert.equal(r.itens[1].loja, 'B'); assert.equal(r.itens[1].preco, 9.9);
+});
+
+test('perda na moagem: 2 kg por R$ 20 que rendem 1 kg = R$ 20 o kg', async () => {
+  const { precoKgReal } = await import('../public/precos.js');
+  assert.equal(precoKgReal(20, 2, 1), 20);
+  assert.equal(precoKgReal(20, 2, null), 10);
+  assert.equal(precoKgReal(20, null, null), null);
 });

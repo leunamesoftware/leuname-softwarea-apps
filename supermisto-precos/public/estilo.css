@@ -32,6 +32,17 @@ td b{font-size:15px}
 .resumo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
 .resumo div{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:10px;text-align:center}
 .resumo b{display:block;font-size:22px}.resumo span{font-size:12px;color:var(--suave)}
-.grade-campos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 12px}
+.grade-campos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 12px}#insumos{display:block}
 .ok{color:var(--verde);font-size:12px}
-@media (max-width:520px){.item .linha{grid-template-columns:1fr 1fr}.item .linha label:first-child{grid-column:1/-1}th:nth-child(2),td:nth-child(2){display:none}}
+@media (max-width:520px){.item .linha{grid-template-columns:1fr 1fr}.item .linha label:first-child{grid-column:1/-1}}
+.aviso{margin-top:6px;font-size:13px;color:var(--amarelo);background:#FFF4DE;border-radius:8px;padding:6px 8px}
+details.card summary{cursor:pointer;font-weight:600;color:var(--verde-esc)}
+.passos{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:10px 14px 10px 30px;font-size:14px;margin:8px 0}
+.resumo.dois{grid-template-columns:1fr 1fr}.resumo .bom b{color:var(--verde)}.resumo .ruim b{color:var(--vermelho)}
+.comp{border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px}.comp p{margin:4px 0}
+.comp.bom{background:#EEF8F1;border:1px solid #CBE8D4}.comp.ruim{background:#FDF0F0;border:1px solid #F3CFCF}
+.comp-tit{font-weight:700;font-size:15px;margin-bottom:4px}.veredito{margin-top:8px!important;font-size:15px}
+.sub{font-size:13px;font-weight:600;color:var(--suave);margin:12px 0 2px}
+.ins{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:10px 12px;margin:8px 0}
+.ins-campos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}.ins-campos label{margin:6px 0 0;font-size:12px;font-weight:500;color:var(--suave)}
+.ins-campos input{padding:9px}.ins-res{font-size:13px;margin-top:8px;color:var(--verde-esc)}

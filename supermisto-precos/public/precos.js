@@ -11,10 +11,16 @@ export const FORMATOS = [
 ];
 
 export const CONFIG_PADRAO = {
-  taxa_pct: 20, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.35, emb_kit: 0.5, emb_50: 0.8, emb_100: 1,
+  taxa_pct: 20, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.35, emb_kit: 0.5, emb_50: 0.8, emb_100: 1, etiqueta: 0.1,
 };
 
 const r2 = (v) => Math.round(v * 100) / 100;
+
+/** Quilo pronto = o que pagou ÷ o que sobrou depois de moer/secar (2 kg por R$ 20 que viram 1 kg = R$ 20 o kg). */
+export function precoKgReal(pago, comprado, rendeu) {
+  const kg = Number(rendeu) > 0 ? Number(rendeu) : Number(comprado);
+  return kg > 0 && Number(pago) >= 0 ? r2(Number(pago) / kg) : null;
+}
 
 /** Custo da matéria-prima por grama, pela receita (% de cada insumo). */
 export function custoPorGrama(produto, insumos) {
@@ -23,7 +29,7 @@ export function custoPorGrama(produto, insumos) {
 }
 
 export function custoFormato(f, cpg, cfg) {
-  return r2(f.gramas * cpg + (cfg[f.emb] || 0) * f.unidades + (f.kit ? cfg.emb_kit || 0 : 0));
+  return r2(f.gramas * cpg + ((cfg[f.emb] || 0) + (cfg.etiqueta || 0)) * f.unidades + (f.kit ? cfg.emb_kit || 0 : 0));
 }
 
 /** Menor preço que paga a taxa da Shopee, o custo e ainda deixa o lucro mínimo. */
@@ -66,7 +72,7 @@ export function sugerir(f, cpg, cfg, concorrentes) {
   }
   const media = conc.length ? r2(conc.reduce((s, c) => s + c.equivalente, 0) / conc.length) : null;
   return {
-    formato: f.id, nome: f.nome, custo, minimo, preco, lucro: lucro(preco, custo, cfg), situacao,
+    formato: f.id, nome: f.nome, gramas: f.gramas, custo, minimo, preco, lucro: lucro(preco, custo, cfg), situacao,
     concorrentes: conc.length, maisBarato: conc[0] || null, maisCaro: conc[conc.length - 1] || null, media,
   };
 }
