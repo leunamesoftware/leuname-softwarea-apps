@@ -131,3 +131,31 @@ export function tendencia(concorrentes) {
   }
   return [...dias.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([dia, v]) => ({ dia, valor: r2(v.reduce((s, x) => s + x, 0) / v.length) }));
 }
+
+/* ---------- Ranking e estratégia para bater de frente ---------- */
+export const por100g = (c) => (c.gramas > 0 ? r2((c.preco / c.gramas) * 100) : null);
+
+/** Ranking por vendas (mais vendido primeiro) e por preço a cada 100 g (mais barato primeiro). */
+export function ranking(lista) {
+  const validos = lista.filter((c) => c.preco > 0);
+  return {
+    vendas: validos.filter((c) => c.vendidos > 0).sort((a, b) => b.vendidos - a.vendidos),
+    precos: validos.filter((c) => c.gramas > 0).sort((a, b) => por100g(a) - por100g(b)),
+  };
+}
+
+/**
+ * Estratégia contra o mais vendido da faixa: igualar o preço dele (não precisa ser o mais barato),
+ * se o nosso mínimo deixar; e um brinde de 1 sachê para dar água na boca.
+ */
+export function estrategia(top, nosso, custoBrinde, cfg) {
+  if (!top || !nosso) return null;
+  const ref = r2(top.preco * (nosso.gramas / top.gramas)); // preço do mais vendido no mesmo peso
+  const igualar = abaixo90(ref + 0.01) <= ref ? abaixo90(ref + 0.01) : ref;
+  const sobra = lucro(igualar, nosso.custo, cfg);
+  const sobraBrinde = r2(sobra - custoBrinde);
+  return {
+    ref, preco: igualar, sobra, pode: igualar >= nosso.minimo,
+    brinde: sobraBrinde >= cfg.lucro_min ? { custo: custoBrinde, sobra: sobraBrinde } : null,
+  };
+}

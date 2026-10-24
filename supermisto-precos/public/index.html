@@ -28,6 +28,7 @@
   <nav class="abas">
     <button data-aba="prints" class="ativo">📷 Prints</button>
     <button data-aba="tabela">💰 Tabela</button>
+    <button data-aba="ranking">🏆 Ranking</button>
     <button data-aba="custos">🧾 Custos</button>
   </nav>
 
@@ -57,6 +58,18 @@
     <p class="suave">Cada bolinha é um anúncio: quanto mais à direita, mais caro; quanto mais alto, mais vendeu. A linha tracejada é o seu preço mínimo. Toque numa bolinha para ver o anúncio.</p>
     <label>Produto<select id="merc-prod"></select></label>
     <div id="mercado"></div>
+  </section>
+
+  <section id="aba-ranking" class="caixa" hidden>
+    <h2>🏆 Ranking dos concorrentes</h2>
+    <p class="suave">Escolha o produto e o tamanho. O app mostra quem mais vende, quem é mais barato e por quanto você pode entrar para bater de frente.</p>
+    <div class="filtros">
+      <label>Produto<select id="rk-prod"></select></label>
+      <label>Tamanho<select id="rk-faixa"></select></label>
+    </div>
+    <div id="rk-estrategia"></div>
+    <div id="rk-piramide"></div>
+    <div class="dois-rank"><div id="rk-vendas"></div><div id="rk-precos"></div></div>
   </section>
 
   <section id="aba-custos" class="caixa" hidden>

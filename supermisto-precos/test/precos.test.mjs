@@ -74,3 +74,11 @@ test('mercado: alerta quando o mais vendido é mais caro', async () => {
   assert.equal(kg.maisVendido.anuncio, 'A'); assert.equal(kg.maisBarato.anuncio, 'B');
   assert.ok(kg.alertas.some((a) => a.tipo === 'info')); assert.ok(kg.alertas.some((a) => a.tipo === 'bom'));
 });
+
+test('ranking e estratégia: iguala o mais vendido e calcula o brinde', async () => {
+  const { ranking, estrategia } = await import('../public/precos.js');
+  const r = ranking([{ preco: 33, gramas: 1000, vendidos: 8000 }, { preco: 20, gramas: 1000, vendidos: 2000 }]);
+  assert.equal(r.vendas[0].preco, 33); assert.equal(r.precos[0].preco, 20);
+  const e = estrategia(r.vendas[0], { gramas: 1000, custo: 15, minimo: 26 }, 0.8, cfg);
+  assert.equal(e.preco, 32.9); assert.ok(e.pode); assert.ok(e.brinde && e.brinde.sobra > 2);
+});

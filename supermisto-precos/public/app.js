@@ -1,4 +1,4 @@
-import { CONFIG_PADRAO, tabelaProduto, precoKgReal, analisarMercado, tendencia } from './precos.js';
+import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, estrategia, por100g } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -36,8 +36,9 @@ $('#sair').addEventListener('click', async () => { await post('/api/sair').catch
 /* ---------- abas ---------- */
 document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.abas button').forEach((x) => x.classList.toggle('ativo', x === b));
-  ['prints', 'tabela', 'custos'].forEach((a) => { $(`#aba-${a}`).hidden = a !== b.dataset.aba; });
+  ['prints', 'tabela', 'ranking', 'custos'].forEach((a) => { $(`#aba-${a}`).hidden = a !== b.dataset.aba; });
   if (b.dataset.aba === 'tabela') desenharTabela();
+  if (b.dataset.aba === 'ranking') desenharRanking();
 }));
 
 /* ---------- prints ---------- */
@@ -231,6 +232,69 @@ async function salvarCampo(e) {
   e.target.style.borderColor = 'var(--verde)';
 }
 $('#insumos').addEventListener('change', salvarInsumo);
+
+/* ---------- ranking ---------- */
+const kgOuG = (g) => (g >= 1000 ? `${(g / 1000).toLocaleString('pt-BR')} kg` : `${g} g`);
+const MEDALHA = ['🥇', '🥈', '🥉'];
+function listaRank(titulo, itens, destaque) {
+  return `<div class="card"><h3>${titulo}</h3>${itens.length ? `<ol class="rank">${itens.slice(0, 10).map((c, i) => `<li>
+    <span class="pos">${MEDALHA[i] || i + 1 + 'º'}</span>
+    <span class="nome">${esc(c.anuncio)}<small>${kgOuG(c.gramas || 0)}${c.loja ? ' · ' + esc(c.loja) : ''}</small></span>
+    <span class="val">${destaque(c)}</span></li>`).join('')}</ol>` : '<p class="suave">Sem dados nesta seleção.</p>'}</div>`;
+}
+function piramide(itens, top, nosso) {
+  // Mais barato embaixo, mais caro em cima; a largura da barra é quanto vendeu.
+  const lista = itens.filter((c) => c.vendidos > 0).sort((a, b) => b.preco - a.preco).slice(0, 12);
+  if (!lista.length) return '';
+  const max = Math.max(...lista.map((c) => c.vendidos));
+  const minimo = nosso ? nosso.minimo : null;
+  return `<div class="card"><h3>Pirâmide de preços</h3>
+    <p class="suave">Mais caro em cima, mais barato embaixo. A barra é do tamanho das vendas. 🟠 = o que mais vende.</p>
+    <div class="pir">${lista.map((c) => {
+      const w = Math.max(8, (c.vendidos / max) * 100);
+      const abaixo = minimo != null && c.preco * (nosso.gramas / c.gramas) < minimo;
+      return `<div class="pir-l"><span class="pir-p">${brl(c.preco)}</span>
+        <span class="pir-b"><i class="${c === top ? 'top' : abaixo ? 'abaixo' : ''}" style="width:${w}%"></i></span>
+        <span class="pir-v">${mil(c.vendidos)}</span></div>`;
+    }).join('')}</div>
+    ${minimo != null ? '<div class="leg"><span><i class="top"></i>mais vendido</span><span><i class="pt"></i>dá para você cobrar igual</span><span><i class="abaixo"></i>abaixo do seu mínimo</span></div>' : ''}</div>`;
+}
+function desenharRanking() {
+  const prods = D.produtos.filter((p) => D.concorrentes.some((c) => c.produto_id === p.id));
+  const sp = $('#rk-prod'), sf = $('#rk-faixa'), ap = sp.value, af = sf.value;
+  sp.innerHTML = prods.map((p) => `<option value="${p.id}">${esc(p.nome)}</option>`).join('') || '<option value="">Nenhum anúncio lido</option>';
+  if (prods.some((p) => p.id === ap)) sp.value = ap;
+  const prod = D.produtos.find((p) => p.id === sp.value);
+  const conc = D.concorrentes.filter((c) => prod && c.produto_id === prod.id && c.gramas > 0);
+  const faixas = FAIXAS.filter((fx) => conc.some((c) => c.gramas >= fx.de && c.gramas <= fx.ate));
+  sf.innerHTML = faixas.map((fx) => `<option value="${fx.id}">${fx.nome}</option>`).join('') || '<option value="">—</option>';
+  if (faixas.some((fx) => fx.id === af)) sf.value = af;
+  else if (faixas.length) sf.value = faixas.reduce((a, b) => (conc.filter((c) => c.gramas >= b.de && c.gramas <= b.ate).length > conc.filter((c) => c.gramas >= a.de && c.gramas <= a.ate).length ? b : a)).id;
+  const fx = FAIXAS.find((f) => f.id === sf.value);
+  if (!prod || !fx) { ['#rk-estrategia', '#rk-piramide', '#rk-vendas', '#rk-precos'].forEach((k) => { $(k).innerHTML = ''; }); $('#rk-estrategia').innerHTML = '<p class="suave">Jogue prints na aba 📷 Prints (com o peso aparecendo) para montar o ranking.</p>'; return; }
+  const itens = conc.filter((c) => c.gramas >= fx.de && c.gramas <= fx.ate);
+  const rk = ranking(itens), top = rk.vendas[0];
+  const tab = tabelaProduto(prod, D.insumos, D.config, D.concorrentes, D.produtos);
+  const nosso = tab.formatos.filter((f) => fx.formatos.includes(f.formato)).sort((a, b) => a.minimo - b.minimo)[0];
+  const sache = tab.formatos.find((f) => f.formato === 'sache');
+  const e = estrategia(top, nosso, sache ? sache.custo : 0, D.config);
+  $('#rk-estrategia').innerHTML = !top ? '<p class="alerta info">💡 Os prints desta faixa não mostram vendas. Tire prints com o "vendidos" aparecendo.</p>'
+    : !nosso ? `<p class="alerta info">💡 O mais vendido é <b>${esc(top.anuncio)}</b> (${brl(top.preco)}, ${mil(top.vendidos)} vendidos). Ainda não temos um formato desse tamanho na conta.</p>`
+    : `<div class="estr ${e.pode ? 'bom' : 'ruim'}">
+      <div class="estr-tit">${e.pode ? '🎯 Dá para bater de frente!' : '⚠️ Ainda não dá para igualar'}</div>
+      <p>O mais vendido: <b>${esc(top.anuncio)}</b> · ${brl(top.preco)} por ${kgOuG(top.gramas)} · <b>${mil(top.vendidos)} vendidos</b>${rk.precos[0] !== top ? ` (o mais barato custa ${brl(rk.precos[0].preco)}, mas vende menos)` : ''}.</p>
+      ${e.pode ? `<p class="grande">Venda o <b>${nosso.nome}</b> por <b>${brl(e.preco)}</b> → sobra <b>${brl(e.sobra)}</b> por venda.</p>
+        <p>Não precisa ser o mais barato: igualando o mais vendido, você entra na mesma faixa de preço que o cliente já aceita.</p>
+        ${e.brinde ? `<p>🎁 <b>Dê água na boca:</b> mande <b>1 sachê de brinde</b> (custa ${brl(e.brinde.custo)} para você) e ainda sobra <b>${brl(e.brinde.sobra)}</b>. Escreva no título e na foto: "+ BRINDE".</p>` : ''}
+        <p>📸 Copie o que ele faz bem: foto com todos os temperos abertos, peso grande na foto e a palavra "Natural" no título.</p>`
+      : `<p>Seu mínimo para o ${nosso.nome} é ${brl(nosso.minimo)}, e ele cobra ${brl(e.ref)} pelo mesmo peso. Baixe o custo na aba 🧾 Custos (compra maior, embalagem mais barata) ou venda num tamanho em que você ganha.</p>`}
+    </div>`;
+  $('#rk-piramide').innerHTML = piramide(itens, top, nosso);
+  $('#rk-vendas').innerHTML = listaRank('🔥 Mais vendidos', rk.vendas, (c) => `<b>${mil(c.vendidos)}</b><small>${brl(c.preco)}</small>`);
+  $('#rk-precos').innerHTML = listaRank('💲 Melhores preços (a cada 100 g)', rk.precos, (c) => `<b>${brl(por100g(c))}</b><small>${brl(c.preco)}${c.vendidos ? ' · ' + mil(c.vendidos) + ' vend.' : ''}</small>`);
+}
+$('#rk-prod').addEventListener('change', () => { $('#rk-faixa').value = ''; desenharRanking(); });
+$('#rk-faixa').addEventListener('change', desenharRanking);
 $('#config').addEventListener('change', salvarCampo);
 
 iniciar();
