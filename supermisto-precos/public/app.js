@@ -1,4 +1,4 @@
-import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem } from './precos.js';
+import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99 } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -125,7 +125,8 @@ function desenharTabela() {
       <p>🧾 Para você fazer ${g(f.gramas)}: <b>${brl(f.custo)}</b> (matéria-prima + embalagem)</p>
       <p>💸 Menor preço sem prejuízo: <b>${brl(f.minimo)}</b> (já paga a Shopee e deixa ${brl(D.config.lucro_min)})</p>
       <p class="veredito">${ok ? `✅ Venda por <b>${brl(f.preco)}</b>: fica mais barato que todos e sobra <b>${brl(f.lucro)}</b>.`
-        : `❌ Não dá para bater: o concorrente vende abaixo do seu custo. Se vender por ${brl(f.preco)}, sobra ${brl(f.lucro)}, mas fica mais caro que ele.`}</p></div>`;
+        : (() => { const alvo = abaixo99(c.equivalente), teto = tetoKg(alvo, f.gramas, f.custo - f.materia, D.config);
+            return `⚠️ Para vender a <b>${brl(alvo)}</b> (abaixo dele), o tempero pronto pode custar no máximo <b>${brl(Math.max(teto, 0))} o kg</b>. Pelos seus custos de hoje sai ${brl(f.materia / f.gramas * 1000)} o kg: compre mais barato ou baixe a embalagem na aba 🧾 Custos.`; })()}</p></div>`;
   };
   const cartao = (l) => {
     const disp = l.formatos.filter((f) => f.concorrentes), outros = l.formatos.filter((f) => !f.concorrentes);
@@ -192,7 +193,7 @@ function desenharMercado(linhas) {
   if (com.some((l) => l.produto.id === atual)) sel.value = atual;
   const l = com.find((x) => x.produto.id === sel.value) || com[0];
   const conc = D.concorrentes.filter((c) => c.produto_id === l.produto.id);
-  mercadoAtual = analisarMercado(conc, l.formatos).filter((fx) => fx.pontos.length);
+  mercadoAtual = analisarMercado(conc, l.formatos, D.config).filter((fx) => fx.pontos.length);
   const icone = { bom: '✅', ruim: '❌', info: '💡' };
   $('#mercado').innerHTML = mercadoAtual.map((fx, k) => `<div class="card" data-fx="${k}"><h3>${fx.nome}</h3>
       <div class="info">${fx.pontos.length} anúncio(s) · de ${brl(fx.maisBarato.preco)} a ${brl(fx.maisCaro.preco)}</div>
@@ -273,12 +274,19 @@ function ladoALado(c, cpg) {
       <div class="kit">${m}</div><div class="preco">${brl(c.preco)}</div>
       <div class="det">${brl(e.unidadeDele)} cada pacotinho${c.vendidos ? `<br>${mil(c.vendidos)} vendidos` : ''}${c.loja ? `<br>${esc(c.loja)}` : ''}</div></div>
     <div class="vs">VS</div>
-    <div class="lado nos"><div class="quem">🌿 Supermisto</div><div class="nome-an">O mesmo kit</div>
+    <div class="lado nos"><div class="quem">🌿 Supermisto</div><div class="nome-an">O mesmo kit, mais barato</div>
       <div class="kit">${m}</div><div class="preco">${brl(e.preco)}</div>
-      <div class="det">${brl(e.unidadeNossa)} cada pacotinho<br>custo ${brl(e.custo)} · sobra <b>${brl(e.sobra)}</b></div></div>
+      <div class="det">${brl(e.unidadeNossa)} cada pacotinho</div></div>
+    <div class="conta">
+      <p>🧮 Ele vende a <b>${brl(e.unidadeDele)} cada pacotinho de ${e.g} g</b>. Tirando a Shopee, ele recebe <b>${brl(e.liquidoDele)}</b> pelo kit (${brl(e.liquidoDele / e.un)} cada). Com isso ele paga o tempero, os saquinhos e o lucro dele.</p>
+      <p>🎯 Para você vender a <b>${brl(e.preco)}</b>, pagar a Shopee, ${brl(e.embalagens)} de embalagem/etiqueta e ainda lucrar ${brl(D.config.lucro_min)}:
+        o tempero pronto pode custar no máximo <b class="teto">${brl(Math.max(e.teto, 0))} o kg</b> (${brl(Math.max(e.teto, 0) / 10)} cada 100 g).</p>
+    </div>
     <div class="veredito">${e.pode
-      ? `✅ Venda por <b>${brl(e.preco)}</b>, mais barato que ele, e sobra <b>${brl(e.sobra)}</b>.${e.brinde ? ` 🎁 Mande <b>1 sachê de brinde</b> (custa ${brl(e.brinde.custo)}) e ainda sobra <b>${brl(e.brinde.sobra)}</b>.` : ''}`
-      : `❌ Com os seus custos de hoje, esse kit custa ${brl(e.custo)} para fazer: o mínimo é ${brl(e.minimo)}. Igualando ${brl(c.preco)}, sobra ${brl(e.sobraIgual)}. Baixe o custo na aba 🧾 Custos.`}</div>
+      ? `✅ Seu tempero hoje sai ${brl(e.hojeKg)} o kg: dá! Venda por <b>${brl(e.preco)}</b> e sobra <b>${brl(e.sobra)}</b>.${e.brinde ? ` 🎁 Mande <b>1 sachê de brinde</b> (custa ${brl(e.brinde.custo)}) e ainda sobra <b>${brl(e.brinde.sobra)}</b>.` : ''}`
+      : e.teto > 0
+        ? `⚠️ Pelos custos da aba 🧾 Custos, seu tempero sai ${brl(e.hojeKg)} o kg. Para bater esse preço, compre a no máximo <b>${brl(e.teto)} o kg pronto</b> (já contando a perda) ou baixe a embalagem.`
+        : `❌ Nesse preço, só a Shopee e a embalagem (${brl(e.embalagens)}) já comem tudo. Baixe o custo da embalagem na aba 🧾 Custos.`}</div>
   </div>`;
 }
 const tamanhoDe = (c) => montagem(c).g;

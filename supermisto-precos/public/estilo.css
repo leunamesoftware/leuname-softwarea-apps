@@ -86,3 +86,5 @@ h2.sec{margin-top:28px}
 .ok{display:block;margin-top:4px}
 details{margin-top:8px}details summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--verde-esc);padding:6px 0}
 .grupo h3{font-size:18px}
+.duelo .conta{grid-column:1/-1;font-size:13px;background:#F7F8F6;border-radius:10px;padding:8px 10px}.duelo .conta p{margin:4px 0}
+.duelo .teto{color:var(--verde);font-size:15px}

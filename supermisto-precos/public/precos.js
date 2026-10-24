@@ -37,10 +37,21 @@ export function precoMinimo(custo, cfg) {
   return r2((custo + cfg.taxa_fixa + cfg.lucro_min) / (1 - cfg.taxa_pct / 100));
 }
 
+/** Quanto pode custar o kg do tempero pronto para vender por `preco` e ainda sobrar o lucro mínimo. */
+export function tetoKg(preco, gramas, embalagens, cfg) {
+  const sobraParaTempero = preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa - cfg.lucro_min - embalagens;
+  return gramas > 0 ? r2((sobraParaTempero / gramas) * 1000) : null;
+}
+
+/** O que o vendedor recebe da Shopee depois da comissão e da taxa fixa. */
+export const liquido = (preco, cfg) => r2(preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa);
+
 export function lucro(preco, custo, cfg) {
   return r2(preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa - custo);
 }
 
+/** Um pouco abaixo do preço dele, terminando em ,99 (33,00 → 31,99). */
+export const abaixo99 = (v) => { const base = v - 1; let b = Math.floor(base) + 0.99; if (b > base + 1e-9) b -= 1; return r2(Math.max(b, 0.99)); };
 /** Arredonda para cima terminando em ,90 (18,30 → 18,90). */
 export const acima90 = (v) => { const b = Math.floor(v) + 0.9; return r2(b >= v - 1e-9 ? b : b + 1); };
 /** Arredonda para baixo terminando em ,90 (19,50 → 18,90). */
@@ -72,7 +83,7 @@ export function sugerir(f, cpg, cfg, concorrentes) {
   }
   const media = conc.length ? r2(conc.reduce((s, c) => s + c.equivalente, 0) / conc.length) : null;
   return {
-    formato: f.id, nome: f.nome, gramas: f.gramas, custo, minimo, preco, lucro: lucro(preco, custo, cfg), situacao,
+    formato: f.id, nome: f.nome, gramas: f.gramas, materia: r2(f.gramas * cpg), custo, minimo, preco, lucro: lucro(preco, custo, cfg), situacao,
     concorrentes: conc.length, maisBarato: conc[0] || null, maisCaro: conc[conc.length - 1] || null, media,
   };
 }
@@ -99,7 +110,7 @@ export const FAIXAS = [
  * Para cada faixa de peso: os anúncios, o mais vendido, o mais barato e os alertas.
  * `meus` = resultado de sugerir() de cada formato (para comparar com o nosso mínimo).
  */
-export function analisarMercado(concorrentes, meus) {
+export function analisarMercado(concorrentes, meus, cfgMercado = CONFIG_PADRAO) {
   return FAIXAS.map((fx) => {
     const pts = concorrentes.filter((c) => c.gramas >= fx.de && c.gramas <= fx.ate && c.preco > 0);
     if (!pts.length) return { ...fx, pontos: [], alertas: [] };
@@ -114,7 +125,11 @@ export function analisarMercado(concorrentes, meus) {
     if (top && nosso) {
       const ref = r2(top.preco * (nosso.gramas / top.gramas));
       if (nosso.minimo <= ref) alertas.push({ tipo: 'bom', texto: `${nosso.nome}: seu mínimo é R$ ${nosso.minimo.toFixed(2).replace('.', ',')} e o mais vendido cobra R$ ${ref.toFixed(2).replace('.', ',')} pelo mesmo peso. Dá para entrar de frente com ele.` });
-      else alertas.push({ tipo: 'ruim', texto: `${nosso.nome}: seu mínimo (R$ ${nosso.minimo.toFixed(2).replace('.', ',')}) passa do preço do mais vendido (R$ ${ref.toFixed(2).replace('.', ',')}). Baixe o custo ou venda em outro formato.` });
+      else {
+        const alvo = abaixo99(ref), teto = tetoKg(alvo, nosso.gramas, r2(nosso.custo - nosso.materia), cfgMercado);
+        const hoje = r2((nosso.materia / nosso.gramas) * 1000);
+        alertas.push({ tipo: 'ruim', texto: `Para vender o ${nosso.nome} a R$ ${alvo.toFixed(2).replace('.', ',')} (abaixo do mais vendido) você precisa do tempero a no máximo R$ ${Math.max(teto, 0).toFixed(2).replace('.', ',')} o kg pronto. Pelos seus custos de hoje está R$ ${hoje.toFixed(2).replace('.', ',')} o kg: compre mais barato ou baixe a embalagem na aba Custos.` });
+      }
     }
     if (!comVenda.length) alertas.push({ tipo: 'info', texto: 'Os prints desta faixa não mostram vendas. Tire prints com o "vendidos" aparecendo.' });
     return { ...fx, pontos: pts, maisBarato: barato, maisCaro: caro, maisVendido: top, nosso, alertas };
@@ -161,8 +176,6 @@ export function estrategia(top, nosso, custoBrinde, cfg) {
 }
 
 /* ---------- Lado a lado: o mesmo kit do concorrente, feito pela Supermisto ---------- */
-/** Um pouco abaixo do preço dele, terminando em ,99 (33,00 → 31,99). */
-export const abaixo99 = (v) => { const base = v - 1; let b = Math.floor(base) + 0.99; if (b > base + 1e-9) b -= 1; return r2(Math.max(b, 0.99)); };
 /** Embalagem + etiqueta de cada pacotinho, pelo tamanho. */
 export const embUnidade = (g, cfg) => (g <= 20 ? cfg.emb_sache : g <= 75 ? cfg.emb_50 : cfg.emb_100) + (cfg.etiqueta || 0);
 /** Quantos pacotinhos e de quantos gramas é o kit do concorrente. */
@@ -182,8 +195,11 @@ export function espelho(c, cpg, cfg) {
   const sobra = lucro(preco, custo, cfg);
   const custoBrinde = r2(10 * cpg + embUnidade(10, cfg));
   const sobraBrinde = r2(sobra - custoBrinde);
+  const embalagens = r2(custo - un * g * cpg);
   return {
-    un, g, custo, minimo, preco, sobra, pode: preco >= minimo,
+    un, g, custo, minimo, preco, sobra, pode: preco >= minimo, embalagens,
+    teto: tetoKg(preco, un * g, embalagens, cfg), hojeKg: r2(cpg * 1000),
+    liquidoDele: liquido(c.preco, cfg),
     unidadeDele: r2(c.preco / un), unidadeNossa: r2(preco / un), sobraIgual: lucro(c.preco, custo, cfg),
     brinde: sobraBrinde >= cfg.lucro_min ? { custo: custoBrinde, sobra: sobraBrinde } : null,
   };
