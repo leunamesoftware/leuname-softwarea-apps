@@ -37,6 +37,42 @@ PRODUTOS = {
         'ideal': ['Carnes', 'Aves', 'Arroz', 'Feijão', 'Legumes', 'Molhos'],
         'frase': 'Tudo que a sua comida precisa.',
     },
+    'cominho': {
+        'nome': ['Cominho', 'Moído'], 'peso': '10 g', 'destaque': '#F2C230',
+        'ing': 'Cominho moído.', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Feijão', 'Carnes', 'Frango', 'Linguiça', 'Molhos', 'Legumes'],
+        'frase': 'Aroma marcante para o seu feijão.',
+    },
+    'chimichurri': {
+        'nome': ['Chimichurri'], 'peso': '10 g', 'destaque': '#E53935',
+        'ing': 'Salsa, orégano, alho, cebola, pimentão e pimenta calabresa desidratados.', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Churrasco', 'Carnes', 'Frango', 'Pães', 'Legumes', 'Molhos'],
+        'frase': 'O sabor do churrasco.',
+    },
+    'oregano': {
+        'nome': ['Orégano'], 'peso': '10 g', 'destaque': '#F2C230',
+        'ing': 'Orégano desidratado.', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Pizzas', 'Molhos', 'Saladas', 'Carnes', 'Frango', 'Legumes'],
+        'frase': 'O toque da pizza perfeita.',
+    },
+    'paprica-doce': {
+        'nome': ['Páprica Doce'], 'peso': '10 g', 'destaque': '#F2C230',
+        'ing': 'Páprica doce (pimentão vermelho desidratado moído).', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Frango', 'Carnes', 'Batatas', 'Molhos', 'Ovos', 'Legumes'],
+        'frase': 'Cor e sabor suave.',
+    },
+    'paprica-defumada': {
+        'nome': ['Páprica Defumada'], 'peso': '10 g', 'destaque': '#F2C230', 'fumaca': True,
+        'ing': 'Páprica defumada (pimentão vermelho defumado e moído).', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Carnes', 'Churrasco', 'Frango', 'Batatas', 'Feijoada', 'Molhos'],
+        'frase': 'Sabor de churrasco.',
+    },
+    'curcuma': {
+        'nome': ['Açafrão-da-Terra', '(Cúrcuma)'], 'peso': '10 g', 'destaque': '#F2C230',
+        'ing': 'Cúrcuma (açafrão-da-terra) moída.', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Arroz', 'Frango', 'Legumes', 'Sopas', 'Ovos', 'Molhos'],
+        'frase': 'Cor dourada e natural.',
+    },
 }
 EMPRESA = ['Produzido e embalado por: SUPER MISTO TEMPEROS LTDA', 'CNPJ 13.580.397/0001-80 · Estrada de Xerém, 484',
            'Xerém · Duque de Caxias (RJ) · CEP 25241-390', 'SAC: (24) 99872-1557 · INDÚSTRIA BRASILEIRA']
@@ -62,7 +98,7 @@ body{{width:2000px;height:1000px;overflow:hidden;font-family:P;color:#fff}}
 def frente_html(p, fundo):
     nome = ''.join(f'<div>{l}</div>' for l in p['nome'])
     tam = 150 if max(len(l) for l in p['nome']) <= 14 else 128
-    return f"""<html><head><style>{CSS}
+    return f"""<html><head><meta charset="utf-8"><style>{CSS}
 .logo{{position:absolute;left:940px;top:150px;width:800px}}
 .nome{{position:absolute;left:820px;width:1040px;top:470px;text-align:center;font-family:Script;font-size:{tam}px;line-height:1.02;
   text-shadow:0 6px 0 rgba(0,0,0,.25),0 10px 24px rgba(0,0,0,.45);transform:rotate(-3deg)}}
@@ -83,7 +119,7 @@ def frente_html(p, fundo):
 
 def verso_html(p, fundo):
     ideal = ''.join(f'<span>{i}</span>' for i in p['ideal'])
-    return f"""<html><head><style>{CSS}
+    return f"""<html><head><meta charset="utf-8"><style>{CSS}
 .logo{{position:absolute;left:60px;top:70px;width:560px}}
 .nome{{position:absolute;left:70px;top:270px;font-family:Script;font-size:76px;line-height:1.05;text-shadow:0 6px 18px rgba(0,0,0,.5);transform:rotate(-3deg)}}
 .ideal{{position:absolute;left:720px;top:150px;width:600px;background:rgba(255,255,255,.96);border-radius:28px;padding:28px 30px 32px;color:#0B4F27;

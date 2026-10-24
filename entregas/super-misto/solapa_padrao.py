@@ -40,6 +40,12 @@ PRODUTOS = {
     'pimenta-do-reino': {'pronta': True},
     'tempero-completo': {'pronta': True},
     'colorau': {'pronta': True},
+    'cominho': {'pronta': True},
+    'chimichurri': {'pronta': True},
+    'oregano': {'pronta': True},
+    'paprica-doce': {'pronta': True},
+    'paprica-defumada': {'pronta': True},
+    'curcuma': {'pronta': True},
 }
 
 
