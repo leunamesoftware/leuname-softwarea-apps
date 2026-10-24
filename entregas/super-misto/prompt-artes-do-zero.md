@@ -41,5 +41,6 @@ Crie uma imagem horizontal EXATAMENTE 2:1 (2000 x 1000 pixels) para ser o VERSO 
 | Canela em pó | marrom-canela (#6B3A1E) | canela em pó | paus de canela |
 
 ## Como me mandar
-Para cada produto: **frente + verso** (e, se tiver, a **foto do saquinho** para o site).
-Diga o nome do produto. Eu monto tudo e te devolvo a solapa pronta e o PDF da gráfica.
+Para cada produto: **só o fundo da FRENTE** + o nome e o peso (e, se tiver, a **foto do saquinho** para o site).
+O verso eu monto sozinho com o mesmo fundo (o prompt de VERSO é opcional, só se quiser um verso diferente).
+Eu monto frente, verso e o PDF da gráfica.

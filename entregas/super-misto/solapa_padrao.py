@@ -36,14 +36,8 @@ CONSERVACAO = 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, ma
 # tapar: círculos (x, y, raio) em pixels da arte original, para sumir com o ®.
 # coluna: retângulo (x1, y1, x2, y2) da arte do verso onde ficam os textos legais (é coberto e redesenhado).
 PRODUTOS = {
-    'pimenta-do-reino': {
-        'ing': 'Pimenta-do-reino preta moída.',
-        'gluten': 'NÃO CONTÉM GLÚTEN.',
-        'tapar_frente': [], 'tapar_verso': [],
-        'logo_frente': (410, 160, 1000), 'logo_verso': (14, 48, 748),
-        'coluna': (1255, 100, 1745, 572), 'limpar': [],
-        'estender': True, 'cor_titulo': '#0B6E33', 'so_coluna': True, 'col_mm': (72.3, 27),
-    },
+    # 'pronta': frente e verso montados por monta_arte.py (já com logo e todos os textos certos)
+    'pimenta-do-reino': {'pronta': True},
     'tempero-completo': {
         'ing': 'Sal, alho desidratado, cebola desidratada, salsa desidratada, colorífico (fubá de milho e urucum), '
                'pimentão desidratado, pimenta-do-reino, orégano e cebolinha desidratada.',
@@ -115,8 +109,12 @@ def troca_logo(im, caixa):
 def prepara(pid, cfg):
     pasta = SAIDA / pid; pasta.mkdir(parents=True, exist_ok=True)
     f = Image.open(ARTES / f'{pid}-frente.png').convert('RGB')
-    for t in cfg['tapar_frente']: tapa(f, *t)
+    for t in cfg.get('tapar_frente', []): tapa(f, *t)
     v = Image.open(ARTES / f'{pid}-verso.png').convert('RGB')
+    if cfg.get('pronta'):
+        f, v = f.resize((2000, 1000), Image.LANCZOS), v.resize((2000, 1000), Image.LANCZOS)
+        f.save(pasta / '.frente-arte.png'); v.save(pasta / '.verso-arte.png')
+        return pasta, None
     for t in cfg['tapar_verso']: tapa(v, *t)
     d = ImageDraw.Draw(v); x1, y1, x2, y2 = cfg['coluna']
     fundo = mediana_anel(v.load(), (x1 + x2) // 2, (y1 + y2) // 2, 1)
@@ -146,6 +144,8 @@ def frente(c, x, y, pasta):
 
 def verso(c, x, y, pasta, cfg):
     c.drawImage(ImageReader(str(pasta / '.verso-arte.png')), x, y, W, H)
+    if cfg.get('pronta'):
+        return
     ox, ow = cfg.get('col_mm', (73.4, 25))
     cx, cw = x + ox * mm, ow * mm
     cor = HexColor(cfg['cor_titulo']) if cfg.get('cor_titulo') else None

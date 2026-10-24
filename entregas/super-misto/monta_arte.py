@@ -106,8 +106,11 @@ def main(pid):
     with sync_playwright() as pw:
         b = pw.chromium.launch(executable_path=CHROME); pg = b.new_page(viewport={'width': 2000, 'height': 1000})
         render(frente_html(p, ff), ARTES / f'{pid}-frente.png', pg)
-        if fv.exists():
-            render(verso_html(p, fv), ARTES / f'{pid}-verso.png', pg)
+        if not fv.exists():  # sem fundo próprio: o verso usa o fundo da frente, escurecido para os textos
+            from PIL import Image, ImageEnhance, ImageFilter
+            im = Image.open(ff).convert('RGB')
+            ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(2))).enhance(0.62).save(ARTES / f'.{pid}-fundo-verso.png'); fv = ARTES / f'.{pid}-fundo-verso.png'
+        render(verso_html(p, fv), ARTES / f'{pid}-verso.png', pg)
         b.close()
     print('ok', pid)
 
