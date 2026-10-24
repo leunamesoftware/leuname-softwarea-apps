@@ -38,19 +38,8 @@ CONSERVACAO = 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, ma
 PRODUTOS = {
     # 'pronta': frente e verso montados por monta_arte.py (já com logo e todos os textos certos)
     'pimenta-do-reino': {'pronta': True},
-    'tempero-completo': {
-        'ing': 'Sal, alho desidratado, cebola desidratada, salsa desidratada, colorífico (fubá de milho e urucum), '
-               'pimentão desidratado, pimenta-do-reino, orégano e cebolinha desidratada.',
-        'gluten': 'NÃO CONTÉM GLÚTEN.',
-        'tapar_frente': [(1365, 260, 19)], 'tapar_verso': [(662, 88, 18)],
-        'coluna': (1258, 22, 1748, 866), 'limpar': [(900, 745, 1440, 862)],
-    },
-    'colorau': {
-        'ing': 'Fubá de milho e urucum em pó.',
-        'gluten': 'NÃO CONTÉM GLÚTEN.',
-        'tapar_frente': [], 'tapar_verso': [(666, 137, 17)],
-        'coluna': (1262, 80, 1745, 820), 'limpar': [(1120, 690, 1745, 820)], 'col_mm': (77.3, 20.9),
-    },
+    'tempero-completo': {'pronta': True},
+    'colorau': {'pronta': True},
 }
 
 

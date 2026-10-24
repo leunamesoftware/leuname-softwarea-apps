@@ -24,10 +24,27 @@ PRODUTOS = {
         'ideal': ['Carnes', 'Aves', 'Peixes', 'Saladas', 'Sopas', 'Molhos'],
         'frase': 'Aroma forte e picância na medida.',
     },
+    'colorau': {
+        'nome': ['Colorau'], 'peso': '10 g', 'destaque': '#F2C230',
+        'ing': 'Fubá de milho e urucum.', 'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Arroz', 'Feijão', 'Frango', 'Carnes', 'Peixes', 'Ensopados'],
+        'frase': 'Cor viva e sabor suave.',
+    },
+    'tempero-completo': {
+        'nome': ['Tempero', 'Completo'], 'peso': '10 g', 'destaque': '#F57C00',
+        'ing': 'Sal, alho, cebola, salsa, colorífico (fubá de milho e urucum), pimentão, pimenta-do-reino, orégano e cebolinha. Ingredientes desidratados.',
+        'gluten': 'NÃO CONTÉM GLÚTEN.',
+        'ideal': ['Carnes', 'Aves', 'Arroz', 'Feijão', 'Legumes', 'Molhos'],
+        'frase': 'Tudo que a sua comida precisa.',
+    },
 }
 EMPRESA = ['Produzido e embalado por: SUPER MISTO TEMPEROS LTDA', 'CNPJ 13.580.397/0001-80 · Estrada de Xerém, 484',
            'Xerém · Duque de Caxias (RJ) · CEP 25241-390', 'SAC: (24) 99872-1557 · INDÚSTRIA BRASILEIRA']
 CONSERVACAO = 'Manter em local seco, fresco e ao abrigo da luz. Após aberto, manter bem fechado.'
+
+# Furo borboleta (gancho de gôndola): fenda de 1,8 cm com um círculo de 0,55 cm no meio (escala 200 px = 1 cm).
+FURO = ('<svg class="furo" viewBox="0 0 360 120"><g fill="#fff">'
+        '<rect x="0" y="30" width="360" height="60" rx="30"/><circle cx="180" cy="60" r="55"/></g></svg>')
 
 CSS = f"""
 @font-face{{font-family:Script;src:url('file://{FONTES}/kaushanscript-KaushanScript-Regular.ttf')}}
@@ -37,7 +54,7 @@ CSS = f"""
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{width:2000px;height:1000px;overflow:hidden;font-family:P;color:#fff}}
 .cena{{position:relative;width:2000px;height:1000px;background-size:cover;background-position:center}}
-.furo{{position:absolute;left:850px;top:38px;width:300px;height:74px;border-radius:37px;background:#fff;box-shadow:inset 0 3px 8px rgba(0,0,0,.25)}}
+.furo{{position:absolute;left:820px;top:30px;width:360px;height:120px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}}
 .sombra{{filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}}
 """
 
@@ -55,7 +72,7 @@ def frente_html(p, fundo):
 .peso{{position:absolute;right:56px;bottom:46px;padding:14px 46px;border-radius:60px;background:#0B6E33;border:7px solid #fff;
   font-weight:800;font-size:92px;line-height:1;box-shadow:0 10px 26px rgba(0,0,0,.45)}}
 </style></head><body><div class="cena" style="background-image:url('file://{fundo}')">
-<div class="furo"></div>
+{FURO}
 <img class="logo sombra" src="file://{LOGO}">
 <div class="nome">{nome}</div>
 <svg class="risco" viewBox="0 0 700 34" preserveAspectRatio="none"><path d="M10 26 C 200 4, 480 2, 690 14" stroke="{p['destaque']}" stroke-width="14" stroke-linecap="round" fill="none"/></svg>
@@ -82,7 +99,7 @@ def verso_html(p, fundo):
 .lv div{{border:3px solid #fff;border-radius:16px;padding:12px 18px;font-weight:700;font-size:28px;background:rgba(0,0,0,.25)}}
 .emp{{position:absolute;right:40px;bottom:34px;text-align:right;font-weight:600;font-size:22px;line-height:1.38;text-shadow:0 2px 6px rgba(0,0,0,.7)}}
 </style></head><body><div class="cena" style="background-image:url('file://{fundo}')">
-<div class="furo"></div>
+{FURO}
 <img class="logo sombra" src="file://{LOGO}">
 <div class="nome">{'<br>'.join(p['nome'])}</div>
 <div class="ideal"><b>IDEAL PARA:</b><div>{ideal}</div></div>
@@ -100,20 +117,23 @@ def render(html, saida, pg):
     pg.goto(f'file://{tmp}'); pg.wait_for_timeout(400); pg.screenshot(path=str(saida)); tmp.unlink()
 
 
-def main(pid):
-    p = PRODUTOS[pid]
+def main(pid, peso=None):
+    p = dict(PRODUTOS[pid])
+    sufixo = ''
+    if peso:
+        p['peso'] = peso; sufixo = '-' + peso.replace(' ', '')
     ff, fv = ARTES / f'{pid}-fundo-frente.png', ARTES / f'{pid}-fundo-verso.png'
     with sync_playwright() as pw:
         b = pw.chromium.launch(executable_path=CHROME); pg = b.new_page(viewport={'width': 2000, 'height': 1000})
-        render(frente_html(p, ff), ARTES / f'{pid}-frente.png', pg)
+        render(frente_html(p, ff), ARTES / f'{pid}{sufixo}-frente.png', pg)
         if not fv.exists():  # sem fundo próprio: o verso usa o fundo da frente, escurecido para os textos
             from PIL import Image, ImageEnhance, ImageFilter
             im = Image.open(ff).convert('RGB')
             ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(2))).enhance(0.62).save(ARTES / f'.{pid}-fundo-verso.png'); fv = ARTES / f'.{pid}-fundo-verso.png'
-        render(verso_html(p, fv), ARTES / f'{pid}-verso.png', pg)
+        render(verso_html(p, fv), ARTES / f'{pid}{sufixo}-verso.png', pg)
         b.close()
     print('ok', pid)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)  # ex.: monta_arte.py colorau "100 g"
