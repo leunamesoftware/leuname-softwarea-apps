@@ -82,8 +82,8 @@ async function api(env, req, path) {
     catch (e) { console.error('ia', e); return json({ erro: 'A leitura falhou agora. Tente esse print de novo.' }, 502); }
     const loja = String(d.loja || '').trim().slice(0, 80) || lido.loja || null;
     const quando = agora();
-    const ins = env.BANCO.prepare('INSERT INTO concorrentes (produto_id, anuncio, loja, gramas, preco, vendidos, criado_em) VALUES (?,?,?,?,?,?,?) RETURNING id');
-    const salvos = lido.itens.length ? (await env.BANCO.batch(lido.itens.map((i) => ins.bind(i.produto_id, i.anuncio, String(d.loja || '').trim().slice(0, 80) || i.loja || loja, i.gramas, i.preco, i.vendidos, quando)))).map((r) => r.results[0].id) : [];
+    const ins = env.BANCO.prepare('INSERT INTO concorrentes (produto_id, anuncio, loja, gramas, unidades, gramas_unidade, preco, vendidos, criado_em) VALUES (?,?,?,?,?,?,?,?,?) RETURNING id');
+    const salvos = lido.itens.length ? (await env.BANCO.batch(lido.itens.map((i) => ins.bind(i.produto_id, i.anuncio, String(d.loja || '').trim().slice(0, 80) || i.loja || loja, i.gramas, i.unidades, i.gramas_unidade, i.preco, i.vendidos, quando)))).map((r) => r.results[0].id) : [];
     return json({ loja, itens: lido.itens.map((i, k) => ({ ...i, id: salvos[k], loja: String(d.loja || '').trim() || i.loja || loja, criado_em: quando })) });
   }
 
@@ -92,8 +92,10 @@ async function api(env, req, path) {
     const d = await req.json().catch(() => ({}));
     const ids = (await produtos(env)).map((p) => p.id);
     const num = (v) => (v === '' || v == null ? null : Number(v));
-    await env.BANCO.prepare('UPDATE concorrentes SET produto_id = ?, gramas = ?, preco = ?, loja = ? WHERE id = ?')
-      .bind(ids.includes(d.produto_id) ? d.produto_id : null, num(d.gramas), num(d.preco) || 0, String(d.loja || '').slice(0, 80) || null, Number(mc[1])).run();
+    const un = num(d.unidades), gu = num(d.gramas_unidade);
+    const total = un > 0 && gu > 0 ? un * gu : num(d.gramas);
+    await env.BANCO.prepare('UPDATE concorrentes SET produto_id = ?, gramas = ?, unidades = ?, gramas_unidade = ?, preco = ?, loja = ? WHERE id = ?')
+      .bind(ids.includes(d.produto_id) ? d.produto_id : null, total, un, gu, num(d.preco) || 0, String(d.loja || '').slice(0, 80) || null, Number(mc[1])).run();
     return json({ ok: true });
   }
   if (mc && m === 'DELETE') {

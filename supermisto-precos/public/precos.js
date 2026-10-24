@@ -83,7 +83,7 @@ export function tabelaProduto(produto, insumos, cfg, concorrentes, todos = []) {
   const cpg = produto.receita.length || !outros.length ? custoPorGrama(produto, insumos)
     : outros.reduce((s, p) => s + custoPorGrama(p, insumos), 0) / outros.length;
   const meus = concorrentes.filter((c) => c.produto_id === produto.id);
-  return { produto, custo10g: r2(cpg * 10), formatos: FORMATOS.map((f) => sugerir(f, cpg, cfg, meus)), total: meus.length };
+  return { produto, cpg, custo10g: r2(cpg * 10), formatos: FORMATOS.map((f) => sugerir(f, cpg, cfg, meus)), total: meus.length };
 }
 
 /* ---------- Mercado: o que vende mais, por qual preço ---------- */
@@ -156,6 +156,35 @@ export function estrategia(top, nosso, custoBrinde, cfg) {
   const sobraBrinde = r2(sobra - custoBrinde);
   return {
     ref, preco: igualar, sobra, pode: igualar >= nosso.minimo,
+    brinde: sobraBrinde >= cfg.lucro_min ? { custo: custoBrinde, sobra: sobraBrinde } : null,
+  };
+}
+
+/* ---------- Lado a lado: o mesmo kit do concorrente, feito pela Supermisto ---------- */
+/** Um pouco abaixo do preço dele, terminando em ,99 (33,00 → 31,99). */
+export const abaixo99 = (v) => { const base = v - 1; let b = Math.floor(base) + 0.99; if (b > base + 1e-9) b -= 1; return r2(Math.max(b, 0.99)); };
+/** Embalagem + etiqueta de cada pacotinho, pelo tamanho. */
+export const embUnidade = (g, cfg) => (g <= 20 ? cfg.emb_sache : g <= 75 ? cfg.emb_50 : cfg.emb_100) + (cfg.etiqueta || 0);
+/** Quantos pacotinhos e de quantos gramas é o kit do concorrente. */
+export function montagem(c) {
+  const un = c.unidades > 0 ? c.unidades : 1;
+  const g = c.gramas_unidade > 0 ? c.gramas_unidade : c.gramas > 0 ? r2(c.gramas / un) : null;
+  return { un, g };
+}
+
+/** Nosso kit igual ao dele: custo, preço um pouco abaixo, quanto sobra e se cabe um brinde (1 sachê de 10 g). */
+export function espelho(c, cpg, cfg) {
+  const { un, g } = montagem(c);
+  if (!g || !(c.preco > 0)) return null;
+  const custo = r2(un * (g * cpg + embUnidade(g, cfg)) + (un > 1 ? cfg.emb_kit || 0 : 0));
+  const minimo = precoMinimo(custo, cfg);
+  const preco = abaixo99(c.preco);
+  const sobra = lucro(preco, custo, cfg);
+  const custoBrinde = r2(10 * cpg + embUnidade(10, cfg));
+  const sobraBrinde = r2(sobra - custoBrinde);
+  return {
+    un, g, custo, minimo, preco, sobra, pode: preco >= minimo,
+    unidadeDele: r2(c.preco / un), unidadeNossa: r2(preco / un), sobraIgual: lucro(c.preco, custo, cfg),
     brinde: sobraBrinde >= cfg.lucro_min ? { custo: custoBrinde, sobra: sobraBrinde } : null,
   };
 }

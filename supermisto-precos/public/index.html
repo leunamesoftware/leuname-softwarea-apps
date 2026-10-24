@@ -27,8 +27,9 @@
 <main id="app" hidden>
   <nav class="abas">
     <button data-aba="prints" class="ativo">📷 Prints</button>
-    <button data-aba="tabela">💰 Tabela</button>
+    <button data-aba="duelo">⚔️ Duelo</button>
     <button data-aba="ranking">🏆 Ranking</button>
+    <button data-aba="tabela">💰 Tabela</button>
     <button data-aba="custos">🧾 Custos</button>
   </nav>
 
@@ -37,8 +38,8 @@
     <ol class="passos">
       <li>Na Shopee, pesquise (ex.: "colorau 10g", "kit temperos") e tire prints da lista.</li>
       <li>Toque em <b>Escolher prints</b> e selecione vários de uma vez.</li>
-      <li>O robô lê cada anúncio (produto, peso, preço, vendidos) e lista aqui embaixo. Corrija se algo vier errado.</li>
-      <li>Abra a aba <b>💰 Tabela</b>: lá está por quanto vender cada produto e quanto sobra.</li>
+      <li>O robô lê cada anúncio (produto, quantos pacotinhos, gramas de cada, preço, vendidos) e lista aqui embaixo. Corrija se algo vier errado.</li>
+      <li>Abra a aba <b>⚔️ Duelo</b>: cada anúncio dele ao lado do mesmo kit seu, com o seu preço e quanto sobra.</li>
     </ol>
     <label>Loja (opcional, vale para os prints escolhidos)<input id="loja" placeholder="ex.: Casa dos Temperos"></label>
     <label class="btn grande">Escolher prints<input type="file" id="arquivos" accept="image/*" multiple hidden></label>
@@ -70,6 +71,13 @@
     <div id="rk-estrategia"></div>
     <div id="rk-piramide"></div>
     <div class="dois-rank"><div id="rk-vendas"></div><div id="rk-precos"></div></div>
+  </section>
+
+  <section id="aba-duelo" class="caixa" hidden>
+    <h2>⚔️ Duelo: concorrente × Supermisto</h2>
+    <p class="suave">Cada anúncio da concorrência ao lado do <b>mesmo kit</b> feito por você (mesma quantidade de pacotinhos e de gramas), com o preço um pouco abaixo do dele e quanto sobra para você.</p>
+    <label>Produto<select id="du-prod"></select></label>
+    <div id="du-lista"></div>
   </section>
 
   <section id="aba-custos" class="caixa" hidden>

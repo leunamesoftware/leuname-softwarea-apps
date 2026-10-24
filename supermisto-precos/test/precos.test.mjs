@@ -43,7 +43,7 @@ test('sem concorrente: mínimo + 15%', () => {
 test('lê a resposta da IA com texto em volta e números brasileiros', () => {
   const r = lerResposta('Aqui está:\n```json\n{"loja":"Casa X","itens":[{"anuncio":"Colorau 10g kit 10","produto":"colorau","gramas_total":"100 g","preco":"R$ 12,90","vendidos":"1,2mil"}]}\n```', ['colorau']);
   assert.equal(r.loja, 'Casa X');
-  assert.deepEqual(r.itens[0], { anuncio: 'Colorau 10g kit 10', produto_id: 'colorau', gramas: 100, preco: 12.9, vendidos: 1200, loja: 'Casa X' });
+  assert.deepEqual(r.itens[0], { anuncio: 'Colorau 10g kit 10', produto_id: 'colorau', unidades: null, gramas_unidade: null, gramas: 100, preco: 12.9, vendidos: 1200, loja: 'Casa X' });
 });
 
 test('produto desconhecido vira nulo e item sem preço é descartado', () => {
@@ -81,4 +81,18 @@ test('ranking e estratégia: iguala o mais vendido e calcula o brinde', async ()
   assert.equal(r.vendas[0].preco, 33); assert.equal(r.precos[0].preco, 20);
   const e = estrategia(r.vendas[0], { gramas: 1000, custo: 15, minimo: 26 }, 0.8, cfg);
   assert.equal(e.preco, 32.9); assert.ok(e.pode); assert.ok(e.brinde && e.brinde.sobra > 2);
+});
+
+test('lado a lado: kit de 30 sachês de 30 g a R$ 33 vira 31,99 com o mesmo kit', async () => {
+  const { espelho, abaixo99 } = await import('../public/precos.js');
+  assert.equal(abaixo99(33), 31.99); assert.equal(abaixo99(28.7), 26.99);
+  const e = espelho({ preco: 33, unidades: 30, gramas_unidade: 30, gramas: 900 }, 0.01, { ...cfg, emb_50: 0.1, etiqueta: 0 });
+  assert.equal(e.un, 30); assert.equal(e.g, 30); assert.equal(e.preco, 31.99);
+  assert.equal(e.custo, 30 * (0.3 + 0.1) + cfg.emb_kit);
+  assert.equal(e.unidadeDele, 1.1);
+});
+
+test('leitura calcula o total pelas unidades', () => {
+  const r = lerResposta('{"itens":[{"anuncio":"Kit 30 sachês 30g","produto":"colorau","unidades":30,"gramas_unidade":30,"preco":33}]}', ['colorau']);
+  assert.equal(r.itens[0].gramas, 900); assert.equal(r.itens[0].unidades, 30); assert.equal(r.itens[0].gramas_unidade, 30);
 });

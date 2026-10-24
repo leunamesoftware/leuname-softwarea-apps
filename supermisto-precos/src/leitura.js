@@ -9,10 +9,12 @@ Extraia CADA anúncio visível no print. Responda SOMENTE com JSON, sem texto an
 {"loja": "nome da loja se aparecer no print, senão null",
  "itens": [{"anuncio": "título do anúncio",
             "produto": "um destes ids: ${produtos.map((p) => `${p.id} (${p.nome})`).join(', ')}; use sortido para kit com vários sabores diferentes; ou null se não for nenhum deles",
-            "gramas_total": peso TOTAL do anúncio em gramas (kit 10 sachês de 10 g = 100; 1 kg = 1000),
+            "unidades": quantos pacotinhos/sachês vêm no anúncio (1 se for um pacote só),
+            "gramas_unidade": gramas de CADA pacotinho/sachê,
+            "gramas_total": peso TOTAL do anúncio em gramas (unidades × gramas_unidade; kit 30 sachês de 30 g = 900),
             "preco": preço em reais mostrado (se for faixa, o menor),
             "vendidos": quantidade vendida mostrada, em número (7mil+ = 7000; 100mil+ = 100000) ou null}]}
-Exemplo: "Kit 10 temperos 100 g cada" = gramas_total 1000. "Kit 20 unidades" sem peso = null.
+Exemplos: "Kit 10 temperos 100 g cada" = unidades 10, gramas_unidade 100, gramas_total 1000. "Kit 30 sachês 30g" = 30, 30, 900. "Kit 20 unidades" sem peso = unidades 20, gramas null.
 Coloque TODOS os anúncios num único JSON (um só objeto com a lista "itens"); se houver lojas diferentes, use o campo "loja" dentro de cada item.
 Não invente anúncios. Se o peso não aparecer, use null.`;
 }
@@ -52,7 +54,12 @@ export function lerResposta(texto, ids) {
     .map((i) => ({
       anuncio: String(i.anuncio || '').slice(0, 200),
       produto_id: ids.includes(i.produto) ? i.produto : null,
-      gramas: numero(i.gramas_total),
+      ...(() => {
+        const un = numero(i.unidades), gu = numero(i.gramas_unidade);
+        let total = numero(i.gramas_total);
+        if (!(total > 0) && un > 0 && gu > 0) total = un * gu;
+        return { unidades: un > 0 ? un : null, gramas_unidade: gu > 0 ? gu : (total > 0 && un > 0 ? Math.round(total / un) : null), gramas: total > 0 ? total : null };
+      })(),
       preco: numero(i.preco),
       vendidos: (() => { const v = numero(i.vendidos); return v > 2e6 ? Math.round(v / 1000) : v; })(),
       ...(i.loja ? { loja: String(i.loja).slice(0, 80) } : {}),
