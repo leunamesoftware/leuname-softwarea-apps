@@ -109,3 +109,13 @@ test('mesmo 1 kg em montagens diferentes: compara preço por kg e escolhe a que 
   assert.equal(g.linhas[0].un, 20); assert.equal(g.linhas[0].porKg, 33);
   assert.ok(g.melhor);
 });
+
+test('alerta de peso a menos e jogada com o quilo completo', async () => {
+  const { montagensPorPeso } = await import('../public/precos.js');
+  const [g] = montagensPorPeso([
+    { preco: 28.7, unidades: 10, gramas_unidade: 100, vendidos: 7000 },
+    { preco: 33.98, unidades: 30, gramas_unidade: 30, vendidos: 5000 },
+  ], 0.008, cfg);
+  assert.equal(g.faltando.length, 1); assert.equal(g.faltando[0].falta, 100);
+  assert.equal(g.ideia.un, 30); assert.equal(g.ideia.g, 34); assert.equal(g.ideia.preco, 31.99);
+});

@@ -361,6 +361,10 @@ function desenharDuelo() {
       ${p.linhas.map((l) => `<tr class="${l === m ? 'melhor' : ''}"><td><b>${l.un} × ${l.g} g</b></td><td>${brl(l.top.preco)}</td><td>${brl(l.porKg)}</td>
         <td>${l.vendidos ? mil(l.vendidos) : '–'}</td><td>${brl(l.nossoPreco)}<br><small class="${l.pode ? 'ok-txt' : 'ruim-txt'}">sobra ${brl(l.nossaSobra)}</small></td></tr>`).join('')}
       </table>
+      ${p.faltando.map((l) => `<p class="alerta ruim">⚠️ <b>${l.un} × ${l.g} g</b> dá só <b>${kgOuG(l.un * l.g)}</b> (${l.falta} g a menos que ${kgOuG(p.peso)}) e cobra ${brl(l.top.preco)}. O cliente vê "${l.un} pacotinhos" e acha que leva mais.</p>`).join('')}
+      ${p.ideia && p.ideia.contra.un > 1 ? `<div class="estr ${p.ideia.pode ? 'bom' : 'ruim'}"><div class="estr-tit">💡 Jogada inteligente</div>
+        <p>Faça <b>${p.ideia.un} pacotinhos de ${p.ideia.g} g = ${kgOuG(p.ideia.total)} completo</b> e venda por <b>${brl(p.ideia.preco)}</b>: a mesma quantidade de pacotinhos que chama atenção, <b>o quilo inteiro</b> e mais barato que os ${brl(p.ideia.contra.top.preco)} dele. No título e na foto: <b>"${p.ideia.un} SACHÊS = 1 KG COMPLETO"</b>.</p>
+        <p>${p.ideia.pode ? `Com os seus custos de hoje sobra <b>${brl(p.ideia.sobra)}</b> por kit.` : `Para sobrar o seu lucro mínimo, o tempero pronto pode custar até <b>${brl(Math.max(p.ideia.teto, 0))} o kg</b>.`}</p></div>` : ''}
       <p class="estr-dica">🎯 <b>Melhor para você:</b> montar em <b>${m.un} pacotinhos de ${m.g} g</b> e vender por <b>${brl(m.nossoPreco)}</b>${m.pode ? `: sobra <b>${brl(m.nossaSobra)}</b> por kit.` : '. Com os custos de hoje ainda não sobra; veja quanto o tempero pode custar no Duelo abaixo.'}
       Mais pacotinhos chamam mais atenção na foto, mas gastam mais saquinho e etiqueta: o app já desconta isso.</p>
     </div>`;

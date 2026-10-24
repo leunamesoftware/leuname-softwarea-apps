@@ -236,6 +236,13 @@ export function montagensPorPeso(lista, cpg, cfg) {
     }).sort((a, b) => b.porKg - a.porKg);
     const viaveis = linhas.filter((l) => l.pode);
     const melhor = (viaveis.length ? viaveis : linhas).slice().sort((a, b) => b.nossaSobra - a.nossaSobra || b.vendidos - a.vendidos)[0];
-    return { peso, linhas, melhor };
+    // Quem entrega menos que o peso redondo (ex.: 30 × 30 g = 900 g vendido como "kit grande").
+    const faltando = linhas.filter((l) => l.un * l.g < peso).map((l) => ({ ...l, falta: peso - l.un * l.g }));
+    // Ideia: a mesma quantidade de pacotinhos de quem cobra mais caro por kg, mas completando o peso, por menos.
+    const caro = linhas[0];
+    const gIdeia = Math.ceil(peso / caro.un);
+    const e = espelho({ preco: caro.top.preco, unidades: caro.un, gramas_unidade: gIdeia }, cpg, cfg);
+    const ideia = e && { un: caro.un, g: gIdeia, total: caro.un * gIdeia, preco: e.preco, sobra: e.sobra, pode: e.pode, teto: e.teto, contra: caro };
+    return { peso, linhas, melhor, faltando, ideia };
   }).filter((g) => g.linhas.length).sort((a, b) => b.linhas.length - a.linhas.length || b.peso - a.peso);
 }
