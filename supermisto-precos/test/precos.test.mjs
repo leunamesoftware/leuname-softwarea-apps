@@ -119,3 +119,23 @@ test('alerta de peso a menos e jogada com o quilo completo', async () => {
   assert.equal(g.faltando.length, 1); assert.equal(g.faltando[0].falta, 100);
   assert.equal(g.ideia.un, 30); assert.equal(g.ideia.g, 34); assert.equal(g.ideia.preco, 31.99);
 });
+
+test('anúncio pronto: título até 120, kit de 1 kg completo e frete', async () => {
+  const { gerarAnuncio, frete } = await import('../public/anuncios.js');
+  const a = gerarAnuncio({ produto: { id: 'sortido', nome: 'Kit Sortido' }, un: 30, g: 34, preco: 31.99, brinde: true });
+  assert.ok(a.titulo.length <= 120); assert.match(a.titulo, /30 Sachês de 34g = 1,02 kg Completo/); assert.match(a.titulo, /Brinde/);
+  assert.match(a.descricao, /30 sachês de 34 g/); assert.match(a.descricao, /CNPJ 13\.580\.397/);
+  assert.equal(a.foto[0], '30 SACHÊS = 1,02 KG COMPLETO');
+  assert.deepEqual(frete(30, 34).caixa, [25, 20, 8]);
+  const c = gerarAnuncio({ produto: { id: 'colorau', nome: 'Colorau' }, un: 10, g: 10, preco: 19.99 });
+  assert.match(c.titulo, /^Colorau 10 Sachês de 10g = 100 g 100% Natural Sem Conservantes Supermisto$/);
+});
+
+test('conta do kit: Shopee, imposto, tempero, saquinhos e sobra', async () => {
+  const { contaKit } = await import('../public/precos.js');
+  const k = contaKit(26.99, 10, 100, 0.01, cfg);
+  assert.equal(k.shopee, Math.round((26.99 * 0.2 + 4.5) * 100) / 100);
+  assert.equal(k.imposto, Math.round(26.99 * 0.06 * 100) / 100);
+  assert.equal(k.tempero, 10); assert.equal(k.saquinhos, 10 * (cfg.emb_100 + cfg.etiqueta));
+  assert.ok(Math.abs(k.sobra - (26.99 - k.shopee - k.imposto - 10 - k.saquinhos - cfg.emb_kit)) < 0.02);
+});

@@ -11,10 +11,12 @@ export const FORMATOS = [
 ];
 
 export const CONFIG_PADRAO = {
-  taxa_pct: 20, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.25, emb_kit: 0.3, emb_50: 0.15, emb_100: 0.2, etiqueta: 0.05,
+  taxa_pct: 20, imposto_pct: 6, taxa_fixa: 4.5, lucro_min: 2, emb_sache: 0.25, emb_kit: 0.3, emb_50: 0.15, emb_100: 0.2, etiqueta: 0.05,
 };
 
 const r2 = (v) => Math.round(v * 100) / 100;
+/** Parte do preço que fica com a Shopee (comissão) e com o imposto. */
+export const pctFora = (cfg) => ((cfg.taxa_pct || 0) + (cfg.imposto_pct || 0)) / 100;
 
 /** Quilo pronto = o que pagou ÷ o que sobrou depois de moer/secar (2 kg por R$ 20 que viram 1 kg = R$ 20 o kg). */
 export function precoKgReal(pago, comprado, rendeu) {
@@ -34,20 +36,20 @@ export function custoFormato(f, cpg, cfg) {
 
 /** Menor preço que paga a taxa da Shopee, o custo e ainda deixa o lucro mínimo. */
 export function precoMinimo(custo, cfg) {
-  return r2((custo + cfg.taxa_fixa + cfg.lucro_min) / (1 - cfg.taxa_pct / 100));
+  return r2((custo + cfg.taxa_fixa + cfg.lucro_min) / (1 - pctFora(cfg)));
 }
 
 /** Quanto pode custar o kg do tempero pronto para vender por `preco` e ainda sobrar o lucro mínimo. */
 export function tetoKg(preco, gramas, embalagens, cfg) {
-  const sobraParaTempero = preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa - cfg.lucro_min - embalagens;
+  const sobraParaTempero = preco * (1 - pctFora(cfg)) - cfg.taxa_fixa - cfg.lucro_min - embalagens;
   return gramas > 0 ? r2((sobraParaTempero / gramas) * 1000) : null;
 }
 
 /** O que o vendedor recebe da Shopee depois da comissão e da taxa fixa. */
-export const liquido = (preco, cfg) => r2(preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa);
+export const liquido = (preco, cfg) => r2(preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa); // o que a Shopee paga (antes do imposto)
 
 export function lucro(preco, custo, cfg) {
-  return r2(preco * (1 - cfg.taxa_pct / 100) - cfg.taxa_fixa - custo);
+  return r2(preco * (1 - pctFora(cfg)) - cfg.taxa_fixa - custo);
 }
 
 /** Um pouco abaixo do preço dele, terminando em ,99 (33,00 → 31,99). */
@@ -245,4 +247,16 @@ export function montagensPorPeso(lista, cpg, cfg) {
     const ideia = e && { un: caro.un, g: gIdeia, total: caro.un * gIdeia, preco: e.preco, sobra: e.sobra, pode: e.pode, teto: e.teto, contra: caro };
     return { peso, linhas, melhor, faltando, ideia };
   }).filter((g) => g.linhas.length).sort((a, b) => b.linhas.length - a.linhas.length || b.peso - a.peso);
+}
+
+/** Conta completa de um kit: para onde vai cada real do preço. */
+export function contaKit(preco, un, g, cpg, cfg, brinde = false) {
+  const shopee = r2(preco * (cfg.taxa_pct / 100) + cfg.taxa_fixa);
+  const imposto = r2(preco * ((cfg.imposto_pct || 0) / 100));
+  const tempero = r2(un * g * cpg);
+  const saquinhos = r2(un * embUnidade(g, cfg));
+  const kit = un > 1 ? r2(cfg.emb_kit || 0) : 0;
+  const custoBrinde = brinde ? r2(10 * cpg + embUnidade(10, cfg)) : 0;
+  const sobra = r2(preco - shopee - imposto - tempero - saquinhos - kit - custoBrinde);
+  return { preco, shopee, imposto, tempero, saquinhos, kit, brinde: custoBrinde, sobra, porPacotinho: r2((tempero + saquinhos) / un) };
 }

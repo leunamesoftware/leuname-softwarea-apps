@@ -1,4 +1,5 @@
-import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99, montagensPorPeso } from './precos.js';
+import { gerarAnuncio } from './anuncios.js';
+import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99, montagensPorPeso, embUnidade, contaKit } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -37,10 +38,11 @@ $('#sair').addEventListener('click', async () => { await post('/api/sair').catch
 /* ---------- abas ---------- */
 document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.abas button').forEach((x) => x.classList.toggle('ativo', x === b));
-  ['prints', 'tabela', 'ranking', 'duelo', 'custos'].forEach((a) => { $(`#aba-${a}`).hidden = a !== b.dataset.aba; });
+  ['prints', 'tabela', 'ranking', 'duelo', 'anuncios', 'custos'].forEach((a) => { $(`#aba-${a}`).hidden = a !== b.dataset.aba; });
   if (b.dataset.aba === 'tabela') desenharTabela();
   if (b.dataset.aba === 'ranking') desenharRanking();
   if (b.dataset.aba === 'duelo') desenharDuelo();
+  if (b.dataset.aba === 'anuncios') desenharAnuncios();
 }));
 
 /* ---------- prints ---------- */
@@ -227,7 +229,7 @@ $('#mercado').addEventListener('click', (e) => {
 });
 
 /* ---------- custos ---------- */
-const NOMES_CFG = { taxa_pct: 'Comissão Shopee (%)', taxa_fixa: 'Taxa fixa Shopee por item (R$)', lucro_min: 'Lucro mínimo por venda (R$)', emb_sache: 'Embalagem sachê 10 g (R$)', emb_kit: 'Saquinho que junta o kit (R$)', emb_50: 'Embalagem pacote 50 g (R$)', emb_100: 'Embalagem pacote 100 g (R$)', etiqueta: 'Adesivo/etiqueta por pacote (R$)' };
+const NOMES_CFG = { taxa_pct: 'Comissão Shopee (%)', imposto_pct: 'Imposto sobre a venda – Simples (%)', taxa_fixa: 'Taxa fixa Shopee por item (R$)', lucro_min: 'Lucro mínimo por venda (R$)', emb_sache: 'Embalagem sachê 10 g (R$)', emb_kit: 'Saquinho que junta o kit (R$)', emb_50: 'Embalagem pacote 50 g (R$)', emb_100: 'Embalagem pacote 100 g (R$)', etiqueta: 'Adesivo/etiqueta por pacote (R$)' };
 const resultadoInsumo = (i) => `Sai a <b>${brl(i.preco_kg)}</b> o kg pronto · <b>${brl(i.preco_kg / 10)}</b> cada 100 g · ${brl(i.preco_kg / 100)} cada 10 g`;
 function desenharCustos() {
   $('#insumos').innerHTML = D.insumos.map((i) => `<div class="ins" data-insumo="${esc(i.nome)}"><b>${esc(i.nome)}</b>
@@ -389,6 +391,90 @@ function desenharDuelo() {
   if (!$('#du-lista').innerHTML) $('#du-lista').innerHTML = '<p class="suave">Os anúncios deste produto estão sem peso. Corrija na aba 📷 Prints.</p>';
 }
 $('#du-prod').addEventListener('change', desenharDuelo);
+
+/* ---------- anúncios prontos ---------- */
+const lerNumero = (v) => { const t = String(v ?? '').trim(); return t ? Number(t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t) : null; };
+function cartaoAnuncio(prod, un, g, preco, cpg, extra = '', brindeEscolhido = null) {
+  const cfg = D.config;
+  const semBrinde = contaKit(preco, un, g, cpg, cfg, false), comBrinde = contaKit(preco, un, g, cpg, cfg, true);
+  const brinde = brindeEscolhido ?? comBrinde.sobra >= cfg.lucro_min;
+  const k = brinde ? comBrinde : semBrinde;
+  const teto = tetoKg(preco, un * g, k.saquinhos + k.kit + k.brinde, cfg);
+  const sobraFinal = k.sobra;
+  const a = gerarAnuncio({ produto: prod, un, g, preco, brinde });
+  const bloco = (rot, txt, grande) => `<div class="cp"><div class="cp-cab"><b>${rot}</b><button type="button" class="copiar">Copiar</button></div>
+    <pre class="${grande ? 'grande' : ''}">${esc(txt)}</pre></div>`;
+  return `<div class="card anuncio">${extra}
+    <div class="an-topo"><div><div class="an-kit">${un > 1 ? `${un} sachês × ${g} g = ${kgOuG(un * g)}` : `Pacote de ${g} g`}</div>
+      <div class="an-preco">${brl(preco)}</div></div>
+      <div class="an-sobra ${sobraFinal >= cfg.lucro_min ? 'bom' : 'ruim'}">${sobraFinal >= cfg.lucro_min
+        ? `✅ sobra ${brl(sobraFinal)} por venda`
+        : `⚠️ com os custos de hoje sobra ${brl(sobraFinal)}. O tempero pronto pode custar até ${brl(Math.max(teto, 0))} o kg`}${brinde ? '<br>🎁 já com 1 sachê de brinde' : ''}</div></div>
+    <div class="conta-kit"><b>🧮 Conta do kit (base)</b>
+      <div><span>Preço de venda</span><span>${brl(k.preco)}</span></div>
+      <div class="menos"><span>Shopee (${cfg.taxa_pct}% + ${brl(cfg.taxa_fixa)})</span><span>− ${brl(k.shopee)}</span></div>
+      <div class="menos"><span>Imposto (${cfg.imposto_pct || 0}%)</span><span>− ${brl(k.imposto)}</span></div>
+      <div class="menos"><span>Tempero (${kgOuG(un * g)} a ${brl(cpg * 1000)}/kg)</span><span>− ${brl(k.tempero)}</span></div>
+      <div class="menos"><span>Saquinhos + etiquetas (${un} × ${brl(embUnidade(g, cfg))})</span><span>− ${brl(k.saquinhos)}</span></div>
+      ${k.kit ? `<div class="menos"><span>Saquinho que junta o kit</span><span>− ${brl(k.kit)}</span></div>` : ''}
+      ${k.brinde ? `<div class="menos"><span>🎁 Brinde (1 sachê de 10 g)</span><span>− ${brl(k.brinde)}</span></div>` : ''}
+      <div class="total ${k.sobra >= cfg.lucro_min ? 'bom' : 'ruim'}"><span>Sobra para você</span><span>${brl(k.sobra)}</span></div>
+      <small>Cada pacotinho pronto (tempero + saquinho + etiqueta) custa ${brl(k.porPacotinho)}. Os valores vêm da aba 🧾 Custos.</small>
+    </div>
+    ${bloco('Título', a.titulo)}
+    ${bloco('Preço', preco.toFixed(2).replace('.', ','))}
+    ${bloco('Descrição', a.descricao, true)}
+    ${bloco('Texto para escrever na foto', a.foto.join('\n'))}
+    ${bloco('Prompt da imagem (ChatGPT)', a.prompt, true)}
+    ${bloco('Frete: peso e caixa', `Peso: ${String(a.frete.kg).replace('.', ',')} kg · Caixa: ${a.frete.caixa.join(' × ')} cm`)}
+    ${bloco('Categoria', a.categoria)}
+  </div>`;
+}
+function desenharAnuncios() {
+  $('#an-prod').innerHTML = D.produtos.map((p) => `<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+  const blocos = [];
+  for (const prod of D.produtos) {
+    const lista = D.concorrentes.filter((c) => c.produto_id === prod.id && tamanhoDe(c));
+    if (!lista.length) continue;
+    const cpg = tabelaProduto(prod, D.insumos, D.config, D.concorrentes, D.produtos).cpg;
+    const vistos = new Set();
+    // 1) jogada inteligente: mesmo nº de sachês de quem cobra mais caro por kg, mas com o peso completo
+    for (const p of montagensPorPeso(lista, cpg, D.config)) {
+      const i = p.ideia;
+      if (!i || i.contra.un < 2) continue;
+      vistos.add(`${i.un}x${i.g}`);
+      blocos.push({ vendidos: i.contra.vendidos, html: cartaoAnuncio(prod, i.un, i.g, i.preco, cpg,
+        `<div class="an-por">💡 Jogada inteligente · ${esc(prod.nome)}: contra "${esc(i.contra.top.anuncio)}" (${i.contra.un} × ${i.contra.g} g por ${brl(i.contra.top.preco)})</div>`) });
+    }
+    // 2) o mesmo kit do mais vendido de cada montagem, um pouco mais barato
+    const grupos = new Map();
+    for (const c of lista) { const { un, g } = montagem(c), k = `${un}x${g}`; (grupos.get(k) || grupos.set(k, []).get(k)).push(c); }
+    for (const [k, itens] of grupos) {
+      if (vistos.has(k)) continue;
+      const top = [...itens].sort((a, b) => (b.vendidos || 0) - (a.vendidos || 0) || a.preco - b.preco)[0];
+      const e = espelho(top, cpg, D.config);
+      if (!e) continue;
+      blocos.push({ vendidos: top.vendidos || 0, html: cartaoAnuncio(prod, e.un, e.g, e.preco, cpg,
+        `<div class="an-por">🎯 ${esc(prod.nome)}: contra o mais vendido "${esc(top.anuncio)}" (${brl(top.preco)}${top.vendidos ? ', ' + mil(top.vendidos) + ' vendidos' : ''})</div>`) });
+    }
+  }
+  $('#an-lista').innerHTML = blocos.sort((a, b) => b.vendidos - a.vendidos).map((b) => b.html).join('')
+    || '<p class="suave">Jogue prints ou digite anúncios na aba 📷 Prints: os anúncios prontos aparecem aqui.</p>';
+}
+$('#f-anuncio').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target, prod = D.produtos.find((p) => p.id === f.produto_id.value);
+  const un = lerNumero(f.un.value) || 1, g = lerNumero(f.g.value), preco = lerNumero(f.preco.value);
+  if (!(g > 0) || !(preco > 0)) return;
+  const cpg = tabelaProduto(prod, D.insumos, D.config, D.concorrentes, D.produtos).cpg;
+  $('#an-manual').innerHTML = cartaoAnuncio(prod, un, g, preco, cpg, '', f.brinde.checked);
+});
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('.copiar'); if (!b) return;
+  const txt = b.closest('.cp').querySelector('pre').textContent;
+  try { await navigator.clipboard.writeText(txt); } catch { const t = document.createElement('textarea'); t.value = txt; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
+  b.textContent = '✓ Copiado'; setTimeout(() => { b.textContent = 'Copiar'; }, 1500);
+});
 $('#rk-prod').addEventListener('change', () => { $('#rk-faixa').value = ''; desenharRanking(); });
 $('#rk-faixa').addEventListener('change', desenharRanking);
 $('#config').addEventListener('change', salvarCampo);

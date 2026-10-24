@@ -128,7 +128,7 @@ async function api(env, req, path) {
   }
   if (path === '/api/config' && m === 'POST') {
     const d = await req.json().catch(() => ({}));
-    const ok = ['taxa_pct', 'taxa_fixa', 'lucro_min', 'emb_sache', 'emb_kit', 'emb_50', 'emb_100', 'etiqueta'];
+    const ok = ['taxa_pct', 'imposto_pct', 'taxa_fixa', 'lucro_min', 'emb_sache', 'emb_kit', 'emb_50', 'emb_100', 'etiqueta'];
     const st = env.BANCO.prepare('UPDATE config SET valor = ? WHERE chave = ?');
     const lista = Object.entries(d).filter(([k, v]) => ok.includes(k) && Number(v) >= 0).map(([k, v]) => st.bind(Number(v), k));
     if (lista.length) await env.BANCO.batch(lista);

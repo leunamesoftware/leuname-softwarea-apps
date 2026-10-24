@@ -28,6 +28,7 @@
   <nav class="abas">
     <button data-aba="prints" class="ativo">📷 Prints</button>
     <button data-aba="duelo">⚔️ Duelo</button>
+    <button data-aba="anuncios">📝 Anúncios</button>
     <button data-aba="ranking">🏆 Ranking</button>
     <button data-aba="tabela">💰 Tabela</button>
     <button data-aba="custos">🧾 Custos</button>
@@ -92,6 +93,24 @@
     <p class="suave">Cada anúncio da concorrência ao lado do <b>mesmo kit</b> feito por você (mesma quantidade de pacotinhos e de gramas), com o preço um pouco abaixo do dele e quanto sobra para você.</p>
     <label>Produto<select id="du-prod"></select></label>
     <div id="du-lista"></div>
+  </section>
+
+  <section id="aba-anuncios" class="caixa" hidden>
+    <h2>📝 Anúncios prontos para a Shopee</h2>
+    <p class="suave">Montados sozinhos a partir dos concorrentes que você jogou: o kit (quantos sachês e quantos gramas), o preço um pouco abaixo do concorrente, título, descrição, texto da foto e o prompt da imagem. Toque em <b>Copiar</b> e cole na Shopee.</p>
+    <details class="card">
+      <summary>✍️ Montar um anúncio do meu jeito</summary>
+      <form id="f-anuncio" class="grade-manual">
+        <label class="largo">Produto<select name="produto_id" id="an-prod"></select></label>
+        <label>Sachês/pacotinhos<input name="un" inputmode="numeric" value="10" required></label>
+        <label>Gramas cada<input name="g" inputmode="decimal" value="100" required></label>
+        <label>Preço R$<input name="preco" inputmode="decimal" placeholder="27,99" required></label>
+        <label class="check"><input type="checkbox" name="brinde"> Com brinde</label>
+        <button class="btn largo">Montar anúncio</button>
+      </form>
+      <div id="an-manual"></div>
+    </details>
+    <div id="an-lista"></div>
   </section>
 
   <section id="aba-custos" class="caixa" hidden>
