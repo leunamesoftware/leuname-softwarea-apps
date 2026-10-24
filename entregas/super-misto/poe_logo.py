@@ -42,7 +42,11 @@ def main(pid, pesos=('10 g',)):
     if logo.height > y1 - y0:
         print(f'AVISO: o nome invade o espaço da logo em {logo.height - (y1 - y0)} px; peça ao ChatGPT o nome um pouco mais para baixo')
     y1 = y0 + logo.height
-    cx, cy = (x0 + x1) // 2, (y0 + y1) // 2  # centro do painel verde
+    # posição FIXA (fração da solapa), igual em todos: o painel verde vai de ~44% a ~96% da largura
+    cheio = (a.min(2) < 225)
+    xs_s = np.where(cheio[(y0 + y1) // 2])[0]
+    sx0, sx1 = xs_s.min(), xs_s.max()
+    cx, cy = int(sx0 + 0.705 * (sx1 - sx0)), (y0 + y1) // 2
     pos = (cx - logo.width // 2, cy - logo.height // 2)
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
     s = Image.new('RGBA', logo.size, (0, 0, 0, 110)); s.putalpha(logo.split()[-1].point(lambda v: v * 110 // 255))
