@@ -62,3 +62,15 @@ test('perda na moagem: 2 kg por R$ 20 que rendem 1 kg = R$ 20 o kg', async () =>
   assert.equal(precoKgReal(20, 2, null), 10);
   assert.equal(precoKgReal(20, null, null), null);
 });
+
+test('mercado: alerta quando o mais vendido é mais caro', async () => {
+  const { analisarMercado } = await import('../public/precos.js');
+  const conc = [
+    { anuncio: 'A', gramas: 1000, preco: 33, vendidos: 5000 },
+    { anuncio: 'B', gramas: 1000, preco: 20, vendidos: 2000 },
+  ];
+  const meus = [{ formato: 'kit10x100', nome: 'Kit 1 kg', gramas: 1000, minimo: 30 }];
+  const kg = analisarMercado(conc, meus).find((f) => f.id === 'f1000');
+  assert.equal(kg.maisVendido.anuncio, 'A'); assert.equal(kg.maisBarato.anuncio, 'B');
+  assert.ok(kg.alertas.some((a) => a.tipo === 'info')); assert.ok(kg.alertas.some((a) => a.tipo === 'bom'));
+});

@@ -46,3 +46,18 @@ details.card summary{cursor:pointer;font-weight:600;color:var(--verde-esc)}
 .ins{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:10px 12px;margin:8px 0}
 .ins-campos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}.ins-campos label{margin:6px 0 0;font-size:12px;font-weight:500;color:var(--suave)}
 .ins-campos input{padding:9px}.ins-res{font-size:13px;margin-top:8px;color:var(--verde-esc)}
+h2.sec{margin-top:28px}
+.graf{width:100%;height:auto;display:block;margin-top:6px;overflow:visible}
+.graf .grade{stroke:#E6ECE8;stroke-width:1}.graf .base{stroke:#9AA9A0;stroke-width:1}
+.graf .eixo{font-size:10px;fill:var(--suave)}.graf .rotulo{font-size:10px;fill:var(--texto);font-weight:600}
+.graf .pt{fill:#3B6EA8;stroke:#fff;stroke-width:2}.graf .top{fill:var(--laranja);stroke:#fff;stroke-width:2}.graf .barato{fill:#7A5AA8;stroke:#fff;stroke-width:2}
+.graf .nosso{stroke:var(--texto);stroke-width:1.5;stroke-dasharray:4 3}.graf .tend{fill:none;stroke:#3B6EA8;stroke-width:2;stroke-linejoin:round}
+.graf .ponto{cursor:pointer;outline:none}.graf .ponto:focus circle:last-of-type,.graf .ponto:hover circle:last-of-type{stroke:var(--texto)}
+.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--suave);margin-top:4px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.leg i.pt{background:#3B6EA8}.leg i.top{background:var(--laranja)}.leg i.barato{background:#7A5AA8}.leg i.linha{border-radius:0;height:0;width:14px;border-top:2px dashed var(--texto)}
+.detalhe{font-size:13px;margin-top:6px;min-height:18px}
+.alerta{font-size:14px;border-radius:10px;padding:8px 10px;margin:6px 0}
+.alerta.bom{background:#EEF8F1}.alerta.ruim{background:#FDF0F0}.alerta.info{background:#EEF3FA}
+.trend{font-size:14px;font-weight:600}.trend.bom{color:var(--verde)}.trend.ruim{color:var(--vermelho)}
+.dica{margin-top:10px}

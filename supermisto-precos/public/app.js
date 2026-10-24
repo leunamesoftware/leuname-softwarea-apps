@@ -1,4 +1,4 @@
-import { CONFIG_PADRAO, tabelaProduto, precoKgReal } from './precos.js';
+import { CONFIG_PADRAO, tabelaProduto, precoKgReal, analisarMercado, tendencia } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
 const brl = (v) => (v == null ? '–' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
@@ -134,7 +134,72 @@ function desenharTabela() {
   const com = linhas.filter((l) => l.total), sem = linhas.filter((l) => !l.total);
   $('#tabela').innerHTML = (com.length ? com.map(cartao).join('') : '<p class="suave">Ainda não há anúncios lidos. Jogue prints na aba 📷 Prints.</p>')
     + (sem.length ? `<details class="card"><summary>Produtos sem concorrente lido (${sem.length}): toque para ver o preço pelo seu custo</summary>${sem.map(cartao).join('')}</details>` : '');
+  desenharMercado(linhas);
 }
+
+/* ---------- mercado (gráficos) ---------- */
+const mil = (n) => (n >= 1000 ? `${(n / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} mil` : String(n));
+function graficoFaixa(fx) {
+  const W = 340, H = 190, E = 44, D = 14, T = 14, B = 30; // margens: esquerda, direita, topo, base
+  const pts = fx.pontos, comV = pts.filter((c) => c.vendidos > 0);
+  const maxP = Math.max(...pts.map((c) => c.preco), fx.nosso ? fx.nosso.minimo : 0) * 1.12;
+  const vmax = Math.max(10, ...comV.map((c) => c.vendidos)), lmin = 0, lmax = Math.ceil(Math.log10(vmax * 1.5));
+  const x = (v) => E + (v / maxP) * (W - E - D);
+  const y = (v) => (v > 0 ? T + (1 - (Math.log10(v) - lmin) / (lmax - lmin)) * (H - T - B) : H - B);
+  const ticksY = Array.from({ length: lmax + 1 }, (_, i) => 10 ** i).filter((v, i) => i % (lmax > 4 ? 2 : 1) === 0);
+  const passo = maxP > 60 ? 20 : maxP > 25 ? 10 : 5;
+  const ticksX = Array.from({ length: Math.floor(maxP / passo) + 1 }, (_, i) => i * passo);
+  const top = fx.maisVendido;
+  return `<svg viewBox="0 0 ${W} ${H}" class="graf" role="img" aria-label="${esc(fx.nome)}: preço por vendas">
+    ${ticksY.map((v) => `<line x1="${E}" x2="${W - D}" y1="${y(v)}" y2="${y(v)}" class="grade"/><text x="${E - 6}" y="${y(v) + 4}" class="eixo" text-anchor="end">${mil(v)}</text>`).join('')}
+    ${ticksX.map((v) => `<text x="${x(v)}" y="${H - B + 16}" class="eixo" text-anchor="middle">R$ ${v}</text>`).join('')}
+    <line x1="${E}" x2="${W - D}" y1="${H - B}" y2="${H - B}" class="base"/>
+    ${fx.nosso ? `<line x1="${x(fx.nosso.minimo)}" x2="${x(fx.nosso.minimo)}" y1="${T}" y2="${H - B}" class="nosso"/><text x="${x(fx.nosso.minimo) + (x(fx.nosso.minimo) > W - 80 ? -4 : 4)}" y="${H - B - 6}" class="rotulo" text-anchor="${x(fx.nosso.minimo) > W - 80 ? 'end' : 'start'}">seu mínimo</text>` : ''}
+    ${pts.map((c, i) => `<g class="ponto" data-i="${i}" tabindex="0"><circle cx="${x(c.preco)}" cy="${y(c.vendidos)}" r="14" fill="transparent"/>
+      <circle cx="${x(c.preco)}" cy="${y(c.vendidos)}" r="6" class="${c === top ? 'top' : c === fx.maisBarato ? 'barato' : 'pt'}"/><title>${esc(c.anuncio)} · R$ ${c.preco} · ${c.vendidos ? mil(c.vendidos) + ' vendidos' : 'sem vendas no print'}</title></g>`).join('')}
+    ${top ? `<text x="${Math.min(x(top.preco), W - 80)}" y="${y(top.vendidos) - 10}" class="rotulo">mais vendido</text>` : ''}
+    <text x="${E}" y="${T - 4}" class="eixo">vendidos</text>
+  </svg>
+  <div class="leg"><span><i class="pt"></i>anúncio</span><span><i class="top"></i>mais vendido</span><span><i class="barato"></i>mais barato</span><span><i class="linha"></i>seu mínimo</span></div>
+  <div class="detalhe"></div>`;
+}
+function graficoTendencia(t) {
+  if (t.length < 2) return '<p class="suave dica">📉📈 Jogue prints desta faixa em dias diferentes para ver se o preço está subindo ou descendo.</p>';
+  const W = 340, H = 150, E = 44, D = 14, T = 14, B = 30;
+  const vs = t.map((p) => p.valor), lo = Math.min(...vs) * 0.9, hi = Math.max(...vs) * 1.1;
+  const x = (i) => E + (i / (t.length - 1)) * (W - E - D), y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+  const sobe = vs[vs.length - 1] >= vs[0];
+  return `<div class="sub">Preço médio ao longo do tempo (a cada 100 g)</div><p class="trend ${sobe ? 'ruim' : 'bom'}">${sobe ? '📈 O preço médio do mercado está subindo' : '📉 O preço médio do mercado está descendo'}: de ${brl(vs[0])} para ${brl(vs[vs.length - 1])} a cada 100 g.</p>
+    <svg viewBox="0 0 ${W} ${H}" class="graf" role="img" aria-label="Preço médio a cada 100 g por dia">
+    <line x1="${E}" x2="${W - D}" y1="${H - B}" y2="${H - B}" class="base"/>
+    <path d="${t.map((p, i) => `${i ? 'L' : 'M'}${x(i)},${y(p.valor)}`).join(' ')}" class="tend"/>
+    ${t.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.valor)}" r="4.5" class="pt"><title>${p.dia.split('-').reverse().join('/')}: ${brl(p.valor)} a cada 100 g</title></circle>
+      ${i === 0 || i === t.length - 1 ? `<text x="${x(i)}" y="${H - B + 16}" class="eixo" text-anchor="${i ? 'end' : 'start'}">${p.dia.slice(8, 10)}/${p.dia.slice(5, 7)}</text><text x="${x(i)}" y="${y(p.valor) - 9}" class="rotulo" text-anchor="${i ? 'end' : 'start'}">${brl(p.valor)}</text>` : ''}`).join('')}
+  </svg>`;
+}
+let mercadoAtual = [];
+function desenharMercado(linhas) {
+  const com = linhas.filter((l) => l.total);
+  const sel = $('#merc-prod'), atual = sel.value;
+  sel.innerHTML = com.map((l) => `<option value="${l.produto.id}">${esc(l.produto.nome)} (${l.total})</option>`).join('');
+  if (!com.length) { $('#mercado').innerHTML = '<p class="suave">Ainda não há anúncios lidos.</p>'; return; }
+  if (com.some((l) => l.produto.id === atual)) sel.value = atual;
+  const l = com.find((x) => x.produto.id === sel.value) || com[0];
+  const conc = D.concorrentes.filter((c) => c.produto_id === l.produto.id);
+  mercadoAtual = analisarMercado(conc, l.formatos).filter((fx) => fx.pontos.length);
+  const icone = { bom: '✅', ruim: '❌', info: '💡' };
+  $('#mercado').innerHTML = mercadoAtual.map((fx, k) => `<div class="card" data-fx="${k}"><h3>${fx.nome}</h3>
+      <div class="info">${fx.pontos.length} anúncio(s) · de ${brl(fx.maisBarato.preco)} a ${brl(fx.maisCaro.preco)}</div>
+      ${fx.alertas.map((a) => `<p class="alerta ${a.tipo}">${icone[a.tipo]} ${a.texto}</p>`).join('')}
+      ${graficoFaixa(fx)}${graficoTendencia(tendencia(fx.pontos))}</div>`).join('')
+    + (mercadoAtual.length ? '' : '<p class="suave">Os anúncios deste produto estão sem peso. Corrija as gramas na aba 📷 Prints.</p>');
+}
+$('#merc-prod').addEventListener('change', () => desenharTabela());
+$('#mercado').addEventListener('click', (e) => {
+  const g = e.target.closest('.ponto'); if (!g) return;
+  const card = g.closest('[data-fx]'), fx = mercadoAtual[card.dataset.fx], c = fx.pontos[g.dataset.i];
+  card.querySelector('.detalhe').innerHTML = `<b>${esc(c.anuncio)}</b><br>${brl(c.preco)} · ${c.gramas >= 1000 ? c.gramas / 1000 + ' kg' : c.gramas + ' g'} · ${c.vendidos ? mil(c.vendidos) + ' vendidos' : 'sem vendas no print'}${c.loja ? ' · ' + esc(c.loja) : ''}`;
+});
 
 /* ---------- custos ---------- */
 const NOMES_CFG = { taxa_pct: 'Comissão Shopee (%)', taxa_fixa: 'Taxa fixa Shopee por item (R$)', lucro_min: 'Lucro mínimo por venda (R$)', emb_sache: 'Embalagem sachê 10 g (R$)', emb_kit: 'Saquinho que junta o kit (R$)', emb_50: 'Embalagem pacote 50 g (R$)', emb_100: 'Embalagem pacote 100 g (R$)', etiqueta: 'Adesivo/etiqueta por pacote (R$)' };

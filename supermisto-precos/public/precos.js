@@ -85,3 +85,49 @@ export function tabelaProduto(produto, insumos, cfg, concorrentes, todos = []) {
   const meus = concorrentes.filter((c) => c.produto_id === produto.id);
   return { produto, custo10g: r2(cpg * 10), formatos: FORMATOS.map((f) => sugerir(f, cpg, cfg, meus)), total: meus.length };
 }
+
+/* ---------- Mercado: o que vende mais, por qual preço ---------- */
+export const FAIXAS = [
+  { id: 'f10', nome: 'Sachê (até 30 g)', de: 1, ate: 30, formatos: ['sache'] },
+  { id: 'f50', nome: 'Kits e pacotes de ~50 g', de: 31, ate: 75, formatos: ['kit5', 'p50'] },
+  { id: 'f100', nome: 'Kits e pacotes de ~100 g', de: 76, ate: 150, formatos: ['kit10', 'p100'] },
+  { id: 'f500', nome: 'Kits de 250 a 500 g', de: 151, ate: 600, formatos: [] },
+  { id: 'f1000', nome: 'Kits de ~1 kg', de: 601, ate: 5000, formatos: ['kit10x100'] },
+];
+
+/**
+ * Para cada faixa de peso: os anúncios, o mais vendido, o mais barato e os alertas.
+ * `meus` = resultado de sugerir() de cada formato (para comparar com o nosso mínimo).
+ */
+export function analisarMercado(concorrentes, meus) {
+  return FAIXAS.map((fx) => {
+    const pts = concorrentes.filter((c) => c.gramas >= fx.de && c.gramas <= fx.ate && c.preco > 0);
+    if (!pts.length) return { ...fx, pontos: [], alertas: [] };
+    const porPreco = [...pts].sort((a, b) => a.preco - b.preco);
+    const comVenda = pts.filter((c) => c.vendidos > 0).sort((a, b) => b.vendidos - a.vendidos);
+    const barato = porPreco[0], caro = porPreco[porPreco.length - 1], top = comVenda[0] || null;
+    const nosso = meus.filter((m) => fx.formatos.includes(m.formato)).sort((a, b) => a.minimo - b.minimo)[0];
+    const alertas = [];
+    if (top && top !== barato && top.preco > barato.preco) {
+      alertas.push({ tipo: 'info', texto: `O mais vendido (${top.vendidos.toLocaleString('pt-BR')} vendas) custa R$ ${top.preco.toFixed(2).replace('.', ',')}, mais caro que o mais barato (R$ ${barato.preco.toFixed(2).replace('.', ',')}). O cliente paga mais por foto, avaliação e confiança: dá para cobrar até perto de R$ ${top.preco.toFixed(2).replace('.', ',')}.` });
+    }
+    if (top && nosso) {
+      const ref = r2(top.preco * (nosso.gramas / top.gramas));
+      if (nosso.minimo <= ref) alertas.push({ tipo: 'bom', texto: `${nosso.nome}: seu mínimo é R$ ${nosso.minimo.toFixed(2).replace('.', ',')} e o mais vendido cobra R$ ${ref.toFixed(2).replace('.', ',')} pelo mesmo peso. Dá para entrar de frente com ele.` });
+      else alertas.push({ tipo: 'ruim', texto: `${nosso.nome}: seu mínimo (R$ ${nosso.minimo.toFixed(2).replace('.', ',')}) passa do preço do mais vendido (R$ ${ref.toFixed(2).replace('.', ',')}). Baixe o custo ou venda em outro formato.` });
+    }
+    if (!comVenda.length) alertas.push({ tipo: 'info', texto: 'Os prints desta faixa não mostram vendas. Tire prints com o "vendidos" aparecendo.' });
+    return { ...fx, pontos: pts, maisBarato: barato, maisCaro: caro, maisVendido: top, nosso, alertas };
+  });
+}
+
+/** Preço médio a cada 100 g por dia (para ver se o mercado está subindo ou descendo). */
+export function tendencia(concorrentes) {
+  const dias = new Map();
+  for (const c of concorrentes) {
+    if (!(c.gramas > 0 && c.preco > 0 && c.criado_em)) continue;
+    const d = c.criado_em.slice(0, 10);
+    const l = dias.get(d) || []; l.push((c.preco / c.gramas) * 100); dias.set(d, l);
+  }
+  return [...dias.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([dia, v]) => ({ dia, valor: r2(v.reduce((s, x) => s + x, 0) / v.length) }));
+}
