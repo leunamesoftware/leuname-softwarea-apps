@@ -59,6 +59,11 @@ async function api(env, req, path) {
   const m = req.method;
   if (path === '/api/saude') return json({ ok: true });
   if (path === '/api/entrar' && m === 'POST') return entrar(env, req);
+  // Teste da leitura pelo workflow de publicação (segredo TESTE_IA criado e apagado no próprio workflow).
+  if (path === '/api/teste-ia' && m === 'POST' && env.TESTE_IA && req.headers.get('X-Teste') === env.TESTE_IA) {
+    const d = await req.json().catch(() => ({}));
+    try { return json(await lerPrint(env, d.imagem, await produtos(env))); } catch (e) { return json({ erro: String(e) }, 502); }
+  }
   if (!(await logado(env, req))) return json({ erro: 'Entre de novo.' }, 401);
   if (m !== 'GET' && req.headers.get('Origin') && req.headers.get('Origin') !== new URL(req.url).origin) return json({ erro: 'origem' }, 403);
 
