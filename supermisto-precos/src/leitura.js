@@ -1,7 +1,7 @@
 // Lê um print da Shopee com a IA da Cloudflare (Workers AI) e devolve os anúncios em números.
 
 // Modelos de visão da Cloudflare, na ordem de tentativa (se um falhar, tenta o próximo).
-const MODELOS = ['@cf/meta/llama-4-scout-17b-16e-instruct', '@cf/mistralai/mistral-small-3.1-24b-instruct', '@cf/google/gemma-3-12b-it', '@cf/meta/llama-3.2-11b-vision-instruct'];
+const MODELOS = ['@cf/mistralai/mistral-small-3.1-24b-instruct', '@cf/meta/llama-4-scout-17b-16e-instruct'];
 
 function instrucao(produtos) {
   return `Você recebe um print da Shopee (busca ou página de produto) com anúncios de temperos.
@@ -46,12 +46,7 @@ export function lerResposta(texto, ids) {
   return { loja: d.loja ? String(d.loja).slice(0, 80) : null, itens };
 }
 
-async function perguntar(env, modelo, texto, imagem) {
-  if (modelo.includes('llama-3.2')) {
-    await env.AI.run(modelo, { prompt: 'agree' }).catch(() => {}); // aceite da licença (uma vez basta)
-    const bytes = [...Uint8Array.from(atob(imagem.split(',')[1]), (c) => c.charCodeAt(0))];
-    return env.AI.run(modelo, { messages: [{ role: 'user', content: texto }], image: bytes, max_tokens: 2500, temperature: 0 });
-  }
+function perguntar(env, modelo, texto, imagem) {
   return env.AI.run(modelo, {
     messages: [{ role: 'user', content: [{ type: 'text', text: texto }, { type: 'image_url', image_url: { url: imagem } }] }],
     max_tokens: 2500, temperature: 0,
