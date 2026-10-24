@@ -60,7 +60,7 @@ export async function lerPrint(env, imagemDataUrl, produtos) {
       const r = await perguntar(env, modelo, instrucao(produtos), imagemDataUrl);
       const lido = lerResposta(r?.response ?? r, produtos.map((p) => p.id));
       if (lido.itens.length || modelo === MODELOS[MODELOS.length - 1]) return { ...lido, modelo };
-      erros.push(`${modelo}: sem itens`);
+      erros.push(`${modelo}: sem itens: ${JSON.stringify(r?.response ?? r).slice(0, 400)}`);
     } catch (e) { erros.push(`${modelo}: ${String(e).slice(0, 150)}`); }
   }
   throw new Error(erros.join(' | '));
