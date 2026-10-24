@@ -24,7 +24,7 @@ async function iniciar() {
   $('#login').hidden = true; $('#app').hidden = false; $('#sair').hidden = false;
   desenharTudo();
 }
-const desenharTudo = () => { desenharLidos(); desenharTabela(); desenharCustos(); };
+const desenharTudo = () => { desenharLidos(); desenharTabela(); desenharCustos(); desenharManual(); };
 
 /* ---------- login ---------- */
 $('#f-login').addEventListener('submit', async (e) => {
@@ -105,6 +105,24 @@ $('#lidos').addEventListener('click', async (e) => {
 $('#limpar').addEventListener('click', async () => {
   if (!confirm('Apagar todos os anúncios lidos?')) return;
   await post('/api/concorrentes/limpar'); D.concorrentes = []; desenharLidos();
+});
+
+/* ---------- anúncio digitado à mão ---------- */
+function desenharManual() {
+  $('#m-prod').innerHTML = D.produtos.map((p) => `<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+}
+$('#f-manual').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target), d = Object.fromEntries(f);
+  // 28,70 / 28.70 / 1.200,50 viram número
+  const lerNum = (v) => { const t = String(v ?? '').trim(); if (!t) return null; return Number(t.includes(',') ? t.replace(/\./g, '').replace(',', '.') : t); };
+  ['unidades', 'gramas_unidade', 'preco', 'vendidos'].forEach((k) => { d[k] = lerNum(d[k]); });
+  try {
+    const c = await post('/api/concorrentes', d);
+    D.concorrentes.unshift(c); desenharLidos(); desenharTabela();
+    const prod = e.target.produto_id.value; e.target.reset(); e.target.produto_id.value = prod;
+    $('#m-msg').textContent = `✅ Salvo: ${c.unidades} × ${c.gramas_unidade} g por ${brl(c.preco)}. Veja na aba ⚔️ Duelo.`;
+  } catch (er) { $('#m-msg').textContent = er.message; }
 });
 
 /* ---------- tabela ---------- */

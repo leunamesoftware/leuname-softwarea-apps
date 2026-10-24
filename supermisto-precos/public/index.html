@@ -44,6 +44,20 @@
     <label>Loja (opcional, vale para os prints escolhidos)<input id="loja" placeholder="ex.: Casa dos Temperos"></label>
     <label class="btn grande">Escolher prints<input type="file" id="arquivos" accept="image/*" multiple hidden></label>
     <p id="progresso" class="suave"></p>
+    <details class="card" id="manual">
+      <summary>✍️ Digitar um anúncio à mão</summary>
+      <form id="f-manual" class="grade-manual">
+        <label class="largo">Produto<select name="produto_id" id="m-prod"></select></label>
+        <label class="largo">Nome do anúncio<input name="anuncio" placeholder="ex.: Kit 10 temperos 100 g"></label>
+        <label>Pacotinhos<input name="unidades" inputmode="numeric" placeholder="10" required></label>
+        <label>Gramas cada<input name="gramas_unidade" inputmode="decimal" placeholder="100" required></label>
+        <label>Preço R$<input name="preco" inputmode="decimal" placeholder="28,70" required></label>
+        <label>Vendidos<input name="vendidos" inputmode="numeric" placeholder="7000"></label>
+        <label class="largo">Loja (opcional)<input name="loja"></label>
+        <button class="btn largo">Salvar anúncio</button>
+        <p id="m-msg" class="largo suave"></p>
+      </form>
+    </details>
     <h3>Anúncios lidos <small id="qtd"></small></h3>
     <p class="suave">Confira: se o produto ou o peso vier errado, corrija aqui. Anúncio sem produto não entra na tabela.</p>
     <div id="lidos"></div>

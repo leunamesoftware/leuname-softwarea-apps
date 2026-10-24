@@ -87,6 +87,16 @@ async function api(env, req, path) {
     return json({ loja, itens: lido.itens.map((i, k) => ({ ...i, id: salvos[k], loja: String(d.loja || '').trim() || i.loja || loja, criado_em: quando })) });
   }
 
+  if (path === '/api/concorrentes' && m === 'POST') {
+    const d = await req.json().catch(() => ({}));
+    const ids = (await produtos(env)).map((p) => p.id);
+    const num = (v) => (v === '' || v == null || !(Number(v) >= 0) ? null : Number(v));
+    const un = num(d.unidades) || 1, gu = num(d.gramas_unidade), preco = num(d.preco);
+    if (!(preco > 0) || !(gu > 0)) return json({ erro: 'Preencha os gramas de cada pacotinho e o preço.' }, 400);
+    const r = await env.BANCO.prepare('INSERT INTO concorrentes (produto_id, anuncio, loja, gramas, unidades, gramas_unidade, preco, vendidos, criado_em) VALUES (?,?,?,?,?,?,?,?,?) RETURNING *')
+      .bind(ids.includes(d.produto_id) ? d.produto_id : null, String(d.anuncio || 'Anúncio digitado').slice(0, 200), String(d.loja || '').slice(0, 80) || null, un * gu, un, gu, preco, num(d.vendidos), agora()).first();
+    return json(r);
+  }
   const mc = path.match(/^\/api\/concorrentes\/(\d+)$/);
   if (mc && m === 'POST') {
     const d = await req.json().catch(() => ({}));

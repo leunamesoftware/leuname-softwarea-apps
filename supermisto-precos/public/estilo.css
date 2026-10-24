@@ -88,3 +88,5 @@ details{margin-top:8px}details summary{cursor:pointer;font-size:14px;font-weight
 .grupo h3{font-size:18px}
 .duelo .conta{grid-column:1/-1;font-size:13px;background:#F7F8F6;border-radius:10px;padding:8px 10px}.duelo .conta p{margin:4px 0}
 .duelo .teto{color:var(--verde);font-size:15px}
+.grade-manual{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.grade-manual .largo{grid-column:1/-1}
+#manual summary{font-size:15px}
