@@ -296,3 +296,10 @@ O `calculadora/wrangler.toml` tem `keep_vars = true`. **Não tire essa linha:** 
 - O diagnóstico só mostra 10 avisos por etapa: o que é importante vai primeiro na lista. Endereço com `&` sempre entre aspas.
 - Depois de `git push` no Leunamesite, esperar o deploy terminar antes de disparar o diagnóstico (senão testa a versão velha).
 - Mudou arquivo de app/loja: subir a versão do sw.js do app (cache), senão o celular mostra a versão antiga.
+
+## Supermisto Temperos (empresa de temperos do dono)
+- Site: https://www.supermistotemperos.com.br (pasta `sites/supermisto/`, copiada para `SITE-SUPERMISTO/` no Leunamesite; workflow `deploy-supermisto.yml`). E-mail do domínio no Zoho (registros MX/TXT na Cloudflare).
+- Embalagens (solapas): `entregas/super-misto/` — ChatGPT faz só o fundo (`prompts-fundos-todos.md`, sem o número 13), `monta_arte.py <id>` + `solapa_padrao.py <id>` geram frente, verso e PDF da gráfica.
+- Precificador (robô de preços da Shopee): https://precos.supermistotemperos.com.br — pasta `supermisto-precos/` (Worker + D1 `supermisto_precos` + Workers AI lendo prints).
+  Login: senha da Área do Dono. Abas: Prints (print ou digitado à mão), Duelo (mesmo kit lado a lado, contra o mais vendido; montagens do mesmo peso), Anúncios (título, descrição, foto, prompt, frete e conta do kit), Ranking, Tabela, Custos (paguei/comprei/rendeu, embalagem, Shopee 20% + R$ 4,50, imposto).
+  Testes: `npm test` em `supermisto-precos/`. Publicar: workflow `supermisto-precos.yml` (Leunamesite), que também testa a leitura de um print. Ver os anúncios lidos: `supermisto-precos-ver.yml`.
