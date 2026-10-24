@@ -8,10 +8,12 @@ function instrucao(produtos) {
 Extraia CADA anúncio visível no print. Responda SOMENTE com JSON, sem texto antes ou depois, neste formato:
 {"loja": "nome da loja se aparecer no print, senão null",
  "itens": [{"anuncio": "título do anúncio",
-            "produto": "um destes ids: ${produtos.map((p) => `${p.id} (${p.nome})`).join(', ')}; ou null se não for nenhum deles",
+            "produto": "um destes ids: ${produtos.map((p) => `${p.id} (${p.nome})`).join(', ')}; use sortido para kit com vários sabores diferentes; ou null se não for nenhum deles",
             "gramas_total": peso TOTAL do anúncio em gramas (kit 10 sachês de 10 g = 100; 1 kg = 1000),
             "preco": preço em reais mostrado (se for faixa, o menor),
             "vendidos": quantidade vendida mostrada ou null}]}
+Exemplo: "Kit 10 temperos 100 g cada" = gramas_total 1000. "Kit 20 unidades" sem peso = null.
+Coloque TODOS os anúncios num único JSON (um só objeto com a lista "itens"); se houver lojas diferentes, use o campo "loja" dentro de cada item.
 Não invente anúncios. Se o peso não aparecer, use null.`;
 }
 
@@ -27,23 +29,36 @@ function numero(v) {
   return Number.isFinite(n) ? (mil ? Math.round(n * 1000) : n) : null;
 }
 
+/** Pega todos os objetos JSON do texto (a IA às vezes manda vários, separados por vírgula). */
+function objetosJson(t) {
+  const lista = [];
+  let nivel = 0, ini = -1, aspas = false, escape = false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (aspas) { if (escape) escape = false; else if (c === '\\') escape = true; else if (c === '"') aspas = false; continue; }
+    if (c === '"') aspas = true;
+    else if (c === '{') { if (nivel++ === 0) ini = i; }
+    else if (c === '}' && nivel > 0 && --nivel === 0) { try { lista.push(JSON.parse(t.slice(ini, i + 1))); } catch { /* ignora pedaço quebrado */ } }
+  }
+  return lista;
+}
+
 /** Transforma o texto da IA em itens limpos (exportada para os testes). */
 export function lerResposta(texto, ids) {
   const t = typeof texto === 'string' ? texto : JSON.stringify(texto);
-  const ini = t.indexOf('{'), fim = t.lastIndexOf('}');
-  if (ini < 0 || fim < ini) return { loja: null, itens: [] };
-  let d;
-  try { d = JSON.parse(t.slice(ini, fim + 1)); } catch { return { loja: null, itens: [] }; }
-  const itens = (Array.isArray(d.itens) ? d.itens : [])
+  const objs = objetosJson(t).filter((o) => Array.isArray(o.itens));
+  const loja = objs.find((o) => o.loja)?.loja;
+  const itens = objs.flatMap((o) => o.itens.map((i) => ({ ...i, loja: i.loja || o.loja })))
     .map((i) => ({
       anuncio: String(i.anuncio || '').slice(0, 200),
       produto_id: ids.includes(i.produto) ? i.produto : null,
       gramas: numero(i.gramas_total),
       preco: numero(i.preco),
       vendidos: numero(i.vendidos),
+      ...(i.loja ? { loja: String(i.loja).slice(0, 80) } : {}),
     }))
     .filter((i) => i.preco > 0 && i.preco < 10000);
-  return { loja: d.loja ? String(d.loja).slice(0, 80) : null, itens };
+  return { loja: loja ? String(loja).slice(0, 80) : null, itens };
 }
 
 function perguntar(env, modelo, texto, imagem) {
@@ -60,7 +75,7 @@ export async function lerPrint(env, imagemDataUrl, produtos) {
       const r = await perguntar(env, modelo, instrucao(produtos), imagemDataUrl);
       const lido = lerResposta(r?.response ?? r, produtos.map((p) => p.id));
       if (lido.itens.length || modelo === MODELOS[MODELOS.length - 1]) return { ...lido, modelo };
-      erros.push(`${modelo}: sem itens: ${JSON.stringify(r?.response ?? r).slice(0, 400)}`);
+      erros.push(`${modelo}: sem itens`);
     } catch (e) { erros.push(`${modelo}: ${String(e).slice(0, 150)}`); }
   }
   throw new Error(erros.join(' | '));

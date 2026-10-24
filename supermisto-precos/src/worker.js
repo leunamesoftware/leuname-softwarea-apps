@@ -82,8 +82,8 @@ async function api(env, req, path) {
     const loja = String(d.loja || '').trim().slice(0, 80) || lido.loja || null;
     const quando = agora();
     const ins = env.BANCO.prepare('INSERT INTO concorrentes (produto_id, anuncio, loja, gramas, preco, vendidos, criado_em) VALUES (?,?,?,?,?,?,?) RETURNING id');
-    const salvos = lido.itens.length ? (await env.BANCO.batch(lido.itens.map((i) => ins.bind(i.produto_id, i.anuncio, loja, i.gramas, i.preco, i.vendidos, quando)))).map((r) => r.results[0].id) : [];
-    return json({ loja, itens: lido.itens.map((i, k) => ({ ...i, id: salvos[k], loja, criado_em: quando })) });
+    const salvos = lido.itens.length ? (await env.BANCO.batch(lido.itens.map((i) => ins.bind(i.produto_id, i.anuncio, String(d.loja || '').trim().slice(0, 80) || i.loja || loja, i.gramas, i.preco, i.vendidos, quando)))).map((r) => r.results[0].id) : [];
+    return json({ loja, itens: lido.itens.map((i, k) => ({ ...i, id: salvos[k], loja: String(d.loja || '').trim() || i.loja || loja, criado_em: quando })) });
   }
 
   const mc = path.match(/^\/api\/concorrentes\/(\d+)$/);

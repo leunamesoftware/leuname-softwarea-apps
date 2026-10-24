@@ -7,6 +7,7 @@ export const FORMATOS = [
   { id: 'kit10', nome: 'Kit 10 sachês', gramas: 100, emb: 'emb_sache', unidades: 10, kit: true },
   { id: 'p50', nome: 'Pacote 50 g', gramas: 50, emb: 'emb_50', unidades: 1 },
   { id: 'p100', nome: 'Pacote 100 g', gramas: 100, emb: 'emb_100', unidades: 1 },
+  { id: 'kit10x100', nome: 'Kit 10 × 100 g (1 kg)', gramas: 1000, emb: 'emb_100', unidades: 10, kit: true },
 ];
 
 export const CONFIG_PADRAO = {
@@ -70,8 +71,11 @@ export function sugerir(f, cpg, cfg, concorrentes) {
   };
 }
 
-export function tabelaProduto(produto, insumos, cfg, concorrentes) {
-  const cpg = custoPorGrama(produto, insumos);
+/** "Sortido" (kit de vários sabores) usa a média do custo dos nossos produtos. */
+export function tabelaProduto(produto, insumos, cfg, concorrentes, todos = []) {
+  const outros = todos.filter((p) => p.receita.length);
+  const cpg = produto.receita.length || !outros.length ? custoPorGrama(produto, insumos)
+    : outros.reduce((s, p) => s + custoPorGrama(p, insumos), 0) / outros.length;
   const meus = concorrentes.filter((c) => c.produto_id === produto.id);
   return { produto, custo10g: r2(cpg * 10), formatos: FORMATOS.map((f) => sugerir(f, cpg, cfg, meus)), total: meus.length };
 }

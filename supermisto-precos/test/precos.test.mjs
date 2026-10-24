@@ -43,10 +43,15 @@ test('sem concorrente: mínimo + 15%', () => {
 test('lê a resposta da IA com texto em volta e números brasileiros', () => {
   const r = lerResposta('Aqui está:\n```json\n{"loja":"Casa X","itens":[{"anuncio":"Colorau 10g kit 10","produto":"colorau","gramas_total":"100 g","preco":"R$ 12,90","vendidos":"1,2mil"}]}\n```', ['colorau']);
   assert.equal(r.loja, 'Casa X');
-  assert.deepEqual(r.itens[0], { anuncio: 'Colorau 10g kit 10', produto_id: 'colorau', gramas: 100, preco: 12.9, vendidos: 1200 });
+  assert.deepEqual(r.itens[0], { anuncio: 'Colorau 10g kit 10', produto_id: 'colorau', gramas: 100, preco: 12.9, vendidos: 1200, loja: 'Casa X' });
 });
 
 test('produto desconhecido vira nulo e item sem preço é descartado', () => {
   const r = lerResposta('{"itens":[{"anuncio":"Sal grosso","produto":"sal","gramas_total":1000,"preco":5},{"anuncio":"x","produto":"colorau","gramas_total":10}]}', ['colorau']);
   assert.equal(r.itens.length, 1); assert.equal(r.itens[0].produto_id, null);
+});
+
+test('junta vários objetos JSON que a IA manda separados', () => {
+  const r = lerResposta('```json\n{"loja":"A","itens":[{"anuncio":"Kit 10 temperos 100g","produto":"sortido","gramas_total":1000,"preco":28.7}]}\n,\n{"loja":"B","itens":[{"anuncio":"Colorau","produto":"colorau","gramas_total":100,"preco":"9,90"}]}```', ['colorau', 'sortido']);
+  assert.equal(r.itens.length, 2); assert.equal(r.itens[0].loja, 'A'); assert.equal(r.itens[1].loja, 'B'); assert.equal(r.itens[1].preco, 9.9);
 });

@@ -74,7 +74,7 @@ function desenharLidos() {
   $('#qtd').textContent = `(${D.concorrentes.length})`;
   $('#lidos').innerHTML = D.concorrentes.slice(0, 150).map((c) => `
     <div class="item" data-id="${c.id}">
-      <div class="tit">${esc(c.anuncio) || 'Anúncio'} <small>${c.loja ? '· ' + esc(c.loja) : ''}${c.vendidos ? ' · ' + c.vendidos + ' vendidos' : ''}</small></div>
+      <div class="tit">${esc(c.anuncio) || 'Anúncio'} <small>${c.loja ? '· ' + esc(c.loja) : ''}${c.vendidos ? ' · ' + c.vendidos + ' vendidos' : ''}${c.gramas > 0 ? ' · ' + brl(c.preco / c.gramas * 100) + ' a cada 100 g' : ''}</small></div>
       <div class="linha">
         <label>Produto<select name="produto_id">${opts(c.produto_id)}</select></label>
         <label>Gramas<input name="gramas" inputmode="decimal" value="${c.gramas ?? ''}"></label>
@@ -103,7 +103,7 @@ $('#limpar').addEventListener('click', async () => {
 
 /* ---------- tabela ---------- */
 function desenharTabela() {
-  const linhas = D.produtos.map((p) => tabelaProduto(p, D.insumos, D.config, D.concorrentes));
+  const linhas = D.produtos.map((p) => tabelaProduto(p, D.insumos, D.config, D.concorrentes, D.produtos));
   const todos = linhas.flatMap((l) => l.formatos.filter((f) => f.formato !== 'sache'));
   const conta = (s) => todos.filter((f) => f.situacao === s).length;
   $('#resumo').innerHTML = `<div class="resumo"><div><b>${conta('mais_barato')}</b><span>dá p/ ser o mais barato</span></div>
