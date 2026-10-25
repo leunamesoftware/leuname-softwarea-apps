@@ -891,3 +891,5 @@ body{background:#FBF6EE}
 .modal-recs i{font-style:normal;font-size:26px;width:56px;text-align:center}
 /* celular/tablet (toque): sem o efeito de subir, que fica preso depois do toque */
 @media (hover:none){.btn:hover,.prod:hover,.linha:hover,.rec:hover,.rc-prod:hover,.whats-flutua:hover,.prod:hover .prod-img svg{transform:none}}
+/* "Mais sabores" sempre da mesma altura dos produtos da fileira */
+@media (min-width:621px){#favoritos{display:grid;grid-template-columns:repeat(auto-fit,280px);justify-content:center;align-items:stretch}#favoritos>.prod{width:auto}.prod-breve{min-height:0}}
