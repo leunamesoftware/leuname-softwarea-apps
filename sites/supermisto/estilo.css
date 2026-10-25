@@ -889,3 +889,5 @@ body{background:#FBF6EE}
 .modal-recs a{display:flex;align-items:center;gap:10px;background:var(--roxo-cl);border-radius:12px;padding:6px;color:var(--roxo-esc);font-weight:700;font-size:14px}
 .modal-recs img{width:56px;height:42px;object-fit:cover;border-radius:8px;flex:none}
 .modal-recs i{font-style:normal;font-size:26px;width:56px;text-align:center}
+/* celular/tablet (toque): sem o efeito de subir, que fica preso depois do toque */
+@media (hover:none){.btn:hover,.prod:hover,.linha:hover,.rec:hover,.rc-prod:hover,.whats-flutua:hover,.prod:hover .prod-img svg{transform:none}}
