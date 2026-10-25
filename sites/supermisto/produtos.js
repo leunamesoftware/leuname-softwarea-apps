@@ -150,3 +150,8 @@ function embalagem(p, peso) {
   }
   return `<svg viewBox="0 0 160 190" role="img" aria-label="${escapar(p.nome)} Super Misto" font-family="Poppins, Arial, sans-serif">${defs}<ellipse cx="80" cy="184" rx="58" ry="5" fill="#000" opacity=".12"/>${corpo}</svg>`;
 }
+
+// Linha Supermisto em sachê/pacote: os mesmos tamanhos em todos os sabores.
+const LINHA_PACOTES = ['Colorau', 'Pimenta-do-reino moída', 'Cominho moído', 'Páprica doce', 'Páprica defumada', 'Açafrão-da-terra (cúrcuma)',
+  'Alho em pó', 'Cebola em pó', 'Canela em pó', 'Pimenta calabresa', 'Tempero completo', 'Tempero baiano', 'Lemon pepper', 'Chimichurri', 'Orégano'];
+PRODUTOS.forEach((p) => { if (LINHA_PACOTES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });

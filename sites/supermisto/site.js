@@ -17,7 +17,7 @@ const KITS = [
 
 /* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
    Produto sem foto aparece com a embalagem desenhada. */
-const FOTOS = new Set(['tempero-completo', 'colorau', 'pimenta-do-reino-moida']);
+const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano']);
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 function midia(p, peso) {
   return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Supermisto" loading="lazy">` : embalagem(p, peso);
@@ -160,10 +160,10 @@ function inicio() {
     return `<a class="linha aparece" href="catalogo.html?linha=${l.id}"><span class="linha-foto" style="${fundo}"></span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
-  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome)));
+  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome))).slice(0, 7);
   // "Mais sabores" só completa a fileira quando sobra espaço
-  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') + (fav.length % 4 ?
-    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Cominho, chimichurri, orégano e muito mais chegando.</span><em>Ver catálogo completo →</em></a>` : '');
+  $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') + (true ?
+    `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Lemon pepper, calabresa, canela, tempero baiano e muito mais.</span><em>Ver catálogo completo →</em></a>` : '');
   ligarCartoes($('#favoritos'));
   receitasLista($('#receitas-home'), RECEITAS.filter((r) => r.foto).slice(0, 4));
   $$('.emp, .dicas article, .passos li, details').forEach((e) => e.classList.add('aparece'));
