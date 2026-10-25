@@ -2,10 +2,10 @@
    (temperos, molhos e condimentos; conservas de legumes e de frutas; amidos e féculas; outros alimentos; envase).
    emb: pouch (sachê) | pote | garrafa | saco. cor: cor do produto na janela da embalagem. */
 const LINHAS = [
-  { id: 'puros', nome: 'Temperos puros', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas e em grão, puras e cheirosas.' },
-  { id: 'misturas', nome: 'Misturas e blends', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
-  { id: 'churrasco', nome: 'Linha churrasco', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
-  { id: 'ervas', nome: 'Ervas desidratadas', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
+  { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas e em grão, puras e cheirosas.' },
+  { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
+  { id: 'churrasco', nome: 'Linha Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
+  { id: 'ervas', nome: 'Ervas da Horta', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
   { id: 'sais', nome: 'Sais temperados', emoji: '🧂', cor: '#B9A27A', desc: 'Sal com alho, ervas e especiarias.' },
   { id: 'molhos', nome: 'Molhos e condimentos', emoji: '🫙', cor: '#9E1B14', desc: 'Molhos de pimenta, alho e condimentos prontos.' },
   { id: 'conservas', nome: 'Conservas', emoji: '🥒', cor: '#7E9A3A', desc: 'Picles, pimentas e ovos de codorna em conserva.' },
