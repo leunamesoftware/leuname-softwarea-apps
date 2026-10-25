@@ -10,7 +10,7 @@ Uso: python3 shopee_fotos.py   (precisa das fotos do site já recortadas: fotos_
 """
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 AQUI = Path(__file__).parent
 SITE = AQUI.parent.parent / 'sites' / 'supermisto' / 'img' / 'produtos'
@@ -76,9 +76,10 @@ def colar(tela, im, cx, base, altura, sombra=True, largura=None):
     return im.width
 
 
-def faixa_rodape(d, texto='100% NATURAL  ·  SEM CONSERVANTES'):
-    d.rounded_rectangle((90, LADO - 120, LADO - 90, LADO - 40), radius=40, fill=BORDO)
-    d.text((LADO // 2, LADO - 80), texto, font=fonte('Bold', 38), fill='white', anchor='mm')
+def faixa_rodape(d, texto='100% NATURAL  ·  SEM CONSERVANTES', fino=False):
+    y0 = LADO - (100 if fino else 120)
+    d.rounded_rectangle((90, y0, LADO - 90, LADO - 30 if fino else LADO - 40), radius=40, fill=BORDO)
+    d.text((LADO // 2, (y0 + (LADO - 30 if fino else LADO - 40)) // 2), texto, font=fonte('Bold', 36 if fino else 38), fill='white', anchor='mm')
 
 
 def avulso(pid, peso):
@@ -110,26 +111,54 @@ def tamanhos(pid):
 def kit(nome, ids, peso):
     tela = fundo().convert('RGBA')
     d = ImageDraw.Draw(tela)
-    d.text((LADO // 2, 105), nome, font=fonte('ExtraBold', 82 if len(nome) < 18 else 66), fill=BORDO, anchor='mm')
+    d.text((LADO // 2, 72), nome, font=fonte('ExtraBold', 80 if len(nome) < 18 else 64), fill=BORDO, anchor='mm')
     sub = TXT_KIT[peso].format(n=len(ids), t=kg(len(ids) * int(peso[:-1])))
-    w = d.textlength(sub, font=fonte('Bold', 40)) + 80
-    d.rounded_rectangle((LADO // 2 - w // 2, 160, LADO // 2 + w // 2, 230), radius=35, fill=DOURADO)
-    d.text((LADO // 2, 195), sub, font=fonte('Bold', 40), fill='white', anchor='mm')
+    w = d.textlength(sub, font=fonte('Bold', 38)) + 80
+    d.rounded_rectangle((LADO // 2 - w // 2, 122, LADO // 2 + w // 2, 186), radius=32, fill=DOURADO)
+    d.text((LADO // 2, 154), sub, font=fonte('Bold', 38), fill='white', anchor='mm')
     por = 5 if len(ids) > 5 else 3
     linhas = [ids[i:i + por] for i in range(0, len(ids), por)]
-    topo, fim = 265, LADO - 150
-    passo = (LADO - 150) / por
-    alt = (fim - topo) // len(linhas) - 14
+    topo, fim = 200, LADO - 112
+    passo = (LADO - 70) / por
+    alt = (fim - topo) // len(linhas) - 6
+    # um pouco sobrepostos (como numa foto de kit de verdade): da direita para a esquerda,
+    # assim cada saquinho cobre só a foto do vizinho, nunca o nome
+    larg = passo * (1.22 if len(linhas) == 2 else 1.08) - 6
+    p0 = produto(ids[0], peso)
+    h = min(alt, round(larg * p0.height / p0.width))  # altura real de cada fileira
+    sobra = (fim - topo) - len(linhas) * (h + 6)
+    topo += sobra // 2
     for j, lin in enumerate(linhas):
-        base = topo + (j + 1) * (fim - topo) // len(linhas) - 6
+        base = topo + (j + 1) * (h + 6)
         x0 = LADO / 2 - passo * (len(lin) - 1) / 2
-        # um pouco sobrepostos (como numa foto de kit de verdade): da direita para a esquerda,
-        # assim cada saquinho cobre só a foto do vizinho, nunca o nome
-        larg = passo * (1.22 if len(linhas) == 2 else 1.0) - 14
         for i, pid in reversed(list(enumerate(lin))):
             colar(tela, produto(pid, peso), round(x0 + i * passo), base, alt, largura=larg)
-    faixa_rodape(d)
-    return tela.convert('RGB')
+    faixa_rodape(d, fino=True)
+    return vivo(tela)
+
+
+def detalhe(nome, ids, peso, parte, total):
+    """Foto de perto de parte do kit (até 5 saquinhos grandes: 3 em cima, 2 embaixo)."""
+    tela = fundo().convert('RGBA')
+    d = ImageDraw.Draw(tela)
+    d.text((LADO // 2, 70), f'O que vem no {nome.split(" ")[0].lower()}' + (f'  ({parte}/{total})' if total > 1 else ''),
+           font=fonte('ExtraBold', 58), fill=BORDO, anchor='mm')
+    linhas = [ids[:3], ids[3:]] if len(ids) > 3 else [ids]
+    topo, fim = 125, LADO - 45
+    for j, lin in enumerate(linhas):
+        base = topo + (j + 1) * (fim - topo) // len(linhas) - 6
+        passo = (LADO - 40) / 3
+        x0 = LADO / 2 - passo * (len(lin) - 1) / 2
+        for i, pid in enumerate(lin):
+            colar(tela, produto(pid, peso), round(x0 + i * passo), base, (fim - topo) // len(linhas) - 24, largura=passo - 34)
+    return vivo(tela)
+
+
+def vivo(tela):
+    """Um pouco mais claro e com mais cor (foto de vitrine)."""
+    im = tela.convert('RGB')
+    im = ImageEnhance.Brightness(im).enhance(1.04)
+    return ImageEnhance.Color(im).enhance(1.08)
 
 
 def info():
@@ -161,6 +190,9 @@ def main():
     for chave, (nome, ids) in KITS.items():
         for peso in TXT_KIT:
             kit(nome, ids, peso).save(SAIDA / f'kit-{chave}-{peso}.jpg', quality=90)
+            partes = [ids[i:i + 5] for i in range(0, len(ids), 5)]
+            for n, grupo in enumerate(partes, 1):
+                detalhe(nome, grupo, peso, n, len(partes)).save(SAIDA / f'kit-{chave}-{peso}-perto{n}.jpg', quality=90)
     info().save(SAIDA / 'info-natural.jpg', quality=90)
     print('ok', len(list(SAIDA.glob('*.jpg'))), 'fotos')
 

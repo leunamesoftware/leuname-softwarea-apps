@@ -18,7 +18,7 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 - 10 pacotes de 50 g → `kit-dia-a-dia-50g.jpg`
 - 10 pacotes de 100 g → `kit-dia-a-dia-100g.jpg`
 
-**Outras fotos:** `info-natural.jpg`, e as fotos avulsas de alguns sabores do kit (`avulso-<sabor>-100g.jpg`).
+**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -38,7 +38,7 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 - 5 pacotes de 50 g → `kit-especiais-50g.jpg`
 - 5 pacotes de 100 g → `kit-especiais-100g.jpg`
 
-**Outras fotos:** `info-natural.jpg`, e as fotos avulsas de alguns sabores do kit (`avulso-<sabor>-100g.jpg`).
+**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -58,7 +58,7 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 - 15 pacotes de 50 g → `kit-completo-50g.jpg`
 - 15 pacotes de 100 g → `kit-completo-100g.jpg`
 
-**Outras fotos:** `info-natural.jpg`, e as fotos avulsas de alguns sabores do kit (`avulso-<sabor>-100g.jpg`).
+**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
 
 **Descrição:**
 ```
