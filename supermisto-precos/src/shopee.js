@@ -177,9 +177,10 @@ export async function rastreio(env, orderSn) {
 }
 
 /** Gera e baixa a etiqueta oficial da Shopee (PDF) de um ou vários pedidos. */
-export async function etiquetas(env, pedidos) {
+export async function etiquetas(env, pedidos, termica = true) {
+  const tipo = termica ? 'THERMAL_AIR_WAYBILL' : 'NORMAL_AIR_WAYBILL';
   const lista = [];
-  for (const sn of pedidos) lista.push({ order_sn: sn, tracking_number: await rastreio(env, sn).catch(() => '') });
+  for (const sn of pedidos) lista.push({ order_sn: sn, tracking_number: await rastreio(env, sn).catch(() => ''), shipping_document_type: tipo });
   await chamar(env, '/api/v2/logistics/create_shipping_document', { corpo: { order_list: lista } });
   for (let i = 0; i < 10; i++) {
     const r = await chamar(env, '/api/v2/logistics/get_shipping_document_result', { corpo: { order_list: lista.map((o) => ({ order_sn: o.order_sn })) } });
@@ -188,15 +189,15 @@ export async function etiquetas(env, pedidos) {
     if (st.includes('FAILED')) throw new Error('A Shopee não conseguiu gerar a etiqueta. Prepare o envio primeiro.');
     await new Promise((ok) => setTimeout(ok, 1500));
   }
-  return baixarDocumento(env, lista.map((o) => ({ order_sn: o.order_sn })));
+  return baixarDocumento(env, lista.map((o) => ({ order_sn: o.order_sn })), tipo);
 }
 
 /** O download da etiqueta vem em PDF (não JSON): chamada própria. */
-async function baixarDocumento(env, orderList) {
+async function baixarDocumento(env, orderList, tipo) {
   const caminho = '/api/v2/logistics/download_shipping_document';
-  const res = await chamarBruto(env, caminho, { order_list: orderList });
-  const tipo = res.headers.get('Content-Type') || '';
-  if (tipo.includes('json')) { const d = await res.json(); throw new Error(`${d.error || ''}: ${d.message || 'etiqueta indisponível'}`); }
+  const res = await chamarBruto(env, caminho, { shipping_document_type: tipo, order_list: orderList });
+  const formato = res.headers.get('Content-Type') || '';
+  if (formato.includes('json')) { const d = await res.json(); throw new Error(`${d.error || ''}: ${d.message || 'etiqueta indisponível'}`); }
   return res;
 }
 

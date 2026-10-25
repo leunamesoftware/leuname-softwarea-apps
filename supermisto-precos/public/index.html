@@ -48,6 +48,7 @@
     <button data-aba="tabela"><i>💰</i>Tabela de preços</button>
     <p class="grupo">Ajustes</p>
     <button data-aba="custos"><i>🧾</i>Custos</button>
+    <button data-aba="impressao"><i>🖨️</i>Impressão</button>
     <button data-aba="empresa"><i>⚙️</i>Empresa</button>
   </nav>
   <div id="menu-fundo" hidden></div>
@@ -132,6 +133,27 @@
     </div>
   </section>
 
+  <section id="aba-impressao" class="caixa" hidden>
+    <h2>🖨️ Impressão</h2>
+    <h3>Qual impressora você usa?</h3>
+    <div id="imp-config" class="card"></div>
+    <div class="dupla">
+      <div class="card"><h3>💌 Cartão de agradecimento</h3>
+        <p class="suave">Colorido, com QR code das receitas no site e pedido de avaliação 5 estrelas. Vai dentro do pacote (mais avaliações na Shopee).</p>
+        <label>Quantos<input id="imp-qtd-cartao" inputmode="numeric" value="4"></label>
+        <button class="btn" id="imp-cartao">Imprimir cartões</button>
+        <p class="suave">Dica: em Pedidos, marque os pedidos e toque em <b>💌 Cartões</b> para sair com o nome de cada cliente.</p></div>
+      <div class="card"><h3>🔴 Adesivo de lacre</h3>
+        <p class="suave">Redondo, bordô e dourado, com a logo, para fechar o pacote.</p>
+        <label>Quantos<input id="imp-qtd-lacre" inputmode="numeric" value="12"></label>
+        <button class="btn" id="imp-lacre">Imprimir adesivos</button></div>
+    </div>
+    <div class="card"><h3>🔳 QR code de qualquer link</h3>
+      <p class="suave">Para colocar em panfleto, balcão ou caixa (ex.: o site, o WhatsApp da loja, a loja na Shopee).</p>
+      <label>Link<input id="imp-qr-url" value="https://www.supermistotemperos.com.br"></label>
+      <button class="btn" id="imp-qr">Imprimir QR code</button></div>
+  </section>
+
   <section id="aba-empresa" class="caixa" hidden>
     <h2>⚙️ Dados da empresa</h2>
     <p class="suave">Aparecem como remetente nas etiquetas e na declaração de conteúdo das vendas fora da Shopee.</p>
@@ -180,6 +202,7 @@
       <button class="btn sec" data-lote="preparar">🚚 Preparar envio</button>
       <button class="btn" data-lote="etiqueta">🖨️ Etiquetas</button>
       <button class="btn sec" data-lote="separacao">📋 Lista de separação</button>
+      <button class="btn sec" data-lote="cartao">💌 Cartões</button>
       <button class="link" data-lote="limpar">limpar</button>
     </div>
     <div id="ped-lista"></div>

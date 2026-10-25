@@ -1,4 +1,5 @@
 // Vendas: painel, pedidos (envio, etiquetas, lista de separação), venda fora da Shopee e clientes.
+import { impressora, imprimirCartoes } from './erp-impressao.js';
 import { B, $, brl, esc, lerNum, dataHora, dataCurta, hojeISO, STATUS, ENVIO, vendaValida, aviso, abrirAba, contaSku, barras, imprimir, linhaItem, lerItens } from './erp-base.js';
 
 const dia = (iso) => { const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
@@ -135,6 +136,7 @@ document.addEventListener('click', async (e) => {
     if (lote === 'separacao') imprimirSeparacao(pedidos);
     if (lote === 'preparar') await preparar(pedidos.filter((p) => p.origem === 'shopee' && p.envio === 'a_preparar'));
     if (lote === 'etiqueta') etiquetas(pedidos);
+    if (lote === 'cartao') imprimirCartoes(pedidos.map(nomeCliente));
     return;
   }
   const b = e.target.closest('[data-acao]'); if (!b) return;
@@ -165,7 +167,7 @@ async function preparar(pedidos) {
 function etiquetas(pedidos) {
   const shopee = pedidos.filter((p) => p.origem === 'shopee' && ['pronto', 'etiqueta_impressa'].includes(p.envio));
   const manuais = pedidos.filter((p) => p.origem === 'manual' && p.destinatario?.endereco);
-  if (shopee.length) window.open(`/api/erp/etiqueta?pedidos=${encodeURIComponent(shopee.map((p) => p.id).join(','))}`, '_blank');
+  if (shopee.length) window.open(`/api/erp/etiqueta?papel=${impressora()}&pedidos=${encodeURIComponent(shopee.map((p) => p.id).join(','))}`, '_blank');
   if (manuais.length) imprimirEtiquetas(manuais);
   const faltou = pedidos.filter((p) => p.origem === 'shopee' && p.envio === 'a_preparar');
   if (faltou.length) aviso(`${faltou.length} pedido(s) ainda precisam de "Preparar envio" antes da etiqueta.`, false);
@@ -184,7 +186,8 @@ function imprimirEtiquetas(pedidos) {
       ${blocoEnd('REMETENTE', remetente())}
       <div class="cont">${p.itens.map((i) => `${i.qtd}× ${esc(i.nome)}`).join(' · ')}</div>
     </section>`).join(''),
-  `@page{size:100mm 150mm;margin:0}.etq{width:100mm;height:150mm;padding:6mm;page-break-after:always;display:flex;flex-direction:column;gap:4mm;font-size:11pt}
+  (impressora() === 'termica' ? '@page{size:100mm 150mm;margin:0}' : '@page{size:A4;margin:0}body>section{float:left}')
+   + `.etq{width:100mm;height:${impressora() === 'termica' ? 150 : 148}mm;padding:6mm;page-break-after:${impressora() === 'termica' ? 'always' : 'auto'};display:flex;flex-direction:column;gap:4mm;font-size:11pt;${impressora() === 'termica' ? '' : 'margin:0 2.5mm;border:1px dashed #bbb;'}}
    .etq-topo{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #000;padding-bottom:3mm}.etq-topo img{height:14mm}
    .end{border:1.5px solid #000;border-radius:2mm;padding:3mm;line-height:1.35}.end small{display:block;font-size:8pt;font-weight:bold;letter-spacing:1px}
    .end b{font-size:13pt}.end:first-of-type b{font-size:15pt}.cep{font-size:15pt!important}.cont{font-size:9pt;margin-top:auto;border-top:1px dashed #000;padding-top:2mm}`);

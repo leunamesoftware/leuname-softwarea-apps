@@ -391,10 +391,10 @@ async function apiCompleta(env, req, path, corpo, depois) {
 
   // Shopee: etiqueta oficial em PDF (um ou vários pedidos)
   if (path === '/api/erp/etiqueta' && m === 'GET') {
-    const sns = (new URL(req.url).searchParams.get('pedidos') || '').split(',').filter(Boolean).slice(0, 50);
+    const u = new URL(req.url), sns = (u.searchParams.get('pedidos') || '').split(',').filter(Boolean).slice(0, 50);
     if (!sns.length) return json({ erro: 'Escolha os pedidos.' }, 400);
     try {
-      const pdf = await S.etiquetas(env, sns);
+      const pdf = await S.etiquetas(env, sns, u.searchParams.get('papel') !== 'a4');
       await env.BANCO.batch(sns.map((sn) => env.BANCO.prepare("UPDATE pedidos SET envio = 'etiqueta_impressa' WHERE id = ? AND envio IN ('pronto','a_preparar')").bind(sn)));
       return new Response(pdf.body, { headers: { 'Content-Type': 'application/pdf', 'Content-Disposition': `inline; filename="etiquetas-${hoje()}.pdf"`, 'Cache-Control': 'no-store' } });
     } catch (e) {

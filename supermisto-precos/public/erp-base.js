@@ -61,9 +61,9 @@ export function imprimir(titulo, corpoHtml, css = '') {
   w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(titulo)}</title>
     <style>*{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#000;margin:0}${css}
     .barra{padding:10px;background:#f3f3f3;text-align:center}.barra button{font-size:16px;padding:8px 18px}
-    @media print{.barra{display:none}}</style></head><body><div class="barra"><button onclick="print()">🖨️ Imprimir</button></div>${corpoHtml}</body></html>`);
+    @media print{.barra{display:none}}</style></head><body><div class="barra"><button onclick="print()">🖨️ Imprimir</button></div>${corpoHtml}
+    <script>addEventListener('load',()=>setTimeout(()=>{focus();print()},250))<\/script></body></html>`);
   w.document.close();
-  setTimeout(() => { try { w.focus(); w.print(); } catch {} }, 400);
 }
 
 /** Linha de produto + quantidade (+ preço) nos formulários de produção e de venda. */
