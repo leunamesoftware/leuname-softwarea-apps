@@ -18,12 +18,15 @@ const KITS = [
 /* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
    Produto sem foto aparece com a embalagem desenhada. */
 const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano', 'molho-de-pimenta-vermelha', 'molho-shoyu', 'molho-de-alho']);
+// fotos das linhas (cartão 4:3) e capas largas das páginas de linha (img/linhas/<id>-capa.webp)
+const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces'];
+const CAPAS_LINHA = [];
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // foto do tamanho escolhido: 10 g (padrão), 50 g, 100 g ou o pacote de 1 kg
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=27" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=28" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -34,6 +37,16 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 
 /* ---------- cartões de produto ---------- */
 function cartao(p, i) {
+  if (!FOTOS.has(slug(p.nome))) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
+    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=28" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
+    <div class="prod-corpo">
+      <small class="prod-linha">${linhaDe(p.linha).nome}</small>
+      <h3>${escapar(p.nome)}</h3>
+      <p>${escapar(p.desc)}</p>
+      <div class="prod-tam">${p.tam.map((t) => `<span>${t}</span>`).join('')}</div>
+      <span class="btn btn-breve">Em breve</span>
+    </div>
+  </article>`;
   return `<article class="prod aparece" data-i="${i}" tabindex="0" role="button" aria-label="Ver ${escapar(p.nome)}">
     <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, FOTOS.has(slug(p.nome)) ? p.tam[0] : p.tam[1] || p.tam[0])}</div>
     <div class="prod-corpo">
@@ -46,14 +59,15 @@ function cartao(p, i) {
   </article>`;
 }
 function ligarCartoes(el) {
-  el.addEventListener('click', (e) => { const c = e.target.closest('.prod'); if (c) abrir(PRODUTOS[c.dataset.i]); });
-  el.addEventListener('keydown', (e) => { const c = e.target.closest('.prod'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrir(PRODUTOS[c.dataset.i]); } });
+  el.addEventListener('click', (e) => { const c = e.target.closest('.prod[data-i]'); if (c) abrir(PRODUTOS[c.dataset.i]); });
+  el.addEventListener('keydown', (e) => { const c = e.target.closest('.prod[data-i]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrir(PRODUTOS[c.dataset.i]); } });
 }
 
 /* ---------- janela do produto ---------- */
 function abrir(p) {
   const m = $('#modal');
   let tam = FOTOS.has(slug(p.nome)) ? p.tam[0] : p.tam[Math.min(1, p.tam.length - 1)];
+  const recs = typeof RECEITAS === 'undefined' ? [] : RECEITAS.filter((r) => r.usa.includes(p.nome));
   const desenha = () => {
     m.innerHTML = `<div class="modal-fundo" data-fechar></div>
     <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="m-tit">
@@ -64,6 +78,7 @@ function abrir(p) {
         <h2 id="m-tit">${escapar(p.nome)}</h2>
         <p>${escapar(p.desc)}</p>
         <p class="modal-usos"><b>Combina com:</b> ${escapar(p.usos)}</p>
+        ${recs.length ? `<b class="modal-rot">Receitas com ${escapar(p.nome.toLowerCase())}</b><div class="modal-recs">${recs.map((r) => `<a href="receita.html?id=${r.id}">${r.foto ? `<img src="img/receitas/${r.foto}.webp" alt="" loading="lazy">` : `<i>${r.emoji}</i>`}<span>${r.titulo}</span></a>`).join('')}</div>` : ''}
         <b class="modal-rot">Tamanhos</b>
         <div class="modal-tam">${p.tam.map((t) => `<button class="${t === tam ? 'ativo' : ''}" data-tam="${t}">${t}</button>`).join('')}</div>
         <small class="modal-nota">Vendemos para mercados, açougues, restaurantes e revendedores.</small>
@@ -112,7 +127,7 @@ function receitaDetalhe() {
         <h2>Modo de preparo</h2><ol class="rc-modo">${r.preparo.map((i) => `<li>${i}</li>`).join('')}</ol>
         ${r.variacoes ? `<h2>Varie o sabor</h2><div class="rc-var">${r.variacoes.map(([t, d]) => `<div><b>${t}</b><p>${d}</p></div>`).join('')}</div>` : ''}</div>
       <aside class="rc-lado"><h3>Produtos Supermisto desta receita</h3><div class="rc-prods">${usados.map(([p, i]) =>
-        `<button class="rc-prod" data-i="${i}">${midia(p)}<span>${p.nome}</span></button>`).join('')}</div>
+        (FOTOS.has(slug(p.nome)) ? `<button class="rc-prod" data-i="${i}">${midia(p)}<span>${p.nome}</span></button>` : `<div class="rc-prod rc-breve"><span class="breve-mini">Em breve</span><span>${p.nome}</span></div>`)).join('')}</div>
         <a class="btn btn-roxo" href="${linkWhats('Olá! Vi a receita "' + r.titulo + '" no site e quero os temperos Supermisto.')}" target="_blank" rel="noopener">Quero estes temperos</a></aside>
     </div>`;
   $('#receita').addEventListener('click', (e) => { const b = e.target.closest('.rc-prod'); if (b) abrir(PRODUTOS[b.dataset.i]); });
@@ -127,7 +142,7 @@ function redes() {
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
     <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="94" loading="lazy"><p><span class="ln">Temperos de verdade, 100% naturais</span> <span class="ln">e sem conservantes. Fábrica própria.</span></p>${redes()}</div>
-    <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
+    <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="linha.html?id=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
     <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span class="rod-end"><span class="ln">Estrada de Xerém, 484 · Xerém</span><i class="sep"> · </i><span class="ln">Duque de Caxias (RJ)</span></span></div>
   </div>
@@ -153,13 +168,12 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=27" alt="Kit 10 temperos Supermisto" width="900" height="900">';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=28" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.length + '+';
-  const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces'];
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=27)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
-    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=28)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome))).slice(0, 7);
@@ -198,12 +212,30 @@ function catalogo() {
   desenhar();
 }
 
+/* ---------- página de cada linha ---------- */
+function paginaLinha() {
+  const l = LINHAS.find((x) => x.id === new URLSearchParams(location.search).get('id')) || LINHAS[0];
+  document.title = `${l.nome} | Supermisto Temperos`;
+  const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.linha === l.id)
+    .sort(([a], [b]) => FOTOS.has(slug(b.nome)) - FOTOS.has(slug(a.nome)));
+  const prontos = lista.filter(([p]) => FOTOS.has(slug(p.nome))).length;
+  const titulo = `<span class="sobre-tit amarelo">Nossas linhas</span><h1>${l.nome}</h1><p>${l.desc}</p>
+    <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
+  $('#linha').innerHTML = CAPAS_LINHA.includes(l.id)
+    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=28" alt="${l.nome} Supermisto" width="1920" height="720"></div><div class="ln-topo ln-topo-so"><div class="caixa">${titulo}</div></div>`
+    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=28" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
+  $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
+  $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
+  ligarCartoes($('#linha-prods'));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   rodape();
   if ($('#vitrine')) inicio();
   if ($('#catalogo')) catalogo();
   if ($('#receitas-lista')) receitasLista($('#receitas-lista'), RECEITAS);
   if ($('#receita')) receitaDetalhe();
+  if ($('#linha')) paginaLinha();
   ligacoes();
   observar();
   const hamb = $('#hamb'), menu = $('#menu');

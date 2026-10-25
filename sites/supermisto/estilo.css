@@ -855,3 +855,37 @@ body{background:#FBF6EE}
 /* produtos da receita: caixa parada (não acompanha a rolagem) e foto real do pacote */
 .rc-lado{position:static}
 .rc-prod .foto-prod{position:static;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;padding:2px;background:transparent}
+
+/* ===== página de cada linha ===== */
+.ln-topo{background:linear-gradient(135deg,#3D0A4F,#7B1F95);color:#fff;padding:40px 0}
+.ln-topo-in{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.ln-topo h1{font-size:clamp(30px,5vw,48px);line-height:1.1;margin:6px 0 10px;color:#fff}
+.ln-topo p{color:#EBDDF3;font-size:17px;max-width:44ch}
+.ln-conta{display:inline-block;margin-top:14px;background:rgba(255,255,255,.14);border-radius:99px;padding:6px 14px;font-weight:700;font-size:13px;color:#E3BE72}
+.ln-foto{width:100%;height:auto;aspect-ratio:4/3;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.35);display:block}
+.ln-foto-vazia{background:radial-gradient(circle at 50% 40%,#9B3BB5,#2C0739);display:grid;place-items:center}
+.ln-foto-vazia i{font-style:normal;font-size:90px}
+.ln-capa-larga img{display:block;width:100%;height:auto}
+.ln-topo-so{padding:26px 0}
+.ln-nav{display:flex;gap:8px;overflow-x:auto;padding:18px 16px 4px;scrollbar-width:none}
+.ln-nav::-webkit-scrollbar{display:none}
+.ln-nav a{flex:none;font-family:'Poppins',system-ui,sans-serif;font-weight:700;font-size:13px;padding:8px 16px;border-radius:99px;border:2px solid var(--borda);color:var(--roxo);background:#fff;white-space:nowrap}
+.ln-nav a.ativo{background:var(--roxo);border-color:var(--roxo);color:#fff}
+.ln-sec{padding-top:18px}
+@media (max-width:860px){.ln-topo{padding:22px 0}.ln-topo-in{grid-template-columns:1fr;gap:18px}.ln-topo p{font-size:15px}}
+
+/* produto ainda sem foto: aparece, mas não abre */
+.prod-embreve{cursor:default}
+.prod-embreve:hover{transform:none}
+.prod-embreve .prod-img{background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)!important;display:grid;place-items:center;align-content:center;gap:10px}
+.prod-embreve .breve-logo{width:62%;height:auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.breve-selo,.breve-mini{background:#C29433;color:#fff;font-family:'Poppins',system-ui,sans-serif;font-weight:700;font-size:12px;letter-spacing:.5px;text-transform:uppercase;border-radius:99px;padding:4px 12px}
+.btn-breve{background:#EEE6F3;color:#7A6A86;box-shadow:none}
+.rc-breve{cursor:default;align-content:center;min-height:120px}
+.rc-breve:hover{transform:none}
+
+/* receitas dentro da janela do produto */
+.modal-recs{display:grid;gap:8px}
+.modal-recs a{display:flex;align-items:center;gap:10px;background:var(--roxo-cl);border-radius:12px;padding:6px;color:var(--roxo-esc);font-weight:700;font-size:14px}
+.modal-recs img{width:56px;height:42px;object-fit:cover;border-radius:8px;flex:none}
+.modal-recs i{font-style:normal;font-size:26px;width:56px;text-align:center}
