@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revenda e atacado | Supermisto Temperos</title>
+<meta name="description" content="Revenda Supermisto: atacado para supermercados, mercados, distribuidores, restaurantes, compras institucionais e marca própria. Peça a tabela pelo WhatsApp.">
+<meta name="theme-color" content="#5E1675">
+<link rel="icon" href="img/icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:ital,wght@0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css?v=32">
+</head>
+<body>
+<header class="topo" id="topo">
+  <div class="caixa topo-in">
+    <a href="index.html" class="marca" aria-label="Supermisto Temperos, início"><img src="img/logo-supermisto.png?v=32" alt="Supermisto Temperos" width="1029" height="507"></a>
+    <nav class="menu" id="menu">
+      <a href="index.html">Início</a>
+      <a href="catalogo.html">Produtos</a>
+      <a href="receitas.html">Receitas</a>
+      <a href="revenda.html" class="atual">Para empresas</a>
+      <a href="index.html#sobre">Nossa história</a>
+      <a href="index.html#contato">Contato</a>
+    </nav>
+    <a class="btn btn-amarelo topo-cta" href="revenda.html">Seja revendedor</a>
+    <button class="hamb" id="hamb" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="ln-topo rv-topo">
+    <div class="caixa">
+      <span class="sobre-tit amarelo">Revenda e atacado</span>
+      <h1>Leve Supermisto para o seu negócio</h1>
+      <p>Fábrica própria em Duque de Caxias (RJ), com venda direta para empresas. Preencha o formulário e receba a tabela de atacado pelo WhatsApp.</p>
+      <div class="hero-btns"><a class="btn btn-amarelo" href="#rv-pedido">Pedir tabela e orçamento</a><a class="btn btn-vazado" data-whats="Olá! Quero receber o catálogo de produtos Supermisto.">Receber o catálogo</a></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="caixa">
+      <div class="sec-cab"><span class="sobre-tit">Para quem vendemos</span><h2>Um fornecedor direto da fábrica</h2></div>
+      <div class="emp-grid rv-grid">
+        <article class="emp"><h3>Supermercados</h3><p>Linha completa com a marca Supermisto para a gôndola.</p></article>
+        <article class="emp"><h3>Mercados e mercearias</h3><p>Sachês e embalagens de giro rápido para o comércio do bairro.</p></article>
+        <article class="emp"><h3>Distribuidores</h3><p>Compra em volume direto com a fábrica.</p></article>
+        <article class="emp"><h3>Restaurantes e food service</h3><p>Embalagens de 1 kg para a cozinha profissional.</p></article>
+        <article class="emp"><h3>Compras institucionais</h3><p>Atendimento a licitações e compras de órgãos e instituições.</p></article>
+        <article class="emp"><h3>Marca própria</h3><p>Moemos, misturamos e embalamos o tempero com a <b>sua</b> marca.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec rv-info">
+    <div class="caixa rv-info-in">
+      <div>
+        <h2>Linhas disponíveis</h2>
+        <div class="ln-nav rv-linhas" id="rv-linhas"></div>
+        <h2>Embalagens</h2>
+        <p class="rv-emb" id="rv-emb"></p>
+      </div>
+      <div>
+        <h2>Condições comerciais</h2>
+        <dl class="rv-cond" id="rv-cond"></dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec contato" id="rv-pedido">
+    <div class="caixa cont-in">
+      <div>
+        <span class="sobre-tit amarelo">Tabela de atacado</span>
+        <h2>Peça a tabela e o orçamento</h2>
+        <p>Os dados vão organizados para o nosso WhatsApp. Nada fica guardado no site.</p>
+        <ul class="cont-lista">
+          <li><a data-whats="Olá! Vim pela página de revenda da Supermisto." data-fone></a></li>
+          <li><a data-mail></a></li>
+        </ul>
+      </div>
+      <form class="form" id="rv-form">
+        <h3>Seus dados</h3>
+        <label>Nome<input name="nome" required autocomplete="name"></label>
+        <label>Empresa<input name="empresa" required autocomplete="organization"></label>
+        <label>Cidade e estado<input name="cidade" required placeholder="Ex.: Duque de Caxias (RJ)" autocomplete="address-level2"></label>
+        <label>Tipo de negócio<select name="tipo" required><option value="">Escolha</option><option>Supermercado</option><option>Mercado ou mercearia</option><option>Distribuidor</option><option>Restaurante ou food service</option><option>Compra institucional</option><option>Marca própria</option><option>Outro</option></select></label>
+        <fieldset class="rv-fs"><legend>Produtos de interesse</legend><div id="rv-interesse"></div></fieldset>
+        <label>Quantidade estimada (opcional)<input name="qtd" placeholder="Ex.: 20 kg por mês"></label>
+        <label>Mensagem (opcional)<textarea name="msg" rows="3"></textarea></label>
+        <button class="btn btn-roxo" type="submit">Enviar pelo WhatsApp</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape" id="rodape"></footer>
+<a class="whats-flutua" data-whats="Olá! Vim pelo site da Supermisto." aria-label="WhatsApp"></a>
+
+<script src="produtos.js?v=32"></script>
+<script src="receitas.js?v=32"></script>
+<script src="site.js?v=32"></script>
+</body>
+</html>
