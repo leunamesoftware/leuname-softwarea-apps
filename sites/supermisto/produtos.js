@@ -4,7 +4,7 @@
 const LINHAS = [
   { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas e em grão, puras e cheirosas.' },
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
-  { id: 'churrasco', nome: 'Linha Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
+  { id: 'churrasco', nome: 'Linha Super Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
   { id: 'ervas', nome: 'Ervas da Horta', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
   { id: 'molhos', nome: 'Molhos e condimentos', emoji: '🫙', cor: '#9E1B14', desc: 'Molhos de pimenta, alho e condimentos prontos.' },
   { id: 'conservas', nome: 'Conservas', emoji: '🥒', cor: '#7E9A3A', desc: 'Picles, pimentas e ovos de codorna em conserva.' },
