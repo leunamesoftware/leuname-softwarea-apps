@@ -66,6 +66,7 @@ const PRODUTOS = [
   P('Sal grosso temperado', 'sais', '#D7C9AE', 'Sal grosso com alho e pimenta.', 'Churrasco e carnes assadas.', ['500 g', '1 kg']),
   // molhos
   P('Molho de pimenta vermelha', 'molhos', '#B3170F', 'Pimenta vermelha com vinagre e sal, ardência equilibrada.', 'Pastéis, feijão, carnes e petiscos.', ['150 ml'], 'garrafa', 'Novidade'),
+  P('Molho shoyu', 'molhos', '#3B1A10', 'Molho de soja escuro, salgadinho na medida.', 'Yakisoba, arroz, carnes, legumes e marinadas.', ['150 ml'], 'garrafa', 'Novidade'),
   P('Molho de pimenta malagueta', 'molhos', '#C9341A', 'Malagueta curtida no estilo tradicional.', 'Feijoada, peixes e moquecas.', ['150 ml', '500 ml', '1 L'], 'garrafa'),
   P('Molho de alho', 'molhos', '#E9E2CC', 'Cremoso e com muito sabor de alho.', 'Churrasco, lanches e batatas.', ['200 g', '1 kg'], 'pote'),
   P('Tempero pastoso de alho e sal', 'molhos', '#E6DDBE', 'Alho e sal batidos, prontos para o refogado.', 'Arroz, feijão, carnes e legumes.', ['300 g', '1 kg'], 'pote'),

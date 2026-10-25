@@ -17,13 +17,13 @@ const KITS = [
 
 /* Fotos reais: coloque o arquivo em img/produtos/<nome-do-produto>.webp e o nome aqui (ex.: 'colorau').
    Produto sem foto aparece com a embalagem desenhada. */
-const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano', 'molho-de-pimenta-vermelha']);
+const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano', 'molho-de-pimenta-vermelha', 'molho-shoyu']);
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // foto do tamanho escolhido: 10 g (padrão), 50 g, 100 g ou o pacote de 1 kg
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=6" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=7" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
