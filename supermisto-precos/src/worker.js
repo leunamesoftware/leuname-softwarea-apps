@@ -156,6 +156,6 @@ export default {
     }
     return env.ASSETS.fetch(req);
   },
-  // A cada 30 minutos: pedidos novos da Shopee e o que ficou para mandar.
+  // A cada 5 minutos: pedidos novos da Shopee e o que ficou para mandar.
   async scheduled(_ev, env, ctx) { ctx.waitUntil(ERP.rotina(env)); },
 };

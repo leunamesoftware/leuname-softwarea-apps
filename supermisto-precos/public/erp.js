@@ -2,6 +2,7 @@
 import { B, $, brl, esc, lerNum, dataHora, fotoUrl, aviso, abrirAba, contaSku, opcoesSku, linhaItem, lerItens } from './erp-base.js';
 import './erp-vendas.js';
 import './erp-gestao.js';
+import { iniciarAviso } from './erp-aviso.js';
 
 export { contaSku };
 let filtro = 'todos', busca = '';
@@ -9,6 +10,7 @@ let filtro = 'todos', busca = '';
 export async function iniciarErp(dados, funcoes) {
   B.D = dados; B.api = funcoes.api; B.post = funcoes.post; B.recarregar = recarregar;
   await recarregar();
+  iniciarAviso();
   if (location.search.includes('shopee=')) {
     const ok = location.search.includes('shopee=ok');
     history.replaceState(null, '', '/');

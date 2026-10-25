@@ -260,3 +260,4 @@ table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
 .kpi small em{font-style:normal;font-weight:700}
 [hidden]{display:none!important}
 @media (max-width:600px){.sh-status{font-size:0!important;padding:6px}.topo span:not(.sh-status){display:none}}
+.som{border:0;background:#F7F3EC;border-radius:50%;width:36px;height:36px;font-size:17px;cursor:pointer;flex:0 0 auto}.som:hover{background:#EFE4D4}

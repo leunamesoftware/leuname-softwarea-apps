@@ -151,7 +151,7 @@ export async function importarPedidos(env) {
   return { novos };
 }
 
-/** Rotina a cada 30 minutos: pedidos novos e o que ficou para mandar. */
+/** Rotina a cada 5 minutos: pedidos novos e o que ficou para mandar. */
 export async function rotina(env) {
   try {
     await importarPedidos(env);
@@ -168,6 +168,11 @@ export async function api(env, req, path, ctx) {
   const corpo = m === 'GET' ? {} : await req.json().catch(() => ({}));
   const depois = async (ids) => { if ((await opcao(env, 'automatico')) !== '0') ctx.waitUntil(sincronizar(env, ids)); };
 
+  // leve, para o painel aberto perguntar a cada minuto se chegou pedido novo
+  if (path === '/api/erp/ultimo' && m === 'GET') {
+    const r = await env.BANCO.prepare("SELECT MAX(criado_em) AS ultimo, COUNT(*) AS n FROM pedidos WHERE status != 'UNPAID'").first();
+    return json({ ultimo: r.ultimo, n: r.n });
+  }
   if (path === '/api/erp/dados' && m === 'GET') {
     const [skus, pedidos, registro, mov, lanc, compras, insumos, emp] = await Promise.all([
       todosSkus(env),
