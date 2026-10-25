@@ -8,17 +8,19 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 - Avulso: só **50 g, 100 g e 1 kg**.
 - Sachê de 10 g: só dentro dos **kits**.
 
-## KITS (3 anúncios, cada um com 3 variações)
+## KITS (4 anúncios, cada um com 3 variações)
 
 ### Kit 10 Temperos Naturais
 **Título:** `Kit 10 Temperos Naturais Sem Conservantes Supermisto Sabores Variados`
+
+**Capa (1ª foto, saquinhos grandes):** `kit-dia-a-dia-10g-capa.jpg`
 
 **Variações (com a foto de cada uma):**
 - 10 sachês de 10 g → `kit-dia-a-dia-10g.jpg`
 - 10 pacotes de 50 g → `kit-dia-a-dia-50g.jpg`
 - 10 pacotes de 100 g → `kit-dia-a-dia-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-dia-a-dia-10g.jpg` (o kit inteiro), `kit-dia-a-dia-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -33,12 +35,14 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit 5 Temperos Especiais
 **Título:** `Kit 5 Temperos Especiais Sem Conservantes Supermisto Sabores Variados`
 
+**Capa (1ª foto, saquinhos grandes):** `kit-especiais-10g-capa.jpg`
+
 **Variações (com a foto de cada uma):**
 - 5 sachês de 10 g → `kit-especiais-10g.jpg`
 - 5 pacotes de 50 g → `kit-especiais-50g.jpg`
 - 5 pacotes de 100 g → `kit-especiais-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-especiais-10g.jpg` (o kit inteiro), `kit-especiais-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -53,16 +57,40 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit 15 Temperos Naturais
 **Título:** `Kit 15 Temperos Naturais Sem Conservantes Supermisto Sabores Variados`
 
+**Capa (1ª foto, saquinhos grandes):** `kit-completo-10g-capa.jpg`
+
 **Variações (com a foto de cada uma):**
 - 15 sachês de 10 g → `kit-completo-10g.jpg`
 - 15 pacotes de 50 g → `kit-completo-50g.jpg`
 - 15 pacotes de 100 g → `kit-completo-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-<kit>-<peso>-perto1.jpg`, `-perto2.jpg`… (os saquinhos de perto) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-completo-10g.jpg` (o kit inteiro), `kit-completo-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
 🌿 Kit 15 Temperos Naturais: Colorau, Tempero Completo, Pimenta-do-Reino Moída, Cominho Moído, Chimichurri, Orégano, Páprica Doce, Açafrão-da-Terra (Cúrcuma), Alho em Pó, Cebola em Pó, Páprica Defumada, Lemon Pepper, Pimenta Calabresa, Tempero Baiano, Canela em Pó.
+✅ 100% natural, sem conservantes
+✅ Moído e embalado na hora
+✅ Fábrica própria: do nosso moinho direto para você
+🎁 Ótimo para presente e para quem está montando a cozinha.
+🍽️ Ideal para carnes, frango, peixes, arroz, feijão, legumes e molhos.
+```
+
+### Kit Churrasco 5 Temperos
+**Título:** `Kit Churrasco 5 Temperos Sem Conservantes Supermisto Sabores Variados`
+
+**Capa (1ª foto, saquinhos grandes):** `kit-churrasco-10g-capa.jpg`
+
+**Variações (com a foto de cada uma):**
+- 5 sachês de 10 g → `kit-churrasco-10g.jpg`
+- 5 pacotes de 50 g → `kit-churrasco-50g.jpg`
+- 5 pacotes de 100 g → `kit-churrasco-100g.jpg`
+
+**Outras fotos (depois da capa):** `kit-churrasco-10g.jpg` (o kit inteiro), `kit-churrasco-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
+
+**Descrição:**
+```
+🌿 Kit Churrasco 5 Temperos: Chimichurri, Páprica Defumada, Pimenta-do-Reino Moída, Pimenta Calabresa, Alho em Pó.
 ✅ 100% natural, sem conservantes
 ✅ Moído e embalado na hora
 ✅ Fábrica própria: do nosso moinho direto para você

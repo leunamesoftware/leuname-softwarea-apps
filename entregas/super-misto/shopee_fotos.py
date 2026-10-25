@@ -30,10 +30,12 @@ PESOS = {'10g': '', '50g': '-50g', '100g': '-100g', '1kg': '-1kg'}
 DIA_A_DIA = ['colorau', 'tempero-completo', 'pimenta-do-reino', 'cominho', 'chimichurri',
              'oregano', 'paprica-doce', 'curcuma', 'alho-em-po', 'cebola-em-po']
 ESPECIAIS = ['paprica-defumada', 'lemon-pepper', 'pimenta-calabresa', 'tempero-baiano', 'canela']
+CHURRASCO = ['chimichurri', 'paprica-defumada', 'pimenta-do-reino', 'pimenta-calabresa', 'alho-em-po']
 KITS = {
     'dia-a-dia': ('Kit 10 Temperos', DIA_A_DIA),
     'especiais': ('Kit 5 Temperos Especiais', ESPECIAIS),
     'completo': ('Kit 15 Temperos', DIA_A_DIA + ESPECIAIS),
+    'churrasco': ('Kit Churrasco', CHURRASCO),
 }
 TXT_KIT = {'10g': '{n} sachês de 10 g', '50g': '{n} pacotes de 50 g = {t}', '100g': '{n} pacotes de 100 g = {t}'}
 
@@ -48,11 +50,11 @@ def kg(g):
 
 def fundo():
     """Creme com luz no centro (fica limpo e destaca o produto)."""
-    im = Image.new('RGB', (LADO, LADO), CREME)
+    im = Image.new('RGB', (LADO, LADO), (246, 226, 190))  # bordas douradas quentes
     luz = Image.new('L', (LADO, LADO), 0)
-    ImageDraw.Draw(luz).ellipse((150, 120, LADO - 150, LADO - 180), fill=255)
-    luz = luz.filter(ImageFilter.GaussianBlur(160))
-    im.paste(Image.new('RGB', (LADO, LADO), (255, 252, 247)), (0, 0), luz)
+    ImageDraw.Draw(luz).ellipse((60, 40, LADO - 60, LADO - 60), fill=255)
+    luz = luz.filter(ImageFilter.GaussianBlur(190))
+    im.paste(Image.new('RGB', (LADO, LADO), (255, 251, 242)), (0, 0), luz)
     return im
 
 
@@ -137,14 +139,45 @@ def kit(nome, ids, peso):
     return vivo(tela)
 
 
+VITRINE = ['colorau', 'chimichurri', 'curcuma', 'oregano', 'paprica-doce', 'tempero-completo', 'lemon-pepper',
+           'pimenta-calabresa', 'paprica-defumada', 'canela', 'tempero-baiano', 'pimenta-do-reino', 'alho-em-po']
+
+
+def capa(nome, ids, peso):
+    """Capa para a vitrine da Shopee (aparece pequena): poucos saquinhos, bem grandes, e o selo com quantos sabores."""
+    tela = fundo().convert('RGBA')
+    d = ImageDraw.Draw(tela)
+    d.text((LADO // 2, 68), nome, font=fonte('ExtraBold', 92 if len(nome) < 18 else 74), fill=BORDO, anchor='mm')
+    sub = TXT_KIT[peso].format(n=len(ids), t=kg(len(ids) * int(peso[:-1])))
+    w = d.textlength(sub, font=fonte('Bold', 42)) + 90
+    d.rounded_rectangle((LADO // 2 - w // 2, 122, LADO // 2 + w // 2, 192), radius=35, fill=DOURADO)
+    d.text((LADO // 2, 157), sub, font=fonte('Bold', 42), fill='white', anchor='mm')
+    mostra = [i for i in VITRINE if i in ids][:6] if len(ids) > 6 else list(ids)
+    linhas = [mostra[:3], mostra[3:]] if len(mostra) > 3 else [mostra]
+    larg, alt = 380, 470
+    bases = [690, 1185] if len(linhas) == 2 else [900]
+    for j, lin in enumerate(linhas):
+        x0 = LADO / 2 - 385 * (len(lin) - 1) / 2
+        for i, pid in reversed(list(enumerate(lin))):
+            colar(tela, produto(pid, peso), round(x0 + i * 385), bases[j], alt, largura=larg)
+    resto = len(ids) - len(mostra)
+    if resto:  # selo redondo: quantos sabores a mais vêm no kit
+        cx, cy, r = LADO - 150, LADO - 150, 125
+        d.ellipse((cx - r - 8, cy - r - 8, cx + r + 8, cy + r + 8), fill='white')
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=BORDO)
+        d.text((cx, cy - 28), f'+{resto}', font=fonte('ExtraBold', 92), fill='white', anchor='mm')
+        d.text((cx, cy + 50), 'SABORES', font=fonte('Bold', 34), fill=(227, 190, 114), anchor='mm')
+    return vivo(tela)
+
+
 def detalhe(nome, ids, peso, parte, total):
     """Foto de perto de parte do kit (até 5 saquinhos grandes: 3 em cima, 2 embaixo)."""
     tela = fundo().convert('RGBA')
     d = ImageDraw.Draw(tela)
-    d.text((LADO // 2, 70), f'O que vem no {nome.split(" ")[0].lower()}' + (f'  ({parte}/{total})' if total > 1 else ''),
-           font=fonte('ExtraBold', 58), fill=BORDO, anchor='mm')
+    # o nome do kit em cima (para saber de qual kit é a foto)
+    d.text((LADO // 2, 62), nome, font=fonte('ExtraBold', 66 if len(nome) < 18 else 54), fill=BORDO, anchor='mm')
     linhas = [ids[:3], ids[3:]] if len(ids) > 3 else [ids]
-    topo, fim = 125, LADO - 45
+    topo, fim = 110, LADO - 45
     for j, lin in enumerate(linhas):
         base = topo + (j + 1) * (fim - topo) // len(linhas) - 6
         passo = (LADO - 40) / 3
@@ -155,10 +188,12 @@ def detalhe(nome, ids, peso, parte, total):
 
 
 def vivo(tela):
-    """Um pouco mais claro e com mais cor (foto de vitrine)."""
+    """Foto de vitrine: mais clara, com mais cor e contraste e bem nítida (a Shopee mostra pequeno)."""
     im = tela.convert('RGB')
-    im = ImageEnhance.Brightness(im).enhance(1.04)
-    return ImageEnhance.Color(im).enhance(1.08)
+    im = ImageEnhance.Brightness(im).enhance(1.05)
+    im = ImageEnhance.Color(im).enhance(1.22)
+    im = ImageEnhance.Contrast(im).enhance(1.10)
+    return im.filter(ImageFilter.UnsharpMask(radius=2, percent=90, threshold=2))
 
 
 def info():
@@ -190,6 +225,7 @@ def main():
     for chave, (nome, ids) in KITS.items():
         for peso in TXT_KIT:
             kit(nome, ids, peso).save(SAIDA / f'kit-{chave}-{peso}.jpg', quality=90)
+            capa(nome, ids, peso).save(SAIDA / f'kit-{chave}-{peso}-capa.jpg', quality=90)
             partes = [ids[i:i + 5] for i in range(0, len(ids), 5)]
             for n, grupo in enumerate(partes, 1):
                 detalhe(nome, grupo, peso, n, len(partes)).save(SAIDA / f'kit-{chave}-{peso}-perto{n}.jpg', quality=90)
