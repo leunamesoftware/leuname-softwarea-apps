@@ -2,7 +2,8 @@
 import { B, $, aviso, brl } from './erp-base.js';
 
 const CHAVE = 'erp-som';
-let ligado = (() => { try { return localStorage.getItem(CHAVE) === '1'; } catch { return false; } })();
+// ligado por padrão: só fica desligado se o dono desligar de propósito
+let ligado = (() => { try { return localStorage.getItem(CHAVE) !== '0'; } catch { return true; } })();
 let audio = null, ultimo = null, base = document.title, novos = 0;
 
 const CHAVE_ARQ = 'erp-som-arquivo', CHAVE_NOME = 'erp-som-nome';
@@ -42,9 +43,14 @@ async function inscrever() {
   if (perm !== 'granted') return 'negado';
   const reg = await navigator.serviceWorker.ready;
   let sub = await reg.pushManager.getSubscription();
+  const { chave: chaveAtual } = await B.api('/api/push/chave');
+  // inscrição antiga com outra chave: refaz
+  if (sub && sub.options?.applicationServerKey) {
+    const atual = new Uint8Array(sub.options.applicationServerKey), nova = b64(chaveAtual);
+    if (atual.length !== nova.length || atual.some((v, i) => v !== nova[i])) { await sub.unsubscribe().catch(() => {}); sub = null; }
+  }
   if (!sub) {
-    const { chave } = await B.api('/api/push/chave');
-    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(chave) });
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(chaveAtual) });
   }
   await B.post('/api/push/inscrever', { endpoint: sub.endpoint });
   return 'ok';
@@ -142,7 +148,14 @@ document.addEventListener('click', (e) => { if (e.target.id === 'som') { if (!li
 export function iniciarAviso() {
   botao();
   if (location.hash === '#pedidos') document.querySelector('.abas button[data-aba="pedidos"]')?.click();
-  if (ligado && 'Notification' in window && Notification.permission === 'granted') inscrever().catch(() => {});
+  // toda vez que o ERP abre: garante que este aparelho está inscrito para o aviso (com o celular bloqueado também)
+  if (ligado && 'Notification' in window) {
+    if (Notification.permission === 'granted') inscrever().catch(() => {});
+    else if (Notification.permission === 'default') {
+      const pedir = () => { document.removeEventListener('click', pedir, true); inscrever().then((r) => r === 'ok' && aviso('🔔 Avisos de pedido ligados neste aparelho.')).catch(() => {}); };
+      document.addEventListener('click', pedir, true); // o navegador só deixa pedir permissão depois de um toque
+    } else aviso('⚠️ As notificações estão bloqueadas neste aparelho: libere para receber o aviso de pedido.', false);
+  }
   conferir();
   setInterval(conferir, 60000);
 }
