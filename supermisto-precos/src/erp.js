@@ -1,5 +1,6 @@
 // ERP Supermisto: produtos à venda (SKUs), estoque, pedidos e envio automático para a Shopee.
 import * as S from './shopee.js';
+import { avisar } from './push.js';
 
 const agora = () => new Date().toISOString();
 const json = (d, status = 200) => new Response(JSON.stringify(d), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
@@ -134,7 +135,12 @@ export async function importarPedidos(env) {
       await anotar(env, 'pedido', `Pedido ${id} cancelado: estoque devolvido`);
     }
   }
-  if (novos) await anotar(env, 'pedido', `${novos} pedido(s) novo(s) da Shopee`);
+  if (novos) {
+    await anotar(env, 'pedido', `${novos} pedido(s) novo(s) da Shopee`);
+    const ult = pedidos.filter((p) => pedidoValido(p.order_status)).sort((a, b) => b.create_time - a.create_time)[0];
+    await avisar(env, novos > 1 ? `🛒 ${novos} pedidos novos na Shopee` : '🛒 Pedido novo na Shopee',
+      ult ? `${ult.order_sn} · R$ ${Number(ult.total_amount || 0).toFixed(2).replace('.', ',')}` : 'Abra o ERP para ver.').catch(() => {});
+  }
   // quanto a Shopee pagou de verdade (concluídos sem repasse ainda): vira entrada no financeiro
   const semRepasse = (await env.BANCO.prepare("SELECT id, criado_em FROM pedidos WHERE origem = 'shopee' AND status = 'COMPLETED' AND liquido IS NULL LIMIT 20").all()).results;
   for (const p of semRepasse) {
@@ -441,4 +447,17 @@ async function apiCompleta(env, req, path, corpo, depois) {
     return json({ ok: true });
   }
   return null;
+}
+
+/** Pedido de teste: cria um pedido fora da Shopee sem mexer em estoque nem financeiro, avisa o celular; DELETE apaga. */
+export async function pedidoTeste(env, req) {
+  if (req.method === 'DELETE') {
+    await env.BANCO.prepare("DELETE FROM pedidos WHERE id LIKE 'TESTE-%'").run();
+    return json({ ok: true });
+  }
+  const id = `TESTE-${Date.now().toString().slice(-6)}`;
+  await env.BANCO.prepare('INSERT INTO pedidos (id, origem, status, cliente, total, itens, baixado, criado_em, atualizado_em, obs) VALUES (?,?,?,?,?,?,0,?,?,?)')
+    .bind(id, 'manual', 'COMPLETED', 'Pedido de teste', 29.9, JSON.stringify([{ sku: null, nome: 'Kit 15 Temperos (teste)', qtd: 1, preco: 29.9 }]), agora(), agora(), 'Teste do aviso: será apagado').run();
+  const enviados = await avisar(env, '🛒 Pedido novo na Supermisto', `${id} · Kit 15 Temperos · R$ 29,90 (teste)`);
+  return json({ ok: true, id, enviados });
 }

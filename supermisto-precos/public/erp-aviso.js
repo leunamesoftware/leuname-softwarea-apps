@@ -23,16 +23,40 @@ export function tocar() {
   } catch {}
 }
 function botao() { const b = $('#som'); if (b) { b.textContent = ligado ? '🔔' : '🔕'; b.title = ligado ? 'Som de pedido novo: ligado' : 'Som de pedido novo: desligado'; } }
+const b64 = (s) => { const p = '='.repeat((4 - (s.length % 4)) % 4); const t = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(t, (c) => c.charCodeAt(0)); };
+
+/** Inscreve este aparelho para receber o aviso com o ERP fechado (celular bloqueado também). */
+async function inscrever() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return 'sem-suporte';
+  const perm = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+  if (perm !== 'granted') return 'negado';
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    const { chave } = await B.api('/api/push/chave');
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(chave) });
+  }
+  await B.post('/api/push/inscrever', { endpoint: sub.endpoint });
+  return 'ok';
+}
+
 async function alternar() {
   ligado = !ligado;
   try { localStorage.setItem(CHAVE, ligado ? '1' : '0'); } catch {}
   botao();
-  if (ligado) {
-    tocar();
-    if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission().catch(() => {});
-    aviso('🔔 Som ligado: vai tocar quando chegar pedido novo (com o ERP aberto).');
-  } else aviso('🔕 Som de pedido desligado.');
+  if (!ligado) return aviso('🔕 Som de pedido desligado nesta tela.');
+  tocar();
+  const r = await inscrever().catch(() => 'erro');
+  if (r === 'ok') { aviso('🔔 Avisos ligados! Chega notificação de pedido novo até com o celular bloqueado.'); B.post('/api/push/testar').catch(() => {}); }
+  else if (r === 'negado') aviso('⚠️ O navegador bloqueou as notificações. Libere em: cadeado ao lado do endereço → Notificações → Permitir.', false);
+  else aviso('🔔 Som ligado (este navegador não recebe aviso com o ERP fechado).');
 }
+
+// o service worker avisa quando chegou pedido com a tela aberta
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => {
+  if (e.data?.tipo === 'pedido') conferir();
+  if (e.data?.tipo === 'abrir') document.querySelector('.abas button[data-aba="pedidos"]')?.click();
+});
 
 async function conferir() {
   try {
@@ -60,6 +84,8 @@ document.addEventListener('click', (e) => { if (e.target.id === 'som') alternar(
 
 export function iniciarAviso() {
   botao();
+  if (location.hash === '#pedidos') document.querySelector('.abas button[data-aba="pedidos"]')?.click();
+  if (ligado && 'Notification' in window && Notification.permission === 'granted') inscrever().catch(() => {});
   conferir();
   setInterval(conferir, 60000);
 }

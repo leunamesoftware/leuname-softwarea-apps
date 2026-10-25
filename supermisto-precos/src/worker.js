@@ -3,6 +3,7 @@
 import { lerPrint } from './leitura.js';
 import { precoKgReal } from '../public/precos.js';
 import * as ERP from './erp.js';
+import * as PUSH from './push.js';
 
 const COOKIE = 'sp_sessao', LOJA = 'https://www.leunamesoftware.com.br', DIAS = 30;
 
@@ -67,6 +68,9 @@ async function api(env, req, path, ctx) {
     try { return json(await lerPrint(env, d.imagem, await produtos(env))); } catch (e) { return json({ erro: String(e) }, 502); }
   }
   if (path === '/api/shopee/retorno' && m === 'GET') return ERP.retornoShopee(env, req);
+  { const r = await PUSH.publico(env, req, path); if (r) return r; }
+  // Pedido de teste (só pelo workflow, com segredo temporário): toca o aviso no celular e depois é apagado.
+  if (path === '/api/erp/teste-pedido' && env.TESTE_PEDIDO && req.headers.get('X-Teste') === env.TESTE_PEDIDO) return ERP.pedidoTeste(env, req);
   if (!(await logado(env, req))) {
     if (path === '/api/shopee/conectar') return Response.redirect(new URL('/', req.url).toString(), 302);
     return json({ erro: 'Entre de novo.' }, 401);
@@ -78,6 +82,7 @@ async function api(env, req, path, ctx) {
     return json({ ok: true }, 200, { 'Set-Cookie': `${COOKIE}=; Path=/; Max-Age=0` });
   }
   if (path === '/api/dados' && m === 'GET') return json(await dados(env));
+  if (path.startsWith('/api/push/')) { const r = await PUSH.logado(env, req, path); if (r) return r; }
   if (path.startsWith('/api/erp/') || path.startsWith('/api/shopee/')) {
     const r = await ERP.api(env, req, path, ctx);
     if (r) return r;
