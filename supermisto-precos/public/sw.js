@@ -13,7 +13,7 @@ self.addEventListener('push', (e) => {
     if (!avisos.length) avisos = [{ titulo: '🛒 Novidade na Supermisto', texto: 'Abra o ERP para ver.', url: '/#pedidos' }];
     for (const a of avisos) {
       await self.registration.showNotification(a.titulo, {
-        body: a.texto, icon: '/icone-192.png', badge: '/icone-192.png', tag: 'pedido-' + (a.id || Date.now()),
+        body: a.texto, icon: a.icone || '/icone-192.png', badge: '/icone-192.png', tag: 'pedido-' + (a.id || Date.now()),
         vibrate: [200, 100, 200, 100, 400], renotify: true, requireInteraction: true, data: { url: a.url || '/#pedidos' },
       });
     }

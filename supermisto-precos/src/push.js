@@ -25,13 +25,13 @@ async function tocar(endpoint, k) {
 }
 
 /** Avisa todos os aparelhos do dono. */
-export async function avisar(env, titulo, texto, url = '/#pedidos') {
+export async function avisar(env, titulo, texto, url = '/#pedidos', icone = '/icone-192.png') {
   const { results } = await env.BANCO.prepare('SELECT endpoint FROM push_inscricoes').all();
   if (!results.length) return 0;
   const k = await chaves(env);
   let ok = 0;
   for (const { endpoint } of results) {
-    await env.BANCO.prepare('INSERT INTO push_fila (endpoint, titulo, texto, url, criado_em) VALUES (?,?,?,?,?)').bind(endpoint, titulo.slice(0, 80), texto.slice(0, 200), url, agora()).run();
+    await env.BANCO.prepare('INSERT INTO push_fila (endpoint, titulo, texto, url, icone, criado_em) VALUES (?,?,?,?,?,?)').bind(endpoint, titulo.slice(0, 80), texto.slice(0, 200), url, icone, agora()).run();
     try {
       const r = await tocar(endpoint, k);
       if (r.status === 404 || r.status === 410) await env.BANCO.prepare('DELETE FROM push_inscricoes WHERE endpoint = ?').bind(endpoint).run();
@@ -49,7 +49,7 @@ export async function publico(env, req, path) {
     const d = await req.json().catch(() => ({}));
     const ep = String(d.endpoint || '');
     if (!/^https:\/\/\S{10,900}$/.test(ep)) return json({ avisos: [] });
-    const { results } = await env.BANCO.prepare('SELECT id, titulo, texto, url FROM push_fila WHERE endpoint = ? AND criado_em > ? ORDER BY id LIMIT 10')
+    const { results } = await env.BANCO.prepare('SELECT id, titulo, texto, url, icone FROM push_fila WHERE endpoint = ? AND criado_em > ? ORDER BY id LIMIT 10')
       .bind(ep, new Date(Date.now() - 3600e3).toISOString()).all();
     await env.BANCO.prepare('DELETE FROM push_fila WHERE endpoint = ? OR criado_em < ?').bind(ep, new Date(Date.now() - 864e5).toISOString()).run();
     return json({ avisos: results });
