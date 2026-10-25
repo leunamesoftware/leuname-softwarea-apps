@@ -61,11 +61,24 @@
   </nav>
 
   <section id="aba-painel" class="caixa">
-    <div class="cab"><h2>📊 Painel</h2><span class="suave" id="painel-data"></span></div>
-    <div id="painel-kpis"></div>
+    <div id="painel-hero"></div>
+    <div class="atalhos" id="painel-atalhos">
+      <button data-atalho="nova"><i>➕</i>Nova venda</button>
+      <button data-atalho="buscar"><i>🔄</i>Buscar Shopee</button>
+      <button data-atalho="etiquetas"><i>🏷️</i>Etiquetas</button>
+      <button data-atalho="estoque"><i>📥</i>Estoque</button>
+      <button data-atalho="compras"><i>🛍️</i>Compras</button>
+      <button data-atalho="financeiro"><i>💵</i>Financeiro</button>
+      <button data-atalho="relatorios"><i>📈</i>Relatórios</button>
+      <button data-atalho="anuncios"><i>📝</i>Anúncios</button>
+    </div>
     <div class="dupla">
-      <div class="card"><h3>Vendas dos últimos 30 dias</h3><div id="painel-grafico"></div></div>
+      <div class="card"><div class="card-cab"><h3>Vendas dos últimos 30 dias</h3><span class="suave" id="painel-total30"></span></div><div id="painel-grafico"></div></div>
       <div class="card"><h3>⚡ Precisa da sua atenção</h3><div id="painel-alertas"></div></div>
+    </div>
+    <div class="dupla">
+      <div class="card"><h3>🛒 Onde vendeu no mês</h3><div id="painel-canais"></div></div>
+      <div class="card"><h3>📦 Situação dos envios</h3><div id="painel-envios"></div></div>
     </div>
     <div class="dupla">
       <div class="card"><h3>🏆 Mais vendidos do mês</h3><div id="painel-top"></div></div>

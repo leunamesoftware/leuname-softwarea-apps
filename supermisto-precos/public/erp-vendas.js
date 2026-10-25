@@ -1,6 +1,6 @@
 // Vendas: painel, pedidos (envio, etiquetas, lista de separação), venda fora da Shopee e clientes.
 import { impressora, imprimirCartoes } from './erp-impressao.js';
-import { B, $, brl, esc, lerNum, dataHora, dataCurta, hojeISO, STATUS, ENVIO, vendaValida, aviso, abrirAba, contaSku, barras, imprimir, linhaItem, lerItens } from './erp-base.js';
+import { B, $, brl, esc, lerNum, dataHora, dataCurta, hojeISO, STATUS, ENVIO, vendaValida, aviso, abrirAba, contaSku, barras, area, rosca, imprimir, linhaItem, lerItens } from './erp-base.js';
 
 const dia = (iso) => { const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 const atrasado = (p) => p.prazo_envio && p.envio && p.envio !== 'enviado' && new Date(p.prazo_envio) < new Date() && vendaValida(p);
@@ -14,15 +14,33 @@ function desenharPainel() {
   const lancMes = E.lancamentos.filter((l) => l.vencimento.startsWith(mes) && l.pago);
   const entradas = lancMes.filter((l) => l.tipo === 'entrada').reduce((t, l) => t + l.valor, 0), saidas = lancMes.filter((l) => l.tipo === 'saida').reduce((t, l) => t + l.valor, 0);
   const aEnviar = validos.filter((p) => p.envio && p.envio !== 'enviado');
-  $('#painel-data').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
-  $('#painel-kpis').innerHTML = `<div class="kpis">
-    <div class="kpi destaque"><span>Vendas hoje</span><b>${brl(soma(doDia))}</b><small>${doDia.length} pedido(s)</small></div>
-    <div class="kpi"><span>Vendas no mês</span><b>${brl(soma(doMes))}</b><small>${doMes.length} pedido(s) · ticket ${brl(doMes.length ? soma(doMes) / doMes.length : 0)}</small></div>
-    <div class="kpi ${entradas - saidas >= 0 ? 'bom' : 'ruim'}"><span>Saldo do mês (caixa)</span><b>${brl(entradas - saidas)}</b><small>entrou ${brl(entradas)} · saiu ${brl(saidas)}</small></div>
-    <div class="kpi ${aEnviar.length ? 'alerta' : ''}" data-ir-pedidos="enviar"><span>Pedidos a enviar</span><b>${aEnviar.length}</b><small>${aEnviar.filter(atrasado).length ? `<em class="ruim-txt">${aEnviar.filter(atrasado).length} atrasado(s)</em>` : 'nenhum atrasado'}</small></div>
-  </div>`;
+  const mesAnt = (() => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return dia(d.toISOString()).slice(0, 7); })();
+  const doMesAnt = validos.filter((p) => dia(p.criado_em).startsWith(mesAnt));
+  // mesmo pedaço do mês passado (até o mesmo dia), para comparar de forma justa
+  const hojeDia = hoje.slice(8, 10), ateHojeAnt = doMesAnt.filter((p) => dia(p.criado_em).slice(8, 10) <= hojeDia);
+  const vMes = soma(doMes), vAnt = soma(ateHojeAnt), delta = vAnt > 0 ? ((vMes - vAnt) / vAnt) * 100 : null;
   const dias = Array.from({ length: 30 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - 29 + i); return dia(d.toISOString()); });
-  $('#painel-grafico').innerHTML = barras(dias.map((d) => soma(validos.filter((p) => dia(p.criado_em) === d))), dias.map((d) => d.slice(8, 10) + '/' + d.slice(5, 7)));
+  const porDia = dias.map((d) => soma(validos.filter((p) => dia(p.criado_em) === d))), rot = dias.map((d) => d.slice(8, 10) + '/' + d.slice(5, 7));
+  const atrasados = aEnviar.filter(atrasado).length;
+  const data = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+  $('#painel-hero').innerHTML = `<div class="hero-p">
+      <div class="hero-top"><div><small>${data}</small><span>Vendas no mês</span><b>${brl(vMes)}</b>
+        ${delta === null ? '<em>primeiro mês com vendas</em>' : `<em class="${delta >= 0 ? 'sobe' : 'desce'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(0)}% <small>vs. mesmo período do mês passado</small></em>`}</div></div>
+      <div class="hero-graf">${area(porDia.slice(-14), rot.slice(-14), { altura: 70, claro: true })}</div>
+      <div class="hero-kpis">
+        <div><span>Hoje</span><b>${brl(soma(doDia))}</b><small>${doDia.length} pedido(s)</small></div>
+        <div><span>Ticket médio</span><b>${brl(doMes.length ? vMes / doMes.length : 0)}</b><small>${doMes.length} pedido(s) no mês</small></div>
+        <div class="${entradas - saidas >= 0 ? '' : 'ruim'}"><span>Caixa do mês</span><b>${brl(entradas - saidas)}</b><small>entrou ${brl(entradas)}</small></div>
+        <div data-ir-pedidos="enviar" class="${atrasados ? 'ruim' : ''}"><span>A enviar</span><b>${aEnviar.length}</b><small>${atrasados ? `${atrasados} atrasado(s)` : 'nenhum atrasado'}</small></div>
+      </div>
+    </div>`;
+  $('#painel-total30').textContent = brl(porDia.reduce((a, b) => a + b, 0));
+  $('#painel-grafico').innerHTML = area(porDia, rot);
+  const shopee = soma(doMes.filter((p) => p.origem !== 'manual')), fora = soma(doMes.filter((p) => p.origem === 'manual'));
+  $('#painel-canais').innerHTML = vMes ? rosca([['Shopee', shopee, '#EE4D2D'], ['Fora da Shopee', fora, '#5E1675']], { centro: doMes.length + ' ped.' }) : '<p class="suave">Nenhuma venda este mês ainda.</p>';
+  const env = [['Preparar', validos.filter((p) => p.envio === 'a_preparar').length, '#E0A22B'], ['Imprimir etiqueta', validos.filter((p) => p.envio === 'pronto').length, '#7B1F95'],
+    ['Postar', validos.filter((p) => p.envio === 'etiqueta_impressa').length, '#3B6EA8'], ['Enviados no mês', doMes.filter((p) => p.envio === 'enviado').length, '#2E9E5B']];
+  $('#painel-envios').innerHTML = env.some(([, v]) => v) ? rosca(env, { formato: (v) => String(v), centro: aEnviar.length + ' a enviar' }) : '<p class="suave">Nenhum envio ainda.</p>';
   const alertas = [];
   const atr = aEnviar.filter(atrasado);
   if (atr.length) alertas.push(['ruim', `${atr.length} pedido(s) <b>atrasado(s)</b> para enviar`, 'pedidos']);
@@ -47,6 +65,15 @@ function desenharPainel() {
   $('#painel-ultimos').innerHTML = E.pedidos.slice(0, 6).map((p) => `<div class="mini-ped" data-ir="pedidos"><b>${esc(p.id)}</b><span>${esc(nomeCliente(p) || '—')}</span><span class="st-${p.status}">${STATUS[p.status] || p.status}</span><b>${brl(p.total)}</b></div>`).join('') || '<p class="suave">Nenhum pedido ainda.</p>';
 }
 document.addEventListener('click', (e) => {
+  const at = e.target.closest('[data-atalho]');
+  if (at) {
+    const t = at.dataset.atalho;
+    if (t === 'nova') { abrirAba('pedidos'); setTimeout(() => $('#ped-nova')?.click(), 50); }
+    else if (t === 'buscar') { abrirAba('pedidos'); setTimeout(() => $('#ped-buscar')?.click(), 50); }
+    else if (t === 'etiquetas') { filtroPed = 'pronto'; abrirAba('pedidos'); }
+    else abrirAba(t);
+    return;
+  }
   const k = e.target.closest('[data-ir-pedidos]'); if (k) { filtroPed = k.dataset.irPedidos; abrirAba('pedidos'); return; }
   const a = e.target.closest('#aba-painel [data-ir]'); if (a) abrirAba(a.dataset.ir);
 });

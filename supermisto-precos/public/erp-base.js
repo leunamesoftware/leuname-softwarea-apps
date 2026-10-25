@@ -54,6 +54,32 @@ export function barras(valores, rotulos, { altura = 170, cor = '#5E1675', format
   </svg>`;
 }
 
+/** Gráfico de área (linha suave com degradê) para vendas por dia. */
+export function area(valores, rotulos, { altura = 150, formato = brl, claro = false } = {}) {
+  const W = 640, H = altura, E = 6, T = 14, Bm = claro ? 6 : 22, n = valores.length, max = Math.max(1, ...valores);
+  const x = (i) => E + (i * (W - E * 2)) / Math.max(1, n - 1), y = (v) => H - Bm - (v / max) * (H - T - Bm);
+  const pts = valores.map((v, i) => [x(i), y(v)]);
+  const d = pts.map(([px, py], i) => (i ? `L${px.toFixed(1)} ${py.toFixed(1)}` : `M${px.toFixed(1)} ${py.toFixed(1)}`)).join(' ');
+  const id = 'g' + Math.random().toString(36).slice(2, 7), cor = claro ? '#fff' : '#5E1675';
+  const passo = Math.ceil(n / 6);
+  return `<svg viewBox="0 0 ${W} ${H}" class="graf area${claro ? ' claro' : ''}" role="img" aria-label="Gráfico de vendas" preserveAspectRatio="none">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${claro ? '#fff' : '#7B1F95'}" stop-opacity="${claro ? .35 : .35}"/><stop offset="1" stop-color="${claro ? '#fff' : '#7B1F95'}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${d} L${x(n - 1)} ${H - Bm} L${x(0)} ${H - Bm} Z" fill="url(#${id})"/>
+    <path d="${d}" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    ${claro ? '' : valores.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="9" fill="transparent"><title>${rotulos[i]}: ${formato(v)}</title></circle>`).join('')}
+    ${claro ? '' : rotulos.map((r, i) => (i % passo === 0 || i === n - 1) && (n - 1 - i >= passo / 2 || i === n - 1) ? `<text x="${x(i)}" y="${H - 5}" class="eixo" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${r}</text>` : '').join('')}
+  </svg>`;
+}
+
+/** Rosca (donut) com legenda: partes = [[nome, valor, cor]]. */
+export function rosca(partes, { formato = brl, centro = '' } = {}) {
+  const tot = partes.reduce((t, [, v]) => t + v, 0) || 1, R = 15.9155;
+  let ini = 25;
+  const fatias = partes.map(([, v, cor]) => { const pct = (v / tot) * 100, f = `<circle r="${R}" cx="21" cy="21" fill="none" stroke="${cor}" stroke-width="5.5" stroke-dasharray="${pct} ${100 - pct}" stroke-dashoffset="${ini}"/>`; ini -= pct; return f; }).join('');
+  return `<div class="rosca"><svg viewBox="0 0 42 42" role="img" aria-label="Divisão das vendas"><circle r="${R}" cx="21" cy="21" fill="none" stroke="#EFE7F3" stroke-width="5.5"/>${fatias}<text x="21" y="22.5" text-anchor="middle" class="rosca-c">${centro}</text></svg>
+    <ul>${partes.map(([n, v, cor]) => `<li><i style="background:${cor}"></i><span>${esc(n)}</span><b>${formato(v)}</b><small>${Math.round((v / tot) * 100)}%</small></li>`).join('')}</ul></div>`;
+}
+
 /** Abre uma janela só para imprimir (etiquetas, declaração, lista de separação). */
 export function imprimir(titulo, corpoHtml, css = '') {
   const w = window.open('', '_blank');
