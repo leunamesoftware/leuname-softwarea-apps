@@ -51,7 +51,7 @@ const RECEITAS = [
     preparo: ['Corte a picanha em bifes grossos e salgue com o sal de parrilla 30 minutos antes.', 'Asse na brasa forte, primeiro do lado da gordura.', 'Misture o chimichurri com o azeite e deixe hidratar 15 minutos.', 'Fatie a carne e sirva com o chimichurri por cima, farofa e pimenta biquinho.'],
   },
   {
-    id: 'pao-de-queijo', emoji: '🧀', cor: '#E2B04A', tempo: '45 min', rende: '30 unidades',
+    id: 'pao-de-queijo', foto: 'pao-de-queijo', emoji: '🧀', cor: '#E2B04A', tempo: '45 min', rende: '30 unidades',
     titulo: 'Pão de queijo mineiro com polvilho azedo',
     resumo: 'Crocante por fora e puxa-puxa por dentro, do jeito que tem que ser.',
     usa: ['Polvilho azedo', 'Polvilho doce'],
