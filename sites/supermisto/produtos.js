@@ -6,7 +6,6 @@ const LINHAS = [
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
   { id: 'churrasco', nome: 'Linha Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
   { id: 'ervas', nome: 'Ervas da Horta', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
-  { id: 'sais', nome: 'Sais temperados', emoji: '🧂', cor: '#B9A27A', desc: 'Sal com alho, ervas e especiarias.' },
   { id: 'molhos', nome: 'Molhos e condimentos', emoji: '🫙', cor: '#9E1B14', desc: 'Molhos de pimenta, alho e condimentos prontos.' },
   { id: 'conservas', nome: 'Conservas', emoji: '🥒', cor: '#7E9A3A', desc: 'Picles, pimentas e ovos de codorna em conserva.' },
   { id: 'doces', nome: 'Doces e compotas', emoji: '🍑', cor: '#E08A2E', desc: 'Frutas em calda, geleias e doces caseiros.' },
@@ -61,9 +60,9 @@ const PRODUTOS = [
   P('Tomilho', 'ervas', '#6E7A45', 'Sabor delicado e herbal.', 'Carnes, aves, molhos e legumes.', T),
   P('Coentro em grão', 'ervas', '#B9A25E', 'Sementes de aroma cítrico.', 'Conservas, curry, carnes e linguiças.', T),
   // sais
-  P('Sal com alho', 'sais', '#E8DDC2', 'Sal e alho na medida certa.', 'Carnes, legumes, arroz e feijão.', ['500 g', '1 kg']),
-  P('Sal de ervas', 'sais', '#C9CFA4', 'Sal com ervas finas, com menos sódio no prato.', 'Saladas, carnes, ovos e legumes.', ['100 g', '500 g', '1 kg']),
-  P('Sal grosso temperado', 'sais', '#D7C9AE', 'Sal grosso com alho e pimenta.', 'Churrasco e carnes assadas.', ['500 g', '1 kg']),
+  P('Sal com alho', 'misturas', '#E8DDC2', 'Sal e alho na medida certa.', 'Carnes, legumes, arroz e feijão.', ['500 g', '1 kg']),
+  P('Sal de ervas', 'misturas', '#C9CFA4', 'Sal com ervas finas, com menos sódio no prato.', 'Saladas, carnes, ovos e legumes.', ['100 g', '500 g', '1 kg']),
+  P('Sal grosso temperado', 'churrasco', '#D7C9AE', 'Sal grosso com alho e pimenta.', 'Churrasco e carnes assadas.', ['500 g', '1 kg']),
   // molhos
   P('Molho de pimenta vermelha', 'molhos', '#B3170F', 'Pimenta vermelha com vinagre e sal, ardência equilibrada.', 'Pastéis, feijão, carnes e petiscos.', ['150 ml'], 'garrafa', 'Novidade'),
   P('Molho shoyu', 'molhos', '#3B1A10', 'Molho de soja escuro, salgadinho na medida.', 'Yakisoba, arroz, carnes, legumes e marinadas.', ['150 ml'], 'garrafa', 'Novidade'),
