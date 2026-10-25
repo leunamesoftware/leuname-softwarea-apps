@@ -158,7 +158,7 @@ PRODUTOS.forEach((p) => { if (LINHA_PACOTES.includes(p.nome)) p.tam = ['10 g', '
 // sabores novos: mesmos tamanhos; enquanto a arte do 1 kg não chega, o site mostra o sachê com aviso (FOTOS_1KG em site.js)
 const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia moído', 'Gengibre em pó', 'Mostarda em grão',
   'Ervas finas', 'Tempero para frango', 'Tempero para feijão', 'Tempero para arroz', 'Curry',
-  'Tempero para saladas', 'Tempero para pizza', 'Tempero para carne moída', 'Sal com alho', 'Sal de ervas'];
+  'Tempero para saladas', 'Tempero para pizza', 'Tempero para carne moída', 'Sal com alho', 'Sal de ervas', 'Tempero para peixe'];
 PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
 
 /* Ficha técnica que aparece na página do produto (só o que estiver preenchido; confira com o rótulo).
