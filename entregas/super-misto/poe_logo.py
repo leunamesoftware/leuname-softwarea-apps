@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 AQUI = Path(__file__).resolve().parent
-LOGO = AQUI / 'logo-nova' / 'logo-supermisto.png'
+LOGO = AQUI / 'logo-bordo' / 'logo-supermisto.png'
 
 
 def painel_verde(a):
@@ -27,31 +27,28 @@ def painel_verde(a):
 
 
 def main(pid, pesos=('10 g',)):
+    """Logo no canto de cima à esquerda da solapa (sobre a foto), tamanho fixo, sem encostar no furo nem no nome."""
     im = Image.open(AQUI / 'prontos-chatgpt' / f'{pid}.png').convert('RGBA')
     a = np.asarray(im.convert('RGB'))
-    x0, x1, ys = painel_verde(a)
-    # zona da logo: entre o fim do furo e o começo do nome (as letras brancas)
-    branco = (a[:, x0:x1].min(2) > 235).mean(1)
-    h = a.shape[0]
-    y0 = max(y for y in range(int(h * 0.15)) if branco[y] > 0.2) + 10
-    y1 = next(y for y in range(y0 + 20, h) if branco[y] > 0.02) - 6
-    # TAMANHO PADRÃO, igual em todos: 46% da largura da solapa, logo abaixo do furo
-    lw = int(a.shape[1] * 0.46)
+    cheio = a.min(2) < 225
+    y0 = next(y for y in range(a.shape[0]) if cheio[y].mean() > 0.5)
+    xs = np.where(cheio[y0 + 60])[0]; sx0 = int(xs.min())
+    # furo: branco na faixa de cima, no meio da solapa
+    faixa = a[y0 + 20:y0 + 110].min(2) > 235
+    cols = np.where(faixa.mean(0) > 0.3)[0]
+    cols = cols[(cols > a.shape[1] * 0.25) & (cols < a.shape[1] * 0.75)]
+    furo_x0 = int(cols.min()) if len(cols) else a.shape[1] // 2
     logo = Image.open(LOGO).convert('RGBA')
+    # fica logo abaixo da altura do furo, então pode ser grande sem tocar nele
+    linhas_furo = np.where((a[y0:y0 + 200, furo_x0 + 5:furo_x0 + 60].min(2) > 235).mean(1) > 0.5)[0]
+    fundo_furo = y0 + (int(linhas_furo.max()) if len(linhas_furo) else 100)
+    lw = round(a.shape[1] * 0.37)
     logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
-    if logo.height > y1 - y0:
-        print(f'AVISO: o nome invade o espaço da logo em {logo.height - (y1 - y0)} px; peça ao ChatGPT o nome um pouco mais para baixo')
-    y1 = y0 + logo.height
-    # posição FIXA (fração da solapa), igual em todos: o painel verde vai de ~44% a ~96% da largura
-    cheio = (a.min(2) < 225)
-    xs_s = np.where(cheio[(y0 + y1) // 2])[0]
-    sx0, sx1 = xs_s.min(), xs_s.max()
-    cx, cy = int(sx0 + 0.705 * (sx1 - sx0)), (y0 + y1) // 2
-    pos = (cx - logo.width // 2, cy - logo.height // 2)
+    pos = (sx0 + 16, fundo_furo + 10)  # abaixo do furo: a faca do furo nunca corta a logo
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
-    s = Image.new('RGBA', logo.size, (0, 0, 0, 110)); s.putalpha(logo.split()[-1].point(lambda v: v * 110 // 255))
-    sombra.paste(s, (pos[0], pos[1] + 6), s)
-    im = Image.alpha_composite(im, sombra.filter(ImageFilter.GaussianBlur(6)))
+    s_ = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s_.putalpha(logo.split()[-1].point(lambda v: v * 120 // 255))
+    sombra.paste(s_, (pos[0] + 4, pos[1] + 8), s_)
+    im = Image.alpha_composite(im, sombra.filter(ImageFilter.GaussianBlur(7)))
     im.alpha_composite(logo, pos)
     (AQUI / 'saquinhos').mkdir(exist_ok=True)
     for peso in pesos:
