@@ -68,7 +68,7 @@ const PRODUTOS = [
   P('Molho de pimenta vermelha', 'molhos', '#B3170F', 'Pimenta vermelha com vinagre e sal, ardência equilibrada.', 'Pastéis, feijão, carnes e petiscos.', ['150 ml'], 'garrafa', 'Novidade'),
   P('Molho shoyu', 'molhos', '#3B1A10', 'Molho de soja escuro, salgadinho na medida.', 'Yakisoba, arroz, carnes, legumes e marinadas.', ['150 ml'], 'garrafa', 'Novidade'),
   P('Molho de pimenta malagueta', 'molhos', '#C9341A', 'Malagueta curtida no estilo tradicional.', 'Feijoada, peixes e moquecas.', ['150 ml', '500 ml', '1 L'], 'garrafa'),
-  P('Molho de alho', 'molhos', '#E9E2CC', 'Cremoso e com muito sabor de alho.', 'Churrasco, lanches e batatas.', ['200 g', '1 kg'], 'pote'),
+  P('Molho de alho', 'molhos', '#E9E2CC', 'Cremoso e com muito sabor de alho.', 'Churrasco, lanches e batatas.', ['150 ml'], 'garrafa', 'Novidade'),
   P('Tempero pastoso de alho e sal', 'molhos', '#E6DDBE', 'Alho e sal batidos, prontos para o refogado.', 'Arroz, feijão, carnes e legumes.', ['300 g', '1 kg'], 'pote'),
   P('Tempero verde pastoso', 'molhos', '#5C8A2E', 'Salsa, cebolinha, alho e cebola batidos.', 'Carnes, peixes, ovos e refogados.', ['300 g', '1 kg'], 'pote'),
   P('Molho barbecue', 'molhos', '#5A1E10', 'Agridoce e defumado.', 'Costelinha, hambúrgueres e frango.', ['300 ml', '1 L'], 'garrafa'),
