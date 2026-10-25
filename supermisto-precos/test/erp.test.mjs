@@ -60,3 +60,9 @@ test('envio e endereço vêm do pedido da Shopee', async () => {
   assert.deepEqual(destinatarioShopee({ recipient_address: { name: 'Ana', phone: '5521', full_address: 'Rua A, 1', city: 'Rio', state: 'RJ', zipcode: '20000000' } }),
     { nome: 'Ana', telefone: '5521', endereco: 'Rua A, 1', cidade: 'Rio', uf: 'RJ', cep: '20000000' });
 });
+
+test('assinatura do aviso instantâneo da Shopee: HMAC de url|corpo', async () => {
+  const { assinarWebhook } = await import('../src/shopee.js');
+  const esperado = createHmac('sha256', 'chave').update('https://x/api/shopee/webhook|{"code":3}').digest('hex');
+  assert.equal(await assinarWebhook('chave', 'https://x/api/shopee/webhook', '{"code":3}'), esperado);
+});

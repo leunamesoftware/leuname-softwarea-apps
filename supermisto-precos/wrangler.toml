@@ -18,9 +18,9 @@ binding = "AI"
 binding = "FOTOS"
 bucket_name = "supermisto-erp"
 
-# Pedidos novos da Shopee e envio do que mudou, a cada 5 minutos
+# Pedidos novos da Shopee e envio do que mudou, a cada minuto (reserva do aviso instantâneo da Shopee)
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["* * * * *"]
 
 [[d1_databases]]
 binding = "BANCO"

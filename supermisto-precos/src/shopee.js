@@ -208,3 +208,6 @@ export async function repasse(env, orderSn) {
   const i = r.order_income || {};
   return { liquido: i.escrow_amount ?? null, frete: i.actual_shipping_fee ?? null };
 }
+
+/** Assinatura do aviso que a Shopee manda (Push Mechanism): HMAC-SHA256(partner_key, url + "|" + corpo). */
+export const assinarWebhook = (partnerKey, url, corpo) => hmac(partnerKey, `${url}|${corpo}`);

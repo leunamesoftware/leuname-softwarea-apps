@@ -68,6 +68,7 @@ async function api(env, req, path, ctx) {
     try { return json(await lerPrint(env, d.imagem, await produtos(env))); } catch (e) { return json({ erro: String(e) }, 502); }
   }
   if (path === '/api/shopee/retorno' && m === 'GET') return ERP.retornoShopee(env, req);
+  if (path === '/api/shopee/webhook' && m === 'POST') return ERP.webhookShopee(env, req, ctx);
   { const r = await PUSH.publico(env, req, path); if (r) return r; }
   // Pedido de teste (só pelo workflow, com segredo temporário): toca o aviso no celular e depois é apagado.
   if (path === '/api/erp/teste-pedido' && env.TESTE_PEDIDO && req.headers.get('X-Teste') === env.TESTE_PEDIDO) return ERP.pedidoTeste(env, req);
@@ -161,6 +162,6 @@ export default {
     }
     return env.ASSETS.fetch(req);
   },
-  // A cada 5 minutos: pedidos novos da Shopee e o que ficou para mandar.
+  // A cada minuto (reserva: o normal é o aviso instantâneo da Shopee em /api/shopee/webhook): pedidos novos da Shopee e o que ficou para mandar.
   async scheduled(_ev, env, ctx) { ctx.waitUntil(ERP.rotina(env)); },
 };

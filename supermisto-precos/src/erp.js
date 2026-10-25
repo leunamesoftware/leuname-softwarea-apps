@@ -157,7 +157,7 @@ export async function importarPedidos(env) {
   return { novos };
 }
 
-/** Rotina a cada 5 minutos: pedidos novos e o que ficou para mandar. */
+/** Rotina a cada minuto: pedidos novos e o que ficou para mandar. */
 export async function rotina(env) {
   try {
     await importarPedidos(env);
@@ -463,4 +463,19 @@ export async function pedidoTeste(env, req) {
     ? await avisar(env, '🛒 Pedido novo na Shopee', `${id} · Kit 15 Temperos · R$ 29,90 (teste)`, '/#pedidos', '/icone-shopee.png')
     : await avisar(env, '🛒 Pedido novo na Supermisto', `${id} · Kit 15 Temperos · R$ 29,90 (teste)`);
   return json({ ok: true, id, enviados });
+}
+
+/** Aviso instantâneo da Shopee (Push Mechanism): a Shopee chama esta URL na hora em que entra ou muda um pedido.
+ *  Confere a assinatura (HMAC da URL + corpo com a Partner Key) e já busca os pedidos e avisa o celular. */
+export async function webhookShopee(env, req, ctx) {
+  if (!S.configurada(env)) return new Response('ok');
+  const corpo = await req.text();
+  const assinatura = req.headers.get('Authorization') || '';
+  const esperado = await S.assinarWebhook(env.SHOPEE_PARTNER_KEY, req.url, corpo);
+  if (assinatura !== esperado) return new Response('assinatura', { status: 401 });
+  let d = {};
+  try { d = JSON.parse(corpo); } catch {}
+  // code 3 = pedido novo ou mudou de situação; 4 = rastreio; outros: ignora
+  if ([3, 4].includes(Number(d.code))) ctx.waitUntil(importarPedidos(env).catch((e) => anotar(env, 'shopee', `Webhook: ${e.message}`, 0)));
+  return new Response('ok');
 }
