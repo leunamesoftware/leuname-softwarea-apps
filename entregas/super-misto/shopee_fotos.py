@@ -110,71 +110,40 @@ def tamanhos(pid):
     return tela.convert('RGB')
 
 
+# No app da Shopee os botões (voltar, compartilhar, menu) ficam por cima do alto da foto:
+# os primeiros ~180 px ficam só com fundo; o nome do kit vai embaixo.
+TOPO_LIVRE = 185
+
+
+def titulo_embaixo(d, nome, sub):
+    d.text((LADO // 2, LADO - 140), nome, font=fonte('ExtraBold', 86 if len(nome) < 18 else 70), fill=BORDO, anchor='mm')
+    w = d.textlength(sub, font=fonte('Bold', 40)) + 90
+    d.rounded_rectangle((LADO // 2 - w // 2, LADO - 88, LADO // 2 + w // 2, LADO - 22), radius=33, fill=DOURADO)
+    d.text((LADO // 2, LADO - 55), sub, font=fonte('Bold', 40), fill='white', anchor='mm')
+
+
 def kit(nome, ids, peso):
+    """Foto do kit: todos os saquinhos o maior possível, sem nada importante nas bordas nem no alto."""
     tela = fundo().convert('RGBA')
     d = ImageDraw.Draw(tela)
-    d.text((LADO // 2, 72), nome, font=fonte('ExtraBold', 80 if len(nome) < 18 else 64), fill=BORDO, anchor='mm')
-    sub = TXT_KIT[peso].format(n=len(ids), t=kg(len(ids) * int(peso[:-1])))
-    w = d.textlength(sub, font=fonte('Bold', 38)) + 80
-    d.rounded_rectangle((LADO // 2 - w // 2, 122, LADO // 2 + w // 2, 186), radius=32, fill=DOURADO)
-    d.text((LADO // 2, 154), sub, font=fonte('Bold', 38), fill='white', anchor='mm')
-    por = 5 if len(ids) > 5 else 3
+    por = 5 if len(ids) > 6 else 3
     linhas = [ids[i:i + por] for i in range(0, len(ids), por)]
-    topo, fim = 200, LADO - 112
-    passo = (LADO - 70) / por
-    alt = (fim - topo) // len(linhas) - 6
-    # um pouco sobrepostos (como numa foto de kit de verdade): da direita para a esquerda,
-    # assim cada saquinho cobre só a foto do vizinho, nunca o nome
-    larg = passo * (1.22 if len(linhas) == 2 else 1.08) - 6
+    topo, fim = TOPO_LIVRE, LADO - 200
+    passo = (LADO - 90) / (por + 0.3)
+    larg = passo * 1.3  # um pouco sobrepostos: cada saquinho cobre só a foto do vizinho, nunca o nome
     p0 = produto(ids[0], peso)
-    h = min(alt, round(larg * p0.height / p0.width))  # altura real de cada fileira
-    sobra = (fim - topo) - len(linhas) * (h + 6)
-    topo += sobra // 2
+    h = min((fim - topo) // len(linhas) + 12, round(larg * p0.height / p0.width))
+    passo_v = h - 12
+    y0 = topo + ((fim - topo) - len(linhas) * passo_v) // 2
     for j, lin in enumerate(linhas):
-        base = topo + (j + 1) * (h + 6)
         x0 = LADO / 2 - passo * (len(lin) - 1) / 2
         for i, pid in reversed(list(enumerate(lin))):
-            colar(tela, produto(pid, peso), round(x0 + i * passo), base, alt, largura=larg)
-    faixa_rodape(d, fino=True)
+            colar(tela, produto(pid, peso), round(x0 + i * passo), y0 + (j + 1) * passo_v, h, largura=larg)
+    titulo_embaixo(d, nome, TXT_KIT[peso].format(n=len(ids), t=kg(len(ids) * int(peso[:-1]))))
     return vivo(tela)
 
 
-VITRINE = ['colorau', 'chimichurri', 'curcuma', 'oregano', 'paprica-doce', 'tempero-completo', 'lemon-pepper',
-           'pimenta-calabresa', 'paprica-defumada', 'canela', 'tempero-baiano', 'pimenta-do-reino', 'alho-em-po']
-
-
-def capa(nome, ids, peso):
-    """Capa para a vitrine da Shopee (aparece pequena): poucos saquinhos, bem grandes, e o selo com quantos sabores."""
-    tela = fundo().convert('RGBA')
-    d = ImageDraw.Draw(tela)
-    d.text((LADO // 2, 68), nome, font=fonte('ExtraBold', 92 if len(nome) < 18 else 74), fill=BORDO, anchor='mm')
-    sub = TXT_KIT[peso].format(n=len(ids), t=kg(len(ids) * int(peso[:-1])))
-    w = d.textlength(sub, font=fonte('Bold', 42)) + 90
-    d.rounded_rectangle((LADO // 2 - w // 2, 122, LADO // 2 + w // 2, 192), radius=35, fill=DOURADO)
-    d.text((LADO // 2, 157), sub, font=fonte('Bold', 42), fill='white', anchor='mm')
-    if len(ids) > 6:
-        # todos os sabores, o maior possível: 5 por fileira, um pouco sobrepostos (cobrem só a foto do vizinho)
-        linhas = [ids[i:i + 5] for i in range(0, len(ids), 5)]
-        passo, topo, fim = (LADO - 24) / 5.3, 205, LADO - 10  # 4 passos + 1 saquinho (1,3 passo) cabem na largura
-        alt = (fim - topo) // len(linhas) + 10
-        larg = passo * 1.30
-        p0 = produto(ids[0], peso)
-        h = min(alt, round(larg * p0.height / p0.width))
-        topo += ((fim - topo) - len(linhas) * (h - 12)) // 2
-        for j, lin in enumerate(linhas):
-            base = topo + (j + 1) * (h - 12)
-            x0 = LADO / 2 - passo * (len(lin) - 1) / 2
-            for i, pid in reversed(list(enumerate(lin))):
-                colar(tela, produto(pid, peso), round(x0 + i * passo), base, alt, largura=larg)
-        return vivo(tela)
-    linhas = [ids[:3], ids[3:]] if len(ids) > 3 else [ids]
-    larg, alt = 380, 470
-    bases = [690, 1185] if len(linhas) == 2 else [900]
-    for j, lin in enumerate(linhas):
-        x0 = LADO / 2 - 385 * (len(lin) - 1) / 2
-        for i, pid in reversed(list(enumerate(lin))):
-            colar(tela, produto(pid, peso), round(x0 + i * 385), bases[j], alt, largura=larg)
-    return vivo(tela)
+capa = kit  # a capa é a mesma foto (já pensada para aparecer pequena na vitrine)
 
 
 def detalhe(nome, ids, peso, parte, total):
@@ -182,9 +151,9 @@ def detalhe(nome, ids, peso, parte, total):
     tela = fundo().convert('RGBA')
     d = ImageDraw.Draw(tela)
     # o nome do kit em cima (para saber de qual kit é a foto)
-    d.text((LADO // 2, 62), nome, font=fonte('ExtraBold', 66 if len(nome) < 18 else 54), fill=BORDO, anchor='mm')
+    d.text((LADO // 2, LADO - 60), nome, font=fonte('ExtraBold', 66 if len(nome) < 18 else 54), fill=BORDO, anchor='mm')
     linhas = [ids[:3], ids[3:]] if len(ids) > 3 else [ids]
-    topo, fim = 110, LADO - 45
+    topo, fim = TOPO_LIVRE - 40, LADO - 115
     for j, lin in enumerate(linhas):
         base = topo + (j + 1) * (fim - topo) // len(linhas) - 6
         passo = (LADO - 40) / 3
@@ -232,7 +201,6 @@ def main():
     for chave, (nome, ids) in KITS.items():
         for peso in TXT_KIT:
             kit(nome, ids, peso).save(SAIDA / f'kit-{chave}-{peso}.jpg', quality=90)
-            capa(nome, ids, peso).save(SAIDA / f'kit-{chave}-{peso}-capa.jpg', quality=90)
             partes = [ids[i:i + 5] for i in range(0, len(ids), 5)]
             for n, grupo in enumerate(partes, 1):
                 detalhe(nome, grupo, peso, n, len(partes)).save(SAIDA / f'kit-{chave}-{peso}-perto{n}.jpg', quality=90)

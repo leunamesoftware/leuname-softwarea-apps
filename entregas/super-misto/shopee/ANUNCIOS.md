@@ -13,14 +13,14 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit 10 Temperos Naturais
 **Título:** `Kit 10 Temperos Naturais Sem Conservantes Supermisto Sabores Variados`
 
-**Capa (1ª foto, saquinhos grandes):** `kit-dia-a-dia-10g-capa.jpg`
+**Capa (1ª foto):** `kit-dia-a-dia-10g.jpg`
 
 **Variações (com a foto de cada uma):**
 - 10 sachês de 10 g → `kit-dia-a-dia-10g.jpg`
 - 10 pacotes de 50 g → `kit-dia-a-dia-50g.jpg`
 - 10 pacotes de 100 g → `kit-dia-a-dia-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-dia-a-dia-10g.jpg` (o kit inteiro), `kit-dia-a-dia-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-dia-a-dia-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -35,14 +35,14 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit 5 Temperos Especiais
 **Título:** `Kit 5 Temperos Especiais Sem Conservantes Supermisto Sabores Variados`
 
-**Capa (1ª foto, saquinhos grandes):** `kit-especiais-10g-capa.jpg`
+**Capa (1ª foto):** `kit-especiais-10g.jpg`
 
 **Variações (com a foto de cada uma):**
 - 5 sachês de 10 g → `kit-especiais-10g.jpg`
 - 5 pacotes de 50 g → `kit-especiais-50g.jpg`
 - 5 pacotes de 100 g → `kit-especiais-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-especiais-10g.jpg` (o kit inteiro), `kit-especiais-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-especiais-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -57,14 +57,14 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit 15 Temperos Naturais
 **Título:** `Kit 15 Temperos Naturais Sem Conservantes Supermisto Sabores Variados`
 
-**Capa (1ª foto, saquinhos grandes):** `kit-completo-10g-capa.jpg`
+**Capa (1ª foto):** `kit-completo-10g.jpg`
 
 **Variações (com a foto de cada uma):**
 - 15 sachês de 10 g → `kit-completo-10g.jpg`
 - 15 pacotes de 50 g → `kit-completo-50g.jpg`
 - 15 pacotes de 100 g → `kit-completo-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-completo-10g.jpg` (o kit inteiro), `kit-completo-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-completo-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
@@ -79,14 +79,14 @@ A Shopee cobra 20% + R$ 4,50 fixo por item vendido. Por isso o sachê de 10 g **
 ### Kit Churrasco 5 Temperos
 **Título:** `Kit Churrasco 5 Temperos Sem Conservantes Supermisto Sabores Variados`
 
-**Capa (1ª foto, saquinhos grandes):** `kit-churrasco-10g-capa.jpg`
+**Capa (1ª foto):** `kit-churrasco-10g.jpg`
 
 **Variações (com a foto de cada uma):**
 - 5 sachês de 10 g → `kit-churrasco-10g.jpg`
 - 5 pacotes de 50 g → `kit-churrasco-50g.jpg`
 - 5 pacotes de 100 g → `kit-churrasco-100g.jpg`
 
-**Outras fotos (depois da capa):** `kit-churrasco-10g.jpg` (o kit inteiro), `kit-churrasco-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
+**Outras fotos (depois da capa):** `kit-churrasco-10g-perto1.jpg`… (de perto, com o nome do kit) e `info-natural.jpg`.
 
 **Descrição:**
 ```
