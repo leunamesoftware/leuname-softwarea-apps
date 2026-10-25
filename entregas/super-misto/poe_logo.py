@@ -11,6 +11,8 @@ from PIL import Image, ImageFilter, ImageDraw
 
 AQUI = Path(__file__).resolve().parent
 LOGO = AQUI / 'logo-bordo' / 'logo-supermisto.png'
+LOGO_LARGURA = 300
+VERDE_GARRAFA = '--verde-claro' not in sys.argv  # padrão: verde-garrafa (mais escuro e elegante)
 
 
 def painel_verde(a):
@@ -38,40 +40,45 @@ def main(pid, pesos=('10 g',)):
     cols = np.where(faixa.mean(0) > 0.3)[0]
     cols = cols[(cols > a.shape[1] * 0.25) & (cols < a.shape[1] * 0.75)]
     furo_x0 = int(cols.min()) if len(cols) else a.shape[1] // 2
-    # 1) furo: apaga o furo grande da arte e desenha um furo borboleta menor, encostado no topo (abre espaço no verde)
-    import cv2
+    # 1) furo original da arte fica como está (sem remendo): a logo vai no verde logo abaixo dele
+    import cv2  # noqa: F401 (mantido para compatibilidade)
     W = a.shape[1]
-    zona = np.zeros(a.shape[:2], np.uint8)
     fz = (a[y0 + 5:y0 + 170, int(W * .3):int(W * .75)].min(2) > 228)
     ys, xs = np.where(fz)
-    fx0, fx1 = int(xs.min() + W * .3), int(xs.max() + W * .3)
-    fy0, fy1 = int(ys.min() + y0 + 5), int(ys.max() + y0 + 5)
-    zona[fy0 - 6:fy1 + 8, fx0 - 8:fx1 + 8] = 255
-    limpa = cv2.inpaint(np.ascontiguousarray(a[..., ::-1]), zona, 9, cv2.INPAINT_TELEA)[..., ::-1]
-    base_img = Image.fromarray(limpa.copy()).convert('RGBA')
-    base_img.putalpha(im.split()[-1])
-    im = base_img
-    d = ImageDraw.Draw(im)
-    cxf, hf = (fx0 + fx1) // 2, 34
-    ny0 = y0 + 14
-    d.rounded_rectangle([cxf - 120, ny0, cxf + 120, ny0 + hf], radius=hf // 2, fill=(255, 255, 255, 255))
-    d.ellipse([cxf - 26, ny0 - 8, cxf + 26, ny0 + hf + 8], fill=(255, 255, 255, 255))
+    ny0, hf = y0, int(ys.max() + 5)
+    # verde-garrafa: escurece só o painel verde (a maior área verde), não as folhas da foto
+    if VERDE_GARRAFA:
+        from scipy import ndimage as nd
+        rgb = np.asarray(im.convert('RGB')).astype(float)
+        hsv = np.asarray(im.convert('RGB').convert('HSV')).astype(float)
+        h, sat, val = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+        verde = (h > 70) & (h < 130) & (sat > 70)
+        lab, _ = nd.label(verde)
+        maior = lab == (np.bincount(lab.ravel())[1:].argmax() + 1)
+        maior = nd.binary_dilation(maior, iterations=2) & verde
+        hsv2 = hsv.copy()
+        hsv2[..., 0] = np.where(maior, np.clip(h + 6, 0, 255), h)     # um pouco mais azulado
+        hsv2[..., 2] = np.where(maior, val * 0.72, val)                # mais escuro
+        hsv2[..., 1] = np.where(maior, np.clip(sat * 1.05, 0, 255), sat)
+        novo = Image.fromarray(hsv2.astype(np.uint8), 'HSV').convert('RGB').convert('RGBA')
+        novo.putalpha(im.split()[-1]); im = novo
     a = np.asarray(im.convert('RGB'))
-    # 2) espaço no VERDE entre o furo novo e o nome
-    topo = ny0 + hf + 8 + 14
+    # 2) logo no VERDE, no alto, à direita do furo e acima do nome (mesmo tamanho em todos)
+    fx1 = int(xs.max() + W * .3)
     r_, g_, b_ = (a[:, int(W * .55):int(W * .9), i].astype(int) for i in range(3))
     verde = (g_ > r_ + 15) & (g_ > b_) & (g_ < 150)
-    base = next(y for y in range(topo + 30, a.shape[0]) if verde[y].mean() < 0.75) - 16
-    meio = (topo + base) // 2
-    rr, gg, bb = (a[meio, :, i].astype(int) for i in range(3))
+    base = next(y for y in range(y0 + 120, a.shape[0]) if verde[y].mean() < 0.75) - 14   # começo da faixa do nome
+    lin = y0 + 60
+    rr, gg, bb = (a[lin, :, i].astype(int) for i in range(3))
     vcols = np.where((gg > rr + 15) & (gg > bb) & (gg < 150))[0]
-    vcols = vcols[vcols > W * 0.35]
-    cx = int((vcols.min() + vcols.max()) // 2)
+    direita = int(vcols.max()) - 22
+    esquerda = fx1 + 22
     logo = Image.open(LOGO).convert('RGBA')
-    lh = min(base - topo, 128)  # mesmo tamanho em todos (o menor espaço da linha)
-    lw = round(logo.width * lh / logo.height)
+    lw = LOGO_LARGURA
+    lh = round(logo.height * lw / logo.width)
     logo = logo.resize((lw, lh), Image.LANCZOS)
-    pos = (cx - lw // 2, topo + (base - topo - lh) // 2)
+    cx = (esquerda + direita) // 2
+    pos = (min(cx - lw // 2, direita - lw), y0 + 14 + max(0, (base - y0 - 14 - lh) // 2) if base - y0 - 14 > lh else y0 + 14)
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
     s_ = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s_.putalpha(logo.split()[-1].point(lambda v: v * 120 // 255))
     sombra.paste(s_, (pos[0] + 4, pos[1] + 8), s_)
@@ -111,4 +118,5 @@ def troca_peso(im, peso):
 if __name__ == '__main__':
     # ex.: python3 poe_logo.py colorau          (só 10 g)
     #      python3 poe_logo.py colorau 10 30 50 100   (um saquinho de cada peso)
-    main(sys.argv[1], tuple(f'{g} g' for g in sys.argv[2:]) or ('10 g',))
+    args = [x for x in sys.argv[2:] if not x.startswith('--')]
+    main(sys.argv[1], tuple(f'{g} g' for g in args) or ('10 g',))
