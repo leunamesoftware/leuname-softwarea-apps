@@ -839,3 +839,6 @@ body{background:#FBF6EE}
 /* linha ainda sem foto: fundo roxo com o emoji da linha */
 .linha-foto{position:relative}
 .linha-foto i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:52px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+/* banner do topo sempre inteiro na tela (sem cortar embaixo no notebook) */
+.banner-topo img{width:auto;max-width:min(100%,1280px);max-height:calc(100svh - 84px)}
+@media (max-width:860px){.banner-topo img{max-height:none;width:100%}}

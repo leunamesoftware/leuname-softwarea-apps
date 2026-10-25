@@ -23,7 +23,7 @@ const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=16" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=17" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
