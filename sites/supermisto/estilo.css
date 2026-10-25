@@ -796,14 +796,16 @@ body{background:#FBF6EE}
 .hero-vitrine{height:auto!important;display:flex;align-items:center;justify-content:center}
 .vit-kit{width:100%;max-width:520px;height:auto;border-radius:22px;box-shadow:0 18px 40px rgba(74,13,22,.22)}
 @media (max-width:860px){.vit-kit{max-width:420px}}
-/* rodapé no celular: tudo centralizado, uma coluna só */
 @media (max-width:600px){
-  .rod-grid{grid-template-columns:1fr!important;gap:26px;text-align:center;justify-items:center}
-  .rod-grid>div{display:flex;flex-direction:column;align-items:center}
-  .rod-grid p{margin-left:auto;margin-right:auto}
-  .rod-contato a,.rod-contato span{justify-content:center;text-align:center}
-  .rod-base{flex-direction:column;align-items:center;text-align:center}
-  /* rodapé no celular: cada pedaço numa linha inteira, sem quebrar no meio */
+  /* rodapé no celular no mesmo estilo do computador: marca em cima, colunas lado a lado */
+  .rod-grid{grid-template-columns:1fr 1fr!important;gap:26px 18px;padding:34px 0 6px!important}
+  .rod-grid>div:first-child,.rod-contato{grid-column:1 / -1}
+  .rod-grid img{width:150px!important;margin:0 0 4px -6px!important;display:block}
+  .rod-grid p{max-width:none}
+  .rod-grid a,.rod-grid span{font-size:14px}
+  .rod-grid,.rod-grid>div{text-align:left!important;align-items:flex-start!important;justify-items:start!important}
+  .rod-grid p{margin-left:0!important}
+  .rod-base{flex-direction:column;gap:4px;align-items:flex-start!important;text-align:left!important}
   .rodape .ln{display:block}
   .rodape .sep{display:none}
   .rod-contato .rod-end{display:block!important}
