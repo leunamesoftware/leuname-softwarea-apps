@@ -19,8 +19,11 @@ const KITS = [
    Produto sem foto aparece com a embalagem desenhada. */
 const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 'cominho-moido', 'chimichurri', 'oregano', 'paprica-doce', 'paprica-defumada', 'acafrao-da-terra-curcuma', 'alho-em-po', 'cebola-em-po', 'lemon-pepper', 'pimenta-calabresa', 'canela-em-po', 'tempero-baiano']);
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// foto do tamanho escolhido: 10 g (padrão), 50 g, 100 g ou o pacote de 1 kg
+const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
-  return FOTOS.has(slug(p.nome)) ? `<img class="foto-prod" src="img/produtos/${slug(p.nome)}.webp" alt="${escapar(p.nome)} Supermisto" loading="lazy">` : embalagem(p, peso);
+  const s = slug(p.nome);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -32,7 +35,7 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 /* ---------- cartões de produto ---------- */
 function cartao(p, i) {
   return `<article class="prod aparece" data-i="${i}" tabindex="0" role="button" aria-label="Ver ${escapar(p.nome)}">
-    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, p.tam[1] || p.tam[0])}</div>
+    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, FOTOS.has(slug(p.nome)) ? p.tam[0] : p.tam[1] || p.tam[0])}</div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -50,7 +53,7 @@ function ligarCartoes(el) {
 /* ---------- janela do produto ---------- */
 function abrir(p) {
   const m = $('#modal');
-  let tam = p.tam[Math.min(1, p.tam.length - 1)];
+  let tam = FOTOS.has(slug(p.nome)) ? p.tam[0] : p.tam[Math.min(1, p.tam.length - 1)];
   const desenha = () => {
     m.innerHTML = `<div class="modal-fundo" data-fechar></div>
     <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="m-tit">
@@ -150,8 +153,7 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = [['Pimenta-do-reino moída', 'r1'], ['Colorau', 'r2'], ['Tempero completo', 'r3']]
-    .map(([n, c]) => `<div class="vit ${c}">${vit(n)}</div>`).join('') + '<div class="vit-blob"></div>';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.length + '+';
   const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'sais', 'churrasco', 'molhos'];
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {

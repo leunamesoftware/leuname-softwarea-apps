@@ -1,7 +1,7 @@
 /* Receitas Super Misto: textos próprios. "usa" = nomes exatos de produtos do catálogo (produtos.js). */
 const RECEITAS = [
   {
-    id: 'macarrao-alho-ervas', emoji: '🍝', cor: '#C99A3B', tempo: '20 min', rende: '4 porções',
+    id: 'macarrao-alho-ervas', foto: 'macarrao-alho-ervas', emoji: '🍝', cor: '#C99A3B', tempo: '20 min', rende: '4 porções',
     titulo: 'Macarrão cremoso com alho e ervas',
     resumo: 'Prato rápido de dia de semana, cremoso e perfumado.',
     usa: ['Alho em pó', 'Ervas finas', 'Pimenta-do-reino moída', 'Noz-moscada moída'],
