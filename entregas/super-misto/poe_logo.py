@@ -7,7 +7,7 @@ A logo fica centralizada na parte verde, entre o furo e o nome do tempero, sempr
 import sys
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageDraw
 
 AQUI = Path(__file__).resolve().parent
 LOGO = AQUI / 'logo-bordo' / 'logo-supermisto.png'
@@ -38,13 +38,40 @@ def main(pid, pesos=('10 g',)):
     cols = np.where(faixa.mean(0) > 0.3)[0]
     cols = cols[(cols > a.shape[1] * 0.25) & (cols < a.shape[1] * 0.75)]
     furo_x0 = int(cols.min()) if len(cols) else a.shape[1] // 2
+    # 1) furo: apaga o furo grande da arte e desenha um furo borboleta menor, encostado no topo (abre espaço no verde)
+    import cv2
+    W = a.shape[1]
+    zona = np.zeros(a.shape[:2], np.uint8)
+    fz = (a[y0 + 5:y0 + 170, int(W * .3):int(W * .75)].min(2) > 228)
+    ys, xs = np.where(fz)
+    fx0, fx1 = int(xs.min() + W * .3), int(xs.max() + W * .3)
+    fy0, fy1 = int(ys.min() + y0 + 5), int(ys.max() + y0 + 5)
+    zona[fy0 - 6:fy1 + 8, fx0 - 8:fx1 + 8] = 255
+    limpa = cv2.inpaint(np.ascontiguousarray(a[..., ::-1]), zona, 9, cv2.INPAINT_TELEA)[..., ::-1]
+    base_img = Image.fromarray(limpa.copy()).convert('RGBA')
+    base_img.putalpha(im.split()[-1])
+    im = base_img
+    d = ImageDraw.Draw(im)
+    cxf, hf = (fx0 + fx1) // 2, 34
+    ny0 = y0 + 14
+    d.rounded_rectangle([cxf - 120, ny0, cxf + 120, ny0 + hf], radius=hf // 2, fill=(255, 255, 255, 255))
+    d.ellipse([cxf - 26, ny0 - 8, cxf + 26, ny0 + hf + 8], fill=(255, 255, 255, 255))
+    a = np.asarray(im.convert('RGB'))
+    # 2) espaço no VERDE entre o furo novo e o nome
+    topo = ny0 + hf + 8 + 14
+    r_, g_, b_ = (a[:, int(W * .55):int(W * .9), i].astype(int) for i in range(3))
+    verde = (g_ > r_ + 15) & (g_ > b_) & (g_ < 150)
+    base = next(y for y in range(topo + 30, a.shape[0]) if verde[y].mean() < 0.75) - 16
+    meio = (topo + base) // 2
+    rr, gg, bb = (a[meio, :, i].astype(int) for i in range(3))
+    vcols = np.where((gg > rr + 15) & (gg > bb) & (gg < 150))[0]
+    vcols = vcols[vcols > W * 0.35]
+    cx = int((vcols.min() + vcols.max()) // 2)
     logo = Image.open(LOGO).convert('RGBA')
-    # fica logo abaixo da altura do furo, então pode ser grande sem tocar nele
-    linhas_furo = np.where((a[y0:y0 + 200, furo_x0 + 5:furo_x0 + 60].min(2) > 235).mean(1) > 0.5)[0]
-    fundo_furo = y0 + (int(linhas_furo.max()) if len(linhas_furo) else 100)
-    lw = round(a.shape[1] * 0.37)
-    logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
-    pos = (sx0 + 16, fundo_furo + 10)  # abaixo do furo: a faca do furo nunca corta a logo
+    lh = min(base - topo, 128)  # mesmo tamanho em todos (o menor espaço da linha)
+    lw = round(logo.width * lh / logo.height)
+    logo = logo.resize((lw, lh), Image.LANCZOS)
+    pos = (cx - lw // 2, topo + (base - topo - lh) // 2)
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
     s_ = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s_.putalpha(logo.split()[-1].point(lambda v: v * 120 // 255))
     sombra.paste(s_, (pos[0] + 4, pos[1] + 8), s_)
