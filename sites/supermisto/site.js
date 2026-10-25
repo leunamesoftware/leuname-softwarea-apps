@@ -123,7 +123,7 @@ function redes() {
 }
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
-    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="62" loading="lazy"><p>Temperos de verdade, 100% naturais e sem conservantes. Fábrica própria.</p>${redes()}</div>
+    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="94" loading="lazy"><p>Temperos de verdade, 100% naturais e sem conservantes. Fábrica própria.</p>${redes()}</div>
     <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
     <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
