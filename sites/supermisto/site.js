@@ -30,7 +30,7 @@ const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=34" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=35" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -42,7 +42,7 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 /* ---------- cartões de produto ---------- */
 function cartao(p) {
   if (!FOTOS.has(slug(p.nome))) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
-    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=34" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
+    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=35" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -131,11 +131,11 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=34" alt="Kit 10 temperos Supermisto" width="900" height="900">';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=35" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.length + '+';
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=34)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=35)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
     return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
@@ -183,8 +183,8 @@ function paginaLinha() {
   const titulo = `<span class="sobre-tit amarelo">Nossas linhas</span><h1>${l.nome}</h1><p>${l.desc}</p>
     <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
   $('#linha').innerHTML = CAPAS_LINHA.includes(l.id)
-    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=34" alt="${l.nome} Supermisto" width="1920" height="720"></div><div class="ln-topo ln-topo-so"><div class="caixa">${titulo}</div></div>`
-    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=34" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
+    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=35" alt="${l.nome} Supermisto" width="1920" height="720"></div><div class="ln-topo ln-topo-so"><div class="caixa">${titulo}</div></div>`
+    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=35" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
   $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }

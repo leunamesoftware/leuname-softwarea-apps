@@ -941,3 +941,12 @@ body{background:#FBF6EE}
 @media (max-width:420px){#rv-interesse{grid-template-columns:1fr}}
 /* foco visível no teclado */
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #C29433;outline-offset:2px}
+/* página do produto: botões de embalagem iguais e botões de pedido em uma linha */
+#pd-tam{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:8px;max-width:440px}
+#pd-tam button{width:100%;padding:10px 0;text-align:center}
+.pd-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:440px}
+.pd-btns .btn{width:100%;white-space:nowrap;padding:14px 10px;font-size:13px;letter-spacing:.4px;text-align:center;justify-content:center}
+.pd-btns .btn:nth-child(3){grid-column:1/-1}
+@media (max-width:860px){.pd-btns .btn{flex:none}}
+.pd-btns{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:380px){.pd-btns .btn{font-size:12px;letter-spacing:.2px;padding:14px 6px}}
