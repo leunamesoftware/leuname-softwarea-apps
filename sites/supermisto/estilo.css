@@ -842,3 +842,5 @@ body{background:#FBF6EE}
 /* banner do topo sempre inteiro na tela (sem cortar embaixo no notebook) */
 .banner-topo img{width:auto;max-width:min(100%,1280px);max-height:calc(100svh - 84px)}
 @media (max-width:860px){.banner-topo img{max-height:none;width:100%}}
+/* janela do produto no celular: altura da tela visível (a barra do navegador não corta o topo) */
+@media (max-width:860px){.modal-caixa{max-height:calc(100dvh - 24px)}}

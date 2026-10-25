@@ -111,7 +111,9 @@ def recortar(caminho):
 
 def quadrado(im):
     lado = LADO - 2 * MARGEM
-    k = min(lado / im.width, lado / im.height)
+    # garrafa (alta e fina): folga maior em cima e embaixo para a tampa não encostar na borda
+    alto = lado - 2 * round(LADO * 0.05) if im.height > im.width * 1.6 else lado
+    k = min(lado / im.width, alto / im.height)
     im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     tela = Image.new('RGBA', (LADO, LADO), (0, 0, 0, 0))
     tela.alpha_composite(im, ((LADO - im.width) // 2, (LADO - im.height) // 2))
