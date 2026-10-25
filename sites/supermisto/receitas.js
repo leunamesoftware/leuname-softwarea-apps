@@ -35,12 +35,12 @@ const RECEITAS = [
     preparo: ['Tempere a carne com o Tempero completo e a páprica e deixe descansar 15 minutos.', 'Doure a carne em panela bem quente, aos poucos, para não soltar água.', 'Junte o tomate e a água, tampe e cozinhe por 30 minutos em fogo baixo.', 'Finalize com a salsa e sirva com arroz, farofa e ovo frito.'],
   },
   {
-    id: 'frango-assado-dourado', emoji: '🍗', cor: '#C76B22', tempo: '1h10', rende: '5 porções',
+    id: 'frango-assado-dourado', foto: 'frango-assado-dourado', emoji: '🍗', cor: '#C76B22', tempo: '1h30', rende: '6 porções',
     titulo: 'Frango assado dourado e suculento',
     resumo: 'Pele crocante por fora, carne macia por dentro, com tempero que penetra de verdade.',
     usa: ['Tempero para frango', 'Páprica doce', 'Alho em pó', 'Alecrim'],
-    ingredientes: ['1 kg de coxa e sobrecoxa', '2 colheres (sopa) de Tempero para frango Super Misto', '1 colher (chá) de Páprica doce', '1 colher (chá) de Alho em pó', 'Suco de 1 limão', '2 colheres (sopa) de azeite', 'Alecrim a gosto'],
-    preparo: ['Misture todos os temperos com o limão e o azeite.', 'Esfregue no frango, inclusive embaixo da pele, e deixe na geladeira por pelo menos 2 horas.', 'Asse coberto com papel-alumínio a 200 °C por 40 minutos.', 'Retire o papel e asse mais 20 minutos para dourar.'],
+    ingredientes: ['1 frango inteiro (cerca de 2 kg)', '3 colheres (sopa) de Tempero para frango Super Misto', '1 colher (chá) de Páprica doce', '1 colher (chá) de Alho em pó', 'Suco de 1 limão', '3 colheres (sopa) de azeite', '4 batatas em pedaços', '2 cenouras em pedaços', '2 cebolas roxas em quartos', 'Ramos de alecrim a gosto'],
+    preparo: ['Misture os temperos com o limão e 2 colheres de azeite.', 'Esfregue no frango, por dentro, por fora e embaixo da pele, e deixe na geladeira por pelo menos 2 horas.', 'Coloque o frango numa assadeira (ou frigideira de ferro) com as batatas, as cenouras e as cebolas em volta; regue os legumes com o resto do azeite e uma pitada do tempero.', 'Asse coberto com papel-alumínio a 200 °C por 50 minutos.', 'Retire o papel, junte o alecrim e asse mais 30 a 40 minutos, até a pele dourar e os legumes ficarem macios.'],
   },
   {
     id: 'picanha-chimichurri', foto: 'picanha-chimichurri', emoji: '🔥', cor: '#5E2416', tempo: '40 min', rende: '6 porções',
