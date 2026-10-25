@@ -804,3 +804,8 @@ body{background:#FBF6EE}
   .rod-contato a,.rod-contato span{justify-content:center;text-align:center}
   .rod-base{flex-direction:column;align-items:center;text-align:center}
 }
+/* fotos dos produtos maiores e mais vivas (sem caixa apertada) */
+.modal-img:has(.foto-prod){padding:10px}
+.modal-img .foto-prod{max-height:440px;width:auto;filter:drop-shadow(0 14px 22px rgba(74,13,22,.22))}
+.prod-img .foto-prod{padding:4px}
+@media (max-width:860px){.modal-img{height:min(46vh,380px)!important;padding:6px!important}}
