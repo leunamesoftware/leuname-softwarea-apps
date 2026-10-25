@@ -17,7 +17,7 @@ SITE = AQUI.parent.parent / 'sites' / 'supermisto' / 'img' / 'produtos'
 FONTES = AQUI.parents[1] / 'calculadora' / 'scripts' / 'fontes'
 SAIDA = AQUI / 'shopee' / 'fotos'
 LADO = 1200
-CREME, BORDO, BORDO_ESC, DOURADO = (251, 246, 238), (107, 20, 32), (74, 13, 22), (184, 134, 43)
+CREME, BORDO, BORDO_ESC, DOURADO = (251, 246, 238), (94, 22, 117), (61, 10, 79), (194, 148, 51)  # roxo e dourado (marca nova)
 
 SLUG = {'pimenta-do-reino': 'pimenta-do-reino-moida', 'cominho': 'cominho-moido',
         'curcuma': 'acafrao-da-terra-curcuma', 'canela': 'canela-em-po'}
@@ -175,9 +175,11 @@ def vivo(tela):
 def info():
     tela = fundo().convert('RGBA')
     d = ImageDraw.Draw(tela)
-    logo = Image.open(AQUI / 'logo-bordo' / 'logo-supermisto.png').convert('RGBA')
-    logo = logo.resize((520, round(logo.height * 520 / logo.width)), Image.LANCZOS)
-    tela.alpha_composite(logo, ((LADO - logo.width) // 2, 70))
+    # selo redondo roxo com a logo (a logo é branca: no fundo claro vai dentro do círculo)
+    logo = Image.open(AQUI / 'logo-roxa' / 'redondo.png').convert('RGBA').resize((300, 300), Image.LANCZOS)
+    mascara = Image.new('L', logo.size, 0); ImageDraw.Draw(mascara).ellipse((6, 6, 294, 294), fill=255)
+    logo.putalpha(mascara)
+    tela.alpha_composite(logo, ((LADO - logo.width) // 2, 60))
     itens = [('100% natural', 'Só o tempero, sem enchimento.'),
              ('Sem conservantes', 'Nada de química para durar mais.'),
              ('Moído e embalado na hora', 'Mais cheiro e mais sabor na panela.'),

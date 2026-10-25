@@ -42,7 +42,7 @@ export function opcoesSku(sel = '') {
 }
 
 /** Gráfico de barras simples (SVG) com rótulos nos dias. */
-export function barras(valores, rotulos, { altura = 170, cor = '#6B1420', formato = brl } = {}) {
+export function barras(valores, rotulos, { altura = 170, cor = '#5E1675', formato = brl } = {}) {
   const W = 640, H = altura, E = 8, T = 18, Bm = 24;
   const max = Math.max(1, ...valores), n = valores.length, larg = (W - E * 2) / n;
   return `<svg viewBox="0 0 ${W} ${H}" class="graf barras" role="img" aria-label="Gráfico de vendas">

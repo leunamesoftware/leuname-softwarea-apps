@@ -1,10 +1,10 @@
 {
-  "name": "Precificador Supermisto",
+  "name": "Supermisto Gestão",
   "short_name": "Supermisto",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F4F7F5",
-  "theme_color": "#0B6E33",
+  "background_color": "#F7F3EC",
+  "theme_color": "#5E1675",
   "icons": [
     { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },

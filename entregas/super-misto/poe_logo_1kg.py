@@ -9,7 +9,7 @@ from PIL import Image, ImageFilter
 from scipy import ndimage as nd
 
 AQUI = Path(__file__).resolve().parent
-LOGO = AQUI / 'logo-bordo' / 'logo-supermisto.png'
+LOGO = AQUI / 'logo-roxa' / 'logo-branca-risco.png'  # logo nova: branca, folhas e risco dourados
 
 
 def main(pid):
@@ -34,7 +34,7 @@ def main(pid):
     logo = logo.resize((lw, lh), Image.LANCZOS)
     pos = ((x0 + x1) // 2 - lw // 2, top + (base - top - lh) // 2)
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
-    s = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s.putalpha(logo.split()[-1].point(lambda v: v * 110 // 255))
+    s = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s.putalpha(logo.split()[-1].point(lambda v: v * 150 // 255))
     sombra.paste(s, (pos[0] + 3, pos[1] + 6), s)
     im = Image.alpha_composite(im, sombra.filter(ImageFilter.GaussianBlur(6)))
     im.alpha_composite(logo, pos)

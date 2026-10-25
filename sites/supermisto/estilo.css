@@ -406,7 +406,7 @@ h1,h2,h3,.btn,.menu a,.selo-topo,.sobre-tit,.prod-linha,.hero-numeros b,.letreir
 
 /* ======================= TEMA VERDE + TERRACOTA ======================= */
 :root{
-  --roxo:#5E1675; --roxo-esc:#3D0A4F; --roxo-cl:#EAF6EE;
+  --roxo:#5E1675; --roxo-esc:#3D0A4F; --roxo-cl:#F3ECFA;
   --amarelo:#C29433; --vermelho:#9C7420; --creme:#FFFFFF;
   --texto:#1F2A22; --suave:#5E6B60; --borda:#E8DCC8;
   --sombra:0 10px 30px rgba(0,70,28,.12); --raio:16px;
@@ -624,7 +624,7 @@ body{background:#FBF6EE}
 .kit{background:#fff;border:1px solid #F0E3CF;box-shadow:0 6px 18px rgba(0,60,25,.06)}
 .kit small{color:#5E6B60;opacity:1}
 .sobre-tit.amarelo{color:#C29433}
-.contato{background:linear-gradient(180deg,#EEF8F1,#fff);color:#1F2A22}
+.contato{background:linear-gradient(180deg,#F3ECFA,#fff);color:#1F2A22}
 .contato h2{color:#3D0A4F}
 .cont-lista a{color:#3D0A4F}
 .contato .btn-vazado{border-color:#5E1675;color:#5E1675}

@@ -10,8 +10,8 @@ import numpy as np
 from PIL import Image, ImageFilter, ImageDraw
 
 AQUI = Path(__file__).resolve().parent
-LOGO = AQUI / 'logo-bordo' / 'logo-supermisto.png'
-LOGO_LARGURA = 300
+LOGO = AQUI / 'logo-roxa' / 'logo-branca-risco.png'  # logo nova: branca, folhas e risco dourados
+LOGO_LARGURA = 320
 VERDE_GARRAFA = '--verde-claro' not in sys.argv  # padrão: verde-garrafa (mais escuro e elegante)
 
 
@@ -80,7 +80,7 @@ def main(pid, pesos=('10 g',)):
     cx = (esquerda + direita) // 2
     pos = (min(cx - lw // 2, direita - lw), y0 + 14 + max(0, (base - y0 - 14 - lh) // 2) if base - y0 - 14 > lh else y0 + 14)
     sombra = Image.new('RGBA', im.size, (0, 0, 0, 0))
-    s_ = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s_.putalpha(logo.split()[-1].point(lambda v: v * 120 // 255))
+    s_ = Image.new('RGBA', logo.size, (0, 0, 0, 0)); s_.putalpha(logo.split()[-1].point(lambda v: v * 150 // 255))
     sombra.paste(s_, (pos[0] + 4, pos[1] + 8), s_)
     im = Image.alpha_composite(im, sombra.filter(ImageFilter.GaussianBlur(7)))
     im.alpha_composite(logo, pos)
