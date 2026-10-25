@@ -852,3 +852,6 @@ body{background:#FBF6EE}
 /* banner do computador (arte larga): tela toda, sem cortar */
 @media (min-width:861px){.banner-topo picture{display:block}.banner-topo img{width:100%;max-width:1920px;max-height:calc(100svh - 84px);object-fit:contain}}
 @media (max-width:860px){.banner-topo img{width:100%;max-width:100%;max-height:none;height:auto}}
+/* produtos da receita: caixa parada (não acompanha a rolagem) e foto real do pacote */
+.rc-lado{position:static}
+.rc-prod .foto-prod{position:static;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;padding:2px;background:transparent}
