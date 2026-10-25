@@ -23,7 +23,7 @@ const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=14" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=15" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -155,11 +155,11 @@ function inicio() {
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
   $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.length + '+';
-  const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'sais', 'churrasco', 'molhos'];
+  const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'sais', 'churrasco'];
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp)` : `background:linear-gradient(160deg,${l.cor},#142A1F)`;
-    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}"><span class="linha-foto" style="${fundo}"></span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    return `<a class="linha aparece" href="catalogo.html?linha=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
   const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome))).slice(0, 7);
