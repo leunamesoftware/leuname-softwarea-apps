@@ -818,7 +818,7 @@ body{background:#FBF6EE}
 .modal-img:has(.foto-prod){padding:10px}
 .modal-img .foto-prod{max-height:440px;width:auto;filter:drop-shadow(0 14px 22px rgba(74,13,22,.22))}
 .prod-img .foto-prod{padding:4px}
-@media (max-width:860px){.modal-img{height:min(46vh,380px)!important;padding:6px!important}}
+@media (max-width:860px){.modal-img{height:min(46vh,380px)!important;padding:6px!important}.modal-img .foto-prod{height:100%!important;max-height:100%!important;width:100%!important;max-width:100%!important;object-fit:contain!important}}
 
 /* Roxo e dourado (logo nova): topo e rodapé roxos com a logo branca solta */
 .topo{background:linear-gradient(90deg,#3D0A4F,#5E1675)!important;box-shadow:0 2px 16px rgba(40,5,50,.35)!important}
