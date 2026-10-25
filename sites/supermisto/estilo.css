@@ -776,3 +776,18 @@ body{background:#FBF6EE}
 /* prévia: creme + bordô, com o verde só nos selos dos produtos */
 .marca img{height:64px!important;width:auto}
 @media (max-width:520px){.marca img{height:50px!important}}
+
+/* banner do topo (estilo vitrine de supermercado) */
+.banner-topo{display:block;background:#4A0D16}
+.banner-topo img{display:block;width:100%;height:auto;margin:0 auto;max-width:1280px}
+/* depois do banner, a abertura fica clara (como nas marcas grandes), para não pesar bordô sobre bordô */
+.banner-topo + .hero{background:#FBF6EE;color:#3A0A11}
+.banner-topo + .hero::after{background:rgba(184,134,43,.10)}
+.banner-topo + .hero h1{color:#4A0D16}
+.banner-topo + .hero h1 em{color:#B8862B}
+.banner-topo + .hero p{color:#5A4A45}
+.banner-topo + .hero .kicker{color:#9A6E1F}
+.banner-topo + .hero .btn-vazado{border-color:#6B1420;color:#6B1420}
+.banner-topo + .hero .btn-vazado:hover{background:#6B1420;color:#fff}
+.banner-topo + .hero .hero-numeros b{color:#6B1420}
+.banner-topo + .hero .hero-numeros span{color:#5A4A45;opacity:1}
