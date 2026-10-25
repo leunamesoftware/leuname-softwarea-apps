@@ -950,3 +950,5 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (max-width:860px){.pd-btns .btn{flex:none}}
 .pd-btns{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (max-width:380px){.pd-btns .btn{font-size:12px;letter-spacing:.2px;padding:14px 6px}}
+.pd-foto{position:relative}
+.foto-aviso{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(61,10,79,.88);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;white-space:nowrap}

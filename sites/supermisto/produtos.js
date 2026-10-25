@@ -155,11 +155,11 @@ function embalagem(p, peso) {
 const LINHA_PACOTES = ['Colorau', 'Pimenta-do-reino moída', 'Cominho moído', 'Páprica doce', 'Páprica defumada', 'Açafrão-da-terra (cúrcuma)',
   'Alho em pó', 'Cebola em pó', 'Canela em pó', 'Pimenta calabresa', 'Tempero completo', 'Tempero baiano', 'Lemon pepper', 'Chimichurri', 'Orégano'];
 PRODUTOS.forEach((p) => { if (LINHA_PACOTES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
-// sabores novos: por enquanto só os sachês (o pacote de 1 kg entra quando a arte dele chegar)
+// sabores novos: mesmos tamanhos; enquanto a arte do 1 kg não chega, o site mostra o sachê com aviso (FOTOS_1KG em site.js)
 const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia moído', 'Gengibre em pó', 'Mostarda em grão',
   'Ervas finas', 'Tempero para frango', 'Tempero para feijão', 'Tempero para arroz', 'Curry',
   'Tempero para saladas', 'Tempero para pizza', 'Tempero para carne moída', 'Sal com alho', 'Sal de ervas'];
-PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g']; });
+PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
 
 /* Ficha técnica que aparece na página do produto (só o que estiver preenchido; confira com o rótulo).
    Ex.: 'Colorau': { ingredientes: 'Fubá de milho e urucum.', conservacao: 'Local seco e arejado, longe do sol.', validade: '12 meses', alergicos: '' }, */
