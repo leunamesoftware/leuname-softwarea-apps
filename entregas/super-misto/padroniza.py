@@ -51,13 +51,26 @@ def padronizar(foto):
     return tela
 
 
+def tem_logo(im):
+    """Procura o bordô da logo no alto do painel verde (à direita do furo)."""
+    a = np.asarray(im.convert('RGB')).astype(int)
+    z = a[45:210, 640:1090]  # acima da faixa do nome
+    r, g, b = z[..., 0], z[..., 1], z[..., 2]
+    return ((r > 55) & (r < 150) & (g < 50) & (b < 60) & (r > g * 2)).mean() > 0.08
+
+
 def main(foto, pid):
     im = padronizar(foto)
-    pasta = AQUI / 'saquinhos'
-    im.save(pasta / f'{pid}.png')
-    for g in (30, 50, 100):
-        troca_peso(im.convert('RGBA'), f'{g} g').convert('RGB').save(pasta / f'{pid}-{g}g.png')
-    print('ok', pid, 'solapa', partes(im)[0], 'modelo', partes(Image.open(MODELO))[0])
+    if tem_logo(im):
+        pasta = AQUI / 'saquinhos'
+        im.save(pasta / f'{pid}.png')
+        for g in (30, 50, 100):
+            troca_peso(im.convert('RGBA'), f'{g} g').convert('RGB').save(pasta / f'{pid}-{g}g.png')
+    else:  # sem logo: entra como os outros, pelo poe_logo (logo no verde + verde-garrafa)
+        import poe_logo
+        im.save(AQUI / 'prontos-chatgpt' / f'{pid}.png')
+        poe_logo.main(pid, ('10 g', '30 g', '50 g', '100 g'))
+    print('ok', pid, 'logo já vinha' if tem_logo(im) else 'logo colocada')
 
 
 if __name__ == '__main__':
