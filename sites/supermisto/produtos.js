@@ -27,7 +27,7 @@ const PRODUTOS = [
   P('Cebola em pó', 'puros', '#E5CF9C', 'Sabor de cebola refogada em segundos.', 'Molhos, sopas, carnes e patês.', T),
   P('Noz-moscada moída', 'puros', '#8C5A2B', 'Aroma quente e adocicado.', 'Molho branco, purês, doces e bebidas.', ['50 g', '100 g', '500 g']),
   P('Canela em pó', 'puros', '#9C5B2E', 'Doce e perfumada.', 'Doces, bolos, mingau, frutas e bebidas.', T),
-  P('Cravo-da-índia', 'puros', '#4E2A1E', 'Botões inteiros, de aroma intenso.', 'Doces em calda, quentão, carnes e conservas.', ['50 g', '100 g', '500 g']),
+  P('Cravo-da-índia moído', 'puros', '#4E2A1E', 'Aroma intenso e marcante, já moído para usar.', 'Doces em calda, bolos, quentão, carnes e conservas.', ['50 g', '100 g', '500 g']),
   P('Pimenta calabresa', 'puros', '#B32A17', 'Flocos de pimenta vermelha seca.', 'Pizzas, massas, molhos e carnes.', T),
   P('Gengibre em pó', 'puros', '#D9B26A', 'Picante e refrescante.', 'Carnes, peixes, chás e doces.', T),
   P('Mostarda em grão', 'puros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
@@ -155,6 +155,9 @@ function embalagem(p, peso) {
 const LINHA_PACOTES = ['Colorau', 'Pimenta-do-reino moída', 'Cominho moído', 'Páprica doce', 'Páprica defumada', 'Açafrão-da-terra (cúrcuma)',
   'Alho em pó', 'Cebola em pó', 'Canela em pó', 'Pimenta calabresa', 'Tempero completo', 'Tempero baiano', 'Lemon pepper', 'Chimichurri', 'Orégano'];
 PRODUTOS.forEach((p) => { if (LINHA_PACOTES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
+// sabores novos: por enquanto só os sachês (o pacote de 1 kg entra quando a arte dele chegar)
+const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia moído', 'Gengibre em pó', 'Mostarda em grão'];
+PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g']; });
 
 /* Ficha técnica que aparece na página do produto (só o que estiver preenchido; confira com o rótulo).
    Ex.: 'Colorau': { ingredientes: 'Fubá de milho e urucum.', conservacao: 'Local seco e arejado, longe do sol.', validade: '12 meses', alergicos: '' }, */
