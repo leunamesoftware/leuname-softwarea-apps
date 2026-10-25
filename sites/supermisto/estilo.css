@@ -849,3 +849,5 @@ body{background:#FBF6EE}
 .hist-foto{aspect-ratio:2/1;align-self:center}
 .hist-foto2{aspect-ratio:4/3;align-self:center}
 @media (max-width:700px){.hist-foto{min-height:0}}
+/* banner do computador (arte larga): tela toda, sem cortar */
+@media (min-width:861px){.banner-topo picture{display:block}.banner-topo img{width:100%;max-width:1920px;max-height:calc(100svh - 84px);object-fit:contain}}
