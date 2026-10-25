@@ -152,21 +152,28 @@ def capa(nome, ids, peso):
     w = d.textlength(sub, font=fonte('Bold', 42)) + 90
     d.rounded_rectangle((LADO // 2 - w // 2, 122, LADO // 2 + w // 2, 192), radius=35, fill=DOURADO)
     d.text((LADO // 2, 157), sub, font=fonte('Bold', 42), fill='white', anchor='mm')
-    mostra = [i for i in VITRINE if i in ids][:6] if len(ids) > 6 else list(ids)
-    linhas = [mostra[:3], mostra[3:]] if len(mostra) > 3 else [mostra]
+    if len(ids) > 6:
+        # todos os sabores, o maior possível: 5 por fileira, um pouco sobrepostos (cobrem só a foto do vizinho)
+        linhas = [ids[i:i + 5] for i in range(0, len(ids), 5)]
+        passo, topo, fim = (LADO - 24) / 5.3, 205, LADO - 10  # 4 passos + 1 saquinho (1,3 passo) cabem na largura
+        alt = (fim - topo) // len(linhas) + 10
+        larg = passo * 1.30
+        p0 = produto(ids[0], peso)
+        h = min(alt, round(larg * p0.height / p0.width))
+        topo += ((fim - topo) - len(linhas) * (h - 12)) // 2
+        for j, lin in enumerate(linhas):
+            base = topo + (j + 1) * (h - 12)
+            x0 = LADO / 2 - passo * (len(lin) - 1) / 2
+            for i, pid in reversed(list(enumerate(lin))):
+                colar(tela, produto(pid, peso), round(x0 + i * passo), base, alt, largura=larg)
+        return vivo(tela)
+    linhas = [ids[:3], ids[3:]] if len(ids) > 3 else [ids]
     larg, alt = 380, 470
     bases = [690, 1185] if len(linhas) == 2 else [900]
     for j, lin in enumerate(linhas):
         x0 = LADO / 2 - 385 * (len(lin) - 1) / 2
         for i, pid in reversed(list(enumerate(lin))):
             colar(tela, produto(pid, peso), round(x0 + i * 385), bases[j], alt, largura=larg)
-    resto = len(ids) - len(mostra)
-    if resto:  # selo redondo: quantos sabores a mais vêm no kit
-        cx, cy, r = LADO - 150, LADO - 150, 125
-        d.ellipse((cx - r - 8, cy - r - 8, cx + r + 8, cy + r + 8), fill='white')
-        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=BORDO)
-        d.text((cx, cy - 28), f'+{resto}', font=fonte('ExtraBold', 92), fill='white', anchor='mm')
-        d.text((cx, cy + 50), 'SABORES', font=fonte('Bold', 34), fill=(227, 190, 114), anchor='mm')
     return vivo(tela)
 
 
