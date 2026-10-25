@@ -844,3 +844,8 @@ body{background:#FBF6EE}
 @media (max-width:860px){.banner-topo img{max-height:none;width:100%}}
 /* janela do produto no celular: altura da tela visível (a barra do navegador não corta o topo) */
 @media (max-width:860px){.modal-caixa{max-height:calc(100dvh - 24px)}}
+/* fotos de receita e da nossa história: a caixa tem o formato da foto, nada é cortado */
+.rc-foto,.rec-4 .rc-foto,.rc-capa.grande.rc-foto{height:auto!important;aspect-ratio:4/3}
+.hist-foto{aspect-ratio:2/1;align-self:center}
+.hist-foto2{aspect-ratio:4/3;align-self:center}
+@media (max-width:700px){.hist-foto{min-height:0}}
