@@ -156,7 +156,8 @@ const LINHA_PACOTES = ['Colorau', 'Pimenta-do-reino moída', 'Cominho moído', '
   'Alho em pó', 'Cebola em pó', 'Canela em pó', 'Pimenta calabresa', 'Tempero completo', 'Tempero baiano', 'Lemon pepper', 'Chimichurri', 'Orégano'];
 PRODUTOS.forEach((p) => { if (LINHA_PACOTES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g', '1 kg']; });
 // sabores novos: por enquanto só os sachês (o pacote de 1 kg entra quando a arte dele chegar)
-const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia moído', 'Gengibre em pó', 'Mostarda em grão'];
+const LINHA_SACHES = ['Páprica picante', 'Noz-moscada moída', 'Cravo-da-índia moído', 'Gengibre em pó', 'Mostarda em grão',
+  'Ervas finas', 'Tempero para frango', 'Tempero para feijão', 'Tempero para arroz'];
 PRODUTOS.forEach((p) => { if (LINHA_SACHES.includes(p.nome)) p.tam = ['10 g', '50 g', '100 g']; });
 
 /* Ficha técnica que aparece na página do produto (só o que estiver preenchido; confira com o rótulo).
