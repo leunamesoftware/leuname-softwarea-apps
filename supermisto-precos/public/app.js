@@ -37,11 +37,21 @@ $('#f-login').addEventListener('submit', async (e) => {
 });
 $('#sair').addEventListener('click', async () => { await post('/api/sair').catch(() => {}); mostrarLogin(); });
 
+/* ---------- menu (lateral no computador, gaveta no celular) ---------- */
+const fecharMenu = () => { document.body.classList.remove('menu-aberto'); $('#menu-fundo').hidden = true; };
+const abrirMenu = () => { document.body.classList.add('menu-aberto'); $('#menu-fundo').hidden = false; };
+$('#menu-btn').addEventListener('click', () => (document.body.classList.contains('menu-aberto') ? fecharMenu() : abrirMenu()));
+$('#abrir-menu').addEventListener('click', abrirMenu);
+$('#menu-fundo').addEventListener('click', fecharMenu);
+document.querySelectorAll('.barra-baixo [data-ir]').forEach((b) => b.addEventListener('click', () => document.querySelector(`.abas button[data-aba="${b.dataset.ir}"]`).click()));
+
 /* ---------- abas ---------- */
 document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.abas button').forEach((x) => x.classList.toggle('ativo', x === b));
   document.querySelectorAll('.abas button').forEach((x) => { $(`#aba-${x.dataset.aba}`).hidden = x !== b; });
-  if (['produtos', 'estoque', 'pedidos', 'loja'].includes(b.dataset.aba)) desenharErp();
+  if (['painel', 'pedidos', 'clientes', 'produtos', 'estoque', 'compras', 'financeiro', 'relatorios', 'loja', 'empresa'].includes(b.dataset.aba)) desenharErp();
+  document.querySelectorAll('.barra-baixo [data-ir]').forEach((x) => x.classList.toggle('ativo', x.dataset.ir === b.dataset.aba));
+  fecharMenu(); window.scrollTo({ top: 0 });
   if (b.dataset.aba === 'tabela') desenharTabela();
   if (b.dataset.aba === 'ranking') desenharRanking();
   if (b.dataset.aba === 'duelo') desenharDuelo();

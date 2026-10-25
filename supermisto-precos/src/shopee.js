@@ -57,18 +57,22 @@ export async function conectada(env) {
   return !!(await ler(env, 'access_token'));
 }
 
-/** Chamada da API da loja. GET com query; POST com corpo JSON ou FormData. */
-export async function chamar(env, caminho, { query = {}, corpo, metodo } = {}) {
+async function chamarBruto(env, caminho, corpo, query = {}, metodo) {
   const { token: t, shop } = await token(env);
   const ts = agora(), sign = await assinar(env.SHOPEE_PARTNER_ID, env.SHOPEE_PARTNER_KEY, caminho, ts, t, shop);
   const q = new URLSearchParams({ partner_id: env.SHOPEE_PARTNER_ID, timestamp: ts, sign, access_token: t, shop_id: shop });
   for (const [k, v] of Object.entries(query)) q.set(k, Array.isArray(v) ? v.join(',') : v);
   const ehForm = typeof FormData !== 'undefined' && corpo instanceof FormData;
-  const r = await fetch(`${HOST}${caminho}?${q}`, {
+  return fetch(`${HOST}${caminho}?${q}`, {
     method: metodo || (corpo ? 'POST' : 'GET'),
     headers: corpo && !ehForm ? { 'Content-Type': 'application/json' } : {},
     body: corpo ? (ehForm ? corpo : JSON.stringify(corpo)) : undefined,
   });
+}
+
+/** Chamada da API da loja. GET com query; POST com corpo JSON ou FormData. */
+export async function chamar(env, caminho, { query = {}, corpo, metodo } = {}) {
+  const r = await chamarBruto(env, caminho, corpo, query, metodo);
   const d = await r.json().catch(() => ({}));
   if (d.error) throw new Error(`${d.error}: ${d.message || ''}`.trim());
   return d.response || d;
@@ -140,8 +144,67 @@ export async function listarPedidos(env, dias = 15) {
   }
   const pedidos = [];
   for (let i = 0; i < sns.length; i += 50) {
-    const r = await chamar(env, '/api/v2/order/get_order_detail', { query: { order_sn_list: sns.slice(i, i + 50), response_optional_fields: 'buyer_username,item_list,total_amount' } });
+    const r = await chamar(env, '/api/v2/order/get_order_detail', { query: { order_sn_list: sns.slice(i, i + 50), response_optional_fields: 'buyer_username,item_list,total_amount,recipient_address,shipping_carrier,package_list,ship_by_date,actual_shipping_fee,estimated_shipping_fee,note' } });
     pedidos.push(...(r.order_list || []));
   }
   return pedidos;
+}
+
+/* ---------- envio e etiqueta ---------- */
+
+/** Como esse pedido pode ser enviado (levar na agência = dropoff, ou coleta = pickup). */
+export const parametrosEnvio = (env, orderSn) => chamar(env, '/api/v2/logistics/get_shipping_parameter', { query: { order_sn: orderSn } });
+
+/** "Preparar envio": avisa a Shopee que vai enviar. Prefere levar na agência; se só tiver coleta, usa o 1º horário. */
+export async function prepararEnvio(env, orderSn) {
+  const p = await parametrosEnvio(env, orderSn);
+  const precisa = p.info_needed || {};
+  const corpo = { order_sn: orderSn };
+  if (precisa.dropoff) corpo.dropoff = {};
+  else if (precisa.pickup) {
+    const end = (p.pickup?.address_list || []).find((a) => (a.address_flag || []).includes('default_address')) || p.pickup?.address_list?.[0];
+    const hora = end?.time_slot_list?.[0];
+    if (!end || !hora) throw new Error('A Shopee não deu horário de coleta para esse pedido.');
+    corpo.pickup = { address_id: end.address_id, pickup_time_id: hora.pickup_time_id };
+  } else corpo.dropoff = {};
+  await chamar(env, '/api/v2/logistics/ship_order', { corpo });
+  return corpo.pickup ? 'coleta' : 'agência';
+}
+
+export async function rastreio(env, orderSn) {
+  const r = await chamar(env, '/api/v2/logistics/get_tracking_number', { query: { order_sn: orderSn } });
+  return r.tracking_number || '';
+}
+
+/** Gera e baixa a etiqueta oficial da Shopee (PDF) de um ou vários pedidos. */
+export async function etiquetas(env, pedidos) {
+  const lista = [];
+  for (const sn of pedidos) lista.push({ order_sn: sn, tracking_number: await rastreio(env, sn).catch(() => '') });
+  await chamar(env, '/api/v2/logistics/create_shipping_document', { corpo: { order_list: lista } });
+  for (let i = 0; i < 10; i++) {
+    const r = await chamar(env, '/api/v2/logistics/get_shipping_document_result', { corpo: { order_list: lista.map((o) => ({ order_sn: o.order_sn })) } });
+    const st = (r.result_list || []).map((x) => x.status);
+    if (st.length && st.every((x) => x === 'READY')) break;
+    if (st.includes('FAILED')) throw new Error('A Shopee não conseguiu gerar a etiqueta. Prepare o envio primeiro.');
+    await new Promise((ok) => setTimeout(ok, 1500));
+  }
+  return baixarDocumento(env, lista.map((o) => ({ order_sn: o.order_sn })));
+}
+
+/** O download da etiqueta vem em PDF (não JSON): chamada própria. */
+async function baixarDocumento(env, orderList) {
+  const caminho = '/api/v2/logistics/download_shipping_document';
+  const res = await chamarBruto(env, caminho, { order_list: orderList });
+  const tipo = res.headers.get('Content-Type') || '';
+  if (tipo.includes('json')) { const d = await res.json(); throw new Error(`${d.error || ''}: ${d.message || 'etiqueta indisponível'}`); }
+  return res;
+}
+
+/* ---------- financeiro ---------- */
+
+/** Quanto a Shopee repassa do pedido (depois da comissão, taxas e frete). */
+export async function repasse(env, orderSn) {
+  const r = await chamar(env, '/api/v2/payment/get_escrow_detail', { query: { order_sn: orderSn } });
+  const i = r.order_income || {};
+  return { liquido: i.escrow_amount ?? null, frete: i.actual_shipping_fee ?? null };
 }

@@ -39,3 +39,24 @@ test('marca o que falta mandar sem perder o que já estava', () => {
   assert.deepEqual(JSON.parse(marcar('{"preco":1}', 'estoque')), { preco: 1, estoque: 1 });
   assert.deepEqual(JSON.parse(marcar(null, 'fotos')), { fotos: 1 });
 });
+
+test('produção gasta a matéria-prima pela receita (kit divide entre os sabores)', async () => {
+  const { consumoInsumos } = await import('../src/erp.js');
+  const produtos = [
+    { id: 'colorau', receita: '[{"insumo":"Colorau","pct":100}]' },
+    { id: 'tc', receita: '[{"insumo":"Sal","pct":50},{"insumo":"Alho","pct":50}]' },
+  ];
+  assert.deepEqual(consumoInsumos({ sabores: '["colorau"]', unidades: 1, gramas: 100 }, 10, produtos), { Colorau: 1 });
+  const k = consumoInsumos({ sabores: '["colorau","tc"]', unidades: 2, gramas: 10 }, 50, produtos);
+  assert.equal(k.Colorau, 0.5); assert.equal(k.Sal, 0.25); assert.equal(k.Alho, 0.25);
+});
+
+test('envio e endereço vêm do pedido da Shopee', async () => {
+  const { envioDoStatus, destinatarioShopee } = await import('../src/erp.js');
+  assert.equal(envioDoStatus('READY_TO_SHIP'), 'a_preparar');
+  assert.equal(envioDoStatus('PROCESSED'), 'pronto');
+  assert.equal(envioDoStatus('SHIPPED'), 'enviado');
+  assert.equal(envioDoStatus('UNPAID'), null);
+  assert.deepEqual(destinatarioShopee({ recipient_address: { name: 'Ana', phone: '5521', full_address: 'Rua A, 1', city: 'Rio', state: 'RJ', zipcode: '20000000' } }),
+    { nome: 'Ana', telefone: '5521', endereco: 'Rua A, 1', cidade: 'Rio', uf: 'RJ', cep: '20000000' });
+});

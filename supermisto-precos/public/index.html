@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icone-180.png">
 </head>
 <body>
-<header class="topo"><img src="icone-192.png" alt="" width="30" height="30"><b>ERP</b><span>Supermisto</span><button id="sair" class="link" hidden>Sair</button></header>
+<header class="topo"><button id="menu-btn" class="menu-btn" aria-label="Menu">☰</button><img src="icone-192.png" alt="" width="30" height="30"><b>Supermisto</b><span>Gestão</span><span class="sh-status" id="sh-status"></span><button id="sair" class="link" hidden>Sair</button></header>
 
 <main id="login" class="caixa" hidden>
   <h1>Entrar</h1>
@@ -25,20 +25,129 @@
 </main>
 
 <main id="app" hidden>
-  <nav class="abas">
-    <button data-aba="produtos" class="ativo">📦 Produtos</button>
-    <button data-aba="estoque">📥 Estoque</button>
-    <button data-aba="pedidos">🧾 Pedidos</button>
-    <button data-aba="loja">🛒 Shopee</button>
-    <button data-aba="prints">📷 Prints</button>
-    <button data-aba="duelo">⚔️ Duelo</button>
-    <button data-aba="anuncios">📝 Anúncios</button>
-    <button data-aba="ranking">🏆 Ranking</button>
-    <button data-aba="tabela">💰 Tabela</button>
-    <button data-aba="custos">🧾 Custos</button>
+  <nav class="abas" id="menu" aria-label="Menu">
+    <div class="menu-marca"><img src="logo-supermisto.png" alt="Supermisto" width="150" height="74"><span>Gestão</span></div>
+    <p class="grupo">Vendas</p>
+    <button data-aba="painel" class="ativo"><i>📊</i>Painel</button>
+    <button data-aba="pedidos"><i>🧾</i>Pedidos<em id="badge-pedidos" hidden></em></button>
+    <button data-aba="clientes"><i>👥</i>Clientes</button>
+    <p class="grupo">Catálogo</p>
+    <button data-aba="produtos"><i>📦</i>Produtos</button>
+    <button data-aba="estoque"><i>📥</i>Estoque e produção</button>
+    <button data-aba="compras"><i>🛍️</i>Compras e matéria-prima</button>
+    <p class="grupo">Dinheiro</p>
+    <button data-aba="financeiro"><i>💵</i>Financeiro</button>
+    <button data-aba="relatorios"><i>📈</i>Relatórios</button>
+    <p class="grupo">Shopee</p>
+    <button data-aba="loja"><i>🛒</i>Loja Shopee</button>
+    <p class="grupo">Concorrência</p>
+    <button data-aba="prints"><i>📷</i>Prints</button>
+    <button data-aba="duelo"><i>⚔️</i>Duelo</button>
+    <button data-aba="anuncios"><i>📝</i>Anúncios prontos</button>
+    <button data-aba="ranking"><i>🏆</i>Ranking</button>
+    <button data-aba="tabela"><i>💰</i>Tabela de preços</button>
+    <p class="grupo">Ajustes</p>
+    <button data-aba="custos"><i>🧾</i>Custos</button>
+    <button data-aba="empresa"><i>⚙️</i>Empresa</button>
+  </nav>
+  <div id="menu-fundo" hidden></div>
+  <nav class="barra-baixo" aria-label="Atalhos">
+    <button data-ir="painel"><i>📊</i>Painel</button>
+    <button data-ir="pedidos"><i>🧾</i>Pedidos</button>
+    <button data-ir="produtos"><i>📦</i>Produtos</button>
+    <button data-ir="financeiro"><i>💵</i>Dinheiro</button>
+    <button id="abrir-menu"><i>☰</i>Mais</button>
   </nav>
 
-  <section id="aba-produtos" class="caixa">
+  <section id="aba-painel" class="caixa">
+    <div class="cab"><h2>📊 Painel</h2><span class="suave" id="painel-data"></span></div>
+    <div id="painel-kpis"></div>
+    <div class="dupla">
+      <div class="card"><h3>Vendas dos últimos 30 dias</h3><div id="painel-grafico"></div></div>
+      <div class="card"><h3>⚡ Precisa da sua atenção</h3><div id="painel-alertas"></div></div>
+    </div>
+    <div class="dupla">
+      <div class="card"><h3>🏆 Mais vendidos do mês</h3><div id="painel-top"></div></div>
+      <div class="card"><h3>🧾 Últimos pedidos</h3><div id="painel-ultimos"></div></div>
+    </div>
+  </section>
+
+  <section id="aba-clientes" class="caixa" hidden>
+    <h2>👥 Clientes</h2>
+    <p class="suave">Quem já comprou (Shopee e fora dela), quanto comprou e quando foi a última vez. Toque no telefone para chamar no WhatsApp.</p>
+    <input id="cli-busca" type="search" placeholder="🔎 Procurar cliente">
+    <div id="cli-lista"></div>
+  </section>
+
+  <section id="aba-compras" class="caixa" hidden>
+    <h2>🛍️ Compras</h2>
+    <p class="suave">Registre o que comprou. Matéria-prima entra no estoque em kg, atualiza o custo dos produtos e vai para o financeiro.</p>
+    <form id="f-compra" class="card grade-manual">
+      <label class="largo">O que comprou<select name="insumo" id="cp-insumo"></select></label>
+      <label class="largo" id="cp-desc-l">Descrição<input name="descricao" placeholder="ex.: 1.000 saquinhos 10 g"></label>
+      <label>Fornecedor<input name="fornecedor" placeholder="ex.: CEASA"></label>
+      <label>Valor pago (R$)<input name="valor" inputmode="decimal" required></label>
+      <label class="kg">Comprei (kg)<input name="comprado_kg" inputmode="decimal"></label>
+      <label class="kg">Rendeu pronto (kg)<input name="rendeu_kg" inputmode="decimal" placeholder="= comprado"></label>
+      <label>Data<input name="data" type="date"></label>
+      <label class="check"><input type="checkbox" name="pago" checked> Já paguei</label>
+      <button class="btn largo">Registrar compra</button>
+    </form>
+    <h2 class="sec">🌶️ Matéria-prima em estoque</h2>
+    <p class="suave">Sai sozinha quando você registra uma produção (pela receita de cada sabor). Pode acertar o número tocando nele.</p>
+    <div id="mp-lista" class="card"></div>
+    <h2 class="sec">Últimas compras</h2>
+    <div id="cp-lista" class="card"></div>
+  </section>
+
+  <section id="aba-financeiro" class="caixa" hidden>
+    <div class="cab"><h2>💵 Financeiro</h2><input type="month" id="fin-mes"></div>
+    <div id="fin-kpis"></div>
+    <div class="dupla">
+      <div class="card"><h3>Resultado do mês por categoria</h3><div id="fin-dre"></div></div>
+      <div class="card"><h3>⏰ A pagar e a receber</h3><div id="fin-abertos"></div></div>
+    </div>
+    <details class="card"><summary>＋ Lançar entrada ou saída</summary>
+      <form id="f-lanc" class="grade-manual">
+        <label>Tipo<select name="tipo"><option value="saida">Saída (paguei / vou pagar)</option><option value="entrada">Entrada (recebi / vou receber)</option></select></label>
+        <label>Categoria<select name="categoria"><option>Contas fixas</option><option>Embalagem</option><option>Frete</option><option>Impostos</option><option>Funcionários</option><option>Marketing</option><option>Matéria-prima</option><option>Vendas diretas</option><option>Outros</option></select></label>
+        <label class="largo">Descrição<input name="descricao" required placeholder="ex.: Luz da fábrica"></label>
+        <label>Valor (R$)<input name="valor" inputmode="decimal" required></label>
+        <label>Data / vencimento<input name="vencimento" type="date"></label>
+        <label class="check largo"><input type="checkbox" name="pago" checked> Já foi pago / recebido</label>
+        <button class="btn largo">Lançar</button>
+      </form>
+    </details>
+    <h3>Lançamentos do mês</h3>
+    <div id="fin-lista" class="card"></div>
+  </section>
+
+  <section id="aba-relatorios" class="caixa" hidden>
+    <div class="cab"><h2>📈 Relatórios</h2><select id="rel-periodo" class="estreito"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option><option value="365">12 meses</option></select></div>
+    <div id="rel-kpis"></div>
+    <div class="card"><h3>Produtos mais vendidos</h3><div id="rel-produtos"></div></div>
+    <div class="dupla">
+      <div class="card"><h3>Vendas por canal</h3><div id="rel-canal"></div></div>
+      <div class="card"><h3>Margem de cada produto (preço atual)</h3><div id="rel-margem"></div></div>
+    </div>
+  </section>
+
+  <section id="aba-empresa" class="caixa" hidden>
+    <h2>⚙️ Dados da empresa</h2>
+    <p class="suave">Aparecem como remetente nas etiquetas e na declaração de conteúdo das vendas fora da Shopee.</p>
+    <form id="f-empresa" class="card grade-manual">
+      <label class="largo">Razão social<input name="nome"></label>
+      <label>CNPJ<input name="cnpj"></label>
+      <label>Telefone<input name="telefone"></label>
+      <label class="largo">Endereço<input name="endereco"></label>
+      <label>Cidade<input name="cidade"></label>
+      <label>UF<input name="uf" maxlength="2"></label>
+      <label>CEP<input name="cep" inputmode="numeric"></label>
+      <button class="btn largo">Salvar</button>
+    </form>
+  </section>
+
+  <section id="aba-produtos" class="caixa" hidden>
     <h2>📦 Produtos à venda</h2>
     <p class="suave">Cada linha é o que o cliente compra (sabor e tamanho, ou kit). Toque para mudar preço, estoque e fotos. Ligado à Shopee, o que mudar aqui vai sozinho para lá.</p>
     <div id="erp-resumo"></div>
@@ -54,6 +163,7 @@
       <div id="prod-itens"></div>
       <button type="button" class="link" id="prod-mais">＋ outro produto</button>
       <label>Observação (opcional)<input name="obs" placeholder="ex.: lote 25/10"></label>
+      <label class="check"><input type="checkbox" name="baixar" checked> Tirar a matéria-prima usada do estoque (pela receita)</label>
       <button class="btn">Somar no estoque</button>
     </form>
     <h2 class="sec">⚠️ Estoque baixo</h2><div id="est-baixo" class="card"></div>
@@ -61,19 +171,49 @@
   </section>
 
   <section id="aba-pedidos" class="caixa" hidden>
-    <h2>🧾 Pedidos</h2>
+    <div class="cab"><h2>🧾 Pedidos</h2><div><button class="btn sec" id="ped-buscar">↻ Buscar da Shopee</button> <button class="btn" id="ped-nova">＋ Venda fora da Shopee</button></div></div>
     <div id="ped-resumo"></div>
-    <button class="btn sec" id="ped-buscar">Buscar pedidos da Shopee agora</button>
-    <details class="card"><summary>✍️ Registrar venda fora da Shopee (WhatsApp, balcão, atacado)</summary>
-      <form id="f-venda">
-        <div id="venda-itens"></div>
-        <button type="button" class="link" id="venda-mais">＋ outro produto</button>
-        <label>Cliente (opcional)<input name="cliente"></label>
-        <button class="btn">Registrar venda</button>
-      </form>
-    </details>
+    <input id="ped-busca" type="search" placeholder="🔎 Procurar pedido, cliente ou produto">
+    <div class="chips" id="ped-filtros"></div>
+    <div class="barra-sel" id="ped-acoes" hidden>
+      <span id="ped-qtd"></span>
+      <button class="btn sec" data-lote="preparar">🚚 Preparar envio</button>
+      <button class="btn" data-lote="etiqueta">🖨️ Etiquetas</button>
+      <button class="btn sec" data-lote="separacao">📋 Lista de separação</button>
+      <button class="link" data-lote="limpar">limpar</button>
+    </div>
     <div id="ped-lista"></div>
   </section>
+
+  <div id="venda" class="painel-lateral" hidden>
+    <div class="ficha-caixa">
+      <button class="fechar" aria-label="Fechar">×</button>
+      <h2>Venda fora da Shopee</h2>
+      <p class="suave">WhatsApp, balcão, atacado. Sai do estoque e entra no financeiro. Com endereço, gera etiqueta e declaração de conteúdo.</p>
+      <form id="f-venda">
+        <h3>Produtos</h3>
+        <div id="venda-itens"></div>
+        <button type="button" class="link" id="venda-mais">＋ outro produto</button>
+        <div class="grade-manual">
+          <label>Frete cobrado (R$)<input name="frete" inputmode="decimal" placeholder="0"></label>
+          <label>Pagamento<select name="pagamento"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Boleto</option><option>A prazo</option></select></label>
+        </div>
+        <label class="check"><input type="checkbox" name="recebido" checked> Já recebi o dinheiro</label>
+        <h3>Cliente e entrega <small class="suave">(endereço só se for enviar)</small></h3>
+        <div class="grade-manual">
+          <label class="largo">Nome<input name="nome"></label>
+          <label>Telefone<input name="telefone" inputmode="tel"></label>
+          <label>CEP<input name="cep" inputmode="numeric"></label>
+          <label class="largo">Endereço (rua, número, bairro)<input name="endereco"></label>
+          <label>Cidade<input name="cidade"></label>
+          <label>UF<input name="uf" maxlength="2"></label>
+          <label class="largo">Observação<input name="obs"></label>
+        </div>
+        <p class="total-venda" id="venda-total"></p>
+        <button class="btn largo">Registrar venda</button>
+      </form>
+    </div>
+  </div>
 
   <section id="aba-loja" class="caixa" hidden>
     <h2>🛒 Loja da Shopee</h2>
