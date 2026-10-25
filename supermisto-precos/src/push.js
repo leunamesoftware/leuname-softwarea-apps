@@ -58,7 +58,7 @@ export async function publico(env, req, path) {
 }
 
 /** Rotas do dono logado: chave pública e inscrição do aparelho. */
-export async function logado(env, req, path) {
+export async function logado(env, req, path, ctx) {
   if (path === '/api/push/chave' && req.method === 'GET') return json({ chave: (await chaves(env)).publica });
   if (path === '/api/push/inscrever' && req.method === 'POST') {
     const d = await req.json().catch(() => ({}));
@@ -67,5 +67,10 @@ export async function logado(env, req, path) {
     return json({ ok: true });
   }
   if (path === '/api/push/testar' && req.method === 'POST') return json({ enviados: await avisar(env, '🔔 Avisos ligados', 'Assim vai chegar o aviso de pedido novo da Supermisto.') });
+  // Teste pelo próprio dono: espera 15 s (tempo de bloquear o celular) e manda um aviso igual ao de pedido da Shopee.
+  if (path === '/api/push/testar-pedido' && req.method === 'POST' && ctx) {
+    ctx.waitUntil(new Promise((ok) => setTimeout(ok, 15000)).then(() => avisar(env, '🛒 Pedido novo na Shopee', 'TESTE · Kit 15 Temperos · R$ 29,90 (só um teste do aviso)', '/#pedidos', '/icone-shopee.png')));
+    return json({ ok: true });
+  }
   return null;
 }

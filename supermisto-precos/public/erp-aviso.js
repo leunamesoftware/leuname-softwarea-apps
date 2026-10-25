@@ -64,6 +64,7 @@ function painelSom() {
       <label class="btn">🎵 Escolher outro som<input type="file" accept="audio/*" id="som-arquivo" hidden></label>
       ${nome ? '<button class="link" id="som-padrao">voltar ao padrão</button>' : ''}
     </div>
+    <button class="btn largo" id="som-teste-pedido">🧪 Testar aviso de pedido (chega em 15 s: bloqueie o celular)</button>
     <details class="som-ajuda"><summary>E com o celular bloqueado?</summary>
       <p>Com o celular bloqueado quem toca é o <b>som de notificação do celular</b>. Para trocar por um som seu (Samsung):</p>
       <ol><li>Baixe o som (mp3) no celular.</li>
@@ -78,6 +79,7 @@ document.addEventListener('click', (e) => {
   const p = $('#som-painel'); if (!p || p.hidden) return;
   if (e.target === p || e.target.classList.contains('fechar') && e.target.closest('#som-painel')) p.hidden = true;
   if (e.target.id === 'som-testar') tocar();
+  if (e.target.id === 'som-teste-pedido') { B.post('/api/push/testar-pedido').then(() => aviso('🧪 Bloqueie o celular agora: o aviso chega em 15 segundos.')).catch((er) => aviso(er.message, false)); p.hidden = true; }
   if (e.target.id === 'som-padrao') { try { localStorage.removeItem(CHAVE_ARQ); localStorage.removeItem(CHAVE_NOME); } catch {} plim(); painelSom(); }
 });
 document.addEventListener('change', (e) => {

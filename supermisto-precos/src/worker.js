@@ -83,7 +83,7 @@ async function api(env, req, path, ctx) {
     return json({ ok: true }, 200, { 'Set-Cookie': `${COOKIE}=; Path=/; Max-Age=0` });
   }
   if (path === '/api/dados' && m === 'GET') return json(await dados(env));
-  if (path.startsWith('/api/push/')) { const r = await PUSH.logado(env, req, path); if (r) return r; }
+  if (path.startsWith('/api/push/')) { const r = await PUSH.logado(env, req, path, ctx); if (r) return r; }
   if (path.startsWith('/api/erp/') || path.startsWith('/api/shopee/')) {
     const r = await ERP.api(env, req, path, ctx);
     if (r) return r;
