@@ -1,4 +1,5 @@
-# Precificador Supermisto: prints da Shopee → IA lê os preços → tabela de preços com a nossa matéria-prima.
+# ERP Supermisto: produtos, estoque, pedidos e ligação com a Shopee + Precificador (prints da concorrência → preços).
+# Segredos (opcionais até o cadastro na Shopee Open Platform): SHOPEE_PARTNER_ID e SHOPEE_PARTNER_KEY.
 # Publicado pelo workflow supermisto-precos.yml (repositório Leunamesite), que cria o banco D1 na primeira vez.
 name = "supermisto-precos"
 main = "src/worker.js"
@@ -7,10 +8,19 @@ compatibility_date = "2026-09-01"
 [assets]
 directory = "public"
 binding = "ASSETS"
-run_worker_first = ["/api/*"]
+run_worker_first = ["/api/*", "/fotos/*"]
 
 [ai]
 binding = "AI"
+
+# Fotos dos produtos do ERP (as mesmas que vão para a Shopee)
+[[r2_buckets]]
+binding = "FOTOS"
+bucket_name = "supermisto-erp"
+
+# Pedidos novos da Shopee e envio do que mudou, a cada 30 minutos
+[triggers]
+crons = ["*/30 * * * *"]
 
 [[d1_databases]]
 binding = "BANCO"
@@ -28,4 +38,8 @@ DONO_EMAIL = "leunamesoftware@gmail.com"
 
 [[routes]]
 pattern = "precos.supermistotemperos.com.br"
+custom_domain = true
+
+[[routes]]
+pattern = "erp.supermistotemperos.com.br"
 custom_domain = true

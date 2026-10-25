@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0B6E33">
+<meta name="theme-color" content="#6B1420">
 <meta name="robots" content="noindex">
-<title>Precificador Supermisto</title>
+<title>ERP Supermisto</title>
 <link rel="stylesheet" href="estilo.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone-192.png">
 <link rel="apple-touch-icon" href="icone-180.png">
 </head>
 <body>
-<header class="topo"><img src="icone-192.png" alt="" width="30" height="30"><b>Precificador</b><span>Supermisto</span><button id="sair" class="link" hidden>Sair</button></header>
+<header class="topo"><img src="icone-192.png" alt="" width="30" height="30"><b>ERP</b><span>Supermisto</span><button id="sair" class="link" hidden>Sair</button></header>
 
 <main id="login" class="caixa" hidden>
   <h1>Entrar</h1>
@@ -26,7 +26,11 @@
 
 <main id="app" hidden>
   <nav class="abas">
-    <button data-aba="prints" class="ativo">📷 Prints</button>
+    <button data-aba="produtos" class="ativo">📦 Produtos</button>
+    <button data-aba="estoque">📥 Estoque</button>
+    <button data-aba="pedidos">🧾 Pedidos</button>
+    <button data-aba="loja">🛒 Shopee</button>
+    <button data-aba="prints">📷 Prints</button>
     <button data-aba="duelo">⚔️ Duelo</button>
     <button data-aba="anuncios">📝 Anúncios</button>
     <button data-aba="ranking">🏆 Ranking</button>
@@ -34,7 +38,51 @@
     <button data-aba="custos">🧾 Custos</button>
   </nav>
 
-  <section id="aba-prints" class="caixa">
+  <section id="aba-produtos" class="caixa">
+    <h2>📦 Produtos à venda</h2>
+    <p class="suave">Cada linha é o que o cliente compra (sabor e tamanho, ou kit). Toque para mudar preço, estoque e fotos. Ligado à Shopee, o que mudar aqui vai sozinho para lá.</p>
+    <div id="erp-resumo"></div>
+    <input id="erp-busca" type="search" placeholder="🔎 Procurar produto ou SKU">
+    <div class="chips"><button data-filtro="todos" class="ativo">Todos</button><button data-filtro="avulsos">Avulsos</button><button data-filtro="kits">Kits</button><button data-filtro="baixo">Estoque baixo</button><button data-filtro="shopee">Na Shopee</button></div>
+    <div id="erp-lista"></div>
+  </section>
+
+  <section id="aba-estoque" class="caixa" hidden>
+    <h2>📥 Entrada de produção</h2>
+    <p class="suave">Embalou? Coloque aqui quantos de cada ficaram prontos. Soma no estoque e atualiza a Shopee.</p>
+    <form id="f-producao" class="card">
+      <div id="prod-itens"></div>
+      <button type="button" class="link" id="prod-mais">＋ outro produto</button>
+      <label>Observação (opcional)<input name="obs" placeholder="ex.: lote 25/10"></label>
+      <button class="btn">Somar no estoque</button>
+    </form>
+    <h2 class="sec">⚠️ Estoque baixo</h2><div id="est-baixo" class="card"></div>
+    <h2 class="sec">Últimas entradas e saídas</h2><div id="est-mov" class="card"></div>
+  </section>
+
+  <section id="aba-pedidos" class="caixa" hidden>
+    <h2>🧾 Pedidos</h2>
+    <div id="ped-resumo"></div>
+    <button class="btn sec" id="ped-buscar">Buscar pedidos da Shopee agora</button>
+    <details class="card"><summary>✍️ Registrar venda fora da Shopee (WhatsApp, balcão, atacado)</summary>
+      <form id="f-venda">
+        <div id="venda-itens"></div>
+        <button type="button" class="link" id="venda-mais">＋ outro produto</button>
+        <label>Cliente (opcional)<input name="cliente"></label>
+        <button class="btn">Registrar venda</button>
+      </form>
+    </details>
+    <div id="ped-lista"></div>
+  </section>
+
+  <section id="aba-loja" class="caixa" hidden>
+    <h2>🛒 Loja da Shopee</h2>
+    <div id="loja-passos" class="card"></div>
+    <div id="loja-anuncios"></div>
+    <h2 class="sec">Registro</h2><div id="loja-registro" class="card"></div>
+  </section>
+
+  <section id="aba-prints" class="caixa" hidden>
     <h2>Jogue os prints da Shopee</h2>
     <ol class="passos">
       <li>Na Shopee, pesquise (ex.: "colorau 10g", "kit temperos") e tire prints da lista.</li>
@@ -122,6 +170,7 @@
     <div id="config" class="grade-campos"></div>
   </section>
 </main>
+<div id="ficha" hidden></div>
 <script type="module" src="app.js"></script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>

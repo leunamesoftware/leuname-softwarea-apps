@@ -2,6 +2,7 @@
 // Login: e-mail do dono (DONO_EMAIL) + senha da Área do Dono (conferida no servidor de contas, como no painel do Pedêê).
 import { lerPrint } from './leitura.js';
 import { precoKgReal } from '../public/precos.js';
+import * as ERP from './erp.js';
 
 const COOKIE = 'sp_sessao', LOJA = 'https://www.leunamesoftware.com.br', DIAS = 30;
 
@@ -56,7 +57,7 @@ async function dados(env) {
   return { config: Object.fromEntries(cfg.results.map((c) => [c.chave, c.valor])), insumos: ins.results, produtos: prods, concorrentes: conc.results };
 }
 
-async function api(env, req, path) {
+async function api(env, req, path, ctx) {
   const m = req.method;
   if (path === '/api/saude') return json({ ok: true });
   if (path === '/api/entrar' && m === 'POST') return entrar(env, req);
@@ -65,7 +66,11 @@ async function api(env, req, path) {
     const d = await req.json().catch(() => ({}));
     try { return json(await lerPrint(env, d.imagem, await produtos(env))); } catch (e) { return json({ erro: String(e) }, 502); }
   }
-  if (!(await logado(env, req))) return json({ erro: 'Entre de novo.' }, 401);
+  if (path === '/api/shopee/retorno' && m === 'GET') return ERP.retornoShopee(env, req);
+  if (!(await logado(env, req))) {
+    if (path === '/api/shopee/conectar') return Response.redirect(new URL('/', req.url).toString(), 302);
+    return json({ erro: 'Entre de novo.' }, 401);
+  }
   if (m !== 'GET' && req.headers.get('Origin') && req.headers.get('Origin') !== new URL(req.url).origin) return json({ erro: 'origem' }, 403);
 
   if (path === '/api/sair' && m === 'POST') {
@@ -73,6 +78,10 @@ async function api(env, req, path) {
     return json({ ok: true }, 200, { 'Set-Cookie': `${COOKIE}=; Path=/; Max-Age=0` });
   }
   if (path === '/api/dados' && m === 'GET') return json(await dados(env));
+  if (path.startsWith('/api/erp/') || path.startsWith('/api/shopee/')) {
+    const r = await ERP.api(env, req, path, ctx);
+    if (r) return r;
+  }
 
   if (path === '/api/ler-print' && m === 'POST') {
     const d = await req.json().catch(() => ({}));
@@ -138,12 +147,15 @@ async function api(env, req, path) {
 }
 
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const path = new URL(req.url).pathname;
+    if (path.startsWith('/fotos/')) return ERP.foto(env, decodeURIComponent(path.slice(7)));
     if (path.startsWith('/api/')) {
-      try { return await api(env, req, path); }
+      try { return await api(env, req, path, ctx); }
       catch (e) { console.error(e); return json({ erro: 'Erro no servidor. Tente de novo.' }, 500); }
     }
     return env.ASSETS.fetch(req);
   },
+  // A cada 30 minutos: pedidos novos da Shopee e o que ficou para mandar.
+  async scheduled(_ev, env, ctx) { ctx.waitUntil(ERP.rotina(env)); },
 };

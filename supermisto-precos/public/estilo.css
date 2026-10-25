@@ -108,3 +108,48 @@ details{margin-top:8px}details summary{cursor:pointer;font-size:14px;font-weight
 .conta-kit .total.bom span:last-child{color:var(--verde)}.conta-kit .total.ruim span:last-child{color:var(--vermelho)}
 .conta-kit small{display:block;color:var(--suave);margin-top:4px}
 .conta-kit>div span:last-child{white-space:nowrap}
+
+/* ---------- ERP (marca Supermisto: bordô e dourado; o verde fica só para "deu certo") ---------- */
+.topo{background:#6B1420}.btn{background:#6B1420}.btn.grande{background:#B8862B}.btn.sec{background:#fff;color:#6B1420;border:1px solid #6B1420}
+.abas .ativo{color:#6B1420;border-bottom-color:#6B1420}.abas button{flex:0 0 auto;padding:14px 12px}
+.card h3{color:#4A0D16}
+.resumo.quatro{grid-template-columns:repeat(4,1fr)}.resumo .bom b{color:var(--verde)}.resumo .ruim b{color:var(--vermelho)}
+@media (max-width:520px){.resumo.quatro{grid-template-columns:1fr 1fr}}
+#erp-busca{margin:10px 0 6px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 0 8px}
+.chips button{flex:0 0 auto;border:1px solid var(--borda);background:#fff;border-radius:20px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--suave);cursor:pointer}
+.chips .ativo{background:#6B1420;color:#fff;border-color:#6B1420}
+.sku{display:grid;grid-template-columns:64px 1fr auto auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:8px 12px 8px 8px;margin:8px 0;cursor:pointer}
+.sku:hover{border-color:#B8862B}.sku.inativo{opacity:.55}
+.sku-foto{width:64px;height:64px;border-radius:10px;background:#F7F1E8;display:grid;place-items:center;overflow:hidden}.sku-foto img{width:100%;height:100%;object-fit:contain}
+.sku-info b{display:block;font-size:15px}.sku-info small{display:block;color:var(--suave);font-size:12px}
+.sp{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:2px 8px;margin-top:4px}
+.sp-nao{background:#F1F1F1;color:#777}.sp-ok{background:#E3F4E8;color:var(--verde)}.sp-pend{background:#FFF4DE;color:var(--amarelo)}.sp-erro{background:#FDE8E8;color:var(--vermelho)}
+.sku-num,.sku-est{text-align:right;min-width:78px}.sku-num span{display:block;font-weight:800;font-size:16px}.sku-num .falta{color:var(--amarelo);font-size:13px}
+.sku-num small,.sku-est small{display:block;font-size:11px;color:var(--suave)}.sku-num small.ok-txt{color:var(--verde)}.sku-num small.ruim-txt{color:var(--vermelho)}
+.sku-est b{font-size:20px}.sku-est.baixo b{color:var(--vermelho)}
+@media (max-width:560px){.sku{grid-template-columns:56px 1fr auto}.sku-foto{width:56px;height:56px}.sku-est{grid-column:3;grid-row:2;min-width:0}.sku-num{grid-column:3;grid-row:1}.sku-info{grid-row:1/3}.sku-foto{grid-row:1/3}}
+#ficha{position:fixed;inset:0;background:rgba(30,10,14,.45);z-index:20;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:24px 12px}
+#ficha[hidden]{display:none}
+.ficha-caixa{background:#fff;border-radius:16px;max-width:620px;width:100%;padding:18px;position:relative}
+.ficha-caixa h2{padding-right:36px}.fechar{position:absolute;top:10px;right:12px;border:0;background:none;font-size:30px;line-height:1;cursor:pointer;color:var(--suave)}
+body.sem-rolar{overflow:hidden}
+.dica-preco{font-size:13px;color:var(--suave);background:#FBF6EE;border-radius:10px;padding:8px 10px}
+.dica-preco .link{padding:0;font-size:13px;color:#6B1420;text-decoration:underline}
+.fotos{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.ft{width:96px;height:96px;border:1px solid var(--borda);border-radius:10px;position:relative;overflow:hidden;background:#FBF6EE}
+.ft img{width:100%;height:100%;object-fit:contain}.ft span{position:absolute;left:4px;bottom:4px;background:#6B1420;color:#fff;font-size:10px;font-weight:700;border-radius:8px;padding:1px 6px}
+.ft .x{position:absolute;top:0;right:2px;border:0;background:none;color:var(--vermelho);font-size:20px;cursor:pointer}
+.ft.add{display:grid;place-items:center;font-size:32px;color:#B8862B;cursor:pointer;margin:0;border-style:dashed}
+.linha-item{display:grid;grid-template-columns:1fr 80px auto;gap:6px;align-items:center;margin:6px 0}
+.linha-item:has([name=preco]){grid-template-columns:1fr 70px 90px auto}
+.linha-item select,.linha-item input{margin:0}.linha-item .x{border:0;background:none;color:var(--vermelho);font-size:22px;cursor:pointer;padding:4px}
+.pedido ul{margin:6px 0 0 18px;font-size:14px}.ped-topo{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ped-topo .st{margin-left:auto;font-size:13px;font-weight:600}
+.t-shopee{background:#FFE9E2;color:#D9431E}.t-manual{background:#F3EAD8;color:#8A6216}
+.passos-sh{list-style:none;margin:0 0 10px}.passos-sh li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--borda);font-size:14px}
+.passos-sh li>span{flex:0 0 28px;height:28px;border-radius:50%;background:#F3EAD8;color:#8A6216;display:grid;place-items:center;font-weight:800}
+.passos-sh li.feito>span{background:#E3F4E8;color:var(--verde)}.passos-sh .btn{margin-top:6px}
+.an-sh .linha2{display:flex;gap:8px;align-items:center}.an-sh .linha2 select{margin:0;flex:1}.an-sh .btn{margin:0;padding:10px 14px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#1B2A20;color:#fff;padding:12px 18px;border-radius:12px;z-index:30;font-weight:600;max-width:92vw;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.toast.ruim{background:var(--vermelho)}
+input[hidden]{display:none!important}

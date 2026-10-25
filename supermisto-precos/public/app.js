@@ -1,4 +1,5 @@
 import { gerarAnuncio } from './anuncios.js';
+import { iniciarErp, desenharErp } from './erp.js';
 import { CONFIG_PADRAO, FAIXAS, tabelaProduto, precoKgReal, analisarMercado, tendencia, ranking, por100g, espelho, montagem, tetoKg, abaixo99, montagensPorPeso, embUnidade, contaKit } from './precos.js';
 
 const $ = (s) => document.querySelector(s);
@@ -24,6 +25,7 @@ async function iniciar() {
   D.config = { ...CONFIG_PADRAO, ...D.config };
   $('#login').hidden = true; $('#app').hidden = false; $('#sair').hidden = false;
   desenharTudo();
+  iniciarErp(D, { api, post }).catch((er) => console.error(er));
 }
 const desenharTudo = () => { desenharLidos(); desenharTabela(); desenharCustos(); desenharManual(); };
 
@@ -38,7 +40,8 @@ $('#sair').addEventListener('click', async () => { await post('/api/sair').catch
 /* ---------- abas ---------- */
 document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.abas button').forEach((x) => x.classList.toggle('ativo', x === b));
-  ['prints', 'tabela', 'ranking', 'duelo', 'anuncios', 'custos'].forEach((a) => { $(`#aba-${a}`).hidden = a !== b.dataset.aba; });
+  document.querySelectorAll('.abas button').forEach((x) => { $(`#aba-${x.dataset.aba}`).hidden = x !== b; });
+  if (['produtos', 'estoque', 'pedidos', 'loja'].includes(b.dataset.aba)) desenharErp();
   if (b.dataset.aba === 'tabela') desenharTabela();
   if (b.dataset.aba === 'ranking') desenharRanking();
   if (b.dataset.aba === 'duelo') desenharDuelo();
