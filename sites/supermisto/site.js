@@ -23,7 +23,7 @@ const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 function midia(p, peso) {
   const s = slug(p.nome);
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=3" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=4" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -126,12 +126,12 @@ function redes() {
 }
 function rodape() {
   $('#rodape').innerHTML = `<div class="caixa rod-grid">
-    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="94" loading="lazy"><p>Temperos de verdade, 100% naturais e sem conservantes. Fábrica própria.</p>${redes()}</div>
+    <div><img src="img/logo-supermisto.png" alt="Supermisto Temperos" width="190" height="94" loading="lazy"><p><span class="ln">Temperos de verdade, 100% naturais</span> <span class="ln">e sem conservantes. Fábrica própria.</span></p>${redes()}</div>
     <div><b>Produtos</b>${LINHAS.slice(0, 5).map((l) => `<a href="catalogo.html?linha=${l.id}">${l.nome}</a>`).join('')}<a href="catalogo.html">Ver todos →</a></div>
     <div><b>Empresa</b><a href="receitas.html">Receitas</a><a href="index.html#sobre">Nossa história</a><a href="index.html#empresas">Atacado e licitações</a><a href="index.html#empresas">Marca própria</a></div>
-    <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span><span>Estrada de Xerém, 484 · Xerém · Duque de Caxias (RJ)</span></span></div>
+    <div class="rod-contato"><b>Contato</b><a data-whats="Olá! Vim pelo site da Supermisto."><span data-fone></span></a><a data-mail-link><span data-mail-txt></span></a><span class="rod-end"><span class="ln">Estrada de Xerém, 484 · Xerém</span><i class="sep"> · </i><span class="ln">Duque de Caxias (RJ)</span></span></div>
   </div>
-  <div class="caixa rod-base"><span>SUPER MISTO TEMPEROS LTDA · <span class="nw">CNPJ 13.580.397/0001-80</span></span><span><a href="privacidade.html">Política de privacidade</a> · © ${new Date().getFullYear()} Supermisto. Todos os direitos reservados.</span></div>`;
+  <div class="caixa rod-base"><span><span class="ln">SUPER MISTO TEMPEROS LTDA</span><i class="sep"> · </i><span class="ln">CNPJ 13.580.397/0001-80</span></span><span><span class="ln"><a href="privacidade.html">Política de privacidade</a></span><i class="sep"> · </i><span class="ln">© ${new Date().getFullYear()} Supermisto. Todos os direitos reservados.</span></span></div>`;
 }
 function ligacoes() {
   $$('[data-whats]').forEach((a) => { a.href = linkWhats(a.dataset.whats); a.target = '_blank'; a.rel = 'noopener'; });
