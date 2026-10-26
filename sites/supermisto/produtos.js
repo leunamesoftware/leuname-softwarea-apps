@@ -5,12 +5,15 @@ const LINHAS = [
   { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas, puras e cheirosas, prontas para usar.' },
   { id: 'inteiros', nome: 'Especiarias em grão', emoji: '🫚', cor: '#8E6A35', desc: 'Grãos, sementes e especiarias inteiras para moer na hora.' },
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
+  { id: 'brasil', nome: 'Sabores do Brasil', emoji: '🇧🇷', cor: '#2E7D32', desc: 'Temperos das receitas típicas de cada região do país.' },
+  { id: 'semsal', nome: 'Sem sal adicionado', emoji: '💚', cor: '#4E7F2E', desc: 'Todo o sabor das especiarias, sem sal na mistura.' },
   { id: 'churrasco', nome: 'Linha Super Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
   { id: 'ervas', nome: 'Ervas da Horta', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
   { id: 'molhos', nome: 'Molhos e condimentos', emoji: '🫙', cor: '#9E1B14', desc: 'Molhos de pimenta, alho e condimentos prontos.' },
   { id: 'conservas', nome: 'Conservas', emoji: '🥒', cor: '#7E9A3A', desc: 'Picles, pimentas e ovos de codorna em conserva.' },
   { id: 'doces', nome: 'Doces e compotas', emoji: '🍑', cor: '#E08A2E', desc: 'Frutas em calda, geleias e doces caseiros.' },
   { id: 'amidos', nome: 'Amidos e farofas', emoji: '🌾', cor: '#E9DFC7', desc: 'Polvilhos, féculas e farofas temperadas.' },
+  { id: 'kits', nome: 'Kits com receita', emoji: '🎁', cor: '#C29433', desc: 'Os temperos certos de uma receita, com o passo a passo e QR code.' },
   { id: 'chas', nome: 'Chás e infusões', emoji: '🍵', cor: '#7E9A3A', desc: 'Ervas e flores secas para chás naturais.' },
   { id: 'sopas', nome: 'Sopas e caldos', emoji: '🥣', cor: '#D98A2B', desc: 'Sopas práticas feitas com legumes desidratados.' },
   { id: 'pastas', nome: 'Pastas e temperos pastosos', emoji: '🧄', cor: '#E6DDBE', desc: 'Alho, gengibre, pimenta e ervas batidos, prontos para usar.' },
@@ -40,7 +43,7 @@ const PRODUTOS = [
   P('Mostarda em grão', 'inteiros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
   // misturas
   P('Tempero completo', 'misturas', '#C99A3B', 'Sal, alho, cebola, salsa, colorau, pimentão e ervas: mais sabor em uma colher.', 'Carnes, aves, peixes, saladas, legumes e sopas.', ['10 g'], 'pouch', ''),
-  P('Tempero baiano', 'misturas', '#D96A1E', 'Mistura de especiarias com cor e sabor da Bahia.', 'Carnes, frango, peixes e feijão.', T),
+  P('Tempero baiano', 'brasil', '#D96A1E', 'Mistura de especiarias com cor e sabor da Bahia.', 'Carnes, frango, peixes e feijão.', T),
   P('Lemon pepper', 'misturas', '#E3C34A', 'Limão e pimenta-do-reino na medida certa.', 'Peixes, frango, saladas e legumes.', T),
   P('Ervas finas', 'misturas', '#7C9A48', 'Salsa, cebolinha, manjericão, orégano e alecrim.', 'Massas, molhos, pães e carnes brancas.', T),
   P('Tempero para frango', 'misturas', '#D99A3A', 'Receita própria para frango suculento e dourado.', 'Frango assado, frito e grelhado.', T),
@@ -174,7 +177,7 @@ PRODUTOS.push(
   P('Urucum em grão', 'inteiros', '#B8321A', 'Sementes de urucum para fazer o colorau caseiro.', 'Óleo colorido, arroz, peixes e carnes.', S4),
   // misturas
   P('Tempero sírio', 'misturas', '#7A3C1E', 'Mistura de sete pimentas e especiarias árabes.', 'Quibe, esfiha, carne moída e arroz.', S4),
-  P('Tempero mineiro', 'misturas', '#9C6A2E', 'Alho, cebola, cheiro-verde e pimenta, do jeito da roça.', 'Feijão tropeiro, couve, carnes e torresmo.', S4),
+  P('Tempero mineiro', 'brasil', '#9C6A2E', 'Alho, cebola, cheiro-verde e pimenta, do jeito da roça.', 'Feijão tropeiro, couve, carnes e torresmo.', S4),
   P('Tempero para batata frita', 'misturas', '#D99A2B', 'Páprica, alho e cebola para salpicar na hora.', 'Batata frita, batata rústica, pipoca e petiscos.', S4),
   P('Tempero para legumes', 'misturas', '#7E9A3A', 'Ervas e especiarias para legumes assados e cozidos.', 'Legumes no forno, refogados e sopas.', S4),
   P('Tempero para macarrão', 'misturas', '#B8432A', 'Orégano, manjericão, alho e tomate seco.', 'Molho de tomate, massas e lasanha.', S4),
@@ -274,6 +277,37 @@ PRODUTOS.push(
   P('Kit moedores Supermisto', 'chef', '#5E1675', 'Dupla de moedores (pimenta e sal) com refil.', 'Mesa, churrasco e presente.', UN),
   P('Pilão de madeira', 'chef', '#8A5A2E', 'Pilão para amassar alho e especiarias, com a nossa marca.', 'Alho, ervas e temperos frescos.', UN),
   P('Kit presente Supermisto', 'chef', '#5E1675', 'Avental e pano de prato Supermisto com temperos, em caixa de presente.', 'Presente para quem gosta de cozinhar.', UN),
+);
+
+// Diferenciais: sabores do Brasil, sem sal adicionado, molhos com fruta e por ardência, sais especiais e kits com receita.
+const KIT = ['kit'], ML = ['150 ml'];
+PRODUTOS.push(
+  P('Tempero para feijoada', 'brasil', '#4A2A1E', 'Louro, cominho, alho e páprica defumada para a feijoada carioca.', 'Feijoada, feijão preto e caldinho.', S4),
+  P('Tempero para moqueca', 'brasil', '#D9762B', 'Coentro, colorau e pimenta para a moqueca capixaba e baiana.', 'Moqueca de peixe, camarão e banana-da-terra.', S4),
+  P('Tempero para carne de sol', 'brasil', '#8C2F1B', 'Alho, pimenta e coentro do jeito nordestino.', 'Carne de sol, paçoca de carne e baião de dois.', S4),
+  P('Tempero gaúcho', 'brasil', '#5A1E10', 'Para o churrasco de chão, com ervas e pimenta.', 'Costela, picanha e linguiça.', S4),
+  P('Tempero para galinhada', 'brasil', '#E2A42B', 'Açafrão, colorau e ervas do jeito goiano.', 'Galinhada, arroz com frango e pequi.', S4),
+  P('Tempero para baião de dois', 'brasil', '#B08A4A', 'Coentro, cominho e alho para o prato cearense.', 'Baião de dois, feijão-verde e arroz.', S4),
+  P('Tempero completo sem sal', 'semsal', '#7E9A3A', 'Alho, cebola, salsa, colorau e ervas, sem sal adicionado.', 'Arroz, feijão, carnes e legumes.', S4),
+  P('Tempero para carnes sem sal', 'semsal', '#8C2F1B', 'Especiarias para carnes, sem sal adicionado.', 'Bifes, assados e churrasco.', S4),
+  P('Tempero para frango sem sal', 'semsal', '#C46A1E', 'Páprica, alho e ervas, sem sal adicionado.', 'Frango assado, grelhado e ensopado.', S4),
+  P('Tempero para legumes sem sal', 'semsal', '#6E8B3D', 'Ervas e especiarias, sem sal adicionado.', 'Legumes no vapor, assados e sopas.', S4),
+  P('Tempero para feijão sem sal', 'semsal', '#7A3E1D', 'Louro, cominho e alho, sem sal adicionado.', 'Feijão e caldos.', S4),
+  P('Molho de pimenta com manga', 'molhos', '#E2A42B', 'Pimenta e manga: doce no começo, ardido no final.', 'Frango, peixes, petiscos e lanches.', ML, 'garrafa'),
+  P('Molho de pimenta com maracujá', 'molhos', '#D9A21B', 'Pimenta com o azedinho do maracujá.', 'Peixes, saladas e petiscos.', ML, 'garrafa'),
+  P('Molho de pimenta com goiaba', 'molhos', '#C2324A', 'Pimenta com goiaba, agridoce e encorpado.', 'Carnes, queijos e petiscos.', ML, 'garrafa'),
+  P('Molho de pimenta com abacaxi', 'molhos', '#C9B44A', 'Pimenta com abacaxi, fresco e picante.', 'Carne de porco, frango e lanches.', ML, 'garrafa'),
+  P('Molho de pimenta suave', 'molhos', '#E2572B', 'Ardência 1 de 5 🌶️: para quem está começando.', 'Pastéis, ovos e petiscos.', ML, 'garrafa'),
+  P('Molho de pimenta extra forte', 'molhos', '#8E0E0E', 'Ardência 5 de 5 🌶️: só para os corajosos.', 'Feijão, caldos e churrasco.', ML, 'garrafa'),
+  P('Sal defumado', 'churrasco', '#5A3A2A', 'Sal grosso defumado na lenha.', 'Carnes na brasa, ovos e legumes.', ['100 g', '500 g', '1 kg']),
+  P('Flor de sal com ervas', 'misturas', '#DCE3C8', 'Flocos de sal com alecrim, tomilho e pimenta.', 'Finalizar carnes, saladas e pães.', ['100 g', '250 g']),
+  P('Sal rosa temperado', 'misturas', '#E8B8B0', 'Sal rosa com alho, pimenta e ervas.', 'Carnes, saladas e legumes.', ['100 g', '500 g']),
+  P('Kit Feijoada', 'kits', '#4A2A1E', 'Tempero para feijoada, louro, cominho e páprica defumada, com a receita.', 'Feijoada de domingo para 10 pessoas.', KIT),
+  P('Kit Churrasco Completo', 'kits', '#7A2E1A', 'Sal de parrilla, chimichurri, tempero para costela e pimenta grossa, com receitas.', 'Churrasco do começo ao fim.', KIT),
+  P('Kit Moqueca', 'kits', '#D9762B', 'Tempero para moqueca, colorau e coentro, com a receita.', 'Moqueca de peixe para 6 pessoas.', KIT),
+  P('Kit Comida Mineira', 'kits', '#9C6A2E', 'Tempero mineiro, alho e cheiro-verde, com receitas de tropeiro e couve.', 'Almoço mineiro completo.', KIT),
+  P('Kit Frango Assado', 'kits', '#C46A1E', 'Tempero para frango, páprica doce, alho em pó e alecrim, com a receita.', 'Frango assado dourado para 6 pessoas.', KIT),
+  P('Kit Pizza Caseira', 'kits', '#B8432A', 'Tempero para pizza, orégano e calabresa, com receita da massa e do molho.', 'Noite de pizza em casa.', KIT),
 );
 
 // Linha Supermisto em sachê/pacote: os mesmos tamanhos em todos os sabores.
