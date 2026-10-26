@@ -952,3 +952,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (max-width:380px){.pd-btns .btn{font-size:12px;letter-spacing:.2px;padding:14px 6px}}
 .pd-foto{position:relative}
 .foto-aviso{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(61,10,79,.88);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:99px;white-space:nowrap}
+/* capa larga da linha: no computador o título vai por cima, no espaço livre à esquerda da foto */
+.ln-capa-larga{position:relative;background:#3D0A4F}
+.ln-capa-txt{background:linear-gradient(135deg,#3D0A4F,#7B1F95);color:#fff;padding:22px 0}
+.ln-capa-txt h1{font-size:clamp(30px,5vw,52px);line-height:1.1;margin:6px 0 10px;color:#fff}
+.ln-capa-txt p{color:#EBDDF3;font-size:17px;max-width:34ch}
+@media (min-width:861px){
+  .ln-capa-larga img{max-height:620px;object-fit:cover;object-position:70% 55%}
+  .ln-capa-txt{position:absolute;inset:0;background:linear-gradient(90deg,rgba(45,7,57,.75) 0%,rgba(45,7,57,.35) 38%,transparent 55%);display:flex;align-items:center;padding:0}
+  .ln-capa-txt .caixa{width:100%}.ln-capa-txt .caixa>div{max-width:440px}
+}
+@media (min-width:861px){.ln-capa-txt .caixa{max-width:1200px;margin:0 auto;padding:0 32px}}
