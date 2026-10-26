@@ -33,10 +33,14 @@ const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
 // sabores que já têm a foto do pacote de 1 kg (os outros mostram o sachê com o aviso)
 const FOTOS_1KG = new Set(['acafrao-da-terra-curcuma', 'alho-em-po', 'canela-em-po', 'cebola-em-po', 'chimichurri', 'colorau', 'cominho-moido', 'gengibre-em-po', 'mostarda-em-grao', 'tempero-para-peixe',
   'lemon-pepper', 'oregano', 'paprica-defumada', 'paprica-doce', 'pimenta-calabresa', 'pimenta-do-reino-moida', 'tempero-baiano', 'tempero-completo']);
+// cada produto tem um id fixo (o slug do nome original): o nome pode ser trocado pelo app sem perder a foto
+PRODUTOS.forEach((p) => { p.id = p.id || slug(p.nome); });
+const temFoto = (p) => FOTOS.has(p.id) || !!p.foto;
 function midia(p, peso) {
-  const s = slug(p.nome);
-  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=44" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=44" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  const s = p.id;
+  if (p.foto) return `<img class="foto-prod" src="${escapar((p.fotosPeso && p.fotosPeso[peso]) || p.foto)}" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">`;
+  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=45" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=45" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -47,8 +51,8 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 
 /* ---------- cartões de produto ---------- */
 function cartao(p) {
-  if (!FOTOS.has(slug(p.nome))) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
-    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=44" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
+  if (!temFoto(p)) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
+    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=45" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -58,7 +62,7 @@ function cartao(p) {
     </div>
   </article>`;
   return `<a class="prod aparece" href="${linkProduto(p)}" aria-label="Ver ${escapar(p.nome)}">
-    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, FOTOS.has(slug(p.nome)) ? p.tam[0] : p.tam[1] || p.tam[0])}</div>
+    <div class="prod-img" style="--c:${linhaDe(p.linha).cor}">${p.tag ? `<span class="prod-tag">${p.tag}</span>` : ''}${midia(p, temFoto(p) ? p.tam[0] : p.tam[1] || p.tam[0])}</div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -68,7 +72,7 @@ function cartao(p) {
     </div>
   </a>`;
 }
-const linkProduto = (p) => `produto.html?id=${slug(p.nome)}`;
+const linkProduto = (p) => `produto.html?id=${p.id}`;
 const recsDe = (p) => (typeof RECEITAS === 'undefined' ? [] : RECEITAS.filter((r) => r.usa.includes(p.nome)));
 
 
@@ -97,7 +101,7 @@ function receitaDetalhe() {
         <h2>Modo de preparo</h2><ol class="rc-modo">${r.preparo.map((i) => `<li>${i}</li>`).join('')}</ol>
         ${r.variacoes ? `<h2>Varie o sabor</h2><div class="rc-var">${r.variacoes.map(([t, d]) => `<div><b>${t}</b><p>${d}</p></div>`).join('')}</div>` : ''}</div>
       <aside class="rc-lado"><h3>Produtos Supermisto desta receita</h3><div class="rc-prods">${usados.map(([p]) =>
-        (FOTOS.has(slug(p.nome)) ? `<a class="rc-prod" href="${linkProduto(p)}">${midia(p)}<span>${p.nome}</span></a>` : `<div class="rc-prod rc-breve"><span class="breve-mini">Em breve</span><span>${p.nome}</span></div>`)).join('')}</div>
+        (temFoto(p) ? `<a class="rc-prod" href="${linkProduto(p)}">${midia(p)}<span>${p.nome}</span></a>` : `<div class="rc-prod rc-breve"><span class="breve-mini">Em breve</span><span>${p.nome}</span></div>`)).join('')}</div>
         <a class="btn btn-roxo" href="${linkWhats('Olá! Vi a receita "' + r.titulo + '" no site e quero os temperos Supermisto.')}" target="_blank" rel="noopener">Quero estes temperos</a></aside>
     </div>`;
   receitasLista($('#receitas-mais'), RECEITAS.filter((x) => x.id !== r.id).slice(0, 3));
@@ -137,15 +141,15 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=44" alt="Kit 10 temperos Supermisto" width="900" height="900">';
-  $('#num-prod').textContent = PRODUTOS.length + '+';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=45" alt="Kit 10 temperos Supermisto" width="900" height="900">';
+  $('#num-prod').textContent = PRODUTOS.filter(temFoto).length;
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=44)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=45)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
     return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
-  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => FOTOS.has(slug(p.nome))).slice(0, 7);
+  const fav = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => temFoto(p)).slice(0, 7);
   // "Mais sabores" só completa a fileira quando sobra espaço
   $('#favoritos').innerHTML = fav.map(([p, i]) => cartao(p, i)).join('') + (true ?
     `<a class="prod prod-breve aparece" href="catalogo.html"><b>Mais sabores</b><span>Lemon pepper, calabresa, canela, tempero baiano e muito mais.</span><em>Ver catálogo completo →</em></a>` : '');
@@ -169,7 +173,7 @@ function catalogo() {
     $$('#filtros button').forEach((b) => b.classList.toggle('ativo', b.dataset.f === linha));
     const q = norm(busca.value.trim());
     const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => (linha === 'todos' || p.linha === linha) && (!q || norm(p.nome + ' ' + p.desc + ' ' + p.usos).includes(q)))
-      .sort(([a], [b]) => FOTOS.has(slug(b.nome)) - FOTOS.has(slug(a.nome)));
+      .sort(([a], [b]) => temFoto(b) - temFoto(a));
     $('#conta').textContent = lista.length ? `${lista.length} produto${lista.length > 1 ? 's' : ''}` : 'Nenhum produto encontrado. Chame no WhatsApp: a gente pode produzir!';
     $('#catalogo').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
     observar();
@@ -184,13 +188,13 @@ function paginaLinha() {
   const l = LINHAS.find((x) => x.id === new URLSearchParams(location.search).get('id')) || LINHAS[0];
   document.title = `${l.nome} | Supermisto Temperos`;
   const lista = PRODUTOS.map((p, i) => [p, i]).filter(([p]) => p.linha === l.id)
-    .sort(([a], [b]) => FOTOS.has(slug(b.nome)) - FOTOS.has(slug(a.nome)));
-  const prontos = lista.filter(([p]) => FOTOS.has(slug(p.nome))).length;
+    .sort(([a], [b]) => temFoto(b) - temFoto(a));
+  const prontos = lista.filter(([p]) => temFoto(p)).length;
   const titulo = `<span class="sobre-tit amarelo">Nossas linhas</span><h1>${l.nome}</h1><p>${l.desc}</p>
     <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
   $('#linha').innerHTML = CAPAS_LINHA.includes(l.id)
-    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=44" alt="${l.nome} Supermisto" width="1920" height="720"></div><div class="ln-topo ln-topo-so"><div class="caixa">${titulo}</div></div>`
-    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=44" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
+    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=45" alt="${l.nome} Supermisto" width="1920" height="720"></div><div class="ln-topo ln-topo-so"><div class="caixa">${titulo}</div></div>`
+    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=45" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
   $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }
@@ -198,15 +202,15 @@ function paginaLinha() {
 /* ---------- página de cada produto ---------- */
 function paginaProduto() {
   const id = new URLSearchParams(location.search).get('id');
-  const p = PRODUTOS.find((x) => slug(x.nome) === id && FOTOS.has(id));
+  const p = PRODUTOS.find((x) => x.id === id && temFoto(x));
   if (!p) { location.replace('catalogo.html'); return; }
-  const l = linhaDe(p.linha), info = (typeof INFO !== 'undefined' && INFO[p.nome]) || {};
+  const l = linhaDe(p.linha), info = p.info || (typeof INFO !== 'undefined' && INFO[p.nome]) || {};
   document.title = `${p.nome} Supermisto | ${l.nome}`;
   $('meta[name=description]').content = `${p.nome} Supermisto: ${p.desc} Embalagens de ${p.tam.join(', ')}.`;
   let tam = p.tam[0];
   const fichas = [['Ingredientes', info.ingredientes], ['Conservação', info.conservacao], ['Validade', info.validade], ['Alérgicos', info.alergicos]].filter(([, v]) => v);
   const recs = recsDe(p);
-  const mais = PRODUTOS.filter((x) => x.linha === p.linha && x !== p && FOTOS.has(slug(x.nome))).slice(0, 4);
+  const mais = PRODUTOS.filter((x) => x.linha === p.linha && x !== p && temFoto(x)).slice(0, 4);
   $('#produto').innerHTML = `<div class="caixa">
     <nav class="pd-trilha" aria-label="Você está em"><a href="index.html">Início</a> › <a href="linha.html?id=${l.id}">${l.nome}</a> › <span>${escapar(p.nome)}</span></nav>
     <div class="pd-grid">
@@ -239,7 +243,7 @@ function paginaProduto() {
   });
   const ld = document.createElement('script'); ld.type = 'application/ld+json';
   ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'Product', name: `${p.nome} Supermisto`, description: p.desc, category: l.nome,
-    brand: { '@type': 'Brand', name: 'Supermisto' }, image: new URL(`img/produtos/${slug(p.nome)}.webp`, location.href).href });
+    brand: { '@type': 'Brand', name: 'Supermisto' }, image: p.foto || new URL(`img/produtos/${p.id}.webp`, location.href).href });
   document.head.append(ld);
 }
 
@@ -264,7 +268,34 @@ function revenda() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/* ---------- produtos editados pelo app (Área de gestão → Meu site) ---------- */
+const CATALOGO_APP = 'https://precos.supermistotemperos.com.br/api/site/catalogo';
+function aplicarCatalogo(lista) {
+  for (const r of lista || []) {
+    let p = PRODUTOS.find((x) => x.id === r.slug);
+    if (r.oculto) { if (p) PRODUTOS.splice(PRODUTOS.indexOf(p), 1); continue; }
+    if (!p) { if (!r.nome || !LINHAS.some((l) => l.id === r.linha)) continue; p = { id: r.slug, cor: '#C29433', emb: 'pouch', tag: '' }; PRODUTOS.push(p); }
+    if (r.nome) p.nome = r.nome;
+    if (LINHAS.some((l) => l.id === r.linha)) p.linha = r.linha;
+    if (r.descricao) p.desc = r.descricao;
+    if (r.usos) p.usos = r.usos;
+    if (r.tamanhos && r.tamanhos.length) p.tam = r.tamanhos;
+    if (r.foto) { p.foto = r.foto; p.fotosPeso = r.fotos_peso || {}; }
+    const info = { ingredientes: r.ingredientes, conservacao: r.conservacao, validade: r.validade, alergicos: r.alergicos };
+    if (Object.values(info).some(Boolean)) p.info = info;
+    p.desc = p.desc || ''; p.usos = p.usos || ''; p.tam = p.tam && p.tam.length ? p.tam : ['10 g'];
+  }
+}
+async function carregarCatalogo() {
+  try {
+    const c = new AbortController(), t = setTimeout(() => c.abort(), 2500);
+    const r = await fetch(CATALOGO_APP, { signal: c.signal }); clearTimeout(t);
+    if (r.ok) aplicarCatalogo((await r.json()).produtos);
+  } catch { /* sem internet ou app fora do ar: o site segue com o catálogo fixo */ }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await carregarCatalogo();
   rodape();
   if ($('#vitrine')) inicio();
   if ($('#catalogo')) catalogo();

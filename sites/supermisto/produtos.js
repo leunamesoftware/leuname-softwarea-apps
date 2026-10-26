@@ -151,6 +151,59 @@ function embalagem(p, peso) {
   return `<svg viewBox="0 0 160 190" role="img" aria-label="${escapar(p.nome)} Super Misto" font-family="Poppins, Arial, sans-serif">${defs}<ellipse cx="80" cy="184" rx="58" ry="5" fill="#000" opacity=".12"/>${corpo}</svg>`;
 }
 
+// Produtos que vamos fabricar (entram como "Em breve" até a foto chegar; só origem vegetal, dentro do CNPJ).
+const S4 = ['10 g', '50 g', '100 g', '1 kg'], POTE = ['300 g', '500 g'], SACO = ['500 g', '1 kg'];
+PRODUTOS.push(
+  // especiarias
+  P('Pimenta-do-reino em grão', 'puros', '#2F2A28', 'Grãos inteiros para moer na hora, com mais aroma.', 'Moedor de mesa, carnes, conservas e caldos.', S4),
+  P('Pimenta-branca moída', 'puros', '#E8DFC9', 'Picância suave que não mancha o prato.', 'Molho branco, purês, peixes e sopas claras.', S4),
+  P('Cominho em grão', 'puros', '#8E6A35', 'Sementes inteiras para tostar e moer.', 'Feijão, carnes, pães e conservas.', S4),
+  P('Coentro moído', 'puros', '#B49660', 'Sabor cítrico e suave das sementes de coentro.', 'Peixes, frango, feijão e moquecas.', S4),
+  P('Erva-doce', 'puros', '#A8A46A', 'Sementes perfumadas, levemente adocicadas.', 'Pães, bolos, chás e carnes de porco.', S4),
+  P('Canela em pau', 'puros', '#8A4E26', 'Casca inteira, de aroma doce e marcante.', 'Arroz-doce, quentão, caldas e chás.', S4),
+  P('Cravo-da-índia em botões', 'puros', '#4E2A1E', 'Botões inteiros, de aroma intenso.', 'Doces em calda, quentão, carnes e conservas.', S4),
+  P('Urucum em grão', 'puros', '#B8321A', 'Sementes de urucum para fazer o colorau caseiro.', 'Óleo colorido, arroz, peixes e carnes.', S4),
+  // misturas
+  P('Tempero sírio', 'misturas', '#7A3C1E', 'Mistura de sete pimentas e especiarias árabes.', 'Quibe, esfiha, carne moída e arroz.', S4),
+  P('Tempero mineiro', 'misturas', '#9C6A2E', 'Alho, cebola, cheiro-verde e pimenta, do jeito da roça.', 'Feijão tropeiro, couve, carnes e torresmo.', S4),
+  P('Tempero para batata frita', 'misturas', '#D99A2B', 'Páprica, alho e cebola para salpicar na hora.', 'Batata frita, batata rústica, pipoca e petiscos.', S4),
+  P('Tempero para legumes', 'misturas', '#7E9A3A', 'Ervas e especiarias para legumes assados e cozidos.', 'Legumes no forno, refogados e sopas.', S4),
+  P('Tempero para macarrão', 'misturas', '#B8432A', 'Orégano, manjericão, alho e tomate seco.', 'Molho de tomate, massas e lasanha.', S4),
+  P('Ervas de Provence', 'misturas', '#6E8B3D', 'Tomilho, alecrim, manjericão e orégano, ao estilo francês.', 'Frango assado, legumes, massas e carnes.', S4),
+  P('Tempero cajun', 'misturas', '#B6441D', 'Mistura picante e defumada do sul dos Estados Unidos.', 'Frango, camarão, batatas e hambúrguer.', S4),
+  P('Tempero para pipoca', 'misturas', '#E2B04A', 'Sabores para a pipoca de cinema em casa.', 'Pipoca, batata chips e petiscos.', S4),
+  // Super Brasa
+  P('Tempero para hambúrguer', 'churrasco', '#7A2E1A', 'Defumado, alho e pimenta na medida para o blend.', 'Hambúrguer artesanal, almôndegas e kafta.', S4),
+  P('Pimenta-do-reino grossa', 'churrasco', '#3A3330', 'Moagem grossa para crosta de carne.', 'Picanha, steak, costela e cupim.', S4),
+  P('Tempero para frango na brasa', 'churrasco', '#C46A1E', 'Páprica, limão e ervas para o frango na grelha.', 'Coxinha da asa, coxa, sobrecoxa e espetinho.', S4),
+  // ervas
+  P('Hortelã desidratada', 'ervas', '#5D8C4A', 'Refrescante e perfumada.', 'Quibe, tabule, chás e molhos de iogurte.', S4),
+  P('Cheiro-verde desidratado', 'ervas', '#4E7F2E', 'Salsa e cebolinha secas, prontas para usar.', 'Arroz, feijão, ovos, sopas e refogados.', S4),
+  P('Sálvia', 'ervas', '#8A9A7A', 'Folhas aromáticas, de sabor marcante.', 'Massas na manteiga, carne de porco e frango.', S4),
+  // molhos
+  P('Molho inglês', 'molhos', '#3A1E14', 'Agridoce e encorpado, para dar profundidade ao prato.', 'Carnes, marinadas, saladas e drinks.', ['150 ml'], 'garrafa'),
+  P('Molho de pimenta com alho', 'molhos', '#B5160E', 'Pimenta vermelha e alho, ardência na medida.', 'Pastéis, petiscos, feijão e churrasco.', ['150 ml'], 'garrafa'),
+  P('Molho agridoce', 'molhos', '#C4501E', 'Doce e azedinho, de sabor oriental.', 'Frango, rolinho primavera e petiscos.', ['150 ml'], 'garrafa'),
+  P('Mostarda amarela', 'molhos', '#D9A21B', 'Mostarda cremosa e suave.', 'Lanches, cachorro-quente, carnes e molhos.', ['200 g'], 'pote'),
+  // conservas
+  P('Pimenta malagueta em conserva', 'conservas', '#B5160E', 'Pimentas pequenas e ardidas curtidas no vinagre.', 'Feijão, peixes e molhos caseiros.', ['200 g'], 'pote'),
+  P('Cenoura em conserva', 'conservas', '#E07A2B', 'Cenoura crocante em palitos, curtida no vinagre.', 'Petiscos, saladas e tábuas de frios.', POTE, 'pote'),
+  P('Beterraba em conserva', 'conservas', '#8E1E3A', 'Fatias de beterraba agridoce.', 'Saladas, lanches e acompanhamentos.', POTE, 'pote'),
+  P('Alho em conserva', 'conservas', '#EFE6CF', 'Dentes de alho inteiros, macios e saborosos.', 'Petiscos, antepastos e carnes.', ['200 g'], 'pote'),
+  P('Jardineira de legumes', 'conservas', '#7E9A3A', 'Cenoura, pepino, couve-flor e cebolinha em conserva.', 'Saladas, petiscos e acompanhamentos.', POTE, 'pote'),
+  // doces
+  P('Doce de banana', 'doces', '#B87A2B', 'Doce de banana em pedaço, receita caseira.', 'Sobremesa, com queijo e no café.', POTE, 'pote'),
+  P('Geleia de goiaba', 'doces', '#C2324A', 'Geleia brilhante feita com goiaba vermelha.', 'Pães, torradas, bolos e queijos.', POTE, 'pote'),
+  P('Compota de abacaxi', 'doces', '#E2B04A', 'Abacaxi em calda, docinho e perfumado.', 'Sobremesas, pavês e tortas.', POTE, 'pote'),
+  P('Doce de mamão verde', 'doces', '#9AA84A', 'Doce tradicional de mamão verde ralado.', 'Sobremesa e lanche da tarde.', POTE, 'pote'),
+  P('Geleia de abacaxi com pimenta', 'doces', '#D99A2B', 'Doce com um toque picante.', 'Tábua de frios, carnes e torradas.', ['200 g'], 'pote'),
+  // amidos
+  P('Farinha de mandioca torrada', 'amidos', '#E2C98A', 'Farinha fina e torrada no ponto certo.', 'Farofa, pirão e acompanhamentos.', SACO, 'saco'),
+  P('Farofa de cebola', 'amidos', '#D9B26A', 'Farofa pronta com cebola dourada.', 'Churrasco, feijão e carnes.', ['250 g', '500 g'], 'saco'),
+  P('Farofa temperada picante', 'amidos', '#C46A1E', 'Farofa pronta com pimenta calabresa e páprica.', 'Churrasco, feijoada e petiscos.', ['250 g', '500 g'], 'saco'),
+  P('Tapioca granulada', 'amidos', '#F2ECDD', 'Pérolas de tapioca para doces e cuscuz.', 'Cuscuz de tapioca, pudim e mingau.', SACO, 'saco'),
+);
+
 // Linha Supermisto em sachê/pacote: os mesmos tamanhos em todos os sabores.
 const LINHA_PACOTES = ['Colorau', 'Pimenta-do-reino moída', 'Cominho moído', 'Páprica doce', 'Páprica defumada', 'Açafrão-da-terra (cúrcuma)',
   'Alho em pó', 'Cebola em pó', 'Canela em pó', 'Pimenta calabresa', 'Tempero completo', 'Tempero baiano', 'Lemon pepper', 'Chimichurri', 'Orégano'];

@@ -193,7 +193,7 @@ export async function api(env, req, path, ctx) {
     return json({
       skus, pedidos: pedidos.results.map((p) => ({ ...p, itens: JSON.parse(p.itens), destinatario: p.destinatario ? JSON.parse(p.destinatario) : null })),
       registro: registro.results, movimentos: mov.results, lancamentos: lanc.results, compras: compras.results, insumos: insumos.results,
-      empresa: Object.fromEntries(emp.results.map((e) => [e.chave.slice(8), e.valor])),
+      empresa: { ...EMPRESA_PADRAO, ...Object.fromEntries(emp.results.filter((e) => e.valor).map((e) => [e.chave.slice(8), e.valor])) },
       shopee: { configurada: S.configurada(env), conectada: S.configurada(env) && (await S.conectada(env)), automatico: (await opcao(env, 'automatico')) !== '0', loja: await opcao(env, 'shop_id') },
     });
   }
@@ -349,6 +349,8 @@ export async function foto(env, chave) {
 }
 
 /* ---------- envio, financeiro, compras, empresa ---------- */
+// Remetente padrão (vale enquanto não for trocado em ⚙️ Empresa): sempre a empresa, nunca o nome do dono.
+export const EMPRESA_PADRAO = { nome: 'Supermisto Temperos', cnpj: '13.580.397/0001-80', endereco: 'Estrada de Xerém, 484 - Xerém', cidade: 'Duque de Caxias', uf: 'RJ', cep: '25241-390', telefone: '(24) 99872-1557' };
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 const CATEGORIAS = ['Vendas Shopee', 'Vendas diretas', 'Matéria-prima', 'Embalagem', 'Frete', 'Impostos', 'Contas fixas', 'Funcionários', 'Marketing', 'Outros'];

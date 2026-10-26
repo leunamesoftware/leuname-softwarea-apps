@@ -3,6 +3,7 @@ import { B, $, brl, esc, lerNum, dataHora, fotoUrl, aviso, abrirAba, contaSku, o
 import './erp-vendas.js';
 import './erp-gestao.js';
 import './erp-impressao.js';
+import './erp-site.js';
 import { iniciarAviso } from './erp-aviso.js';
 
 export { contaSku };

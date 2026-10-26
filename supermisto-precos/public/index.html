@@ -38,6 +38,8 @@
     <p class="grupo">Dinheiro</p>
     <button data-aba="financeiro"><i>💵</i>Financeiro</button>
     <button data-aba="relatorios"><i>📈</i>Relatórios</button>
+    <p class="grupo">Site</p>
+    <button data-aba="site"><i>🌐</i>Meu site</button>
     <p class="grupo">Shopee</p>
     <button data-aba="loja"><i>🛒</i>Loja Shopee</button>
     <p class="grupo">Concorrência</p>
@@ -145,6 +147,15 @@
       <div class="card"><h3>Margem de cada produto (preço atual)</h3><div id="rel-margem"></div></div>
     </div>
   </section>
+
+  <section id="aba-site" class="caixa" hidden>
+    <div class="cab"><h2>🌐 Meu site</h2><button class="btn" id="site-novo">＋ Produto novo</button></div>
+    <p class="suave">Edite nome, descrição, tamanhos e fotos dos produtos de <a href="https://www.supermistotemperos.com.br" target="_blank" rel="noopener">supermistotemperos.com.br</a>, crie produtos novos ou esconda algum. Muda no site em até 1 minuto.</p>
+    <input id="site-busca" type="search" placeholder="🔎 Procurar produto">
+    <div class="chips" id="site-filtros"></div>
+    <div id="site-lista" class="site-lista"></div>
+  </section>
+  <div id="site-ed" hidden></div>
 
   <section id="aba-impressao" class="caixa" hidden>
     <h2>🖨️ Impressão</h2>
