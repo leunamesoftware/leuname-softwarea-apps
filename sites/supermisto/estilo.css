@@ -979,3 +979,22 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (max-width:420px){.menu{gap:16px!important}.menu a{font-size:12.5px!important;letter-spacing:.3px}.marca img{height:46px!important}}
 @media (max-width:700px){.menu{flex-wrap:wrap;overflow:visible!important;gap:2px 18px!important;justify-content:flex-start}.menu a{padding:5px 0!important}}
 @media (max-width:700px){.topo{position:relative!important}}
+
+/* banners das linhas: faixa roxa da marca à esquerda (disfarça o espaço vazio das fotos) e nome sempre por cima, também no celular */
+.ln-capa-larga{position:relative;overflow:hidden;background:#2C0739}
+.ln-capa-larga img{display:block;width:100%;object-fit:cover}
+.ln-capa-txt{position:absolute!important;inset:0;display:flex!important;align-items:center;padding:0!important;
+  background:linear-gradient(90deg,rgba(44,7,57,.96) 0%,rgba(61,10,79,.88) 26%,rgba(94,22,117,.55) 46%,rgba(94,22,117,.12) 64%,transparent 76%)!important}
+.ln-capa-txt::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#C29433,#E3BE72 40%,transparent 80%)}
+.ln-capa-txt .caixa{width:100%;max-width:1200px;margin:0 auto;padding:0 32px}
+.ln-capa-txt .caixa>div{max-width:440px}
+.ln-capa-txt h1{text-shadow:0 2px 14px rgba(0,0,0,.35)}
+@media (min-width:861px){.ln-capa-larga img{height:min(560px,calc(100svh - 84px));max-height:none}}
+@media (max-width:860px){
+  .ln-capa-larga img{height:300px;object-position:78% 50%}
+  .ln-capa-txt{background:linear-gradient(90deg,rgba(44,7,57,.95) 0%,rgba(61,10,79,.85) 40%,rgba(94,22,117,.45) 66%,transparent 92%)!important}
+  .ln-capa-txt .caixa{padding:0 18px}.ln-capa-txt .caixa>div{max-width:250px}
+  .ln-capa-txt h1{font-size:30px!important;margin:4px 0 6px!important}
+  .ln-capa-txt p{font-size:14px!important;line-height:1.4}
+  .ln-capa-txt .ln-conta{margin-top:8px;font-size:12px}
+}
