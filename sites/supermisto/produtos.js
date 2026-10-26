@@ -201,6 +201,11 @@ PRODUTOS.push(
   P('Doce de banana', 'doces', '#B87A2B', 'Doce de banana em pedaço, receita caseira.', 'Sobremesa, com queijo e no café.', POTE, 'pote'),
   P('Geleia de goiaba', 'doces', '#C2324A', 'Geleia brilhante feita com goiaba vermelha.', 'Pães, torradas, bolos e queijos.', POTE, 'pote'),
   P('Compota de abacaxi', 'doces', '#E2B04A', 'Abacaxi em calda, docinho e perfumado.', 'Sobremesas, pavês e tortas.', POTE, 'pote'),
+  P('Goiaba em calda', 'doces', '#C2324A', 'Metades de goiaba em calda, receita caseira.', 'Sobremesa, com queijo ou sorvete.', POTE, 'pote'),
+  P('Banana em calda', 'doces', '#C9A44E', 'Banana em rodelas na calda de açúcar e canela.', 'Sobremesa, bolos e sorvete.', POTE, 'pote'),
+  P('Caju em calda', 'doces', '#D9762B', 'Caju inteiro em calda, doce do Nordeste.', 'Sobremesa e lanche da tarde.', POTE, 'pote'),
+  P('Doce de laranja em calda', 'doces', '#E08A2E', 'Casca de laranja em calda, docinha e perfumada.', 'Sobremesa e com queijo.', POTE, 'pote'),
+  P('Compota de manga', 'doces', '#E2A42B', 'Pedaços de manga em calda.', 'Sobremesas, pavês e sorvete.', POTE, 'pote'),
   P('Doce de mamão verde', 'doces', '#9AA84A', 'Doce tradicional de mamão verde ralado.', 'Sobremesa e lanche da tarde.', POTE, 'pote'),
   P('Geleia de abacaxi com pimenta', 'doces', '#D99A2B', 'Doce com um toque picante.', 'Tábua de frios, carnes e torradas.', ['200 g'], 'pote'),
   // amidos
