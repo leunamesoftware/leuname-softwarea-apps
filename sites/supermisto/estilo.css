@@ -963,3 +963,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   .ln-capa-txt .caixa{width:100%}.ln-capa-txt .caixa>div{max-width:440px}
 }
 @media (min-width:861px){.ln-capa-txt .caixa{max-width:1200px;margin:0 auto;padding:0 32px}}
+
+/* cabeçalho no celular e tablet: menu sempre à vista (Início, Produtos, Receitas…) numa faixa embaixo da logo */
+@media (max-width:1120px){
+  .topo-in{flex-wrap:wrap;height:auto;padding:10px 0 0;row-gap:6px}
+  .hamb{display:none!important}
+  .topo-cta{display:inline-flex!important;margin-left:auto;padding:9px 16px;font-size:12.5px}
+  .menu{position:static!important;transform:none!important;flex-direction:row!important;order:3;width:100%;background:none!important;box-shadow:none!important;
+    padding:4px 0 10px!important;gap:20px!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0!important}
+  .menu::-webkit-scrollbar{display:none}
+  .menu a{padding:6px 0!important;border:0!important;font-size:13.5px!important;flex:none;opacity:.85}
+  .menu a.atual{opacity:1;color:#E3BE72}
+  .menu a::after{display:block!important;bottom:0}
+}
+@media (max-width:420px){.menu{gap:16px!important}.menu a{font-size:12.5px!important;letter-spacing:.3px}.marca img{height:46px!important}}
+@media (max-width:700px){.menu{flex-wrap:wrap;overflow:visible!important;gap:2px 18px!important;justify-content:flex-start}.menu a{padding:5px 0!important}}
+@media (max-width:700px){.topo{position:relative!important}}
