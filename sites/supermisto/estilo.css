@@ -1009,3 +1009,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   .ln-capa-txt h1{font-size:26px!important}
   .ln-capa-txt p{font-size:13px!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 }
+/* linha só com a foto do quadradinho (4:3): sem esticar; foto à direita no tamanho dela, roxo no resto */
+.ln-capa-larga.so-foto{background:linear-gradient(90deg,#2C0739,#5E1675)}
+@media (min-width:861px){.ln-capa-larga.so-foto img{width:auto!important;height:min(520px,calc(100svh - 84px))!important;margin-left:auto;aspect-ratio:4/3;object-fit:cover}}
+@media (max-width:860px){.ln-capa-larga.so-foto img{aspect-ratio:4/3!important}}

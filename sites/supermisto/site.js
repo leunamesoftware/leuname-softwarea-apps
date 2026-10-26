@@ -28,8 +28,8 @@ const FOTOS = new Set(['colorau', 'tempero-completo', 'pimenta-do-reino-moida', 
 const FOTOS_LINHA = ['ervas', 'puros', 'conservas', 'misturas', 'churrasco', 'molhos', 'doces', 'amidos', 'chas', 'inteiros'];
 const CAPAS_LINHA = ['chas', 'puros', 'inteiros', 'misturas'];
 // foto do quadradinho e capa larga de cada linha: a enviada pelo app (Meu site) vale mais que a do site
-const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=62` : '');
-const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=62` : '');
+const fotoLinha = (l) => l.foto || (FOTOS_LINHA.includes(l.id) ? `img/linhas/${l.id}.webp?v=63` : '');
+const capaLinha = (l) => l.capa || (CAPAS_LINHA.includes(l.id) ? `img/linhas/${l.id}-capa.webp?v=63` : '');
 const slug = (n) => n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // foto do tamanho escolhido: 10 g (padrão), 50 g, 100 g ou o pacote de 1 kg
 const PESO_FOTO = { '50 g': '-50g', '100 g': '-100g', '1 kg': '-1kg' };
@@ -42,8 +42,8 @@ const temFoto = (p) => FOTOS.has(p.id) || !!p.foto;
 function midia(p, peso) {
   const s = p.id;
   if (p.foto) return `<img class="foto-prod" src="${escapar((p.fotosPeso && p.fotosPeso[peso]) || p.foto)}" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">`;
-  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=62" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=62" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=63" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=63" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -55,7 +55,7 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 /* ---------- cartões de produto ---------- */
 function cartao(p) {
   if (!temFoto(p)) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
-    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=62" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
+    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=63" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -144,7 +144,7 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=62" alt="Kit 10 temperos Supermisto" width="900" height="900">';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=63" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = LINHAS.length;
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
@@ -197,7 +197,7 @@ function paginaLinha() {
     <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
   // todas as linhas no mesmo modelo: banner (ou a foto do quadradinho) com a faixa roxa e o nome por cima
   const img = capaLinha(l) || fotoLinha(l);
-  $('#linha').innerHTML = `<div class="ln-capa-larga${img ? '' : ' sem-foto'}">${img ? `<img src="${img}" alt="${l.nome} Supermisto" width="1600" height="900">` : `<span class="ln-emoji">${l.emoji}</span>`}<div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`;
+  $('#linha').innerHTML = `<div class="ln-capa-larga${img ? (capaLinha(l) ? '' : ' so-foto') : ' sem-foto'}">${img ? `<img src="${img}" alt="${l.nome} Supermisto" width="1600" height="900">` : `<span class="ln-emoji">${l.emoji}</span>`}<div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`;
   $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }
