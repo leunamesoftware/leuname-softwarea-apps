@@ -5,7 +5,7 @@ import { B, $, esc, aviso } from './erp-base.js';
 const SITE = 'https://www.supermistotemperos.com.br';
 const TAMS = ['10 g', '30 g', '50 g', '100 g', '250 g', '500 g', '1 kg', '150 ml', '300 ml', '500 ml', '1 L', '200 g', '300 g'];
 const slug = (n) => String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-let base = null, editados = {}, filtroLinha = 'todos', busca = '', carregando = null;
+let linhasApp = {}, base = null, editados = {}, filtroLinha = 'todos', busca = '', carregando = null;
 
 /** Lê o catálogo fixo do site (produtos.js) uma vez. */
 function catalogoDoSite() {
@@ -32,6 +32,7 @@ export async function produtosDoSite() {
   await catalogoDoSite();
   const r = await B.api('/api/erp/site');
   editados = Object.fromEntries(r.produtos.map((p) => [p.slug, p]));
+  linhasApp = r.linhas || {};
   return { linhas: base.linhas, produtos: lista(), cadastrados: r.cadastrados || {}, fotoDe };
 }
 
@@ -40,6 +41,7 @@ async function desenhar() {
   if (!base) el.innerHTML = '<p class="suave">Carregando o catálogo do site…</p>';
   try { await produtosDoSite(); }
   catch { el.innerHTML = '<p class="erro">Não consegui abrir o catálogo do site. Confira a internet e toque em Meu site de novo.</p>'; return; }
+  desenharLinhas();
   $('#site-filtros').innerHTML = [['todos', 'Todos'], ...base.linhas.map((l) => [l.id, l.nome])].map(([k, n]) => `<button data-sl="${k}" class="${k === filtroLinha ? 'ativo' : ''}">${esc(n)}</button>`).join('');
   const q = busca.toLowerCase(), ls = lista().filter((p) => (filtroLinha === 'todos' || p.linha === filtroLinha) && (!q || p.nome.toLowerCase().includes(q)));
   el.innerHTML = ls.map((p) => `<button class="site-item${p.oculto ? ' oculto' : ''}" data-site="${p.id}">
@@ -47,6 +49,42 @@ async function desenhar() {
       <span class="site-txt"><b>${esc(p.nome)}</b><small>${esc(base.linhas.find((l) => l.id === p.linha)?.nome || '')} · ${(p.tam || []).join(', ')}</small>
       ${p.oculto ? '<i class="tg cinza">Escondido</i>' : p.novo ? '<i class="tg">Novo pelo app</i>' : editados[p.id] ? '<i class="tg">Editado</i>' : ''}</span><span>›</span></button>`).join('') || '<p class="suave">Nenhum produto.</p>';
 }
+
+/* ---------- fotos das linhas: quadradinho (4:3) e banner largo ---------- */
+const fotoSite = (id, tipo) => `${SITE}/img/linhas/${id}${tipo === 'capa' ? '-capa' : ''}.webp`;
+function desenharLinhas() {
+  const el = $('#site-linhas'); if (!el) return;
+  el.innerHTML = base.linhas.map((l) => {
+    const a = linhasApp[l.id] || {};
+    const caixa = (tipo, rot) => `<label class="ln-box ${tipo}"><img src="${esc(a[tipo] || fotoSite(l.id, tipo))}" alt="" onerror="this.style.visibility='hidden'">
+      <span>📷 ${rot}</span><input type="file" accept="image/*" data-linha="${l.id}" data-tipo="${tipo}" hidden></label>`;
+    return `<div class="ln-item"><b>${esc(l.emoji)} ${esc(l.nome)}</b><div class="ln-boxes">${caixa('foto', 'Quadradinho')}${caixa('capa', 'Banner')}</div></div>`;
+  }).join('');
+}
+/** Ajusta sozinha: quadradinho vira 4:3 (corta o excesso, puxando para a direita onde costuma estar o produto); banner até 1600 px, no máximo 16:9. */
+function ajustar(arquivo, tipo) {
+  return new Promise((ok, falha) => {
+    const img = new Image(); img.onload = () => {
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      const alvo = tipo === 'foto' ? 4 / 3 : Math.max(16 / 9, Math.min(img.width / img.height, 3));
+      if (sw / sh > alvo) { const nw = sh * alvo; sx = tipo === 'foto' ? (sw - nw) * 0.75 : (sw - nw) / 2; sw = nw; }
+      else if (sw / sh < alvo) { const nh = sw / alvo; sy = (sh - nh) / 2; sh = nh; }
+      const W = tipo === 'foto' ? 800 : Math.min(1600, Math.round(sw)), H = Math.round(W / (sw / sh));
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+      URL.revokeObjectURL(img.src); ok(c.toDataURL('image/webp', 0.86));
+    }; img.onerror = () => falha(new Error('Não consegui abrir essa imagem.')); img.src = URL.createObjectURL(arquivo);
+  });
+}
+document.addEventListener('change', async (e) => {
+  const inp = e.target.closest('input[data-linha]'); if (!inp || !inp.files[0]) return;
+  const caixa = inp.closest('.ln-box'); caixa.classList.add('enviando');
+  try {
+    const r = await B.post('/api/erp/site/linha', { linha: inp.dataset.linha, tipo: inp.dataset.tipo, imagem: await ajustar(inp.files[0], inp.dataset.tipo) });
+    linhasApp = r.linhas || linhasApp; desenharLinhas(); aviso('✅ Imagem ajustada e enviada. Aparece no site em até 1 minuto.');
+  } catch (err) { aviso(err.message || 'Não consegui mandar a imagem.', false); caixa.classList.remove('enviando'); }
+  inp.value = '';
+});
 
 /** Reduz a foto no próprio celular (até 1200 px, WebP) antes de mandar. */
 function reduzir(arquivo) {

@@ -377,3 +377,13 @@ table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
 .cad-feito{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--texto);font-size:14px}.cad-feito input{width:20px;height:20px;margin:0;accent-color:#2E9E5B}
 #cad-resumo .kpis{grid-template-columns:repeat(3,1fr)}
 @media (max-width:600px){#cad-resumo .kpi b{font-size:18px}}
+/* fotos das linhas no Meu site */
+.ln-cartao summary{font-weight:700;color:var(--bordo-esc);cursor:pointer}
+.ln-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:8px}
+.ln-item{background:#FAF7F2;border:1px solid #EFE6DA;border-radius:12px;padding:10px;display:grid;gap:8px}.ln-item b{font-size:14px}
+.ln-boxes{display:grid;grid-template-columns:1fr 1.6fr;gap:8px}
+.ln-box{display:grid;gap:4px;justify-items:center;background:#fff;border:2px dashed #D9C7E6;border-radius:10px;padding:6px;cursor:pointer;position:relative}
+.ln-box img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:#F3ECFA}.ln-box.capa img{aspect-ratio:16/9}
+.ln-box span{font-size:11.5px;font-weight:700;color:#5E1675}
+.ln-box.enviando{opacity:.5;pointer-events:none}.ln-box.enviando::after{content:'Enviando…';position:absolute;top:40%;font-weight:800;color:#3D0A4F}
+@media (max-width:600px){.ln-lista{grid-template-columns:1fr}}
