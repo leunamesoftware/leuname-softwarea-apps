@@ -16,7 +16,7 @@ const LINHAS = [
   { id: 'pastas', nome: 'Pastas e temperos pastosos', emoji: '🧄', cor: '#E6DDBE', desc: 'Alho, gengibre, pimenta e ervas batidos, prontos para usar.' },
   { id: 'graos', nome: 'Grãos e sementes', emoji: '🫘', cor: '#B08A4A', desc: 'Grãos e sementes selecionados e embalados por nós.' },
   { id: 'desidratados', nome: 'Desidratados e cogumelos', emoji: '🍄', cor: '#8A5A3A', desc: 'Legumes, frutas e cogumelos desidratados.' },
-  { id: 'chef', nome: 'Linha Chef Supermisto', emoji: '👨‍🍳', cor: '#5E1675', desc: 'Aventais, panos de prato e utensílios com a nossa marca.' },
+  { id: 'chef', nome: 'Linha Chef Supermisto', emoji: '👨‍🍳', cor: '#5E1675', desc: 'Moedores, utensílios e kits presente com a nossa marca.' },
 ];
 
 const P = (nome, linha, cor, desc, usos, tam, emb = 'pouch', tag = '') => ({ nome, linha, cor, desc, usos, tam, emb, tag });
@@ -228,6 +228,17 @@ PRODUTOS.push(
   P('Boldo', 'chas', '#5D7A3A', 'Folhas secas de boldo.', 'Chá depois das refeições.', CHA),
   P('Chá de maçã com canela', 'chas', '#B8432A', 'Maçã desidratada, canela e cravo.', 'Chá quente nas noites frias.', CHA),
   P('Chá de gengibre com limão', 'chas', '#D9B26A', 'Gengibre e casca de limão desidratados.', 'Chá quente ou gelado.', CHA),
+  P('Hortelã para chá', 'chas', '#5D8C4A', 'Folhas de hortelã secas, bem refrescantes.', 'Chá quente, gelado e sucos.', CHA),
+  P('Erva-mate tostada', 'chas', '#7A5A2E', 'Mate tostado, sabor marcante.', 'Chá mate gelado, com limão ou quente.', ['100 g', '250 g']),
+  P('Chá de frutas vermelhas', 'chas', '#A0183A', 'Hibisco, maçã e frutas vermelhas desidratadas.', 'Chá gelado ou quente, sem açúcar.', CHA),
+  P('Chá de laranja com canela', 'chas', '#E08A2E', 'Casca de laranja, canela e cravo.', 'Chá quente nas noites frias.', CHA),
+  P('Chá de abacaxi com hortelã', 'chas', '#C9B44A', 'Abacaxi desidratado e hortelã.', 'Chá gelado e refrescante.', CHA),
+  P('Camomila com erva-doce', 'chas', '#E2C24A', 'Flores de camomila com sementes de erva-doce.', 'Chá suave para a noite.', CHA),
+  P('Chá de gengibre com canela', 'chas', '#C98A3A', 'Gengibre e canela em pedaços.', 'Chá quente e encorpado.', CHA),
+  P('Alecrim para chá', 'chas', '#6E8B3D', 'Folhas de alecrim secas, bem perfumadas.', 'Chá quente.', CHA),
+  P('Chá de maracujá com hibisco', 'chas', '#C4501E', 'Casca de maracujá desidratada com hibisco.', 'Chá gelado ou quente.', CHA),
+  P('Chá de limão com capim-santo', 'chas', '#A8B44A', 'Capim-santo e casca de limão.', 'Chá gelado e refrescante.', CHA),
+  P('Kit chás da casa', 'chas', '#5E1675', 'Caixa com 6 sabores de chá Supermisto.', 'Para provar todos e dar de presente.', ['6 sabores']),
   P('Erva-doce para chá', 'chas', '#A8A46A', 'Sementes de erva-doce selecionadas.', 'Chá quente, adoçado ou puro.', CHA),
   P('Sopa de legumes', 'sopas', '#D98A2B', 'Legumes desidratados e temperos naturais: é só ferver.', 'Jantar rápido, marmita e lanche quente.', SOPA),
   P('Creme de abóbora com gengibre', 'sopas', '#E08A2E', 'Abóbora e gengibre em pó para um creme encorpado.', 'Jantar e entrada.', SOPA),
@@ -254,9 +265,7 @@ PRODUTOS.push(
   P('Cogumelo shiitake desidratado', 'desidratados', '#6A4A30', 'Shiitake desidratado: é só hidratar.', 'Risotos, yakisoba, molhos e caldos.', ['30 g', '50 g']),
   P('Champignon desidratado', 'desidratados', '#B8A07A', 'Fatias de champignon desidratadas.', 'Estrogonofe, molhos, pizzas e risotos.', ['30 g', '50 g']),
   P('Mix de cogumelos', 'desidratados', '#7A5A3A', 'Shiitake, champignon e cogumelo-do-sol.', 'Risotos, massas e caldos.', ['30 g', '50 g']),
-  P('Avental Supermisto', 'chef', '#3D0A4F', 'Avental de cozinha com a nossa marca bordada.', 'Cozinha de casa, churrasco e presentes.', UN),
-  P('Pano de prato Supermisto', 'chef', '#5E1675', 'Pano de prato de algodão com a marca Supermisto.', 'Cozinha e kits de presente.', UN),
-  P('Colher de pau gravada', 'chef', '#8A5A2E', 'Colher de madeira com a nossa marca gravada.', 'Molhos, doces e presente.', UN),
+    P('Colher de pau gravada', 'chef', '#8A5A2E', 'Colher de madeira com a nossa marca gravada.', 'Molhos, doces e presente.', UN),
   P('Kit churrasco gravado', 'chef', '#3A3330', 'Garfo, faca e pegador com a marca Supermisto.', 'Churrasco e presente.', UN),
   P('Porta-temperos Supermisto', 'chef', '#C29433', 'Suporte com 6 potinhos de vidro e rótulos da marca.', 'Bancada da cozinha.', UN),
   P('Tábua de corte gravada', 'chef', '#9C6A2E', 'Tábua de madeira com a nossa marca.', 'Cortes, petiscos e tábua de frios.', UN),
@@ -264,7 +273,7 @@ PRODUTOS.push(
   P('Moedor de sal grosso Supermisto', 'chef', '#E8DFC9', 'Moedor de vidro com a marca Supermisto.', 'Sal grosso, sal de parrilla e sal temperado.', UN),
   P('Kit moedores Supermisto', 'chef', '#5E1675', 'Dupla de moedores (pimenta e sal) com refil.', 'Mesa, churrasco e presente.', UN),
   P('Pilão de madeira', 'chef', '#8A5A2E', 'Pilão para amassar alho e especiarias, com a nossa marca.', 'Alho, ervas e temperos frescos.', UN),
-  P('Kit presente Supermisto', 'chef', '#5E1675', 'Avental, pano de prato e temperos em caixa de presente.', 'Presente para quem gosta de cozinhar.', UN),
+  P('Kit presente Supermisto', 'chef', '#5E1675', 'Avental e pano de prato Supermisto com temperos, em caixa de presente.', 'Presente para quem gosta de cozinhar.', UN),
 );
 
 // Linha Supermisto em sachê/pacote: os mesmos tamanhos em todos os sabores.
