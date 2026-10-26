@@ -2,7 +2,8 @@
    (temperos, molhos e condimentos; conservas de legumes e de frutas; amidos e féculas; outros alimentos; envase).
    emb: pouch (sachê) | pote | garrafa | saco. cor: cor do produto na janela da embalagem. */
 const LINHAS = [
-  { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas e em grão, puras e cheirosas.' },
+  { id: 'puros', nome: 'Especiarias puras', emoji: '🌶️', cor: '#D8401E', desc: 'Especiarias moídas, puras e cheirosas, prontas para usar.' },
+  { id: 'inteiros', nome: 'Especiarias em grão', emoji: '🫚', cor: '#8E6A35', desc: 'Grãos, sementes e especiarias inteiras para moer na hora.' },
   { id: 'misturas', nome: 'Misturas da Casa', emoji: '🥘', cor: '#C99A3B', desc: 'Receitas exclusivas que já dão sabor à comida.' },
   { id: 'churrasco', nome: 'Linha Super Brasa', emoji: '🔥', cor: '#B5512F', desc: 'Para carne na brasa ficar inesquecível.' },
   { id: 'ervas', nome: 'Ervas da Horta', emoji: '🌿', cor: '#6E8B3D', desc: 'Folhas e ervas secas com aroma de horta.' },
@@ -36,7 +37,7 @@ const PRODUTOS = [
   P('Cravo-da-índia moído', 'puros', '#4E2A1E', 'Aroma intenso e marcante, já moído para usar.', 'Doces em calda, bolos, quentão, carnes e conservas.', ['50 g', '100 g', '500 g']),
   P('Pimenta calabresa', 'puros', '#B32A17', 'Flocos de pimenta vermelha seca.', 'Pizzas, massas, molhos e carnes.', T),
   P('Gengibre em pó', 'puros', '#D9B26A', 'Picante e refrescante.', 'Carnes, peixes, chás e doces.', T),
-  P('Mostarda em grão', 'puros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
+  P('Mostarda em grão', 'inteiros', '#C8A33F', 'Grãos amarelos para conservas e molhos.', 'Picles, molhos e marinadas.', T),
   // misturas
   P('Tempero completo', 'misturas', '#C99A3B', 'Sal, alho, cebola, salsa, colorau, pimentão e ervas: mais sabor em uma colher.', 'Carnes, aves, peixes, saladas, legumes e sopas.', ['10 g'], 'pouch', ''),
   P('Tempero baiano', 'misturas', '#D96A1E', 'Mistura de especiarias com cor e sabor da Bahia.', 'Carnes, frango, peixes e feijão.', T),
@@ -64,7 +65,7 @@ const PRODUTOS = [
   P('Alecrim', 'ervas', '#5E7348', 'Folhas aromáticas e resinosas.', 'Batatas, carnes assadas e pães.', T),
   P('Louro em folha', 'ervas', '#7C8A4A', 'Folhas inteiras e perfumadas.', 'Feijão, molhos, carnes e conservas.', ['50 g', '100 g', '500 g']),
   P('Tomilho', 'ervas', '#6E7A45', 'Sabor delicado e herbal.', 'Carnes, aves, molhos e legumes.', T),
-  P('Coentro em grão', 'ervas', '#B9A25E', 'Sementes de aroma cítrico.', 'Conservas, curry, carnes e linguiças.', T),
+  P('Coentro em grão', 'inteiros', '#B9A25E', 'Sementes de aroma cítrico.', 'Conservas, curry, carnes e linguiças.', T),
   // sais
   P('Sal com alho', 'misturas', '#E8DDC2', 'Sal e alho na medida certa.', 'Carnes, legumes, arroz e feijão.', ['500 g', '1 kg']),
   P('Sal de ervas', 'misturas', '#C9CFA4', 'Sal com ervas finas, com menos sódio no prato.', 'Saladas, carnes, ovos e legumes.', ['100 g', '500 g', '1 kg']),
@@ -161,14 +162,16 @@ function embalagem(p, peso) {
 const S4 = ['10 g', '50 g', '100 g', '1 kg'], POTE = ['300 g', '500 g'], SACO = ['500 g', '1 kg'];
 PRODUTOS.push(
   // especiarias
-  P('Pimenta-do-reino em grão', 'puros', '#2F2A28', 'Grãos inteiros para moer na hora, com mais aroma.', 'Moedor de mesa, carnes, conservas e caldos.', S4),
+  P('Pimenta-do-reino em grão', 'inteiros', '#2F2A28', 'Grãos inteiros para moer na hora, com mais aroma.', 'Moedor de mesa, carnes, conservas e caldos.', S4),
   P('Pimenta-branca moída', 'puros', '#E8DFC9', 'Picância suave que não mancha o prato.', 'Molho branco, purês, peixes e sopas claras.', S4),
-  P('Cominho em grão', 'puros', '#8E6A35', 'Sementes inteiras para tostar e moer.', 'Feijão, carnes, pães e conservas.', S4),
+  P('Cominho em grão', 'inteiros', '#8E6A35', 'Sementes inteiras para tostar e moer.', 'Feijão, carnes, pães e conservas.', S4),
   P('Coentro moído', 'puros', '#B49660', 'Sabor cítrico e suave das sementes de coentro.', 'Peixes, frango, feijão e moquecas.', S4),
-  P('Erva-doce', 'puros', '#A8A46A', 'Sementes perfumadas, levemente adocicadas.', 'Pães, bolos, chás e carnes de porco.', S4),
-  P('Canela em pau', 'puros', '#8A4E26', 'Casca inteira, de aroma doce e marcante.', 'Arroz-doce, quentão, caldas e chás.', S4),
-  P('Cravo-da-índia em botões', 'puros', '#4E2A1E', 'Botões inteiros, de aroma intenso.', 'Doces em calda, quentão, carnes e conservas.', S4),
-  P('Urucum em grão', 'puros', '#B8321A', 'Sementes de urucum para fazer o colorau caseiro.', 'Óleo colorido, arroz, peixes e carnes.', S4),
+  P('Erva-doce', 'inteiros', '#A8A46A', 'Sementes perfumadas, levemente adocicadas.', 'Pães, bolos, chás e carnes de porco.', S4),
+  P('Canela em pau', 'inteiros', '#8A4E26', 'Casca inteira, de aroma doce e marcante.', 'Arroz-doce, quentão, caldas e chás.', S4),
+  P('Cravo-da-índia em botões', 'inteiros', '#4E2A1E', 'Botões inteiros, de aroma intenso.', 'Doces em calda, quentão, carnes e conservas.', S4),
+  P('Noz-moscada inteira', 'inteiros', '#8C5A2B', 'Noz-moscada inteira para ralar na hora.', 'Molho branco, purês, doces e bebidas.', S4),
+  P('Pimenta-da-jamaica em grão', 'inteiros', '#6A3A22', 'Grãos com aroma de cravo, canela e noz-moscada juntos.', 'Carnes, conservas, molhos e doces.', S4),
+  P('Urucum em grão', 'inteiros', '#B8321A', 'Sementes de urucum para fazer o colorau caseiro.', 'Óleo colorido, arroz, peixes e carnes.', S4),
   // misturas
   P('Tempero sírio', 'misturas', '#7A3C1E', 'Mistura de sete pimentas e especiarias árabes.', 'Quibe, esfiha, carne moída e arroz.', S4),
   P('Tempero mineiro', 'misturas', '#9C6A2E', 'Alho, cebola, cheiro-verde e pimenta, do jeito da roça.', 'Feijão tropeiro, couve, carnes e torresmo.', S4),
