@@ -49,7 +49,7 @@ document.querySelectorAll('.barra-baixo [data-ir]').forEach((b) => b.addEventLis
 document.querySelectorAll('.abas button').forEach((b) => b.addEventListener('click', () => {
   document.querySelectorAll('.abas button').forEach((x) => x.classList.toggle('ativo', x === b));
   document.querySelectorAll('.abas button').forEach((x) => { $(`#aba-${x.dataset.aba}`).hidden = x !== b; });
-  if (['painel', 'pedidos', 'clientes', 'produtos', 'estoque', 'compras', 'financeiro', 'relatorios', 'loja', 'empresa', 'impressao', 'site'].includes(b.dataset.aba)) desenharErp();
+  if (['painel', 'pedidos', 'clientes', 'produtos', 'estoque', 'compras', 'financeiro', 'relatorios', 'loja', 'empresa', 'impressao', 'site', 'cadastro'].includes(b.dataset.aba)) desenharErp();
   document.querySelectorAll('.barra-baixo [data-ir]').forEach((x) => x.classList.toggle('ativo', x.dataset.ir === b.dataset.aba));
   fecharMenu(); window.scrollTo({ top: 0 });
   if (b.dataset.aba === 'tabela') desenharTabela();

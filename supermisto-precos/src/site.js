@@ -36,8 +36,18 @@ export async function catalogo(env, req) {
 export async function api(env, req, path) {
   const m = req.method, base = new URL(req.url).origin;
   if (path === '/api/erp/site' && m === 'GET') {
-    const { results } = await env.BANCO.prepare('SELECT * FROM site_produtos').all();
-    return json({ produtos: results.map((r) => linha(r, base)) });
+    const [{ results }, cad] = await Promise.all([env.BANCO.prepare('SELECT * FROM site_produtos').all(),
+      env.BANCO.prepare("SELECT chave, valor FROM shopee WHERE chave LIKE 'cad_%'").all()]);
+    return json({ produtos: results.map((r) => linha(r, base)), cadastrados: Object.fromEntries(cad.results.map((c) => [c.chave.slice(4), c.valor])) });
+  }
+  // Shopee: marcar produto já cadastrado à mão (some da lista de pendentes)
+  if (path === '/api/erp/site/cadastrado' && m === 'POST') {
+    const corpo = await req.json().catch(() => ({}));
+    const slug = slugDe(corpo.slug);
+    if (!slug) return json({ erro: 'Produto inválido.' }, 400);
+    if (corpo.feito) await env.BANCO.prepare('INSERT INTO shopee (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor').bind(`cad_${slug}`, agora().slice(0, 10)).run();
+    else await env.BANCO.prepare('DELETE FROM shopee WHERE chave = ?').bind(`cad_${slug}`).run();
+    return json({ ok: true });
   }
   if (path === '/api/erp/site' && m === 'POST') {
     const corpo = await req.json().catch(() => ({}));

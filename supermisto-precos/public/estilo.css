@@ -355,3 +355,25 @@ table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
 .site-btns{display:flex;gap:8px;flex-wrap:wrap}.site-btns .btn{margin:0}
 @media (max-width:600px){.site-lista{grid-template-columns:1fr}}
 .site-form input,.site-form textarea,.site-form select{font-weight:400;color:var(--texto)}
+
+/* ===== Cadastrar na Shopee ===== */
+.cad{background:#fff;border:1px solid #EADFD3;border-radius:14px;margin:8px 0;overflow:hidden}
+.cad.feito{opacity:.75}
+.cad>summary{list-style:none;display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center;padding:8px 12px 8px 8px;cursor:pointer}
+.cad>summary::-webkit-details-marker{display:none}
+.cad>summary img{width:52px;height:52px;object-fit:contain;border-radius:10px;background:#F7F3EC}
+.cad>summary b{display:block;font-size:14.5px}.cad>summary small{display:block;font-size:12px;color:var(--suave)}
+.cad[open]>summary{border-bottom:1px solid #F0E7DC}
+.cad-corpo{padding:12px;display:grid;gap:12px}
+.cad-campo{display:grid;gap:4px}
+.cad-rot{display:flex;align-items:center;gap:8px}.cad-rot b{font-size:13px;color:var(--bordo-esc)}.cad-rot small{color:var(--suave);font-size:11.5px}
+.cad-cp{margin-left:auto;border:1px solid #D9C7E6;background:#F3ECFA;color:#5E1675;font-weight:700;font-size:12px;border-radius:99px;padding:5px 12px;cursor:pointer}
+.cad-cp.mini{margin:0;padding:3px 9px;font-size:12px;white-space:nowrap}
+.cad-cp.ok{background:#2E9E5B;border-color:#2E9E5B;color:#fff}
+.cad-txt{background:#FAF7F2;border:1px solid #EFE6DA;border-radius:10px;padding:9px 11px;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+.cad-txt.grande{max-height:220px;overflow:auto}
+.cad-var{width:100%;border-collapse:collapse;font-size:13px}.cad-var th{font-size:11px;text-align:left}.cad-var td{padding:5px 4px;vertical-align:middle}
+.cad-falta{font-size:11.5px;font-weight:700;color:#B7791F;background:#FFF4DE;border-radius:99px;padding:2px 8px}
+.cad-feito{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--texto);font-size:14px}.cad-feito input{width:20px;height:20px;margin:0;accent-color:#2E9E5B}
+#cad-resumo .kpis{grid-template-columns:repeat(3,1fr)}
+@media (max-width:600px){#cad-resumo .kpi b{font-size:18px}}

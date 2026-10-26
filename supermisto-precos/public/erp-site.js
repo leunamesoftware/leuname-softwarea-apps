@@ -12,7 +12,7 @@ function catalogoDoSite() {
   if (base) return Promise.resolve(base);
   carregando = carregando || new Promise((ok, falha) => {
     const s = document.createElement('script'); s.src = `${SITE}/produtos.js?t=${Date.now()}`;
-    s.onload = () => { try { base = { linhas: (0, eval)('LINHAS'), produtos: (0, eval)('PRODUTOS').map((p) => ({ ...p, id: slug(p.nome) })) }; ok(base); } catch (e) { falha(e); } };
+    s.onload = () => { try { const info = (0, eval)('typeof INFO === "undefined" ? {} : INFO'); base = { linhas: (0, eval)('LINHAS'), produtos: (0, eval)('PRODUTOS').map((p) => ({ ...(info[p.nome] || {}), ...p, id: slug(p.nome) })) }; ok(base); } catch (e) { falha(e); } };
     s.onerror = falha; document.head.append(s);
   });
   return carregando;
@@ -27,10 +27,18 @@ function lista() {
 const mesclar = (e) => Object.fromEntries(Object.entries({ nome: e.nome, linha: e.linha, desc: e.descricao, usos: e.usos, tam: e.tamanhos?.length ? e.tamanhos : undefined, foto: e.foto, fotosPeso: e.fotos_peso, oculto: e.oculto, ingredientes: e.ingredientes, conservacao: e.conservacao, validade: e.validade, alergicos: e.alergicos }).filter(([, v]) => v !== undefined && v !== ''));
 const fotoDe = (p) => p.foto || `${SITE}/img/produtos/${p.id}.webp`;
 
+/** Catálogo completo do site (fixo + o que foi mudado pelo app), também usado na aba Cadastrar na Shopee. */
+export async function produtosDoSite() {
+  await catalogoDoSite();
+  const r = await B.api('/api/erp/site');
+  editados = Object.fromEntries(r.produtos.map((p) => [p.slug, p]));
+  return { linhas: base.linhas, produtos: lista(), cadastrados: r.cadastrados || {}, fotoDe };
+}
+
 async function desenhar() {
   const el = $('#site-lista'); if (!el || $('#aba-site').hidden) return;
   if (!base) el.innerHTML = '<p class="suave">Carregando o catálogo do site…</p>';
-  try { await catalogoDoSite(); editados = Object.fromEntries((await B.api('/api/erp/site')).produtos.map((p) => [p.slug, p])); }
+  try { await produtosDoSite(); }
   catch { el.innerHTML = '<p class="erro">Não consegui abrir o catálogo do site. Confira a internet e toque em Meu site de novo.</p>'; return; }
   $('#site-filtros').innerHTML = [['todos', 'Todos'], ...base.linhas.map((l) => [l.id, l.nome])].map(([k, n]) => `<button data-sl="${k}" class="${k === filtroLinha ? 'ativo' : ''}">${esc(n)}</button>`).join('');
   const q = busca.toLowerCase(), ls = lista().filter((p) => (filtroLinha === 'todos' || p.linha === filtroLinha) && (!q || p.nome.toLowerCase().includes(q)));

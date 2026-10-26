@@ -41,6 +41,7 @@
     <p class="grupo">Site</p>
     <button data-aba="site"><i>🌐</i>Meu site</button>
     <p class="grupo">Shopee</p>
+    <button data-aba="cadastro"><i>📋</i>Cadastrar na Shopee</button>
     <button data-aba="loja"><i>🛒</i>Loja Shopee</button>
     <p class="grupo">Concorrência</p>
     <button data-aba="prints"><i>📷</i>Prints</button>
@@ -146,6 +147,16 @@
       <div class="card"><h3>Vendas por canal</h3><div id="rel-canal"></div></div>
       <div class="card"><h3>Margem de cada produto (preço atual)</h3><div id="rel-margem"></div></div>
     </div>
+  </section>
+
+  <section id="aba-cadastro" class="caixa" hidden>
+    <div class="cab"><h2>📋 Cadastrar na Shopee</h2><button class="btn sec" id="cad-recarregar">↻ Atualizar</button></div>
+    <p class="suave">Cada produto do site com título, descrição, categoria, variações, códigos, preço, peso e caixa prontos. Toque em <b>Copiar</b>, cole na Central do Vendedor da Shopee, suba as fotos e marque <b>“Já cadastrei”</b>.</p>
+    <div id="cad-resumo"></div>
+    <input id="cad-busca" type="search" placeholder="🔎 Procurar produto">
+    <div class="chips" id="cad-mostrar"><button data-cm="pendentes">Faltam cadastrar</button><button data-cm="feitos">Já cadastrados</button><button data-cm="todos">Todos</button></div>
+    <div class="chips" id="cad-linhas"></div>
+    <div id="cad-lista"></div>
   </section>
 
   <section id="aba-site" class="caixa" hidden>
