@@ -39,8 +39,8 @@ const temFoto = (p) => FOTOS.has(p.id) || !!p.foto;
 function midia(p, peso) {
   const s = p.id;
   if (p.foto) return `<img class="foto-prod" src="${escapar((p.fotosPeso && p.fotosPeso[peso]) || p.foto)}" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">`;
-  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=55" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
-  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=55" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
+  if (FOTOS.has(s) && peso === '1 kg' && !FOTOS_1KG.has(s)) return `<img class="foto-prod" src="img/produtos/${s}.webp?v=56" alt="${escapar(p.nome)} Supermisto" loading="lazy"><span class="foto-aviso">Foto do pacote de 1 kg em breve</span>`;
+  return FOTOS.has(s) ? `<img class="foto-prod" src="img/produtos/${s}${PESO_FOTO[peso] || ''}.webp?v=56" alt="${escapar(p.nome)} Supermisto ${peso || ''}" loading="lazy">` : embalagem(p, peso);
 }
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -52,7 +52,7 @@ const WHATS_SVG = '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" a
 /* ---------- cartões de produto ---------- */
 function cartao(p) {
   if (!temFoto(p)) return `<article class="prod prod-embreve aparece" aria-label="${escapar(p.nome)}: em breve">
-    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=55" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
+    <div class="prod-img"><img class="breve-logo" src="img/logo-supermisto.png?v=56" alt="" loading="lazy"><span class="breve-selo">Em breve</span></div>
     <div class="prod-corpo">
       <small class="prod-linha">${linhaDe(p.linha).nome}</small>
       <h3>${escapar(p.nome)}</h3>
@@ -141,11 +141,11 @@ function inicio() {
   const pegar = (nome) => PRODUTOS.find((p) => p.nome === nome);
   // produtos com foto real entram como recorte (sem fundo); os outros com a embalagem desenhada
   const vit = (n) => FOTOS.has(slug(n)) ? `<img src="img/produtos/${slug(n)}-recorte.png" alt="${n} Supermisto">` : embalagem(pegar(n), pegar(n).tam[1] || pegar(n).tam[0]);
-  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=55" alt="Kit 10 temperos Supermisto" width="900" height="900">';
+  $('#vitrine').innerHTML = '<img class="vit-kit" src="img/kit-10-temperos.webp?v=56" alt="Kit 10 temperos Supermisto" width="900" height="900">';
   $('#num-prod').textContent = PRODUTOS.filter(temFoto).length; $('#num-linhas').textContent = LINHAS.length;
   $('#linhas-grid').innerHTML = LINHAS.map((l) => {
     const qtd = PRODUTOS.filter((p) => p.linha === l.id).length;
-    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=55)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
+    const fundo = FOTOS_LINHA.includes(l.id) ? `background-image:url(img/linhas/${l.id}.webp?v=56)` : `background:radial-gradient(circle at 50% 40%,#7B1F95,#2C0739)`;
     return `<a class="linha aparece" href="linha.html?id=${l.id}"><span class="linha-foto" style="${fundo}">${FOTOS_LINHA.includes(l.id) ? '' : `<i>${l.emoji}</i>`}</span><b>${l.nome}</b><em>${qtd} produtos</em></a>`;
   }).join('');
   // só produtos com foto real (os outros entram quando a foto chegar)
@@ -193,8 +193,8 @@ function paginaLinha() {
   const titulo = `<span class="sobre-tit amarelo">Nossas linhas</span><h1>${l.nome}</h1><p>${l.desc}</p>
     <span class="ln-conta">${lista.length} produtos${prontos < lista.length ? ` · ${lista.length - prontos} em breve` : ''}</span>`;
   $('#linha').innerHTML = CAPAS_LINHA.includes(l.id)
-    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=55" alt="${l.nome} Supermisto" width="1600" height="900"><div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`
-    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=55" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
+    ? `<div class="ln-capa-larga"><img src="img/linhas/${l.id}-capa.webp?v=56" alt="${l.nome} Supermisto" width="1600" height="900"><div class="ln-capa-txt"><div class="caixa"><div>${titulo}</div></div></div></div>`
+    : `<div class="ln-topo"><div class="caixa ln-topo-in"><div>${titulo}</div>${FOTOS_LINHA.includes(l.id) ? `<img class="ln-foto" src="img/linhas/${l.id}.webp?v=56" alt="${l.nome} Supermisto" width="800" height="600">` : `<div class="ln-foto ln-foto-vazia"><i>${l.emoji}</i></div>`}</div></div>`;
   $('#linhas-nav').innerHTML = LINHAS.map((x) => `<a href="linha.html?id=${x.id}"${x.id === l.id ? ' class="ativo" aria-current="page"' : ''}>${x.nome}</a>`).join('');
   $('#linha-prods').innerHTML = lista.map(([p, i]) => cartao(p, i)).join('');
 }
@@ -268,6 +268,8 @@ function revenda() {
   });
 }
 
+const tentar = (f) => { try { f(); } catch (e) { console.error(e); } };
+
 /* ---------- produtos editados pelo app (Área de gestão → Meu site) ---------- */
 const CATALOGO_APP = 'https://precos.supermistotemperos.com.br/api/site/catalogo';
 function aplicarCatalogo(lista) {
@@ -295,18 +297,19 @@ async function carregarCatalogo() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await carregarCatalogo();
-  rodape();
-  if ($('#vitrine')) inicio();
-  if ($('#catalogo')) catalogo();
-  if ($('#receitas-lista')) receitasLista($('#receitas-lista'), RECEITAS);
-  if ($('#receita')) receitaDetalhe();
-  if ($('#linha')) paginaLinha();
-  if ($('#produto')) paginaProduto();
-  if ($('#rv-form')) revenda();
-  ligacoes();
-  observar();
+  // menu primeiro: funciona na hora, mesmo enquanto o catálogo do app ainda carrega
   const hamb = $('#hamb'), menu = $('#menu');
   hamb.addEventListener('click', () => { const ab = menu.classList.toggle('aberto'); hamb.setAttribute('aria-expanded', ab); });
   $$('#menu a').forEach((a) => a.addEventListener('click', () => { menu.classList.remove('aberto'); hamb.setAttribute('aria-expanded', false); }));
+  await carregarCatalogo();
+  rodape();
+  if ($('#vitrine')) tentar(() => inicio());
+  if ($('#catalogo')) tentar(() => catalogo());
+  if ($('#receitas-lista')) tentar(() => receitasLista($('#receitas-lista'), RECEITAS));
+  if ($('#receita')) tentar(() => receitaDetalhe());
+  if ($('#linha')) tentar(() => paginaLinha());
+  if ($('#produto')) tentar(() => paginaProduto());
+  if ($('#rv-form')) tentar(() => revenda());
+  ligacoes();
+  observar();
 });
