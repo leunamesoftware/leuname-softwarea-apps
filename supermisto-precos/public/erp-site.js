@@ -86,16 +86,70 @@ document.addEventListener('change', async (e) => {
   inp.value = '';
 });
 
-/** Reduz a foto no próprio celular (até 1200 px, WebP) antes de mandar. */
+/** Tira o fundo (branco, preto ou qualquer cor lisa/degradê que encosta nas bordas) e põe o produto centralizado no fundo bege. */
+function semFundo(img) {
+  const k = Math.min(1, 1000 / Math.max(img.width, img.height)), w = Math.round(img.width * k), h = Math.round(img.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h);
+  const dados = g.getImageData(0, 0, w, h), px = dados.data, n = w * h;
+  // cor do fundo = mediana das bordas
+  const med = (ch) => { const v = []; for (let x = 0; x < w; x++) { v.push(px[x * 4 + ch], px[((h - 1) * w + x) * 4 + ch]); } for (let y = 0; y < h; y++) { v.push(px[y * w * 4 + ch], px[(y * w + w - 1) * 4 + ch]); } v.sort((a, b) => a - b); return v[v.length >> 1]; };
+  const bg = [med(0), med(1), med(2)];
+  const dist = (i) => Math.hypot(px[i * 4] - bg[0], px[i * 4 + 1] - bg[1], px[i * 4 + 2] - bg[2]);
+  const TOL = 46, PASSO = 9;
+  const fundo = new Uint8Array(n), fila = new Int32Array(n); let ini = 0, fim = 0;
+  const entra = (i) => { if (!fundo[i] && dist(i) < TOL) { fundo[i] = 1; fila[fim++] = i; } };
+  for (let x = 0; x < w; x++) { entra(x); entra((h - 1) * w + x); }
+  for (let y = 0; y < h; y++) { entra(y * w); entra(y * w + w - 1); }
+  while (ini < fim) {
+    const i = fila[ini++], x = i % w, y = (i / w) | 0;
+    for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) {
+      if (j < 0 || fundo[j]) continue;
+      const d = Math.hypot(px[i * 4] - px[j * 4], px[i * 4 + 1] - px[j * 4 + 1], px[i * 4 + 2] - px[j * 4 + 2]);
+      if (dist(j) < TOL || (d < PASSO && dist(j) < TOL * 1.8)) { fundo[j] = 1; fila[fim++] = j; }
+    }
+  }
+  // máscara do produto, suavizada (tira o contorno de fundo)
+  const m = document.createElement('canvas'); m.width = w; m.height = h;
+  const gm = m.getContext('2d'), mm = gm.createImageData(w, h);
+  let x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (let i = 0; i < n; i++) {
+    const v = fundo[i] ? 0 : 255; mm.data[i * 4 + 3] = v;
+    if (v) { const x = i % w, y = (i / w) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 <= x0 || y1 <= y0 || (x1 - x0) * (y1 - y0) < n * 0.03) throw new Error('Não achei o produto nessa foto. Tente uma foto com o pacote inteiro e o fundo liso.');
+  gm.putImageData(mm, 0, 0);
+  const rec = document.createElement('canvas'); rec.width = w; rec.height = h;
+  const gr = rec.getContext('2d');
+  gr.filter = 'blur(1.1px)'; gr.drawImage(m, 0, 0); gr.filter = 'none';
+  gr.globalCompositeOperation = 'source-in'; gr.drawImage(c, 0, 0); // produto com borda suave
+  const bw = x1 - x0 + 1, bh = y1 - y0 + 1, S = 1200, area = S * 0.84, esc = Math.min(area / bw, area / bh);
+  const out = document.createElement('canvas'); out.width = S; out.height = S;
+  const go = out.getContext('2d');
+  const gr0 = go.createRadialGradient(S / 2, S * 0.55, S * 0.05, S / 2, S * 0.55, S * 0.75);
+  gr0.addColorStop(0, '#FFF4E6'); gr0.addColorStop(1, '#F1E6D4'); go.fillStyle = gr0; go.fillRect(0, 0, S, S);
+  const dw = bw * esc, dh = bh * esc, dx = (S - dw) / 2, dy = (S - dh) / 2;
+  go.save(); go.shadowColor = 'rgba(70,40,10,.28)'; go.shadowBlur = 38; go.shadowOffsetY = 16;
+  go.drawImage(rec, x0, y0, bw, bh, dx, dy, dw, dh); go.restore();
+  go.drawImage(rec, x0, y0, bw, bh, dx, dy, dw, dh);
+  return out;
+}
+/** Reduz a foto no próprio celular (até 1200 px, WebP); com "tirar o fundo" ligado, deixa só o pacote no fundo bege. */
 function reduzir(arquivo) {
   return new Promise((ok, falha) => {
     const img = new Image(); img.onload = () => {
-      const k = Math.min(1, 1200 / Math.max(img.width, img.height)), c = document.createElement('canvas');
-      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      ok(c.toDataURL('image/webp', 0.85)); URL.revokeObjectURL(img.src);
-    }; img.onerror = falha; img.src = URL.createObjectURL(arquivo);
+      try {
+        const limpar = !document.querySelector('#site-semfundo') || document.querySelector('#site-semfundo').checked;
+        const c = limpar ? semFundo(img) : (() => {
+          const k = Math.min(1, 1200 / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+          cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); return cv;
+        })();
+        ok(c.toDataURL('image/webp', 0.88));
+      } catch (e) { falha(e); } finally { URL.revokeObjectURL(img.src); }
+    }; img.onerror = () => falha(new Error('Não consegui abrir essa imagem.')); img.src = URL.createObjectURL(arquivo);
   });
 }
+window.semFundoErp = semFundo;
 
 function abrir(id) {
   const p = id ? lista().find((x) => x.id === id) : { id: '', nome: '', linha: filtroLinha === 'todos' ? base.linhas[0].id : filtroLinha, desc: '', usos: '', tam: ['10 g', '50 g', '100 g', '1 kg'], novo: true };
@@ -105,6 +159,7 @@ function abrir(id) {
     <button type="button" class="fechar" aria-label="Fechar">×</button>
     <h2>${id ? '✏️ Editar produto' : '➕ Produto novo'}</h2>
     <p class="suave">${id ? 'O que você mudar aparece no site em até 1 minuto.' : 'Ele entra no site na linha escolhida. Sem foto, aparece como “Em breve”.'}</p>
+    <label class="site-chk"><input type="checkbox" id="site-semfundo" checked> ✨ Tirar o fundo da foto e deixar só o pacote no fundo bege</label>
     <div class="site-fotos">
       <label class="site-fotobox"><img src="${esc(id ? fotoDe(p) : '')}" alt="" onerror="this.style.visibility='hidden'"><span>📷 Foto principal</span><input type="file" accept="image/*" data-peso="" hidden></label>
       ${(p.tam || []).filter((t) => t !== (p.tam || [])[0]).map((t) => `<label class="site-fotobox peq"><img src="${esc(p.fotosPeso?.[t] || '')}" alt="" onerror="this.style.visibility='hidden'"><span>📷 ${esc(t)}</span><input type="file" accept="image/*" data-peso="${esc(t)}" hidden></label>`).join('')}

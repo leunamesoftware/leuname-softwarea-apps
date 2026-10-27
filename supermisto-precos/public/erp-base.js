@@ -42,7 +42,7 @@ export function opcoesSku(sel = '') {
 }
 
 /** Gráfico de barras simples (SVG) com rótulos nos dias. */
-export function barras(valores, rotulos, { altura = 170, cor = '#5E1675', formato = brl } = {}) {
+export function barras(valores, rotulos, { altura = 170, cor = '#5A2A14', formato = brl } = {}) {
   const W = 640, H = altura, E = 8, T = 18, Bm = 24;
   const max = Math.max(1, ...valores), n = valores.length, larg = (W - E * 2) / n;
   return `<svg viewBox="0 0 ${W} ${H}" class="graf barras" role="img" aria-label="Gráfico de vendas">
@@ -60,10 +60,10 @@ export function area(valores, rotulos, { altura = 150, formato = brl, claro = fa
   const x = (i) => E + (i * (W - E * 2)) / Math.max(1, n - 1), y = (v) => H - Bm - (v / max) * (H - T - Bm);
   const pts = valores.map((v, i) => [x(i), y(v)]);
   const d = pts.map(([px, py], i) => (i ? `L${px.toFixed(1)} ${py.toFixed(1)}` : `M${px.toFixed(1)} ${py.toFixed(1)}`)).join(' ');
-  const id = 'g' + Math.random().toString(36).slice(2, 7), cor = claro ? '#fff' : '#5E1675';
+  const id = 'g' + Math.random().toString(36).slice(2, 7), cor = claro ? '#fff' : '#5A2A14';
   const passo = Math.ceil(n / 6);
   return `<svg viewBox="0 0 ${W} ${H}" class="graf area${claro ? ' claro' : ''}" role="img" aria-label="Gráfico de vendas" preserveAspectRatio="none">
-    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${claro ? '#fff' : '#7B1F95'}" stop-opacity="${claro ? .35 : .35}"/><stop offset="1" stop-color="${claro ? '#fff' : '#7B1F95'}" stop-opacity="0"/></linearGradient></defs>
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${claro ? '#fff' : '#7A3E1E'}" stop-opacity="${claro ? .35 : .35}"/><stop offset="1" stop-color="${claro ? '#fff' : '#7A3E1E'}" stop-opacity="0"/></linearGradient></defs>
     <path d="${d} L${x(n - 1)} ${H - Bm} L${x(0)} ${H - Bm} Z" fill="url(#${id})"/>
     <path d="${d}" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
     ${claro ? '' : valores.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="9" fill="transparent"><title>${rotulos[i]}: ${formato(v)}</title></circle>`).join('')}

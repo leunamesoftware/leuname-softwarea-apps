@@ -13,7 +13,7 @@ function carregarQr() {
   qrPronto = qrPronto || new Promise((ok, falha) => { const s = document.createElement('script'); s.src = '/qrcode.js'; s.onload = ok; s.onerror = falha; document.head.append(s); });
   return qrPronto;
 }
-export async function qrSvg(texto, cor = '#3D0A4F') {
+export async function qrSvg(texto, cor = '#3E1C0E') {
   await carregarQr();
   const q = window.qrcode(0, 'M'); q.addData(texto); q.make();
   const n = q.getModuleCount(); let d = '';
@@ -35,12 +35,12 @@ async function cartao(nome = '') {
   </section>`;
 }
 const CSS_CARTAO = `.ct{width:100mm;height:148mm;padding:8mm 7mm;display:flex;flex-direction:column;align-items:center;text-align:center;
-  background:linear-gradient(180deg,#FBF6EE 0%,#fff 45%);border:1.2mm solid #5E1675;border-radius:5mm;position:relative;overflow:hidden;page-break-inside:avoid;
+  background:linear-gradient(180deg,#FBF6EE 0%,#fff 45%);border:1.2mm solid #5A2A14;border-radius:5mm;position:relative;overflow:hidden;page-break-inside:avoid;
   -webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:'Trebuchet MS',Arial,sans-serif;color:#2B1A12}
-  .ct::after{content:'';position:absolute;left:0;right:0;bottom:0;height:9mm;background:#5E1675}
-  .ct-topo img{width:52mm}.ct h1{font-size:23pt;color:#5E1675;margin:3mm 0 1mm;font-weight:900}
+  .ct::after{content:'';position:absolute;left:0;right:0;bottom:0;height:9mm;background:#5A2A14}
+  .ct-topo img{width:52mm}.ct h1{font-size:23pt;color:#5A2A14;margin:3mm 0 1mm;font-weight:900}
   .sub{font-size:10.5pt;margin:0 0 4mm;line-height:1.35}.ct-qr{display:flex;gap:4mm;align-items:center;background:#fff;border:0.6mm solid #E3CBA0;border-radius:3mm;padding:3mm;text-align:left}
-  .qr{width:28mm;height:28mm}.qr svg{width:100%;height:100%}.ct-qr b{display:block;font-size:11pt;color:#5E1675}.ct-qr span{font-size:9pt;color:#6B5A4E}
+  .qr{width:28mm;height:28mm}.qr svg{width:100%;height:100%}.ct-qr b{display:block;font-size:11pt;color:#5A2A14}.ct-qr span{font-size:9pt;color:#6B5A4E}
   .ct-estrelas{font-size:22pt;color:#E0A22B;letter-spacing:2mm;margin:4mm 0 1mm}.aval{font-size:10.5pt;line-height:1.35;margin:0}
   .rod{position:absolute;bottom:2.2mm;left:0;right:0;margin:0;font-size:7.5pt;color:#F3DFB8;z-index:1;letter-spacing:.3mm}`;
 
@@ -48,7 +48,7 @@ const CSS_CARTAO = `.ct{width:100mm;height:148mm;padding:8mm 7mm;display:flex;fl
 function lacre() {
   return `<div class="lc"><img src="${logo()}" alt=""><b>Feito com carinho</b><span>100% natural</span></div>`;
 }
-const CSS_LACRE = `.lc{width:58mm;height:58mm;border-radius:50%;background:radial-gradient(circle,#7B1F95 0%,#3D0A4F 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;
+const CSS_LACRE = `.lc{width:58mm;height:58mm;border-radius:50%;background:radial-gradient(circle,#7A3E1E 0%,#3E1C0E 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;
   color:#fff;border:1.4mm solid #E3BE72;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-family:'Trebuchet MS',Arial,sans-serif;page-break-inside:avoid}
   .lc img{width:40mm;filter:drop-shadow(0 .5mm .8mm rgba(0,0,0,.4))}.lc b{font-size:10pt;margin-top:1.5mm;color:#F3DFB8}.lc span{font-size:7.5pt;letter-spacing:.6mm;text-transform:uppercase;opacity:.85}`;
 

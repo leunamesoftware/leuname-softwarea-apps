@@ -37,8 +37,8 @@ function desenharPainel() {
   $('#painel-total30').textContent = brl(porDia.reduce((a, b) => a + b, 0));
   $('#painel-grafico').innerHTML = area(porDia, rot);
   const shopee = soma(doMes.filter((p) => p.origem !== 'manual')), fora = soma(doMes.filter((p) => p.origem === 'manual'));
-  $('#painel-canais').innerHTML = vMes ? rosca([['Shopee', shopee, '#EE4D2D'], ['Fora da Shopee', fora, '#5E1675']], { centro: doMes.length + ' ped.' }) : '<p class="suave">Nenhuma venda este mês ainda.</p>';
-  const env = [['Preparar', validos.filter((p) => p.envio === 'a_preparar').length, '#E0A22B'], ['Imprimir etiqueta', validos.filter((p) => p.envio === 'pronto').length, '#7B1F95'],
+  $('#painel-canais').innerHTML = vMes ? rosca([['Shopee', shopee, '#EE4D2D'], ['Fora da Shopee', fora, '#5A2A14']], { centro: doMes.length + ' ped.' }) : '<p class="suave">Nenhuma venda este mês ainda.</p>';
+  const env = [['Preparar', validos.filter((p) => p.envio === 'a_preparar').length, '#E0A22B'], ['Imprimir etiqueta', validos.filter((p) => p.envio === 'pronto').length, '#7A3E1E'],
     ['Postar', validos.filter((p) => p.envio === 'etiqueta_impressa').length, '#3B6EA8'], ['Enviados no mês', doMes.filter((p) => p.envio === 'enviado').length, '#2E9E5B']];
   $('#painel-envios').innerHTML = env.some(([, v]) => v) ? rosca(env, { formato: (v) => String(v), centro: aEnviar.length + ' a enviar' }) : '<p class="suave">Nenhum envio ainda.</p>';
   const alertas = [];
