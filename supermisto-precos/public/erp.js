@@ -5,6 +5,7 @@ import './erp-gestao.js';
 import './erp-impressao.js';
 import './erp-site.js';
 import './erp-shopee.js';
+import './erp-ceasa.js';
 import { iniciarAviso } from './erp-aviso.js';
 
 export { contaSku };

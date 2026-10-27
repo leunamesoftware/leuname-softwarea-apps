@@ -76,7 +76,7 @@ export function rosca(partes, { formato = brl, centro = '' } = {}) {
   const tot = partes.reduce((t, [, v]) => t + v, 0) || 1, R = 15.9155;
   let ini = 25;
   const fatias = partes.map(([, v, cor]) => { const pct = (v / tot) * 100, f = `<circle r="${R}" cx="21" cy="21" fill="none" stroke="${cor}" stroke-width="5.5" stroke-dasharray="${pct} ${100 - pct}" stroke-dashoffset="${ini}"/>`; ini -= pct; return f; }).join('');
-  return `<div class="rosca"><svg viewBox="0 0 42 42" role="img" aria-label="Divisão das vendas"><circle r="${R}" cx="21" cy="21" fill="none" stroke="#EFE7F3" stroke-width="5.5"/>${fatias}<text x="21" y="22.5" text-anchor="middle" class="rosca-c">${centro}</text></svg>
+  return `<div class="rosca"><svg viewBox="0 0 42 42" role="img" aria-label="Divisão das vendas"><circle r="${R}" cx="21" cy="21" fill="none" stroke="#EFE5D8" stroke-width="5.5"/>${fatias}<text x="21" y="22.5" text-anchor="middle" class="rosca-c">${centro}</text></svg>
     <ul>${partes.map(([n, v, cor]) => `<li><i style="background:${cor}"></i><span>${esc(n)}</span><b>${formato(v)}</b><small>${Math.round((v / tot) * 100)}%</small></li>`).join('')}</ul></div>`;
 }
 

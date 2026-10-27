@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icone-180.png">
 </head>
 <body>
-<header class="topo"><button id="menu-btn" class="menu-btn" aria-label="Menu">☰</button><img src="icone-192.png" alt="" width="30" height="30"><b>Supermisto</b><span>Gestão</span><span class="sh-status" id="sh-status"></span><button id="som" class="som" title="Som de pedido novo" aria-label="Som de pedido novo">🔕</button><button id="sair" class="link" hidden>Sair</button></header>
+<header class="topo"><button id="menu-btn" class="menu-btn" aria-label="Menu">☰</button><img src="icone-192.png" alt="" width="30" height="30"><b>Supermisto</b><span>Gestão</span><span class="sh-status" id="sh-status"></span><button id="som" class="som" title="Som de pedido novo" aria-label="Som de pedido novo">🔕</button><button id="instalar" class="link" hidden>⬇️ Instalar</button><button id="sair" class="link" hidden>Sair</button></header>
 
 <main id="login" class="caixa" hidden>
   <h1>Entrar</h1>
@@ -43,6 +43,8 @@
     <p class="grupo">Shopee</p>
     <button data-aba="cadastro"><i>📋</i>Cadastrar na Shopee</button>
     <button data-aba="loja"><i>🛒</i>Loja Shopee</button>
+    <p class="grupo">Ceasa e lucro</p>
+    <button data-aba="ceasa"><i>🥬</i>Ceasa × concorrente</button>
     <p class="grupo">Concorrência</p>
     <button data-aba="prints"><i>📷</i>Prints</button>
     <button data-aba="duelo"><i>⚔️</i>Duelo</button>
@@ -363,6 +365,34 @@
     <div id="an-lista"></div>
   </section>
 
+  <section id="aba-ceasa" class="caixa" hidden>
+    <h2>Ceasa × concorrente × lucro</h2>
+    <p class="suave">Jogue o PDF da cotação da Ceasa. O sistema acha só os nossos produtos, calcula o quilo pronto (descontando perda e secagem), soma embalagem, Shopee e imposto, e mostra o lucro de cada pacote e de cada kit.</p>
+    <div id="ce-semaforo"></div>
+    <div id="ce-avisos"></div>
+    <div id="ce-kpis"></div>
+    <h3>1. Cotação do dia</h3>
+    <div class="ce-envio"><label class="btn ce-arq">📄 Escolher PDF da cotação<input type="file" id="ce-arquivo" accept=".pdf,.txt,application/pdf,text/plain" hidden></label>
+      <textarea id="ce-texto" rows="3" placeholder="…ou cole aqui o texto da cotação"></textarea>
+      <button class="btn" id="ce-ler">🔎 Ler cotação</button></div>
+    <div id="ce-leitura"></div>
+    <h3>2. Matéria-prima: da caixa ao quilo pronto</h3>
+    <div id="ce-materia" class="ce-rola"></div>
+    <h3>3. Preço de venda e lucro</h3>
+    <div id="ce-lucro" class="ce-rola"></div>
+    <h3>4. Concorrentes na Shopee</h3>
+    <div id="ce-conc" class="ce-rola"></div>
+    <h3>5. Kits</h3>
+    <p class="suave">O pacote sozinho é a vitrine; o lucro grande vem do kit. Veja quanto sobra em cada um e quanto o cliente economiza.</p>
+    <div id="ce-kits"></div>
+    <h3>6. Embalagens (saquinho, solapa, etiqueta…)</h3>
+    <div id="ce-emb" class="ce-rola"></div>
+    <h3>7. Shopee e impostos</h3>
+    <div id="ce-regras"></div>
+    <h3>Histórico de preços</h3>
+    <div id="ce-hist" class="ce-rola"></div>
+  </section>
+
   <section id="aba-custos" class="caixa" hidden>
     <h2>Matéria-prima</h2>
     <p class="suave">Coloque o que você pagou, quantos kg comprou e quanto <b>sobrou pronto</b> depois de moer e secar. O app desconta a perda sozinho. Exemplo: paguei R$ 20 em 2 kg, rendeu 1 kg pronto = R$ 20 o kg (R$ 2,00 cada 100 g).</p>
@@ -374,6 +404,7 @@
 </main>
 <div id="ficha" hidden></div>
 <script type="module" src="app.js"></script>
+<script>let _ip=null;addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();_ip=e;const b=document.getElementById('instalar');b.hidden=false;b.onclick=async()=>{_ip.prompt();await _ip.userChoice.catch(()=>{});b.hidden=true;};});</script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

@@ -3,7 +3,7 @@
   "short_name": "Supermisto",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F3EC",
+  "background_color": "#5A2A14",
   "theme_color": "#5A2A14",
   "icons": [
     { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },

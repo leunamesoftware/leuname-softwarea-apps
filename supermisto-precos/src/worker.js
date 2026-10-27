@@ -5,6 +5,7 @@ import { precoKgReal } from '../public/precos.js';
 import * as ERP from './erp.js';
 import * as PUSH from './push.js';
 import * as SITE from './site.js';
+import * as CEASA from './ceasa.js';
 
 const COOKIE = 'sp_sessao', LOJA = 'https://www.leunamesoftware.com.br', DIAS = 30;
 
@@ -86,6 +87,7 @@ async function api(env, req, path, ctx) {
   }
   if (path === '/api/dados' && m === 'GET') return json(await dados(env));
   if (path.startsWith('/api/push/')) { const r = await PUSH.logado(env, req, path, ctx); if (r) return r; }
+  if (path.startsWith('/api/ceasa')) { const r = await CEASA.api(env, req, path); if (r) return r; }
   if (path.startsWith('/api/erp/site')) { const r = await SITE.api(env, req, path); if (r) return r; }
   if (path.startsWith('/api/erp/') || path.startsWith('/api/shopee/')) {
     const r = await ERP.api(env, req, path, ctx);
