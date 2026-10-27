@@ -14,9 +14,10 @@ run_worker_first = ["/api/*", "/fotos/*"]
 binding = "AI"
 
 # Fotos dos produtos do ERP (as mesmas que vão para a Shopee)
-[[r2_buckets]]
-binding = "FOTOS"
-bucket_name = "supermisto-erp"
+# R2 desligado: a conta Cloudflare ainda não ativou o R2 (erro 10136). Ativar no painel e descomentar.
+# [[r2_buckets]]
+# binding = "FOTOS"
+# bucket_name = "supermisto-erp"
 
 # Pedidos novos da Shopee e envio do que mudou, a cada minuto (reserva do aviso instantâneo da Shopee)
 [triggers]
