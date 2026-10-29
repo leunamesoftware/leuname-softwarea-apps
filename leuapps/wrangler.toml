@@ -51,6 +51,7 @@ pattern = "mercagestao.leunamesoftware.com.br"
 custom_domain = true
 
 # Downloads dos APKs da loja para Android (leuapps.apk, gestacell.apk): /baixar/<arquivo>.
-[[r2_buckets]]
-binding = "DOWNLOADS"
-bucket_name = "leuname-downloads"
+# R2 desligado: ativar R2 no painel da Cloudflare e descomentar.
+# [[r2_buckets]]
+# binding = "DOWNLOADS"
+# bucket_name = "leuname-downloads"
