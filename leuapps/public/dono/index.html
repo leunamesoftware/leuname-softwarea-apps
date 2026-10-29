@@ -167,11 +167,12 @@ section h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px;
   </section>
 
   <section class="laranja">
-    <h2>Brindes · Quanto Cobrar de graça</h2>
+    <h2>Brindes · apps de graça</h2>
     <div class="brinde">
       <p class="nota" style="border:0;padding:0;">Coloque só o e-mail da pessoa. Ela abre o Quanto Cobrar, toca em <b>Entrar</b>, coloca esse e-mail e <b>cria a senha que quiser</b> (mínimo 6 letras ou números). Já entra com o 👑 Pro completo, sem comprar.</p>
       <form id="form-brinde">
         <input id="b-email" type="email" placeholder="email@da-pessoa.com" autocomplete="off" required aria-label="E-mail da pessoa">
+        <select id="b-app" aria-label="Qual app" style="grid-column:1/-1"><option value="quantocobrar">Quanto Cobrar (Pro)</option><option value="gestacell">Gestacell (vitalício)</option><option value="radar">Radar Preventivo (vitalício)</option></select>
         <select id="b-dias" aria-label="Por quanto tempo"><option value="">Sem prazo</option><option value="30">30 dias</option><option value="90">3 meses</option><option value="365">1 ano</option></select>
         <button type="submit" style="grid-column:1/-1">🎁 Dar o presente</button>
       </form>
@@ -241,8 +242,9 @@ async function carregarBrindes() {
   const lista = document.getElementById('b-lista');
   try {
     const r = await fetch('/loja-api/dono/brindes', { credentials: 'same-origin', cache: 'no-store' });
-    const { brindes = [] } = await r.json();
-    lista.innerHTML = brindes.length ? brindes.map((b) => `<li><span>${esc(b.email)}<small>${b.expira_em ? 'até ' + dataBR(b.expira_em) : 'sem prazo'} · dado em ${dataBR(b.criado_em)}</small></span><button type="button" data-tirar="${esc(b.email)}">Tirar</button></li>`).join('')
+    const { brindes: bq = [], apps: ba = [] } = await r.json();
+    const brindes = [...bq.map((b) => ({ ...b, app: 'quantocobrar' })), ...ba.map((b) => ({ ...b, expira_em: null }))];
+    lista.innerHTML = brindes.length ? brindes.map((b) => `<li><span>${esc(b.email)}<small>${esc(b.app)} · ${b.expira_em ? 'até ' + dataBR(b.expira_em) : 'sem prazo'} · dado em ${dataBR(b.criado_em)}</small></span><button type="button" data-tirar="${esc(b.email)}" data-app="${esc(b.app)}">Tirar</button></li>`).join('')
       : '<li><span><small>Nenhum presente dado ainda.</small></span></li>';
   } catch { lista.innerHTML = '<li><span><small>Sem internet agora.</small></span></li>'; }
 }
@@ -250,14 +252,14 @@ document.getElementById('form-brinde').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('b-email').value.trim();
   const r = await fetch('/loja-api/dono/brindes', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, dias: document.getElementById('b-dias').value }) }).catch(() => null);
+    body: JSON.stringify({ email, app: document.getElementById('b-app').value, dias: document.getElementById('b-dias').value }) }).catch(() => null);
   if (!r) return bMsg('Sem internet. Tente de novo.');
   if (!r.ok) return bMsg((await r.json().catch(() => ({}))).erro === 'email' ? 'Confira o e-mail.' : 'Não deu para salvar agora.');
   e.target.reset(); bMsg(`Pronto! ${email} já tem o 👑 Pro de presente.`, true); carregarBrindes();
 });
 document.getElementById('b-lista').addEventListener('click', async (e) => {
   const b = e.target.closest('[data-tirar]'); if (!b || !confirm(`Tirar o presente de ${b.dataset.tirar}?`)) return;
-  await fetch('/loja-api/dono/brindes/remover', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: b.dataset.tirar }) }).catch(() => {});
+  await fetch('/loja-api/dono/brindes/remover', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: b.dataset.tirar, app: b.dataset.app }) }).catch(() => {});
   carregarBrindes();
 });
 carregarBrindes();

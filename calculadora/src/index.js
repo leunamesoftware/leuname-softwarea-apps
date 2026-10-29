@@ -2,7 +2,7 @@ import { listarAvaliacoes, avaliar, votarUtil, excluirAvaliacao, denunciarAvalia
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
-import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde } from './brindes.js';
+import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmail, listarBrindesApps, darBrindeApp, tirarBrindeApp } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
@@ -161,7 +161,7 @@ export default {
         const d = await corpo(req);
         let conta = await buscarConta(env, d?.email);
         // Ganhou presente (brinde) e ainda não tem conta: o primeiro "Entrar" cria a conta com a senha que a pessoa escolheu.
-        if (!conta && EMAIL.test(String(d?.email || '').trim().toLowerCase()) && senhaValida(d?.senha) && (await brindeDoEmail(env, d.email))) {
+        if (!conta && EMAIL.test(String(d?.email || '').trim().toLowerCase()) && senhaValida(d?.senha) && ((await brindeDoEmail(env, d.email)) || Object.keys(await brindesAppsDoEmail(env, d.email)).length)) {
           const email = String(d.email).trim().toLowerCase();
           conta = (await contaParaCompra(env, email, email.split('@')[0], d.senha)).conta;
           return json({ ok: true, nome: conta.nome, novaConta: true }, 200, await abrirSessao(env, conta.id, req, { avisar: (c, t) => avisarAparelhoNovo(env, c, t) }));
@@ -374,10 +374,17 @@ export default {
       if (pathname === '/api/dono/brindes' || pathname === '/api/dono/brindes/remover') {
         const conta = await contaDaSessao(env, req);
         if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
-        if (m === 'GET' && pathname === '/api/dono/brindes') return json({ brindes: await listarBrindes(env) });
+        if (m === 'GET' && pathname === '/api/dono/brindes') return json({ brindes: await listarBrindes(env), apps: await listarBrindesApps(env) });
         if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
-        const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, await corpo(req));
+        const dados = await corpo(req);
+        // Com "app" (gestacell, radar...): presente vitalício daquele app, licença presa ao e-mail.
+        if (dados?.app && dados.app !== 'quantocobrar') {
+          const appIds = Object.fromEntries(Object.values(PLANOS).filter((p) => p.licenca && !p.template).map((p) => [p.app, p.licenca]));
+          const r = await (pathname === '/api/dono/brindes' ? darBrindeApp(env, dados, appIds) : tirarBrindeApp(env, dados));
+          return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
+        }
+        const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, dados);
         return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
       }
       if (pathname.startsWith('/api/dono/') && m === 'POST') {

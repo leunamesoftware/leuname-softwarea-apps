@@ -1,5 +1,5 @@
 import { emitirLicenca } from './licencas.js';
-import { brindeDoEmail } from './brindes.js';
+import { brindeDoEmail, brindesAppsDoEmail } from './brindes.js';
 import { TEMPLATES } from './templates_arquivos.js';
 
 // Planos à venda e o que cada um libera.
@@ -182,6 +182,8 @@ export async function appsDaConta(env, contaId, email) {
     if (apps[app] && !apps[app].expiraEm) continue;
     apps[app] = { chave: r.chave, plano: r.plano, expiraEm: r.expira_em || null };
   }
+  // Presente vitalício do dono (por e-mail): vale para sempre, sem compra.
+  try { for (const [app, b] of Object.entries(await brindesAppsDoEmail(env, email))) if (!apps[app] || apps[app].expiraEm) apps[app] = b; } catch (e) { console.error('brinde app', e?.message); }
   // Sem compra valendo: o teste grátis (enquanto não acabar) também libera o app.
   const testes = await testesDaConta(env, contaId);
   for (const [app, t] of Object.entries(testes)) if (!apps[app] && !t.acabou) apps[app] = { teste: true, expiraEm: t.expiraEm };
