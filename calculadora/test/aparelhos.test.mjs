@@ -12,6 +12,7 @@ function banco() {
     CREATE TABLE sessoes (token_hash TEXT PRIMARY KEY, conta_id TEXT NOT NULL, criado_em TEXT NOT NULL, expira_em TEXT NOT NULL);`);
   db.exec(readFileSync(new URL('../migrations/0014_aparelhos.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../migrations/0015_nova_senha.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../migrations/0019_brindes_apps.sql', import.meta.url), 'utf8'));
   db.exec("CREATE TABLE pedidos (id TEXT, email TEXT, conta_id TEXT)"); db.exec("INSERT INTO pedidos VALUES ('p1','maria@x.com','c1')");
   db.prepare("INSERT INTO contas VALUES ('c1','maria@x.com','Maria Souza','h','s','2026-10-01')").run();
   db.prepare("INSERT INTO contas VALUES ('d1','dono@x.com','Dono','h','s','2026-10-01')").run();
@@ -79,4 +80,25 @@ test('dono troca o e-mail da conta de quem perdeu o e-mail', async () => {
   assert.equal((await trocarEmailDaConta(env, 'nao@x.com', 'novo@x.com')).erro, 'conta_nao_encontrada');
   assert.equal((await trocarEmailDaConta(env, 'maria@x.com', 'Maria.Nova@x.com')).ok, true);
   assert.equal((await buscarConta(env, 'maria.nova@x.com')).id, 'c1');
+});
+
+test('quem ganhou presente do dono usa 2 celulares + 2 computadores; o terceiro do mesmo tipo derruba o mais antigo', async () => {
+  const env = banco();
+  const ins = env.DB; // usa o mesmo SQLite
+  await ins.prepare("INSERT INTO brindes_apps VALUES (?, ?, ?, ?, ?)").bind('maria@x.com', 'gestacell', 'LEU-AAAA-BBBB-CCCC', '', '2026-10-29').run();
+  const ids = ['a', 'b', 'c', 'd', 'e'].map((x) => x.repeat(32));
+  const c1 = token(await abrirSessao(env, 'c1', pedido(CELULAR, ids[0])));
+  await new Promise((r) => setTimeout(r, 5));
+  const c2 = token(await abrirSessao(env, 'c1', pedido(CELULAR, ids[1])));
+  await new Promise((r) => setTimeout(r, 5));
+  const p1 = token(await abrirSessao(env, 'c1', pedido(PC, ids[3])));
+  await new Promise((r) => setTimeout(r, 5));
+  const p2 = token(await abrirSessao(env, 'c1', pedido(PC, ids[4])));
+  for (const [ua, id, t] of [[CELULAR, ids[0], c1], [CELULAR, ids[1], c2], [PC, ids[3], p1], [PC, ids[4], p2]])
+    assert.equal((await contaDaSessao(env, pedido(ua, id, t))).email, 'maria@x.com', 'dois de cada tipo convivem');
+  await new Promise((r) => setTimeout(r, 5));
+  const c3 = token(await abrirSessao(env, 'c1', pedido(CELULAR, ids[2])));
+  assert.equal(await contaDaSessao(env, pedido(CELULAR, ids[0], c1)), null, 'o celular mais antigo foi desconectado');
+  assert.equal((await contaDaSessao(env, pedido(CELULAR, ids[1], c2))).email, 'maria@x.com');
+  assert.equal((await contaDaSessao(env, pedido(CELULAR, ids[2], c3))).email, 'maria@x.com');
 });

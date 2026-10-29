@@ -69,14 +69,20 @@ export async function abrirSessao(env, contaId, req, { avisar, aparelho } = {}) 
   const dono = conta && env.DONO_EMAIL && conta.email.toLowerCase() === String(env.DONO_EMAIL).toLowerCase();
   if (!dono) {
     // Sessões antigas sem tipo (de antes da trava) contam como do mesmo tipo só se o navegador for igual: ficam em paz.
-    const { results: antigas = [] } = await env.DB.prepare('SELECT token_hash, aparelho FROM sessoes WHERE conta_id = ? AND tipo = ? AND substituida_em IS NULL AND token_hash != ? AND expira_em > ?')
+    // Limite por tipo: 1 celular + 1 computador; quem ganhou presente do dono (brindes_apps) usa 2 celulares + 2 computadores.
+    let presente = null;
+    try { presente = await env.DB.prepare('SELECT 1 AS x FROM brindes_apps WHERE email = ? LIMIT 1').bind(String(conta.email).toLowerCase()).first(); } catch { /* tabela ainda não criada: limite normal */ }
+    const limite = presente ? 2 : 1;
+    const { results: antigas = [] } = await env.DB.prepare('SELECT token_hash, aparelho FROM sessoes WHERE conta_id = ? AND tipo = ? AND substituida_em IS NULL AND token_hash != ? AND expira_em > ? ORDER BY criado_em DESC')
       .bind(contaId, tipo, tokenHash, agora.toISOString()).all();
-    if (antigas.length) {
-      await env.DB.prepare('UPDATE sessoes SET substituida_em = ? WHERE conta_id = ? AND tipo = ? AND substituida_em IS NULL AND token_hash != ?')
-        .bind(agora.toISOString(), contaId, tipo, tokenHash).run();
-      // Mesmo aparelho entrando de novo: não precisa avisar.
-      if (antigas.some((a) => a.aparelho !== ap.valor) && avisar) await avisar(conta, tipo).catch(() => {});
+    // Mesmo aparelho entrando de novo não ocupa uma vaga a mais; dos outros, ficam só os mais recentes (limite - 1).
+    const doutros = antigas.filter((x) => x.aparelho !== ap.valor);
+    const sai = [...antigas.filter((x) => x.aparelho === ap.valor), ...doutros.slice(limite - 1)];
+    for (const x of sai) {
+      await env.DB.prepare('UPDATE sessoes SET substituida_em = ? WHERE token_hash = ?').bind(agora.toISOString(), x.token_hash).run();
     }
+    // Só avisa por e-mail quando um aparelho diferente foi desconectado.
+    if (sai.some((x) => x.aparelho !== ap.valor) && avisar) await avisar(conta, tipo).catch(() => {});
   }
   return [cookie(req, token, DIAS_SESSAO * 86400), ...(ap.cookie ? [] : [cookieAparelho(req, ap.valor)])];
 }
