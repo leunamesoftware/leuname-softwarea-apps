@@ -289,15 +289,38 @@ export async function ativarVariantes(env, { pid }) {
   const porNome = new Map();
   for (const x of plano2) { porNome.set(x.nome.toLowerCase(), x); porNome.set(`${x.cor} / ${x.tam}`.toLowerCase(), x); if (!x.tam) porNome.set(x.cor.toLowerCase(), x); if (!x.cor) porNome.set(x.tam.toLowerCase(), x); }
   let fotos = 0, semFoto = 0;
+  const chave = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter((w) => w && !['e', 'de', 'com', 'sem'].includes(w)).sort().join(' ');
+  const porChave = new Map(); for (const x of plano2) { porChave.set(chave(`${x.cor} ${x.tam}`), x); porChave.set(chave(x.nome), x); }
+  const pendentes = []; // variantes cuja foto da CJ ainda não está entre as fotos do produto
+  const anexar = async (variantId, mediaId) => {
+    const a = await consultar(env, `mutation($pid: ID!, $v: [ProductVariantAppendMediaInput!]!) { productVariantAppendMedia(productId: $pid, variantMedia: $v) { userErrors { message } } }`,
+      { pid: prod.id, v: [{ variantId, mediaIds: [mediaId] }] });
+    return !(a.erro || a.dados?.productVariantAppendMedia?.userErrors?.length);
+  };
   for (const v of variantesNow) {
     if (v.media?.nodes?.length) continue;
-    const x = porNome.get(String(v.title).toLowerCase());
+    const x = porNome.get(String(v.title).toLowerCase()) || porChave.get(chave(v.title));
     const alvo = x?.foto ? baseFoto(x.foto) : '';
     const m = alvo && midias.find((mm) => mm.b && (mm.b === alvo || mm.b.includes(alvo) || alvo.includes(mm.b)));
-    if (!m) { semFoto++; continue; }
-    const a = await consultar(env, `mutation($pid: ID!, $v: [ProductVariantAppendMediaInput!]!) { productVariantAppendMedia(productId: $pid, variantMedia: $v) { userErrors { message } } }`,
-      { pid: prod.id, v: [{ variantId: v.id, mediaIds: [m.id] }] });
-    if (a.erro || a.dados?.productVariantAppendMedia?.userErrors?.length) semFoto++; else fotos++;
+    if (m) { if (await anexar(v.id, m.id)) fotos++; else semFoto++; continue; }
+    if (x?.foto && /^https:\/\//.test(x.foto)) pendentes.push({ id: v.id, url: x.foto }); else semFoto++;
+  }
+  // Foto da cor que a CJ tem mas que não veio entre as fotos do produto: sobe para a loja e liga à cor.
+  if (pendentes.length) {
+    const urls = [...new Set(pendentes.map((x) => x.url))].slice(0, 12);
+    const c = await consultar(env, `mutation($p: ID!, $m: [CreateMediaInput!]!) { productCreateMedia(productId: $p, media: $m) { media { ... on MediaImage { id } } userErrors { message } } }`,
+      { p: prod.id, m: urls.map((u) => ({ originalSource: u, mediaContentType: 'IMAGE', alt: prod.title })) });
+    const ids = c.dados?.productCreateMedia?.media?.map((m) => m?.id) || [];
+    const idPorUrl = new Map(urls.map((u, i) => [u, ids[i]]));
+    for (let i = 0; i < 12; i++) { // espera a Shopify terminar de processar as fotos
+      await esperar(1500);
+      const t = await consultar(env, `query($ids: [ID!]!) { nodes(ids: $ids) { ... on MediaImage { id status } } }`, { ids: ids.filter(Boolean) });
+      if ((t.dados?.nodes || []).every((n) => !n || n.status === 'READY' || n.status === 'FAILED')) break;
+    }
+    for (const x of pendentes) {
+      const mid = idPorUrl.get(x.url);
+      if (mid && (await anexar(x.id, mid))) fotos++; else semFoto++;
+    }
   }
   return { ok: true, criadas, fotos, semFoto, avisos, titulo: prod.title };
 }
