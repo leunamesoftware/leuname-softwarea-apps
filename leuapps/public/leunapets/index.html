@@ -392,16 +392,21 @@ function guardarMeu(p) {
   D.meus.unshift({ id: novoId(), titulo: p.titulo, foto: p.foto || '', link: p.link || '', loja: p.loja || '', precoVenda: p.preco || '', custo: p.custo || '', frete: p.frete || '', status: 'Ideia', nota: '', criado: new Date().toISOString() });
   salvar();
 }
-TELAS.meus = () => `<h2>Meus produtos</h2><p class="sub">Do achado até a loja. Mude o estado conforme avança.</p>
-  <div class="kanban">${ESTADOS.map((e) => { const l = D.meus.filter((m) => m.status === e); return `<div class="col"><h4>${e} <span class="selo n">${l.length}</span></h4>${l.map((m) => {
+let meusBusca = '', meusAbertas = {};
+const MEUS_VISIVEIS = 4;
+TELAS.meus = () => `<h2>Meus produtos</h2><p class="sub">Do achado até a loja. Mude o estado conforme avança. <b>Na loja</b> o app preenche sozinho quando você envia um produto: não precisa mexer.</p>
+  <input id="meus-busca" type="search" placeholder="🔎 Pesquisar nos meus produtos…" value="${esc(meusBusca)}" style="margin-bottom:12px">
+  <div class="kanban">${ESTADOS.map((e) => { const tudo = D.meus.filter((m) => m.status === e && (!meusBusca || m.titulo.toLowerCase().includes(meusBusca.toLowerCase()))); const l = meusBusca || meusAbertas[e] ? tudo : tudo.slice(0, MEUS_VISIVEIS); return `<div class="col"><h4>${e} <span class="selo n">${tudo.length}</span></h4>${l.map((m) => {
     const x = lucro({ preco: m.precoVenda, custo: m.custo, frete: m.frete });
     return `<div class="item"><div class="m">${m.foto ? `<img src="${esc(m.foto)}" alt="">` : ''}<div><div class="t">${esc(m.titulo)}</div>
       <div>${m.precoVenda ? eur(num(m.precoVenda)) : 'sem preço'}${x && m.custo ? ` · lucro ${eur(x.antes)} <span class="selo ${x.antes / (x.custos + x.antes) >= .35 ? 'v' : x.antes / (x.custos + x.antes) >= .25 ? 'a' : 'x'}">${arred(x.antes / (x.custos + x.antes) * 100)}%</span>` : ''}</div></div></div>
       <select data-st="${m.id}">${ESTADOS.map((s) => `<option ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
       <textarea rows="2" data-nota="${m.id}" placeholder="Notas: fornecedor, ideia de anúncio…">${esc(m.nota)}</textarea>
-      <div class="linha" style="margin-top:6px">${m.link ? `<a class="btn peq sec" href="${esc(m.link)}" target="_blank" rel="noopener">Ver ↗</a>` : ''}<button class="btn peq sec" data-calcm="${m.id}">🧮</button><button class="btn peq verm" data-apagar="${m.id}">Apagar</button></div></div>`; }).join('') || '<p class="nota" style="margin:4px">Vazio.</p>'}</div>`; }).join('')}</div>
-  <p class="nota" style="margin-top:12px">Quando um produto passa para “Aprovado”, me diga no chat: eu confiro a CJ e crio o produto na loja, com texto em português de Portugal.</p>`;
+      <div class="linha" style="margin-top:6px">${m.link ? `<a class="btn peq sec" href="${esc(m.link)}" target="_blank" rel="noopener">Ver ↗</a>` : ''}<button class="btn peq sec" data-calcm="${m.id}">🧮</button><button class="btn peq verm" data-apagar="${m.id}">Apagar</button></div></div>`; }).join('') || '<p class="nota" style="margin:4px">Vazio.</p>'}${!meusBusca && tudo.length > MEUS_VISIVEIS ? `<button class="btn peq sec" data-mais="${e}" style="width:100%;margin-top:6px">${meusAbertas[e] ? '▲ Mostrar menos' : `▼ Ver todos (${tudo.length})`}</button>` : ''}</div>`; }).join('')}</div>
+  <p class="nota" style="margin-top:12px">Dica: para mandar um produto para a loja use o botão “🛍 Enviar” em Fornecedor (CJ). Aqui é só o seu controle.</p>`;
 LIGAR.meus = () => {
+  const bu = $('#meus-busca'); if (bu) bu.addEventListener('input', () => { meusBusca = bu.value; const pos = bu.selectionStart; refazer(); const n = $('#meus-busca'); n.focus(); n.setSelectionRange(pos, pos); });
+  document.querySelectorAll('[data-mais]').forEach((b) => b.addEventListener('click', () => { meusAbertas[b.dataset.mais] = !meusAbertas[b.dataset.mais]; refazer(); }));
   document.querySelectorAll('[data-st]').forEach((s) => s.addEventListener('change', () => { D.meus.find((m) => m.id === s.dataset.st).status = s.value; salvar(); refazer(); }));
   document.querySelectorAll('[data-nota]').forEach((t) => t.addEventListener('change', () => { D.meus.find((m) => m.id === t.dataset.nota).nota = t.value; salvar(); }));
   document.querySelectorAll('[data-apagar]').forEach((b) => b.addEventListener('click', () => { if (confirm('Apagar este produto da lista?')) { D.meus = D.meus.filter((m) => m.id !== b.dataset.apagar); salvar(); refazer(); } }));
