@@ -260,7 +260,9 @@ TELAS.painel = () => {
   const gasto = D.camp.reduce((s, c) => s + num(c.gasto), 0), receita = D.camp.reduce((s, c) => s + num(c.receita), 0), vendas = D.camp.reduce((s, c) => s + num(c.vendas), 0);
   const roas = gasto > 0 ? arred(receita / gasto) : 0;
   const por = (e) => D.meus.filter((m) => m.status === e).length;
-  const feitos = LANCAMENTO.filter(([k]) => D.feito[k]).length;
+  const pubLoja = lojaLista.itens.filter((p) => p.status === 'ACTIVE').length, temLoja = lojaEstado?.ligada && lojaLista.itens.length > 0;
+  const okItem = (k) => D.feito[k] || (k === 'prod10' && pubLoja >= 10);
+  const feitos = LANCAMENTO.filter(([k]) => okItem(k)).length;
   const plat = ['meta', 'tiktok', 'google'].map((p) => {
     const l = D.camp.filter((c) => c.plataforma === p), g = l.reduce((s, c) => s + num(c.gasto), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
     return { p, g, r, v: l.reduce((s, c) => s + num(c.vendas), 0) };
@@ -269,7 +271,7 @@ TELAS.painel = () => {
   return `<h2>Painel</h2><p class="sub">Tudo da LeunaPets num só lugar.</p>
   <div class="grade g4">
     <div class="kpi"><small>Produtos em teste</small><b>${por('Ideia') + por('Aprovado')}</b></div>
-    <div class="kpi r"><small>Na loja</small><b>${por('Na loja')}</b></div>
+    <div class="kpi r"><small>Na loja (publicados)</small><b>${temLoja ? pubLoja : por('Na loja')}</b></div>
     <div class="kpi"><small>Gasto em anúncios</small><b>${eur(gasto)}</b></div>
     <div class="kpi v"><small>Retorno (ROAS)</small><b>${roas ? roas.toFixed(2) + '×' : '—'}</b></div>
   </div>
@@ -282,13 +284,14 @@ TELAS.painel = () => {
     </div>
     <div class="card check"><h3>Antes de vender (${feitos}/${LANCAMENTO.length})</h3>
       <div class="barra"><i style="width:${feitos / LANCAMENTO.length * 100}%"></i></div>
-      ${LANCAMENTO.map(([k, t]) => `<label class="${D.feito[k] ? 'feito' : ''}"><input type="checkbox" data-feito="${k}" ${D.feito[k] ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
+      ${LANCAMENTO.map(([k, t]) => `<label class="${okItem(k) ? 'feito' : ''}"><input type="checkbox" data-feito="${k}" ${okItem(k) ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
     </div>
   </div>
   <div class="card"><h3>Seus dados</h3><p class="nota">Este app guarda a lista neste navegador. Faça uma cópia de vez em quando.</p>
     <div class="linha"><button class="btn sec fixo" id="exp">⬇️ Exportar cópia</button><label class="btn sec fixo" style="margin:0;cursor:pointer">⬆️ Importar<input id="imp" type="file" accept="application/json" class="oculto"></label></div></div>`;
 };
 LIGAR.painel = () => {
+  if (!lojaLista.itens.length && !lojaLista.carregando) { (async () => { if (!lojaEstado) await lojaCarregarEstado().catch(() => {}); if (lojaEstado?.ligada) { const r = await api('shopify/listar', {}).catch(() => null); if (r?.ok) { lojaLista = { carregando: false, itens: r.j.produtos, msg: '' }; if (document.querySelector('[data-feito]')) refazer(); } } })(); }
   document.querySelectorAll('[data-ir]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); ir(a.dataset.ir); }));
   document.querySelectorAll('[data-feito]').forEach((c) => c.addEventListener('change', () => { D.feito[c.dataset.feito] = c.checked; salvar(); refazer(); }));
   $('#exp').addEventListener('click', () => {
