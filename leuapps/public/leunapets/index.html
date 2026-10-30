@@ -587,6 +587,12 @@ async function lojaMarcarEnviados() {
   let mudou = false;
   for (const p of r.j.produtos) if (p.cj && !D.enviados[p.cj]) { D.enviados[p.cj] = p.admin; mudou = true; }
   if (mudou) { salvar(); if (vista === 'fornecedor') cjRankDesenhar(); }
+  // Guarda no servidor o texto técnico da CJ dos produtos enviados, para o Claude escrever a descrição sem print.
+  const novos = Object.keys(D.enviados).filter((pid) => !D.detSalvo?.[pid]);
+  if (novos.length) {
+    const r2 = await api('cj/detalhes', { pids: novos.slice(0, 6) }).catch(() => null);
+    if (r2?.ok && r2.j.guardados) { D.detSalvo = D.detSalvo || {}; novos.slice(0, 6).forEach((pid) => { D.detSalvo[pid] = 1; }); salvar(); }
+  }
 }
 
 

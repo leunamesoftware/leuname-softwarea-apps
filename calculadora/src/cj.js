@@ -150,3 +150,22 @@ export async function detalharCj(env, pid) {
   fotos = [...new Set(fotos.filter((u) => typeof u === 'string' && /^https:\/\//.test(u)))].slice(0, 8);
   return { pid: String(d.pid || pid), nome: String(d.productNameEn || '').slice(0, 160), fotos, pesoG: Number(d.productWeight) || null };
 }
+
+const semHtml = (h) => String(h || '').replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/gi, ' ').replace(/<img[^>]*>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+
+/** Guarda no servidor o texto técnico da CJ (material, medidas, descrição) dos produtos já enviados, para o Claude ler sem print. */
+export async function guardarDetalhes(env, pids) {
+  const lista = (Array.isArray(pids) ? pids : []).filter((p) => /^[A-Za-z0-9-]{6,60}$/.test(String(p))).slice(0, 6);
+  let guardados = 0;
+  for (const pid of lista) {
+    const det = await comToken(env, `${BASE}/product/query?pid=${encodeURIComponent(pid)}`);
+    if (det.erro) continue;
+    const d = det.dados || {};
+    const vars = (Array.isArray(d.variants) ? d.variants : []).slice(0, 12).map((v) => ({ nome: String(v.variantNameEn || v.variantKey || '').slice(0, 80), compr: v.variantLength, larg: v.variantWidth, alt: v.variantHeight, peso: v.variantWeight, preco: v.variantSellPrice }));
+    const json = JSON.stringify({ nome: d.productNameEn, categoria: d.categoryName, material: d.materialNameEn || d.materialKey, embalagem: d.packingNameEn, propriedades: d.productKeyEn, peso: d.productWeight, descricao: semHtml(d.description).slice(0, 3000), variantes: vars });
+    await env.DB.prepare('INSERT INTO cj_detalhes (pid, json, atualizado_em) VALUES (?, ?, ?) ON CONFLICT(pid) DO UPDATE SET json=excluded.json, atualizado_em=excluded.atualizado_em').bind(String(pid), json, new Date().toISOString()).run();
+    guardados++;
+    await new Promise((r) => setTimeout(r, 1100));
+  }
+  return { ok: true, guardados };
+}

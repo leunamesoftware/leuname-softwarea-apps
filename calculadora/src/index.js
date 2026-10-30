@@ -6,7 +6,7 @@ import { listarCanal, marcarEnvio } from './canal.js';
 import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmail, listarBrindesApps, darBrindeApp, tirarBrindeApp } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
-import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj, detalharCj } from './cj.js';
+import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj, detalharCj, guardarDetalhes } from './cj.js';
 import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos, baixarFoto } from './shopify.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
@@ -407,7 +407,7 @@ export default {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const d = await corpo(req, pathname === '/api/dono/cj/ranking' ? 200000 : 4096);
         const acao = { '/api/dono/cj/chave': () => guardarChave(env, d?.chave), '/api/dono/cj/remover': () => removerChave(env),
-          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid), '/api/dono/cj/ranking': () => guardarRanking(env, d) }[pathname];
+          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid), '/api/dono/cj/ranking': () => guardarRanking(env, d), '/api/dono/cj/detalhes': () => guardarDetalhes(env, d?.pids) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
