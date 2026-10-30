@@ -50,9 +50,9 @@ custom_domain = true
 pattern = "mercagestao.leunamesoftware.com.br"
 custom_domain = true
 
-# LeunaPets Radar (ferramenta do dono; instala no computador como app separado).
+# LeunaPets (app do dono para a loja de cães e gatos; instala no computador como app separado).
 [[routes]]
-pattern = "radar.leunamesoftware.com.br"
+pattern = "leunapets.leunamesoftware.com.br"
 custom_domain = true
 
 # Downloads dos APKs da loja para Android (leuapps.apk, gestacell.apk): /baixar/<arquivo>.

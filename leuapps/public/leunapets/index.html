@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#101B3F">
-<title>LeunaPets Radar</title>
-<link rel="icon" href="/leunapets-radar/icone-192.png">
+<title>LeunaPets</title>
+<link rel="icon" href="/leunapets/icone-192.png">
 <style>
 :root{--rosa:#F0306E;--rosa2:#FFE4EC;--azul:#101B3F;--azul2:#1B2A5C;--fundo:#F5F6FA;--card:#fff;--texto:#101B3F;--mudo:#667089;--linha:#E3E6EF;--verde:#12875A;--verde2:#DDF5EA;--amar:#B7791F;--amar2:#FFF4D6;--verm:#C0272D;--verm2:#FDE3E4;--r:14px}
 *{box-sizing:border-box}html,body{margin:0}
@@ -114,8 +114,8 @@ td.n,th.n{text-align:right}
 
 <div id="entrada" class="oculto">
   <form id="f-entrar">
-    <img src="/leunapets-radar/logo-branco.webp" alt="LeunaPets">
-    <h1>Radar de Produtos</h1>
+    <img src="/leunapets/logo-branco.webp" alt="LeunaPets">
+    <h1>LeunaPets</h1>
     <p id="e-sub">Entre com a sua conta de dono.</p>
     <label for="e-email">E-mail</label><input id="e-email" type="email" autocomplete="username" required>
     <label for="e-senha">Senha da Área do Dono</label><input id="e-senha" type="password" autocomplete="current-password" required>
@@ -124,14 +124,15 @@ td.n,th.n{text-align:right}
   </form>
 </div>
 
-<div id="topo"><img src="/leunapets-radar/logo-branco.webp" alt="LeunaPets"><span style="color:#C8CFE6;font-size:13px">Radar</span></div>
+<div id="topo"><img src="/leunapets/logo-branco.webp" alt="LeunaPets"><span style="color:#C8CFE6;font-size:13px">Loja de cães e gatos</span></div>
 
 <div id="app" class="oculto">
   <nav id="menu">
-    <img class="logo" src="/leunapets-radar/logo-branco.webp" alt="LeunaPets">
+    <img class="logo" src="/leunapets/logo-branco.webp" alt="LeunaPets">
     <button data-v="painel">📊 Painel</button>
     <div class="grupo">Produtos</div>
-    <button data-v="radar">🔎 Radar de lojas</button>
+    <button data-v="radar">🔎 Lojas concorrentes</button>
+    <button data-v="fornecedor">📦 Fornecedor (CJ)</button>
     <button data-v="calc">🧮 Calculadora</button>
     <button data-v="meus">⭐ Meus produtos</button>
     <div class="grupo">Tráfego pago</div>
@@ -152,7 +153,7 @@ const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.')); re
 const arred = (x) => Math.round(x * 100) / 100;
 
 // ---------- dados (ficam neste navegador; dá para exportar e importar) ----------
-const CHAVE = 'leunapets_radar_v1';
+const CHAVE = 'leunapets_app_v1';
 const VAZIO = () => ({ lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25 } });
 let D = VAZIO();
 try { const g = JSON.parse(localStorage.getItem(CHAVE) || 'null'); if (g && typeof g === 'object') D = { ...VAZIO(), ...g, cfg: { ...VAZIO().cfg, ...(g.cfg || {}) } }; } catch {}
@@ -274,11 +275,11 @@ LIGAR.painel = () => {
   $('#exp').addEventListener('click', () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(D, null, 1)], { type: 'application/json' }));
-    a.download = 'leunapets-radar-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+    a.download = 'leunapets-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
   });
   $('#imp').addEventListener('change', async (e) => {
     try { const j = JSON.parse(await e.target.files[0].text()); if (typeof j !== 'object' || !j) throw 0; D = { ...VAZIO(), ...j, cfg: { ...VAZIO().cfg, ...(j.cfg || {}) } }; salvar(); refazer(); }
-    catch { alert('Este arquivo não parece uma cópia do Radar.'); }
+    catch { alert('Este arquivo não parece uma cópia do LeunaPets.'); }
   });
 };
 
@@ -289,7 +290,7 @@ TELAS.radar = () => {
     && (!filtro.q || p.titulo.toLowerCase().includes(filtro.q.toLowerCase()))
     && (!filtro.min || (p.preco ?? 0) >= num(filtro.min)) && (!filtro.max || (p.preco ?? 1e9) <= num(filtro.max)))
     .sort((a, b) => filtro.ordem === 'preco' ? (a.preco ?? 0) - (b.preco ?? 0) : filtro.ordem === 'preco-' ? (b.preco ?? 0) - (a.preco ?? 0) : a.posicao - b.posicao).slice(0, 120);
-  return `<h2>Radar de lojas</h2><p class="sub">Cole o endereço de lojas concorrentes (Shopify) e veja o que elas vendem, na ordem em que elas mostram.</p>
+  return `<h2>Lojas concorrentes</h2><p class="sub">Cole o endereço de lojas concorrentes (Shopify) e veja o que elas vendem, na ordem em que elas mostram.</p>
   <div class="card"><div class="linha"><div><label>Endereço da loja</label><input id="url" placeholder="ex.: www.nomedaloja.com" ${lendo ? 'disabled' : ''}></div>
     <button class="btn fixo" id="add" ${lendo ? 'disabled' : ''}>${lendo ? 'Lendo…' : '＋ Adicionar loja'}</button></div>
     <div class="erro" id="r-erro">${esc(msgRadar)}</div>
@@ -343,7 +344,7 @@ TELAS.calc = () => {
     <div><label>Frete da CJ para Portugal (€)</label><input id="c-frete" inputmode="decimal" value="${esc(c.frete)}"></div>
     <div><label>Anúncio por venda (€)</label><input id="c-anun" inputmode="decimal" value="${esc(c.anuncio)}" placeholder="0 se ainda não sabe"></div></div>
     <div id="c-res">${resCalc()}</div>
-    <div class="linha" style="margin-top:12px"><button class="btn fixo" id="c-guardar">⭐ Guardar em Meus produtos</button><a class="btn sec fixo" href="https://cjdropshipping.com/" target="_blank" rel="noopener">Abrir a CJ</a></div></div>
+    <div class="linha" style="margin-top:12px"><button class="btn fixo" id="c-guardar">⭐ Guardar em Meus produtos</button><button class="btn sec fixo" id="c-cj">📦 Fornecedor (CJ)</button></div></div>
   <details class="card"><summary><b>Taxas usadas</b> (mude só se souber)</summary><div class="linha" style="margin-top:8px">
     <div><label>IVA (%)</label><input id="k-iva" value="${cf.iva}"></div><div><label>Taxa IOSS da CJ (% do preço)</label><input id="k-ioss" value="${cf.ioss}"></div>
     <div><label>Stripe (%)</label><input id="k-stripe" value="${cf.stripe}"></div><div><label>Stripe fixo (€)</label><input id="k-fixo" value="${cf.stripeFixo}"></div></div>
@@ -360,6 +361,7 @@ LIGAR.calc = () => {
   const m = [['#c-tit', 'titulo'], ['#c-preco', 'preco'], ['#c-custo', 'custo'], ['#c-frete', 'frete'], ['#c-anun', 'anuncio']];
   m.forEach(([id, k]) => $(id).addEventListener('input', () => { calcEntrada[k] = $(id).value; $('#c-res').innerHTML = resCalc(); }));
   [['#k-iva', 'iva'], ['#k-ioss', 'ioss'], ['#k-stripe', 'stripe'], ['#k-fixo', 'stripeFixo']].forEach(([id, k]) => $(id).addEventListener('input', () => { D.cfg[k] = num($(id).value); salvar(); $('#c-res').innerHTML = resCalc(); }));
+  $('#c-cj').addEventListener('click', () => ir('fornecedor'));
   $('#c-guardar').addEventListener('click', () => {
     if (!calcEntrada.titulo.trim()) return alert('Dê um nome ao produto.');
     guardarMeu({ ...calcEntrada }); ir('meus');
@@ -388,6 +390,23 @@ LIGAR.meus = () => {
   document.querySelectorAll('[data-apagar]').forEach((b) => b.addEventListener('click', () => { if (confirm('Apagar este produto da lista?')) { D.meus = D.meus.filter((m) => m.id !== b.dataset.apagar); salvar(); refazer(); } }));
   document.querySelectorAll('[data-calcm]').forEach((b) => b.addEventListener('click', () => { const m = D.meus.find((x) => x.id === b.dataset.calcm); calcEntrada = { titulo: m.titulo, preco: m.precoVenda, custo: m.custo, frete: m.frete, anuncio: '', foto: m.foto, link: m.link, loja: m.loja }; ir('calc'); }));
 };
+
+// ----- Fornecedor (CJ Dropshipping) -----
+TELAS.fornecedor = () => {
+  const prontos = D.meus.filter((m) => m.status === 'Aprovado');
+  return `<h2>📦 Fornecedor (CJ)</h2><p class="sub">De onde vêm os produtos. A CJ compra, embala e envia para o cliente em Portugal.</p>
+  <div class="card"><h3>Atalhos da CJ</h3><div class="atalhos">
+    <a class="atalho" href="https://cjdropshipping.com/" target="_blank" rel="noopener">Abrir a CJ<small>Pesquisar produtos, preço e frete para Portugal</small></a>
+  </div></div>
+  <div class="card"><h3>Pronto para ir à loja (${prontos.length})</h3>
+    ${prontos.map((m) => `<div class="item"><div class="t">${esc(m.titulo)}</div><div class="m">${m.precoVenda ? 'venda ' + eur(num(m.precoVenda)) : ''}${m.custo ? ' · custo ' + eur(num(m.custo)) : ''}${m.frete ? ' · frete ' + eur(num(m.frete)) : ''}</div>
+      <label>Link do produto na CJ</label><input data-cjlink="${m.id}" value="${esc(m.cjLink || '')}" placeholder="cole aqui o endereço do produto na CJ"></div>`).join('') || '<p class="nota">Nenhum produto “Aprovado” ainda. Em Meus produtos, mude o estado para Aprovado.</p>'}
+    <p class="nota">Depois me diga no chat: eu confiro a CJ (custo, frete e prazo para Portugal) e crio o produto na loja, com texto em português de Portugal.</p></div>
+  <div class="card"><h3>Ligação automática com a CJ</h3>
+    <p>A CJ tem uma ligação para programas (API), grátis para quem tem conta. Com ela o app puxa sozinho o preço, o custo e o frete de cada produto, sem você digitar.</p>
+    <p class="nota">Para ativar: na CJ, em Minha conta → Authorization/API, gerar a chave. A chave não vai neste chat: fica guardada como segredo no servidor e eu explico o passo quando você chegar nessa tela.</p></div>`;
+};
+LIGAR.fornecedor = () => document.querySelectorAll('[data-cjlink]').forEach((i) => i.addEventListener('change', () => { D.meus.find((m) => m.id === i.dataset.cjlink).cjLink = i.value.trim(); salvar(); }));
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----
 const PLAT = {
@@ -430,7 +449,7 @@ for (const k of Object.keys(PLAT)) {
   };
 }
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/leunapets-radar/sw.js').catch(() => {});
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/leunapets/sw.js').catch(() => {});
 iniciar();
 </script>
 </body>

@@ -1,0 +1,14 @@
+{
+  "id": "/?app=leunapets",
+  "name": "LeunaPets",
+  "short_name": "LeunaPets",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101B3F",
+  "theme_color": "#101B3F",
+  "icons": [
+    { "src": "/leunapets/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/leunapets/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
