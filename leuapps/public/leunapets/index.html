@@ -321,15 +321,16 @@ TELAS.radar = () => {
     <div><label>Preço de (€)</label><input id="f-min" value="${esc(filtro.min)}" inputmode="decimal"></div>
     <div><label>até (€)</label><input id="f-max" value="${esc(filtro.max)}" inputmode="decimal"></div>
     <div><label>Ordem</label><select id="f-ordem"><option value="posicao" ${filtro.ordem === 'posicao' ? 'selected' : ''}>Ordem da loja</option><option value="preco" ${filtro.ordem === 'preco' ? 'selected' : ''}>Preço menor</option><option value="preco-" ${filtro.ordem === 'preco-' ? 'selected' : ''}>Preço maior</option></select></div></div></div>
-  <div class="prods">${lista.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')"><span class="pos">#${p.posicao}</span></div>
+  <div class="prods">${lista.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')"><span class="pos">#${p.posicao}</span>${eCampeao(p) ? '<span class="pos" style="left:auto;right:6px;background:#F0306E;color:#fff">🏆 Campeão provável</span>' : ''}</div>
     <div class="corpo"><div class="tit">${esc(p.titulo)}</div><div class="loja">${esc(p.loja)}</div><div class="preco">${p.preco ? eur(p.preco) : '—'}${p.precoAntes && p.precoAntes > p.preco ? ` <small style="color:var(--mudo);font-weight:400;text-decoration:line-through">${eur(p.precoAntes)}</small>` : ''}</div>
-    <div class="acoes"><button class="btn peq" data-calc="${esc(p.id)}">🧮 Calcular</button><button class="btn peq sec" data-guardar="${esc(p.id)}">⭐ Guardar</button><a class="btn peq sec" href="${esc(p.link)}" target="_blank" rel="noopener">↗</a></div></div></div>`).join('') || '<p class="nota">Nada com esse filtro.</p>'}</div>` : ''}`;
+    <div class="acoes"><button class="btn peq" data-calc="${esc(p.id)}">🧮 Calcular</button><button class="btn peq" data-acha-cj="${esc(p.id)}">🔎 Achar na CJ</button><button class="btn peq sec" data-guardar="${esc(p.id)}">⭐ Guardar</button><a class="btn peq sec" href="${esc(p.link)}" target="_blank" rel="noopener">↗</a></div></div></div>`).join('') || '<p class="nota">Nada com esse filtro.</p>'}</div>` : ''}`;
 };
 LIGAR.radar = () => {
   $('#add').addEventListener('click', lerLoja);
   $('#url').addEventListener('keydown', (e) => { if (e.key === 'Enter') lerLoja(); });
   document.querySelectorAll('[data-tirar]').forEach((b) => b.addEventListener('click', () => { const d = b.dataset.tirar; D.lojas = D.lojas.filter((l) => l.dominio !== d); D.cache = D.cache.filter((p) => p.loja !== d); salvar(); refazer(); }));
   const f = (id, k) => { const el = $(id); if (el) el.addEventListener('change', () => { filtro[k] = el.value; refazer(); }); };
+  document.querySelectorAll('[data-acha-cj]').forEach((b) => b.addEventListener('click', () => achaNaCj(D.cache.find((x) => x.id === b.dataset.achaCj))));
   document.querySelectorAll('[data-sug-radar]').forEach((b) => b.addEventListener('click', () => { filtro.q = b.dataset.sugRadar; refazer(); }));
   f('#f-q', 'q'); f('#f-loja', 'loja'); f('#f-min', 'min'); f('#f-max', 'max'); f('#f-ordem', 'ordem');
   document.querySelectorAll('[data-calc]').forEach((b) => b.addEventListener('click', () => { const p = D.cache.find((x) => x.id === b.dataset.calc); calcEntrada = { titulo: p.titulo, preco: p.preco, foto: p.foto, link: p.link, loja: p.loja, custo: '', frete: '', anuncio: '' }; ir('calc'); }));
@@ -455,6 +456,7 @@ function cjDesenhar() {
   el.innerHTML = `<h3>Buscar na CJ <span class="selo v">ligada</span></h3>
     <div class="linha"><div><label>O que procurar (em inglês funciona melhor)</label><input id="cj-q" value="${esc(cjBusca.q)}" placeholder="dog collar, cat water fountain…"></div><button class="btn fixo" id="cj-buscar" ${cjOcupado ? 'disabled' : ''}>${cjOcupado ? 'Buscando…' : '🔎 Buscar'}</button></div>
     <div class="chips" style="margin:6px 0">${SUGESTOES.map((x) => `<button class="chip" type="button" data-sug-cj="${esc(x.cj)}" style="cursor:pointer">${x.e} ${esc(x.pt)}</button>`).join('')}</div>
+    ${cjBusca.ref ? `<div class="aviso" style="margin:8px 0">${esc(cjBusca.ref)}</div>` : ''}
     <div class="erro">${esc(cjBusca.msg)}</div>
     ${cjBusca.produtos.length ? `<p class="nota"><b>${cjBusca.produtos.length} produtos encontrados</b> para “${esc(cjBusca.q)}”.</p>` : ''}
     ${c ? `<p class="nota">Preços da CJ em dólar, convertidos a 1 US$ = ${c.toFixed(4)} €.</p>` : ''}
@@ -539,6 +541,21 @@ const semAcento = (t) => String(t).toLowerCase().normalize('NFD').replace(/[\u03
 function casaBusca(titulo, q) {
   const t = semAcento(titulo), s = SUGESTOES.find((x) => x.pt === q);
   return s ? s.ws.some((w) => t.includes(semAcento(w))) : t.includes(semAcento(q));
+}
+
+/** "Campeão provável": está entre os primeiros da lista "mais vendidos" da loja (só quando a loja deixa ler essa ordem). Não é venda confirmada. */
+function eCampeao(p) {
+  const l = D.lojas.find((x) => x.dominio === p.loja);
+  return !!l && l.ordem === 'mais-vendidos' && p.posicao <= Math.max(10, Math.round(l.n * 0.1));
+}
+/** Pega o produto do concorrente, descobre o que é (coleira, abrigo…) e busca o parecido na CJ. */
+function achaNaCj(p) {
+  if (!p) return;
+  const t = semAcento(p.titulo), s = SUGESTOES.find((x) => x.ws.some((w) => t.includes(semAcento(w))));
+  cjBusca.q = s ? s.cj : p.titulo.replace(/[^\p{L}\p{N} ]/gu, ' ').split(/\s+/).slice(0, 4).join(' ');
+  cjBusca.ref = `Procurando parecido com “${p.titulo.slice(0, 50)}” (a ${p.loja} vende a ${eur(p.preco)}). O preço de venda tem que ficar igual ou menor que esse.`;
+  ir('fornecedor');
+  setTimeout(() => { const q = $('#cj-q'); if (q) { q.value = cjBusca.q; cjBuscar(); } }, 500);
 }
 const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'dog collar', 'dog raincoat', 'pet travel bag', 'pet feeder bowl', 'dog winter coat', 'dog sweater'];
 /** Analisa um produto da CJ e devolve a linha do ranking (ou null se não tem frete para Portugal). */
