@@ -808,6 +808,25 @@ function lojaDesenhar() {
   $('#lj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('shopify/remover', {}).catch(() => {}); lojaEstado = { ligada: false }; lojaLista = { carregando: false, itens: [], msg: '' }; lojaDesenhar(); } });
 }
 
+
+/** Texto simples <-> HTML da descrição, para o dono não ver <p>, <li>… (negrito: **texto**; lista: linhas com "• "). */
+function htmlParaTexto(h) {
+  return String(h || '').replace(/<strong>([\s\S]*?)<\/strong>|<b>([\s\S]*?)<\/b>/gi, (m, a, b) => '**' + (a || b) + '**').replace(/<\/li>/gi, '\n').replace(/<li[^>]*>/gi, '• ')
+    .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|ul|ol|h[1-6])>/gi, '\n\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\n{3,}/g, '\n\n').trim();
+}
+function textoParaHtml(t) {
+  const lim = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  return String(t || '').trim().split(/\n{2,}/).map((bloco) => {
+    const ls = bloco.split('\n').map((l) => l.trim()).filter(Boolean);
+    const item = (l) => /^[•\-*]\s+/.test(l);
+    let out = '', lista = [];
+    const fecha = () => { if (lista.length) { out += '<ul>' + lista.map((l) => '<li>' + lim(l.replace(/^[•\-*]\s+/, '')) + '</li>').join('') + '</ul>'; lista = []; } };
+    let par = [];
+    const fp = () => { if (par.length) { out += '<p>' + par.map(lim).join('<br>') + '</p>'; par = []; } };
+    for (const l of ls) { if (item(l)) { fp(); lista.push(l); } else { fecha(); par.push(l); } }
+    fp(); fecha(); return out;
+  }).join('');
+}
 // ---- Editar produto dentro do app (grava na Shopify) ----
 let lojaEdit = null;
 async function lojaAbrirEdicao(id) {
@@ -824,10 +843,10 @@ function lojaDesenharEdicao(el) {
   el.innerHTML = `<div class="card"><button class="btn sec peq" id="ed-voltar" style="margin:0 0 8px">← Voltar à lista</button>
     <h3>✏️ Editar produto</h3>
     <label>Fotos (a 1ª é a principal)</label>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:8px">${d.fotos.map((f, i) => `<div style="border:1px solid #ddd;border-radius:8px;padding:4px;text-align:center"><img src="${esc(f.url)}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px"><div style="display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap"><a class="btn peq sec" style="margin:0;padding:4px 8px" href="/loja-api/dono/foto?u=${encodeURIComponent(f.url)}&baixar=1" download>⬇</a>${i ? `<button class="btn peq sec ed-prin" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Tornar principal">★</button>` : ''}<button class="btn peq sec ed-del" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Excluir">🗑</button></div></div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:8px">${d.fotos.map((f, i) => `<div style="border:1px solid #ddd;border-radius:8px;padding:4px;text-align:center"><img src="${esc(f.url)}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px"><div style="display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap"><a class="btn peq sec" style="margin:0;padding:4px 8px" href="/loja-api/dono/foto?u=${encodeURIComponent(f.url)}&baixar=1" download>⬇</a>${i ? `<button class="btn peq sec ed-prin" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Tornar principal">★</button>` : ''}<button class="btn peq sec ed-troca" data-m="${esc(f.id)}" data-i="${i}" style="margin:0;padding:4px 8px" title="Trocar por outra foto">🔄</button><button class="btn peq sec ed-del" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Excluir">🗑</button></div></div>`).join('')}</div>
     <input type="file" id="ed-arq" accept="image/*" style="display:none"><button class="btn sec peq" id="ed-subir" style="margin:0 0 8px">⬆ Subir outra foto</button> <label style="display:inline-flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="ed-prin2" style="width:auto"> como principal</label>
     <label>Título</label><input id="ed-titulo" value="${esc(d.titulo)}" maxlength="150">
-    <label>Descrição (pode usar HTML simples)</label><textarea id="ed-desc" rows="9" style="width:100%">${esc(d.descricao)}</textarea>
+    <label>Descrição</label><textarea id="ed-desc" rows="10" style="width:100%">${esc(htmlParaTexto(d.descricao))}</textarea><p class="nota">Linha em branco = novo parágrafo. Comece a linha com • para fazer lista. **assim** deixa em negrito.</p>
     <label>Endereço na loja (parte final do link)</label><input id="ed-handle" value="${esc(d.handle)}">
     <label>Preços${d.opcoes.length ? ` (${esc(d.opcoes.join(' / '))})` : ''}</label>
     ${d.variantes.map((v) => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="flex:1;font-size:13px">${v.nome === 'Default Title' ? 'Preço' : esc(v.nome)}</span><input class="ed-preco" data-v="${esc(v.id)}" value="${esc(Number(v.preco).toFixed(2))}" inputmode="decimal" style="width:90px"> €</div>`).join('')}
@@ -844,7 +863,9 @@ function lojaDesenharEdicao(el) {
     b.disabled = true; const r = await api('shopify/foto-principal', { id: E.id, mediaId: b.dataset.m }).catch(() => null);
     if (r?.ok) lojaAbrirEdicao(E.id); else { b.disabled = false; $('#ed-erro').textContent = 'Não consegui mudar a principal.'; }
   }));
-  $('#ed-subir').addEventListener('click', () => $('#ed-arq').click());
+  let trocando = null;
+  el.querySelectorAll('.ed-troca').forEach((b) => b.addEventListener('click', () => { trocando = { m: b.dataset.m, i: Number(b.dataset.i) }; $('#ed-arq').click(); }));
+  $('#ed-subir').addEventListener('click', () => { trocando = null; $('#ed-arq').click(); });
   $('#ed-arq').addEventListener('change', async (ev) => {
     const arq = ev.target.files[0]; if (!arq) return; const bt = $('#ed-subir'); bt.disabled = true; bt.textContent = 'Subindo…';
     try {
@@ -852,7 +873,8 @@ function lojaDesenharEdicao(el) {
       const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       const dados = c.toDataURL('image/jpeg', 0.88).split(',')[1];
-      const r = await api('shopify/foto-subir', { id: E.id, dados, tipo: 'image/jpeg', principal: $('#ed-prin2').checked }).catch(() => null);
+      const r = await api('shopify/foto-subir', { id: E.id, dados, tipo: 'image/jpeg', principal: trocando ? trocando.i === 0 : $('#ed-prin2').checked }).catch(() => null);
+      if (r?.ok && trocando) await api('shopify/foto-apagar', { id: E.id, mediaId: trocando.m }).catch(() => null);
       if (r?.ok) return lojaAbrirEdicao(E.id);
       $('#ed-erro').textContent = 'Não consegui subir a foto: ' + (r?.j?.detalhe || r?.j?.erro || 'tente de novo');
     } catch { $('#ed-erro').textContent = 'Não consegui ler essa imagem.'; }
@@ -861,7 +883,7 @@ function lojaDesenharEdicao(el) {
   $('#ed-salvar').addEventListener('click', async () => {
     const b = $('#ed-salvar'); b.disabled = true; b.textContent = 'Salvando…';
     const variantes = [...el.querySelectorAll('.ed-preco')].map((i) => ({ id: i.dataset.v, preco: Number(String(i.value).replace(',', '.')) }));
-    const corpo = { id: E.id, titulo: $('#ed-titulo').value, descricao: $('#ed-desc').value, status: $('#ed-status').value, variantes };
+    const corpo = { id: E.id, titulo: $('#ed-titulo').value, descricao: textoParaHtml($('#ed-desc').value), status: $('#ed-status').value, variantes };
     const h = $('#ed-handle').value.trim(); if (h && h !== d.handle) corpo.handle = h;
     const r = await api('shopify/produto-salvar', corpo).catch(() => null);
     b.disabled = false; b.textContent = '💾 Salvar na loja';
