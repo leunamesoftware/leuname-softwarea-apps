@@ -9,7 +9,7 @@ function seguro(resp) {
 }
 
 // Google: cada página diz qual é o endereço principal dela (canônico) e as páginas internas não entram na busca.
-const SEM_BUSCA = /^\/(carrito|checkout|confirmacion|login|mi-cuenta|registro|demo|site-antigo)(\.html)?$|^\/(modelos|loja|instalar|baixar|dono)(\/|$)/;
+const SEM_BUSCA = /^\/(carrito|checkout|confirmacion|login|mi-cuenta|registro|demo|site-antigo)(\.html)?$|^\/(modelos|loja|instalar|baixar|dono|leunapets-radar)(\/|$)/;
 function paraGoogle(url, resp) {
   if (!SITE_HOSTS.includes(url.hostname) || !(resp.headers.get('Content-Type') || '').includes('text/html')) return resp;
   const r = new Response(resp.body, resp);
@@ -29,6 +29,7 @@ const DONO_HOST = 'dono.leunamesoftware.com.br';
 const GESTACELL_HOST = 'gestacell.leunamesoftware.com.br';
 const SITE_HOSTS = ['www.leunamesoftware.com.br', 'leunamesoftware.com.br'];
 const MERCA_HOST = 'mercagestao.leunamesoftware.com.br';
+const RADAR_HOST = 'radar.leunamesoftware.com.br';
 
 // NFC-e do MercaGestão: ponte para o emissor (Focus NFe). O navegador não fala direto com o emissor (CORS),
 // então o app manda aqui com o token da própria loja; nada é guardado no servidor.
@@ -244,6 +245,11 @@ export default {
       if (!url.pathname.startsWith('/img/') && !url.pathname.startsWith('/mercagestao/')) url.pathname = '/mercagestao' + (url.pathname === '/' ? '/' : url.pathname);
       req = new Request(url, req);
     }
+    // LeunaPets Radar (só o dono; a tela de entrada fica no próprio app): radar.leunamesoftware.com.br/ mostra o que está em /leunapets-radar/.
+    if (url.hostname === RADAR_HOST) {
+      if (!url.pathname.startsWith('/leunapets-radar/')) url.pathname = '/leunapets-radar' + (url.pathname === '/' ? '/' : url.pathname);
+      req = new Request(url, req);
+    }
     // Gestacell no endereço próprio: gestacell.leunamesoftware.com.br/ mostra o que está em /gestacell/.
     if (url.hostname === GESTACELL_HOST) {
       if (!url.pathname.startsWith('/img/') && !url.pathname.startsWith('/gestacell/')) url.pathname = '/gestacell' + (url.pathname === '/' ? '/' : url.pathname);
@@ -259,6 +265,9 @@ export default {
     // Arquivos da vitrine (index.html, apps.json, imagens…).
     const arquivo = await env.ASSETS.fetch(req);
     // Gestacell no endereço próprio: o manifesto vai já no HTML, para a loja conseguir instalar com um toque.
+    if (url.hostname === RADAR_HOST && arquivo.status === 200 && (arquivo.headers.get('Content-Type') || '').includes('text/html')) {
+      return seguro(new HTMLRewriter().on('head', { element: (e) => e.append('<link rel="manifest" href="/leunapets-radar/app.webmanifest">', { html: true }) }).transform(arquivo));
+    }
     if (url.hostname === GESTACELL_HOST && arquivo.status === 200 && (arquivo.headers.get('Content-Type') || '').includes('text/html')) {
       return seguro(new HTMLRewriter().on('head', { element: (e) => e.append('<link rel="manifest" href="/app.webmanifest">', { html: true }) }).transform(arquivo));
     }

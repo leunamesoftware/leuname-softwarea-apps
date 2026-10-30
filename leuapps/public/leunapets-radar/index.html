@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#101B3F">
+<title>LeunaPets Radar</title>
+<link rel="icon" href="/leunapets-radar/icone-192.png">
+<style>
+:root{--rosa:#F0306E;--rosa2:#FFE4EC;--azul:#101B3F;--azul2:#1B2A5C;--fundo:#F5F6FA;--card:#fff;--texto:#101B3F;--mudo:#667089;--linha:#E3E6EF;--verde:#12875A;--verde2:#DDF5EA;--amar:#B7791F;--amar2:#FFF4D6;--verm:#C0272D;--verm2:#FDE3E4;--r:14px}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--fundo);color:var(--texto);font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--rosa)}
+.oculto{display:none!important}
+/* entrada */
+#entrada{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,var(--azul),var(--azul2))}
+#entrada form{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:380px;box-shadow:0 20px 50px #0006}
+#entrada img{height:46px;display:block;margin:0 auto 6px;background:var(--azul);padding:8px 14px;border-radius:12px}
+#entrada h1{font-size:20px;text-align:center;margin:10px 0 4px}
+#entrada p{color:var(--mudo);text-align:center;margin:0 0 14px}
+label{display:block;font-size:13px;color:var(--mudo);margin:10px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--linha);border-radius:10px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rosa)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:10px 16px;background:var(--rosa);color:#fff;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(1.07)}
+.btn.sec{background:#fff;color:var(--azul);border:1.5px solid var(--linha)}
+.btn.peq{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.verm{background:#fff;color:var(--verm);border:1.5px solid var(--verm2)}
+.erro{color:var(--verm);font-size:13px;margin:8px 0 0;min-height:18px}
+#entrada .btn{width:100%;margin-top:14px}
+/* estrutura */
+#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+nav{background:var(--azul);color:#fff;padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+nav .logo{height:40px;display:block;margin:2px 6px 16px}
+nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;color:#C8CFE6;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;margin-bottom:2px}
+nav button:hover{background:#ffffff14;color:#fff}
+nav button.ativo{background:var(--rosa);color:#fff}
+nav .grupo{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7F8BB0;margin:16px 12px 6px}
+nav .sair{margin-top:18px;color:#9AA5C8}
+main{padding:22px clamp(14px,3vw,34px) 60px;max-width:1280px;width:100%}
+h2{margin:0 0 4px;font-size:24px}
+.sub{color:var(--mudo);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--linha);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.card h3{margin:0 0 10px;font-size:16px}
+.grade{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.kpi{border-radius:var(--r);padding:16px;color:#fff;background:linear-gradient(135deg,var(--azul),var(--azul2))}
+.kpi.r{background:linear-gradient(135deg,var(--rosa),#C21E56)}
+.kpi.v{background:linear-gradient(135deg,#12875A,#0B5E3E)}
+.kpi small{opacity:.8;display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{font-size:28px;display:block;margin-top:4px}
+.linha{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.linha>*{flex:1 1 140px}
+.linha>.fixo{flex:0 0 auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{display:inline-flex;gap:8px;align-items:center;background:var(--rosa2);color:var(--azul);border-radius:99px;padding:5px 6px 5px 12px;font-weight:600;font-size:13px}
+.chip button{border:0;background:#fff;border-radius:99px;width:22px;height:22px;cursor:pointer;color:var(--verm)}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.prod{background:#fff;border:1px solid var(--linha);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.prod .foto{aspect-ratio:1/1;background:#EEF0F6 center/cover no-repeat;position:relative}
+.prod .pos{position:absolute;left:8px;top:8px;background:var(--azul);color:#fff;border-radius:99px;font-size:12px;padding:2px 9px;font-weight:700}
+.prod .corpo{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.prod .tit{font-weight:700;font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod .loja{color:var(--mudo);font-size:12px}
+.prod .preco{font-size:18px;font-weight:800;color:var(--rosa)}
+.prod .acoes{display:flex;gap:6px;margin-top:auto}
+.prod .acoes .btn{flex:1}
+.selo{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700}
+.selo.v{background:var(--verde2);color:var(--verde)}.selo.a{background:var(--amar2);color:var(--amar)}.selo.x{background:var(--verm2);color:var(--verm)}.selo.n{background:#E9ECF5;color:var(--azul)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.res div{background:var(--fundo);border-radius:10px;padding:10px 12px}
+.res small{color:var(--mudo);display:block;font-size:12px}.res b{font-size:18px}
+.veredito{border-radius:12px;padding:12px 14px;font-weight:700;margin-top:12px}
+.veredito.v{background:var(--verde2);color:var(--verde)}.veredito.a{background:var(--amar2);color:var(--amar)}.veredito.x{background:var(--verm2);color:var(--verm)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--linha);text-align:left}
+th{font-size:12px;color:var(--mudo);text-transform:uppercase;letter-spacing:.05em}
+td.n,th.n{text-align:right}
+.tabela{overflow:auto}
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;align-items:start}
+.col{background:#ECEEF5;border-radius:var(--r);padding:10px}
+.col h4{margin:2px 4px 10px;font-size:14px;display:flex;justify-content:space-between}
+.item{background:#fff;border-radius:12px;padding:10px;margin-bottom:8px;border:1px solid var(--linha)}
+.item .t{font-weight:700;font-size:14px}
+.item .m{display:flex;gap:8px;align-items:center;margin-top:6px;font-size:13px;color:var(--mudo)}
+.item img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#EEF0F6}
+.item select,.item textarea{padding:6px 8px;font-size:13px;margin-top:6px}
+.nota{color:var(--mudo);font-size:13px}
+.aviso{background:var(--amar2);color:#7A5410;border-radius:10px;padding:10px 12px;font-size:13px;margin:10px 0}
+.atalhos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.atalho{display:block;text-decoration:none;color:var(--azul);background:#fff;border:1.5px solid var(--linha);border-radius:12px;padding:12px 14px;font-weight:700}
+.atalho small{display:block;color:var(--mudo);font-weight:400;margin-top:2px}
+.atalho:hover{border-color:var(--rosa)}
+.check label{display:flex;gap:10px;align-items:flex-start;margin:0;padding:8px 0;border-bottom:1px solid var(--linha);color:var(--texto);font-size:14px;font-weight:500;cursor:pointer}
+.check input{width:auto;margin-top:3px}
+.check label.feito span{text-decoration:line-through;color:var(--mudo)}
+.barra{height:10px;background:#E9ECF5;border-radius:99px;overflow:hidden}.barra i{display:block;height:100%;background:var(--rosa)}
+#topo{display:none}
+@media(max-width:820px){
+  #app{grid-template-columns:1fr}
+  nav{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;display:flex;overflow-x:auto;padding:6px;z-index:5;gap:2px}
+  nav .logo,nav .grupo,nav .sair{display:none}
+  nav button{flex:0 0 auto;flex-direction:column;gap:2px;padding:6px 10px;font-size:11px;width:auto;text-align:center;margin:0}
+  main{padding-bottom:100px}
+  #topo{display:flex;align-items:center;justify-content:space-between;background:var(--azul);padding:8px 14px}
+  #topo img{height:30px}
+}
+</style>
+</head>
+<body>
+
+<div id="entrada" class="oculto">
+  <form id="f-entrar">
+    <img src="/leunapets-radar/logo-branco.webp" alt="LeunaPets">
+    <h1>Radar de Produtos</h1>
+    <p id="e-sub">Entre com a sua conta de dono.</p>
+    <label for="e-email">E-mail</label><input id="e-email" type="email" autocomplete="username" required>
+    <label for="e-senha">Senha da Área do Dono</label><input id="e-senha" type="password" autocomplete="current-password" required>
+    <div class="erro" id="e-erro"></div>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+
+<div id="topo"><img src="/leunapets-radar/logo-branco.webp" alt="LeunaPets"><span style="color:#C8CFE6;font-size:13px">Radar</span></div>
+
+<div id="app" class="oculto">
+  <nav id="menu">
+    <img class="logo" src="/leunapets-radar/logo-branco.webp" alt="LeunaPets">
+    <button data-v="painel">📊 Painel</button>
+    <div class="grupo">Produtos</div>
+    <button data-v="radar">🔎 Radar de lojas</button>
+    <button data-v="calc">🧮 Calculadora</button>
+    <button data-v="meus">⭐ Meus produtos</button>
+    <div class="grupo">Tráfego pago</div>
+    <button data-v="meta">📘 Facebook e Instagram</button>
+    <button data-v="tiktok">🎵 TikTok</button>
+    <button data-v="google">🔍 Google</button>
+    <button class="sair" id="sair">Sair</button>
+  </nav>
+  <main id="tela"></main>
+</div>
+
+<script>
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const eur = (n) => (Number.isFinite(n) ? n : 0).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' });
+const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.')); return Number.isFinite(n) ? n : 0; };
+const arred = (x) => Math.round(x * 100) / 100;
+
+// ---------- dados (ficam neste navegador; dá para exportar e importar) ----------
+const CHAVE = 'leunapets_radar_v1';
+const VAZIO = () => ({ lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25 } });
+let D = VAZIO();
+try { const g = JSON.parse(localStorage.getItem(CHAVE) || 'null'); if (g && typeof g === 'object') D = { ...VAZIO(), ...g, cfg: { ...VAZIO().cfg, ...(g.cfg || {}) } }; } catch {}
+const salvar = () => { try { localStorage.setItem(CHAVE, JSON.stringify(D)); } catch {} };
+const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+// ---------- conta ----------
+async function api(caminho, corpo) {
+  const r = await fetch('/loja-api/dono/' + caminho, corpo === undefined ? { credentials: 'same-origin', cache: 'no-store' }
+    : { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) });
+  let j = null; try { j = await r.json(); } catch {}
+  return { ok: r.ok, status: r.status, j };
+}
+async function iniciar() {
+  let est = null;
+  try { est = (await api('estado')).j; } catch {}
+  if (est?.logado) return abrirApp();
+  $('#entrada').classList.remove('oculto');
+  if (est && !est.temSenha) $('#e-sub').textContent = 'Antes, crie a sua senha de dono na Área do Dono (dono.leunamesoftware.com.br).';
+  if (!est) $('#e-erro').textContent = 'Sem internet agora. Tente de novo.';
+}
+$('#f-entrar').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('#e-erro').textContent = '';
+  const r = await api('entrar', { email: $('#e-email').value.trim(), senha: $('#e-senha').value }).catch(() => null);
+  if (r?.ok) { $('#entrada').classList.add('oculto'); return abrirApp(); }
+  $('#e-erro').textContent = r?.j?.erro === 'email' ? 'Este não é o e-mail do dono.' : r?.status === 429 ? 'Muitas tentativas. Espere um pouco.' : 'E-mail ou senha incorretos.';
+});
+$('#sair').addEventListener('click', async () => { await api('sair', {}).catch(() => {}); location.reload(); });
+
+// ---------- navegação ----------
+let vista = 'painel';
+function abrirApp() {
+  $('#app').classList.remove('oculto');
+  $('#topo').style.display = '';
+  $('#menu').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) ir(b.dataset.v); });
+  ir(location.hash.slice(1) || 'painel');
+}
+function ir(v) {
+  if (!TELAS[v]) v = 'painel';
+  vista = v; location.hash = v;
+  document.querySelectorAll('#menu button[data-v]').forEach((b) => b.classList.toggle('ativo', b.dataset.v === v));
+  $('#tela').innerHTML = TELAS[v]();
+  if (LIGAR[v]) LIGAR[v]();
+  window.scrollTo(0, 0);
+}
+const refazer = () => { const y = window.scrollY; $('#tela').innerHTML = TELAS[vista](); if (LIGAR[vista]) LIGAR[vista](); window.scrollTo(0, y); };
+
+// ---------- contas de lucro (mesma regra do servidor, calculadora/src/radar.js) ----------
+function lucro({ preco, custo, frete, anuncio = 0 }) {
+  const c = D.cfg, P = num(preco);
+  if (P <= 0) return null;
+  const iva = P - P / (1 + c.iva / 100), ioss = P * c.ioss / 100, pag = P * c.stripe / 100 + c.stripeFixo;
+  const custos = num(custo) + num(frete) + iva + ioss + pag;
+  const antes = P - custos, final = antes - num(anuncio);
+  const fixos = num(custo) + num(frete) + c.stripeFixo + num(anuncio);
+  const variavel = 1 / (1 + c.iva / 100) - c.ioss / 100 - c.stripe / 100;
+  return { iva: arred(iva), ioss: arred(ioss), pag: arred(pag), custos: arred(custos), antes: arred(antes), lucro: arred(final), margem: arred(final / P * 100), eq: variavel > 0 ? arred(fixos / variavel) : null, anuncioMax: arred(Math.max(0, antes)) };
+}
+function veredito(l) {
+  if (!l) return '';
+  const m = l.antes / (l.custos + l.antes) * 100; // margem antes de anúncios
+  if (l.antes <= 0) return '<div class="veredito x">❌ Dá prejuízo antes mesmo dos anúncios. Descartar ou subir o preço.</div>';
+  if (m < 25) return `<div class="veredito x">⚠️ Margem baixa (${arred(m)}% antes de anúncios). Sobra pouco para pagar tráfego.</div>`;
+  if (m < 35) return `<div class="veredito a">🟡 Margem razoável (${arred(m)}%). Dá para testar, mas com anúncio barato.</div>`;
+  return `<div class="veredito v">✅ Boa margem (${arred(m)}% antes de anúncios). Pode gastar até ${eur(l.anuncioMax)} em anúncio por venda e ainda não ter prejuízo.</div>`;
+}
+
+// ---------- telas ----------
+const ESTADOS = ['Ideia', 'Aprovado', 'Na loja', 'Descartado'];
+const TELAS = {}, LIGAR = {};
+
+const LANCAMENTO = [
+  ['tema', 'Publicar o tema final da loja (cópia compacta)'],
+  ['senha', 'Traduzir a página de senha e, no fim, tirar a senha da loja'],
+  ['prod10', 'Ter pelo menos 10 produtos na loja'],
+  ['colecoes', 'Todos os produtos nas coleções Cães ou Gatos'],
+  ['pixel', 'Instalar o pixel (Facebook e Instagram, TikTok, Google)'],
+  ['meta', 'Criar a conta de anúncios da Meta'],
+  ['merchant', 'Atualizar o Google Merchant (e-mail suporte@leunapets.com)'],
+  ['teste', 'Combinar o valor do teste de anúncios (o dono aprova o gasto)'],
+];
+
+TELAS.painel = () => {
+  const gasto = D.camp.reduce((s, c) => s + num(c.gasto), 0), receita = D.camp.reduce((s, c) => s + num(c.receita), 0), vendas = D.camp.reduce((s, c) => s + num(c.vendas), 0);
+  const roas = gasto > 0 ? arred(receita / gasto) : 0;
+  const por = (e) => D.meus.filter((m) => m.status === e).length;
+  const feitos = LANCAMENTO.filter(([k]) => D.feito[k]).length;
+  const plat = ['meta', 'tiktok', 'google'].map((p) => {
+    const l = D.camp.filter((c) => c.plataforma === p), g = l.reduce((s, c) => s + num(c.gasto), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
+    return { p, g, r, v: l.reduce((s, c) => s + num(c.vendas), 0) };
+  });
+  const nomes = { meta: 'Facebook e Instagram', tiktok: 'TikTok', google: 'Google' };
+  return `<h2>Painel</h2><p class="sub">Tudo da LeunaPets num só lugar.</p>
+  <div class="grade g4">
+    <div class="kpi"><small>Produtos em teste</small><b>${por('Ideia') + por('Aprovado')}</b></div>
+    <div class="kpi r"><small>Na loja</small><b>${por('Na loja')}</b></div>
+    <div class="kpi"><small>Gasto em anúncios</small><b>${eur(gasto)}</b></div>
+    <div class="kpi v"><small>Retorno (ROAS)</small><b>${roas ? roas.toFixed(2) + '×' : '—'}</b></div>
+  </div>
+  <div class="grade g2" style="margin-top:16px">
+    <div class="card"><h3>Tráfego pago por plataforma</h3>
+      <div class="tabela"><table><tr><th>Plataforma</th><th class="n">Gasto</th><th class="n">Vendas</th><th class="n">Receita</th><th class="n">ROAS</th></tr>
+      ${plat.map((x) => `<tr><td><a href="#" data-ir="${x.p}">${nomes[x.p]}</a></td><td class="n">${eur(x.g)}</td><td class="n">${x.v}</td><td class="n">${eur(x.r)}</td><td class="n">${x.g > 0 ? (x.r / x.g).toFixed(2) + '×' : '—'}</td></tr>`).join('')}
+      </table></div>
+      <p class="nota">Os números dos anúncios são os que você registra em cada plataforma (${vendas} venda(s) registradas). A ligação automática com as contas de anúncios vem depois.</p>
+    </div>
+    <div class="card check"><h3>Antes de vender (${feitos}/${LANCAMENTO.length})</h3>
+      <div class="barra"><i style="width:${feitos / LANCAMENTO.length * 100}%"></i></div>
+      ${LANCAMENTO.map(([k, t]) => `<label class="${D.feito[k] ? 'feito' : ''}"><input type="checkbox" data-feito="${k}" ${D.feito[k] ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
+    </div>
+  </div>
+  <div class="card"><h3>Seus dados</h3><p class="nota">Este app guarda a lista neste navegador. Faça uma cópia de vez em quando.</p>
+    <div class="linha"><button class="btn sec fixo" id="exp">⬇️ Exportar cópia</button><label class="btn sec fixo" style="margin:0;cursor:pointer">⬆️ Importar<input id="imp" type="file" accept="application/json" class="oculto"></label></div></div>`;
+};
+LIGAR.painel = () => {
+  document.querySelectorAll('[data-ir]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); ir(a.dataset.ir); }));
+  document.querySelectorAll('[data-feito]').forEach((c) => c.addEventListener('change', () => { D.feito[c.dataset.feito] = c.checked; salvar(); refazer(); }));
+  $('#exp').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(D, null, 1)], { type: 'application/json' }));
+    a.download = 'leunapets-radar-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+  });
+  $('#imp').addEventListener('change', async (e) => {
+    try { const j = JSON.parse(await e.target.files[0].text()); if (typeof j !== 'object' || !j) throw 0; D = { ...VAZIO(), ...j, cfg: { ...VAZIO().cfg, ...(j.cfg || {}) } }; salvar(); refazer(); }
+    catch { alert('Este arquivo não parece uma cópia do Radar.'); }
+  });
+};
+
+// ----- Radar de lojas -----
+let filtro = { q: '', min: '', max: '', ordem: 'posicao', loja: '' }, lendo = false, msgRadar = '';
+TELAS.radar = () => {
+  const lista = D.cache.filter((p) => (!filtro.loja || p.loja === filtro.loja)
+    && (!filtro.q || p.titulo.toLowerCase().includes(filtro.q.toLowerCase()))
+    && (!filtro.min || (p.preco ?? 0) >= num(filtro.min)) && (!filtro.max || (p.preco ?? 1e9) <= num(filtro.max)))
+    .sort((a, b) => filtro.ordem === 'preco' ? (a.preco ?? 0) - (b.preco ?? 0) : filtro.ordem === 'preco-' ? (b.preco ?? 0) - (a.preco ?? 0) : a.posicao - b.posicao).slice(0, 120);
+  return `<h2>Radar de lojas</h2><p class="sub">Cole o endereço de lojas concorrentes (Shopify) e veja o que elas vendem, na ordem em que elas mostram.</p>
+  <div class="card"><div class="linha"><div><label>Endereço da loja</label><input id="url" placeholder="ex.: www.nomedaloja.com" ${lendo ? 'disabled' : ''}></div>
+    <button class="btn fixo" id="add" ${lendo ? 'disabled' : ''}>${lendo ? 'Lendo…' : '＋ Adicionar loja'}</button></div>
+    <div class="erro" id="r-erro">${esc(msgRadar)}</div>
+    <div class="chips">${D.lojas.map((l) => `<span class="chip">${esc(l.dominio)} <small>${l.n} prod.</small><button title="Tirar" data-tirar="${esc(l.dominio)}">×</button></span>`).join('') || '<span class="nota">Nenhuma loja ainda.</span>'}</div>
+    <p class="nota">“Mais vendidos” só aparece quando a loja deixa ler essa ordem; senão mostramos o catálogo na ordem normal. Preço é o que o cliente paga lá.</p></div>
+  ${D.cache.length ? `<div class="card"><div class="linha">
+    <div><label>Buscar</label><input id="f-q" value="${esc(filtro.q)}" placeholder="coleira, fonte, cama…"></div>
+    <div><label>Loja</label><select id="f-loja"><option value="">Todas</option>${D.lojas.map((l) => `<option ${filtro.loja === l.dominio ? 'selected' : ''}>${esc(l.dominio)}</option>`).join('')}</select></div>
+    <div><label>Preço de (€)</label><input id="f-min" value="${esc(filtro.min)}" inputmode="decimal"></div>
+    <div><label>até (€)</label><input id="f-max" value="${esc(filtro.max)}" inputmode="decimal"></div>
+    <div><label>Ordem</label><select id="f-ordem"><option value="posicao" ${filtro.ordem === 'posicao' ? 'selected' : ''}>Ordem da loja</option><option value="preco" ${filtro.ordem === 'preco' ? 'selected' : ''}>Preço menor</option><option value="preco-" ${filtro.ordem === 'preco-' ? 'selected' : ''}>Preço maior</option></select></div></div></div>
+  <div class="prods">${lista.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')"><span class="pos">#${p.posicao}</span></div>
+    <div class="corpo"><div class="tit">${esc(p.titulo)}</div><div class="loja">${esc(p.loja)}</div><div class="preco">${p.preco ? eur(p.preco) : '—'}${p.precoAntes && p.precoAntes > p.preco ? ` <small style="color:var(--mudo);font-weight:400;text-decoration:line-through">${eur(p.precoAntes)}</small>` : ''}</div>
+    <div class="acoes"><button class="btn peq" data-calc="${esc(p.id)}">🧮 Calcular</button><button class="btn peq sec" data-guardar="${esc(p.id)}">⭐ Guardar</button><a class="btn peq sec" href="${esc(p.link)}" target="_blank" rel="noopener">↗</a></div></div></div>`).join('') || '<p class="nota">Nada com esse filtro.</p>'}</div>` : ''}`;
+};
+LIGAR.radar = () => {
+  $('#add').addEventListener('click', lerLoja);
+  $('#url').addEventListener('keydown', (e) => { if (e.key === 'Enter') lerLoja(); });
+  document.querySelectorAll('[data-tirar]').forEach((b) => b.addEventListener('click', () => { const d = b.dataset.tirar; D.lojas = D.lojas.filter((l) => l.dominio !== d); D.cache = D.cache.filter((p) => p.loja !== d); salvar(); refazer(); }));
+  const f = (id, k) => { const el = $(id); if (el) el.addEventListener('change', () => { filtro[k] = el.value; refazer(); }); };
+  f('#f-q', 'q'); f('#f-loja', 'loja'); f('#f-min', 'min'); f('#f-max', 'max'); f('#f-ordem', 'ordem');
+  document.querySelectorAll('[data-calc]').forEach((b) => b.addEventListener('click', () => { const p = D.cache.find((x) => x.id === b.dataset.calc); calcEntrada = { titulo: p.titulo, preco: p.preco, foto: p.foto, link: p.link, loja: p.loja, custo: '', frete: '', anuncio: '' }; ir('calc'); }));
+  document.querySelectorAll('[data-guardar]').forEach((b) => b.addEventListener('click', () => { const p = D.cache.find((x) => x.id === b.dataset.guardar); guardarMeu({ titulo: p.titulo, preco: p.preco, foto: p.foto, link: p.link, loja: p.loja }); b.textContent = '✔ Guardado'; b.disabled = true; }));
+};
+async function lerLoja() {
+  const url = $('#url').value.trim();
+  if (!url) return;
+  lendo = true; msgRadar = ''; refazer();
+  try {
+    const r = await api('radar/loja', { url });
+    if (!r.ok) {
+      msgRadar = { endereco: 'Esse endereço não parece uma loja.', sem_catalogo: 'Essa loja não deixa ver o catálogo (ou não é Shopify).', loja_nao_respondeu: 'A loja não respondeu. Tente de novo.', so_o_dono: 'Entre de novo na sua conta.' }[r.j?.erro] || 'Não deu para ler essa loja.';
+    } else {
+      const { loja, ordem, produtos } = r.j;
+      D.lojas = D.lojas.filter((l) => l.dominio !== loja).concat({ dominio: loja, ordem, n: produtos.length, lido: new Date().toISOString() });
+      D.cache = D.cache.filter((p) => p.loja !== loja).concat(produtos);
+      msgRadar = ordem === 'mais-vendidos' ? '' : 'Lida na ordem normal do catálogo (a loja não mostra “mais vendidos”).';
+    }
+  } catch { msgRadar = 'Sem internet agora.'; }
+  lendo = false; salvar(); refazer();
+}
+
+// ----- Calculadora -----
+let calcEntrada = { titulo: '', preco: '', custo: '', frete: '', anuncio: '', foto: '', link: '', loja: '' };
+TELAS.calc = () => {
+  const c = calcEntrada, l = lucro(c), cf = D.cfg;
+  return `<h2>Calculadora de lucro</h2><p class="sub">Para vender em Portugal, com IVA e IOSS. Os valores da CJ você copia da página do produto.</p>
+  <div class="card"><div class="linha"><div style="flex:2 1 260px"><label>Nome do produto</label><input id="c-tit" value="${esc(c.titulo)}"></div>
+    <div><label>Preço de venda na loja (€, com IVA)</label><input id="c-preco" inputmode="decimal" value="${esc(c.preco)}"></div></div>
+    <div class="linha"><div><label>Custo na CJ (€)</label><input id="c-custo" inputmode="decimal" value="${esc(c.custo)}"></div>
+    <div><label>Frete da CJ para Portugal (€)</label><input id="c-frete" inputmode="decimal" value="${esc(c.frete)}"></div>
+    <div><label>Anúncio por venda (€)</label><input id="c-anun" inputmode="decimal" value="${esc(c.anuncio)}" placeholder="0 se ainda não sabe"></div></div>
+    <div id="c-res">${resCalc()}</div>
+    <div class="linha" style="margin-top:12px"><button class="btn fixo" id="c-guardar">⭐ Guardar em Meus produtos</button><a class="btn sec fixo" href="https://cjdropshipping.com/" target="_blank" rel="noopener">Abrir a CJ</a></div></div>
+  <details class="card"><summary><b>Taxas usadas</b> (mude só se souber)</summary><div class="linha" style="margin-top:8px">
+    <div><label>IVA (%)</label><input id="k-iva" value="${cf.iva}"></div><div><label>Taxa IOSS da CJ (% do preço)</label><input id="k-ioss" value="${cf.ioss}"></div>
+    <div><label>Stripe (%)</label><input id="k-stripe" value="${cf.stripe}"></div><div><label>Stripe fixo (€)</label><input id="k-fixo" value="${cf.stripeFixo}"></div></div>
+    <p class="nota">A taxa IOSS é calculada de forma prudente (sobre o preço de venda). Confirme na CJ e ajuste. A taxa da Stripe depende do cartão do cliente.</p></details>`;
+};
+function resCalc() {
+  const l = lucro(calcEntrada);
+  if (!l) return '<p class="nota">Preencha o preço de venda para ver as contas.</p>';
+  return `<div class="res"><div><small>IVA (nosso)</small><b>${eur(l.iva)}</b></div><div><small>Taxa IOSS</small><b>${eur(l.ioss)}</b></div><div><small>Pagamento</small><b>${eur(l.pag)}</b></div>
+  <div><small>Custo total</small><b>${eur(l.custos)}</b></div><div><small>Lucro antes de anúncios</small><b>${eur(l.antes)}</b></div><div><small>Lucro final</small><b style="color:${l.lucro >= 0 ? 'var(--verde)' : 'var(--verm)'}">${eur(l.lucro)}</b></div>
+  <div><small>Margem final</small><b>${l.margem}%</b></div><div><small>Preço mínimo (sem prejuízo)</small><b>${l.eq ? eur(l.eq) : '—'}</b></div></div>${veredito(l)}`;
+}
+LIGAR.calc = () => {
+  const m = [['#c-tit', 'titulo'], ['#c-preco', 'preco'], ['#c-custo', 'custo'], ['#c-frete', 'frete'], ['#c-anun', 'anuncio']];
+  m.forEach(([id, k]) => $(id).addEventListener('input', () => { calcEntrada[k] = $(id).value; $('#c-res').innerHTML = resCalc(); }));
+  [['#k-iva', 'iva'], ['#k-ioss', 'ioss'], ['#k-stripe', 'stripe'], ['#k-fixo', 'stripeFixo']].forEach(([id, k]) => $(id).addEventListener('input', () => { D.cfg[k] = num($(id).value); salvar(); $('#c-res').innerHTML = resCalc(); }));
+  $('#c-guardar').addEventListener('click', () => {
+    if (!calcEntrada.titulo.trim()) return alert('Dê um nome ao produto.');
+    guardarMeu({ ...calcEntrada }); ir('meus');
+  });
+};
+
+// ----- Meus produtos -----
+function guardarMeu(p) {
+  const ja = D.meus.find((m) => m.link && m.link === p.link);
+  if (ja) { Object.assign(ja, { precoVenda: p.preco ?? ja.precoVenda, custo: p.custo ?? ja.custo, frete: p.frete ?? ja.frete }); return salvar(); }
+  D.meus.unshift({ id: novoId(), titulo: p.titulo, foto: p.foto || '', link: p.link || '', loja: p.loja || '', precoVenda: p.preco || '', custo: p.custo || '', frete: p.frete || '', status: 'Ideia', nota: '', criado: new Date().toISOString() });
+  salvar();
+}
+TELAS.meus = () => `<h2>Meus produtos</h2><p class="sub">Do achado até a loja. Mude o estado conforme avança.</p>
+  <div class="kanban">${ESTADOS.map((e) => { const l = D.meus.filter((m) => m.status === e); return `<div class="col"><h4>${e} <span class="selo n">${l.length}</span></h4>${l.map((m) => {
+    const x = lucro({ preco: m.precoVenda, custo: m.custo, frete: m.frete });
+    return `<div class="item"><div class="m">${m.foto ? `<img src="${esc(m.foto)}" alt="">` : ''}<div><div class="t">${esc(m.titulo)}</div>
+      <div>${m.precoVenda ? eur(num(m.precoVenda)) : 'sem preço'}${x && m.custo ? ` · lucro ${eur(x.antes)} <span class="selo ${x.antes / (x.custos + x.antes) >= .35 ? 'v' : x.antes / (x.custos + x.antes) >= .25 ? 'a' : 'x'}">${arred(x.antes / (x.custos + x.antes) * 100)}%</span>` : ''}</div></div></div>
+      <select data-st="${m.id}">${ESTADOS.map((s) => `<option ${s === m.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+      <textarea rows="2" data-nota="${m.id}" placeholder="Notas: fornecedor, ideia de anúncio…">${esc(m.nota)}</textarea>
+      <div class="linha" style="margin-top:6px">${m.link ? `<a class="btn peq sec" href="${esc(m.link)}" target="_blank" rel="noopener">Ver ↗</a>` : ''}<button class="btn peq sec" data-calcm="${m.id}">🧮</button><button class="btn peq verm" data-apagar="${m.id}">Apagar</button></div></div>`; }).join('') || '<p class="nota" style="margin:4px">Vazio.</p>'}</div>`; }).join('')}</div>
+  <p class="nota" style="margin-top:12px">Quando um produto passa para “Aprovado”, me diga no chat: eu confiro a CJ e crio o produto na loja, com texto em português de Portugal.</p>`;
+LIGAR.meus = () => {
+  document.querySelectorAll('[data-st]').forEach((s) => s.addEventListener('change', () => { D.meus.find((m) => m.id === s.dataset.st).status = s.value; salvar(); refazer(); }));
+  document.querySelectorAll('[data-nota]').forEach((t) => t.addEventListener('change', () => { D.meus.find((m) => m.id === t.dataset.nota).nota = t.value; salvar(); }));
+  document.querySelectorAll('[data-apagar]').forEach((b) => b.addEventListener('click', () => { if (confirm('Apagar este produto da lista?')) { D.meus = D.meus.filter((m) => m.id !== b.dataset.apagar); salvar(); refazer(); } }));
+  document.querySelectorAll('[data-calcm]').forEach((b) => b.addEventListener('click', () => { const m = D.meus.find((x) => x.id === b.dataset.calcm); calcEntrada = { titulo: m.titulo, preco: m.precoVenda, custo: m.custo, frete: m.frete, anuncio: '', foto: m.foto, link: m.link, loja: m.loja }; ir('calc'); }));
+};
+
+// ----- Tráfego pago (uma tela para cada plataforma) -----
+const PLAT = {
+  meta: { nome: 'Facebook e Instagram', icone: '📘', dica: 'A Meta é a nossa primeira escolha: aceita anunciante do Brasil mirando Portugal. Comece com orçamento pequeno e só gaste com a sua aprovação.',
+    atalhos: [['Biblioteca de Anúncios (Portugal, ativos)', 'Veja o que outras lojas anunciam agora', 'https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=PT&q=c%C3%A3es&search_type=keyword_unordered&media_type=all'],
+      ['Biblioteca: gatos', 'Mesma busca para gatos', 'https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=PT&q=gatos&search_type=keyword_unordered&media_type=all'],
+      ['Gerenciador de Anúncios', 'Sua conta de anúncios', 'https://adsmanager.facebook.com/'], ['Gerenciador de Eventos (pixel)', 'Confira se o pixel dispara', 'https://business.facebook.com/events_manager2/']] },
+  tiktok: { nome: 'TikTok', icone: '🎵', dica: 'O TikTok pode exigir verificação do anunciante e da região. Antes de gastar, confirme que a conta de anúncios aceita você e que o pagamento funciona.',
+    atalhos: [['Top Ads (Portugal)', 'Anúncios mais vistos', 'https://ads.tiktok.com/business/creativecenter/inspiration/topads/pc/pt?region=PT'],
+      ['Produtos em alta', 'O que está a bombar', 'https://ads.tiktok.com/business/creativecenter/top-products/pc/pt?region=PT'], ['TikTok Ads Manager', 'Sua conta de anúncios', 'https://ads.tiktok.com/'], ['TikTok Shop / vídeos', 'Pesquisar tendências de cães e gatos', 'https://www.tiktok.com/search?q=produtos%20para%20c%C3%A3es']] },
+  google: { nome: 'Google', icone: '🔍', dica: 'O Google Shopping precisa do Merchant Center aprovado. Depois que as vendas começarem, ele costuma trazer clientes com mais intenção de compra.',
+    atalhos: [['Google Trends (Portugal)', 'Veja se o interesse sobe ou desce', 'https://trends.google.com/trends/explore?geo=PT&q=coleira%20para%20c%C3%A3es'], ['Merchant Center', 'Catálogo e aprovação de produtos', 'https://merchants.google.com/'],
+      ['Google Ads', 'Sua conta de anúncios', 'https://ads.google.com/'], ['Planeador de palavras-chave', 'Quanto se procura por mês', 'https://ads.google.com/home/tools/keyword-planner/']] },
+};
+for (const k of Object.keys(PLAT)) {
+  TELAS[k] = () => {
+    const P = PLAT[k], l = D.camp.filter((c) => c.plataforma === k).sort((a, b) => b.data.localeCompare(a.data));
+    const g = l.reduce((s, c) => s + num(c.gasto), 0), v = l.reduce((s, c) => s + num(c.vendas), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
+    const aprov = D.meus.filter((m) => m.status !== 'Descartado' && m.precoVenda && m.custo);
+    const media = aprov.length ? aprov.reduce((s, m) => s + lucro({ preco: m.precoVenda, custo: m.custo, frete: m.frete }).antes, 0) / aprov.length : 0;
+    const cpa = v ? g / v : 0;
+    return `<h2>${P.icone} ${P.nome}</h2><p class="sub">${esc(P.dica)}</p>
+    <div class="grade g4"><div class="kpi"><small>Gasto</small><b>${eur(g)}</b></div><div class="kpi r"><small>Vendas</small><b>${v}</b></div><div class="kpi"><small>Receita</small><b>${eur(r)}</b></div><div class="kpi v"><small>ROAS</small><b>${g > 0 ? (r / g).toFixed(2) + '×' : '—'}</b></div></div>
+    ${v && media ? `<div class="veredito ${cpa <= media ? 'v' : 'x'}" style="margin-top:14px">${cpa <= media ? '✅' : '⚠️'} Cada venda custa ${eur(cpa)} em anúncio; o lucro médio dos seus produtos antes de anúncios é ${eur(media)}.</div>` : ''}
+    <div class="card" style="margin-top:16px"><h3>Pesquisar e abrir</h3><div class="atalhos">${P.atalhos.map(([t, s, u]) => `<a class="atalho" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}<small>${esc(s)}</small></a>`).join('')}</div></div>
+    <div class="card"><h3>Registrar resultados</h3><div class="linha"><div><label>Dia</label><input type="date" id="p-data" value="${new Date().toISOString().slice(0, 10)}"></div>
+      <div><label>Gasto (€)</label><input id="p-gasto" inputmode="decimal"></div><div><label>Vendas</label><input id="p-vendas" inputmode="numeric"></div><div><label>Receita (€)</label><input id="p-receita" inputmode="decimal"></div>
+      <div style="flex:2 1 200px"><label>Nota (produto, vídeo…)</label><input id="p-nota"></div><button class="btn fixo" id="p-add">Registrar</button></div>
+      <div class="tabela" style="margin-top:10px"><table><tr><th>Dia</th><th class="n">Gasto</th><th class="n">Vendas</th><th class="n">Receita</th><th>Nota</th><th></th></tr>
+      ${l.map((c) => `<tr><td>${esc(c.data)}</td><td class="n">${eur(num(c.gasto))}</td><td class="n">${num(c.vendas)}</td><td class="n">${eur(num(c.receita))}</td><td>${esc(c.nota)}</td><td><button class="btn peq verm" data-rm="${c.id}">×</button></td></tr>`).join('') || '<tr><td colspan="6" class="nota">Nada registrado ainda.</td></tr>'}</table></div>
+      <p class="nota">Por enquanto você digita os números do painel de cada plataforma. A leitura automática dessas contas fica para a próxima versão.</p></div>`;
+  };
+  LIGAR[k] = () => {
+    $('#p-add').addEventListener('click', () => {
+      if (!$('#p-gasto').value && !$('#p-vendas').value) return;
+      D.camp.push({ id: novoId(), plataforma: k, data: $('#p-data').value, gasto: num($('#p-gasto').value), vendas: num($('#p-vendas').value), receita: num($('#p-receita').value), nota: $('#p-nota').value.slice(0, 120) });
+      salvar(); refazer();
+    });
+    document.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', () => { D.camp = D.camp.filter((c) => c.id !== b.dataset.rm); salvar(); refazer(); }));
+  };
+}
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/leunapets-radar/sw.js').catch(() => {});
+iniciar();
+</script>
+</body>
+</html>
