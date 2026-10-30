@@ -148,7 +148,7 @@ export async function detalharCj(env, pid) {
   try { const x = typeof d.productImage === 'string' ? JSON.parse(d.productImage) : d.productImage; if (Array.isArray(x)) fotos = x; } catch {}
   if (d.bigImage) fotos.unshift(d.bigImage);
   fotos = [...new Set(fotos.filter((u) => typeof u === 'string' && /^https:\/\//.test(u)))].slice(0, 8);
-  return { pid: String(d.pid || pid), nome: String(d.productNameEn || '').slice(0, 160), fotos, pesoG: Number(d.productWeight) || null };
+  return { pid: String(d.pid || pid), nome: String(d.productNameEn || '').slice(0, 160), fotos, pesoG: Number(d.productWeight) || null, variantes: normalizarVariantes(d).sort((a, b) => a.precoUsd - b.precoUsd) };
 }
 
 const semHtml = (h) => String(h || '').replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/gi, ' ').replace(/<img[^>]*>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();

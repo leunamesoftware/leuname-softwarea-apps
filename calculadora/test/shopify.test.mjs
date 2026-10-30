@@ -149,3 +149,19 @@ test('foto: só baixa de hosts da CJ e da Shopify; enviar usa só as fotos escol
     assert.equal(r2.fotos, 0); assert.deepEqual(media, []);
   } finally { globalThis.fetch = original; }
 });
+
+import { nomeOpcao, planoVariantes } from '../src/shopify.js';
+test('variantes: nome limpo, cor em português, preço sobe com o custo e respeita o teto', () => {
+  assert.equal(nomeOpcao('Cat playing bed Pink', 'Cat playing bed'), 'Rosa');
+  assert.equal(nomeOpcao('Pudding Cat Bed M', 'Pudding Cat Bed'), 'M');
+  assert.equal(nomeOpcao('Blue', 'Smart Pet Water Fountain'), 'Azul');
+  const vs = [{ vid: 'a', nome: 'Pudding Cat Bed S', precoUsd: 3.4 }, { vid: 'b', nome: 'Pudding Cat Bed M', precoUsd: 4.25 }, { vid: 'c', nome: 'Pudding Cat Bed L', precoUsd: 5.5, foto: 'https://x/y.jpg' }];
+  const p = planoVariantes(vs, 'Pudding Cat Bed', 23.9, 0.9);
+  assert.deepEqual(p.map((x) => x.nome), ['S', 'M', 'L']);
+  assert.equal(p[0].preco, '23.90');
+  assert.ok(Number(p[2].preco) > Number(p[1].preco) && Number(p[1].preco) > 23.9);
+  assert.equal(planoVariantes(vs, 'Pudding Cat Bed', 44.9, 0.9)[2].preco, '44.90');
+  assert.deepEqual(planoVariantes([vs[0]], 'x', 10, 0.9), []);
+  const iguais = planoVariantes([{ vid: '1', nome: 'EVA bag', precoUsd: 5 }, { vid: '2', nome: 'EVA bag', precoUsd: 5 }], 'Outro', 10, 0.9);
+  assert.equal(iguais.length, 2); assert.notEqual(iguais[0].nome, iguais[1].nome);
+});

@@ -1,7 +1,7 @@
 // Ligação do app LeunaPets com a loja Shopify (só o dono).
 // Envia o produto escolhido como RASCUNHO (não aparece para os clientes) e lista o que já está na loja.
 // A chave fica na tabela shopify_config (D1) e nunca volta para o navegador.
-import { detalharCj } from './cj.js';
+import { detalharCj, cambioUsdEur } from './cj.js';
 
 const VERSAO = '2025-07';
 const COLECOES = { 'Cães': ['Cães', 'Caes', 'Cães e Gatos'], 'Gatos': ['Gatos'] };
@@ -159,6 +159,105 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
     } else avisos.push('colecao');
   }
   return { ok: true, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(prodId)}`, fotos: escolhidas.length, avisos };
+}
+
+
+// ---- Cores e tamanhos (variantes) ----
+const CORES = { pink: 'Rosa', red: 'Vermelho', green: 'Verde', blue: 'Azul', 'light blue': 'Azul claro', grey: 'Cinzento', gray: 'Cinzento', black: 'Preto', white: 'Branco',
+  brown: 'Castanho', coffee: 'Café', beige: 'Bege', yellow: 'Amarelo', purple: 'Roxo', orange: 'Laranja', khaki: 'Caqui', cream: 'Creme', camel: 'Camelo', apricot: 'Alperce',
+  navy: 'Azul-marinho', rose: 'Rosa', silver: 'Prateado', gold: 'Dourado', 'dark grey': 'Cinzento escuro', 'light grey': 'Cinzento claro' };
+
+/** Tira o nome do produto da frente do nome da variante da CJ e põe as cores em português. */
+export function nomeOpcao(nomeVar, nomeProd) {
+  let n = String(nomeVar || '').trim();
+  const base = String(nomeProd || '').trim();
+  if (base && n.toLowerCase().startsWith(base.toLowerCase())) n = n.slice(base.length);
+  else if (base) { // a CJ às vezes corta o nome: tira o maior começo em comum
+    let i = 0; const a = n.toLowerCase(), b = base.toLowerCase();
+    while (i < a.length && i < b.length && a[i] === b[i]) i++;
+    if (i >= 15) n = n.slice(i);
+  }
+  n = n.replace(/^[\s\-–:,.]+|[\s\-–:,.]+$/g, '').replace(/\s+/g, ' ');
+  if (!n || n.length < 1) return '';
+  n = n.replace(/\b(light blue|dark grey|light grey|[a-z]+)\b/gi, (w) => CORES[w.toLowerCase()] || w);
+  return n.slice(0, 60);
+}
+
+/**
+ * Plano das variantes: nome único, preço (o do produto + a diferença de custo ×2,5, no máximo 44,90) e foto da CJ.
+ * `base` = preço do produto (variante mais barata). Devolve [] se não houver o que escolher.
+ */
+export function planoVariantes(variantes, nomeProd, base, cambio, teto = 44.9) {
+  const lista = (variantes || []).filter((v) => v && v.vid && Number.isFinite(v.precoUsd)).slice(0, 30);
+  if (lista.length < 2) return [];
+  const minimo = Math.min(...lista.map((v) => v.precoUsd));
+  const usados = new Map(); const plano = [];
+  for (const v of lista) {
+    let nome = nomeOpcao(v.nome, nomeProd) || 'Padrão';
+    const k = nome.toLowerCase(); const n = (usados.get(k) || 0) + 1; usados.set(k, n);
+    if (n > 1) nome = `${nome} (${n})`;
+    const extra = cambio ? Math.max(0, (v.precoUsd - minimo) * cambio * 2.5) : 0;
+    const preco = Math.min(teto, Math.round((base + Math.ceil(extra)) * 100) / 100);
+    plano.push({ vid: v.vid, nome, preco: Math.max(preco, base).toFixed(2), foto: v.foto || null });
+  }
+  if (new Set(plano.map((x) => x.nome.toLowerCase())).size < 2) return [];
+  return plano;
+}
+
+const baseFoto = (u) => String(u || '').split('?')[0].split('/').pop().toLowerCase().replace(/_\d+x\d*(?=\.)/, '').replace(/\.[a-z0-9]+$/, '');
+
+/**
+ * Cria as opções (cor/tamanho) num produto que só tem 1 variante e põe a foto de cada cor.
+ * Pode ser chamado de novo: se o produto já tem opções, só tenta pôr as fotos que faltam.
+ */
+export async function ativarVariantes(env, { pid }) {
+  const tag = `cj-${String(pid || '').trim()}`;
+  if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title media(first: 40) { nodes { ... on MediaImage { id image { url } } } }
+    variants(first: 60) { nodes { id title price selectedOptions { name value } media(first: 1) { nodes { id } } } } } } }`, { q: `tag:'${tag}'` });
+  if (q.erro) return q;
+  const prod = q.dados?.products?.nodes?.[0];
+  if (!prod) return { erro: 'nao_achei', status: 404 };
+  const vs = prod.variants?.nodes || [];
+  const det = await detalharCj(env, pid);
+  if (det.erro) return det;
+  const cambio = await cambioUsdEur();
+  const base = Number(vs[0]?.price) || 0;
+  let criadas = 0, avisos = [];
+  if (vs.length === 1) {
+    const plano = planoVariantes(det.variantes, det.nome, base, cambio);
+    if (!plano.length) return { ok: true, criadas: 0, fotos: 0, sem_opcoes: true, avisos };
+    const o = await consultar(env, `mutation($id: ID!, $opts: [OptionCreateInput!]!) { productOptionsCreate(productId: $id, options: $opts) { userErrors { message } product { variants(first: 5) { nodes { id } } } } }`,
+      { id: prod.id, opts: [{ name: 'Opção', values: [{ name: plano[0].nome }] }] });
+    const oe = o.dados?.productOptionsCreate;
+    if (o.erro || oe?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(oe?.userErrors || o).slice(0, 300) };
+    const resto = plano.slice(1).map((x) => ({ optionValues: [{ optionName: 'Opção', name: x.nome }], price: x.preco, inventoryItem: { tracked: false, requiresShipping: true } }));
+    const b = await consultar(env, `mutation($id: ID!, $v: [ProductVariantsBulkInput!]!) { productVariantsBulkCreate(productId: $id, variants: $v, strategy: DEFAULT) { userErrors { message } } }`, { id: prod.id, v: resto });
+    const be = b.dados?.productVariantsBulkCreate;
+    if (b.erro || be?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(be?.userErrors || b).slice(0, 300) };
+    criadas = plano.length;
+    avisos.push('opcoes_criadas');
+    // O preço da primeira não muda; confere o que ficou.
+  }
+  // Fotos: acha a foto de cada cor entre as fotos que o produto já tem (pelo nome do arquivo).
+  const r2 = await consultar(env, `query($id: ID!) { product(id: $id) { media(first: 40) { nodes { ... on MediaImage { id image { url } } } }
+    variants(first: 60) { nodes { id title media(first: 1) { nodes { id } } } } } }`, { id: prod.id });
+  const midias = (r2.dados?.product?.media?.nodes || []).filter((m) => m?.id && m.image?.url).map((m) => ({ id: m.id, b: baseFoto(m.image.url) }));
+  const variantesNow = r2.dados?.product?.variants?.nodes || [];
+  const plano2 = planoVariantes(det.variantes, det.nome, base || 1, null);
+  const porNome = new Map(plano2.map((x) => [x.nome.toLowerCase(), x]));
+  let fotos = 0, semFoto = 0;
+  for (const v of variantesNow) {
+    if (v.media?.nodes?.length) continue;
+    const x = porNome.get(String(v.title).toLowerCase());
+    const alvo = x?.foto ? baseFoto(x.foto) : '';
+    const m = alvo && midias.find((mm) => mm.b && (mm.b === alvo || mm.b.includes(alvo) || alvo.includes(mm.b)));
+    if (!m) { semFoto++; continue; }
+    const a = await consultar(env, `mutation($pid: ID!, $v: [ProductVariantAppendMediaInput!]!) { productVariantAppendMedia(productId: $pid, variantMedia: $v) { userErrors { message } } }`,
+      { pid: prod.id, v: [{ variantId: v.id, mediaIds: [m.id] }] });
+    if (a.erro || a.dados?.productVariantAppendMedia?.userErrors?.length) semFoto++; else fotos++;
+  }
+  return { ok: true, criadas, fotos, semFoto, avisos, titulo: prod.title };
 }
 
 /** Todas as fotos dos produtos da loja (até 50 produtos, 30 fotos cada), para a galeria do app. */
