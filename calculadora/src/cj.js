@@ -86,7 +86,7 @@ export async function cambioUsdEur() {
 }
 
 /** Produtos adultos/impróprios que a CJ mistura nas buscas de "dog" (nunca entram no app nem na loja). */
-const IMPROPRIO = /\b(penis|sheath|dildo|vibrat\w*|sex\w*|erotic\w*|adult|bdsm|fetish|anal|butt\s*plug|cock\w*|masturbat\w*|condom|lingerie|stimulat\w*|vagina\w*|nipple|bondage|thong|g-?spot|prostate|latex\s*mask|cosplay\s*porn)\b|for men with|realistic dog hanging/i;
+const IMPROPRIO = /\b(penis|sheath|dildo|vibrat\w*|sex\w*|erotic\w*|adult|bdsm|fetish|anal|butt\s*plug|cock\w*|masturbat\w*|condom|lingerie|stimulat\w*|vagina\w*|nipple|bondage|thong|g-?spot|prostate|latex\s*mask|cosplay\s*porn)\b|for men with|realistic dog hanging|dog\s*knot|knotting|animal\s*house\s*(toy|silicone|sex)/i;
 export const improprio = (nome) => IMPROPRIO.test(String(nome || ''));
 
 export function normalizarBusca(dados) {

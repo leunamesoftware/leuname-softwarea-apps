@@ -525,17 +525,17 @@ async function cjRanquear() {
 
 // Sugestões clicáveis: o nome em português, as palavras que as lojas usam (PT/ES/EN) e a busca em inglês para a CJ.
 var SUGESTOES = [
-  { e: '🦮', pt: 'coleira', ws: ['coleira', 'collar', 'gola', 'colar', 'collares'], cj: 'dog collar' },
-  { e: '🐕', pt: 'peitoral', ws: ['peitoral', 'arnés', 'arnes', 'harness'], cj: 'dog harness' },
-  { e: '➰', pt: 'trela', ws: ['trela', 'guia', 'correa', 'leash'], cj: 'dog leash' },
-  { e: '🧥', pt: 'casaco / roupa', ws: ['casaco', 'abrigo', 'camisola', 'roupa', 'ropa', 'coat', 'sweater', 'jersey', 'impermeável', 'impermeable'], cj: 'dog winter coat' },
-  { e: '🛏️', pt: 'cama', ws: ['cama', 'caminha', 'cuna', 'bed'], cj: 'pet bed' },
-  { e: '⛲', pt: 'fonte de água', ws: ['fonte', 'bebedouro', 'fuente', 'fountain'], cj: 'pet water fountain' },
-  { e: '🥣', pt: 'comedouro / tigela', ws: ['comedouro', 'tigela', 'comedero', 'bowl', 'feeder'], cj: 'pet feeder bowl' },
-  { e: '🧶', pt: 'brinquedo', ws: ['brinquedo', 'juguete', 'toy'], cj: 'dog toy' },
-  { e: '🐈', pt: 'arranhador', ws: ['arranhador', 'rascador', 'scratch'], cj: 'cat scratching post' },
-  { e: '🎒', pt: 'transporte / mochila', ws: ['transporte', 'mochila', 'transportín', 'carrier', 'bolsa', 'bolso', 'travel'], cj: 'pet travel bag' },
-  { e: '🧼', pt: 'higiene / escova', ws: ['escova', 'cepillo', 'brush', 'champô', 'champú', 'grooming', 'luva'], cj: 'pet grooming brush' },
+  { e: '🦮', pt: 'coleira', ws: ['coleira', 'collar', 'gola', 'colar', 'collares'], cj: 'dog collar', en: ['collar'] },
+  { e: '🐕', pt: 'peitoral', ws: ['peitoral', 'arnés', 'arnes', 'harness'], cj: 'dog harness', en: ['harness', 'vest'] },
+  { e: '➰', pt: 'trela', ws: ['trela', 'guia', 'correa', 'leash'], cj: 'dog leash', en: ['leash', 'lead', 'leads'] },
+  { e: '🧥', pt: 'casaco / roupa', ws: ['casaco', 'abrigo', 'camisola', 'roupa', 'ropa', 'coat', 'sweater', 'jersey', 'impermeável', 'impermeable'], cj: 'dog winter coat', en: ['coat', 'jacket', 'sweater', 'hoodie', 'clothes', 'clothing', 'vest', 'apparel', 'raincoat', 'pajamas', 'costume'] },
+  { e: '🛏️', pt: 'cama', ws: ['cama', 'caminha', 'cuna', 'bed'], cj: 'pet bed', en: ['bed', 'mat', 'sofa', 'nest', 'cushion', 'kennel', 'cave', 'blanket'] },
+  { e: '⛲', pt: 'fonte de água', ws: ['fonte', 'bebedouro', 'fuente', 'fountain'], cj: 'pet water fountain', en: ['fountain', 'dispenser', 'waterer'] },
+  { e: '🥣', pt: 'comedouro / tigela', ws: ['comedouro', 'tigela', 'comedero', 'bowl', 'feeder'], cj: 'pet feeder bowl', en: ['bowl', 'feeder', 'dish'] },
+  { e: '🧶', pt: 'brinquedo', ws: ['brinquedo', 'juguete', 'toy'], cj: 'dog toy', en: ['toy', 'ball', 'chew', 'rope', 'plush', 'squeak'] },
+  { e: '🐈', pt: 'arranhador', ws: ['arranhador', 'rascador', 'scratch'], cj: 'cat scratching post', en: ['scratch', 'post', 'tree', 'tower', 'board', 'pad'] },
+  { e: '🎒', pt: 'transporte / mochila', ws: ['transporte', 'mochila', 'transportín', 'carrier', 'bolsa', 'bolso', 'travel'], cj: 'pet travel bag', en: ['bag', 'carrier', 'backpack', 'cage', 'stroller'] },
+  { e: '🧼', pt: 'higiene / escova', ws: ['escova', 'cepillo', 'brush', 'champô', 'champú', 'grooming', 'luva'], cj: 'pet grooming brush', en: ['brush', 'comb', 'glove', 'shampoo', 'grooming', 'clipper', 'trimmer'] },
 ];
 const semAcento = (t) => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 function casaBusca(titulo, q) {
@@ -560,6 +560,13 @@ function achaNaCj(p) {
   ir('fornecedor');
   setTimeout(() => { const q = $('#cj-q'); if (q) { q.value = cjBusca.q; cjBuscar().then(() => { if (cjBusca.produtos.length) cjRanquear(); }); } }, 500);
 }
+
+/** O resultado da CJ tem que ser do tipo pedido (peitoral = harness…). Se a busca for livre, usa a última palavra. */
+function relevante(nome, q) {
+  const toks = semAcento(nome).split(/[^a-z0-9]+/).filter(Boolean), sug = SUGESTOES.find((x) => x.cj === q);
+  const alvo = sug?.en || [semAcento(q).split(/\s+/).filter(Boolean).pop()].filter((w) => w && w.length >= 3);
+  return !alvo.length || alvo.some((w) => toks.some((t) => t.startsWith(w)));
+}
 const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'dog collar', 'dog raincoat', 'pet travel bag', 'pet feeder bowl', 'dog winter coat', 'dog sweater'];
 /** Analisa um produto da CJ e devolve a linha do ranking (ou null se não tem frete para Portugal). */
 async function cjAnalisarItem(p, c) {
@@ -582,7 +589,7 @@ async function cjMulti() {
     const b = await api('cj/buscar', { q }).catch(() => null);
     if (b?.ok && b.j.cambio) {
       cjBusca.cambio = b.j.cambio; const bons = [];
-      for (const p of b.j.produtos.slice(0, 12)) {
+      for (const p of b.j.produtos.filter((x) => relevante(x.nome, q)).slice(0, 12)) {
         if (cjRank.parar) break;
         if (D.enviados[p.pid] || cjRank.itens.some((x) => x.pid === p.pid)) continue;
         const it = await cjAnalisarItem(p, b.j.cambio);
@@ -632,7 +639,7 @@ async function cjBuscar() {
   cjOcupado = true; cjBusca.msg = ''; cjAnalise = null; cjDesenhar();
   const r = await api('cj/buscar', { q: cjBusca.q }).catch(() => null);
   cjOcupado = false;
-  if (r?.ok) { cjBusca.produtos = r.j.produtos; cjBusca.cambio = r.j.cambio; if (!r.j.produtos.length) cjBusca.msg = 'Nada encontrado. Tente outra palavra em inglês.'; }
+  if (r?.ok) { cjBusca.produtos = r.j.produtos.filter((x) => relevante(x.nome, cjBusca.q)); cjBusca.cambio = r.j.cambio; if (!cjBusca.produtos.length) cjBusca.msg = 'Nada encontrado. Tente outra palavra em inglês.'; }
   else cjBusca.msg = cjErros[r?.j?.erro] || 'Não deu para buscar agora.';
   cjDesenhar();
   if (cjBusca.produtos.length) api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjBusca.produtos.map((p) => ({ pid: p.pid, nome: p.nome, lojas: p.lojas, custo: p.precoUsd && cjBusca.cambio ? usd(p.precoUsd, cjBusca.cambio) : null, foto: p.foto })) }).catch(() => {});
