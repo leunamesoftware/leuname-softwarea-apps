@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS vigia_cj (pid TEXT PRIMARY KEY, titulo TEXT, motivo TEXT, em TEXT);

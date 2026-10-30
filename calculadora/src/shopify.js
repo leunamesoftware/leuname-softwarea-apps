@@ -1,7 +1,7 @@
 // Ligação do app LeunaPets com a loja Shopify (só o dono).
 // Envia o produto escolhido como RASCUNHO (não aparece para os clientes) e lista o que já está na loja.
 // A chave fica na tabela shopify_config (D1) e nunca volta para o navegador.
-import { detalharCj, cambioUsdEur, analisarCj, improprio } from './cj.js';
+import { detalharCj, cambioUsdEur, analisarCj, improprio, existeNaCj } from './cj.js';
 const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const VERSAO = '2025-07';
@@ -187,11 +187,11 @@ export function nomeOpcao(nomeVar, nomeProd) {
   return n.slice(0, 60);
 }
 
-const RE_TAM = /^(XXXL|XXL|XL|XS|S|M|L|[2-6]XL)$/i;
+const RE_TAM = /^(X{1,5}L|XS|S|M|L|[2-6]XL)$/i;
 /** Separa "Rosa XL" / "XL Rosa" em cor e tamanho. Sem tamanho reconhecido, tudo vira cor. */
 export function parseCorTam(nome) {
   const t = String(nome || '').trim().split(/[\s/,-]+/).filter(Boolean);
-  const norm = (x) => { const u = x.toUpperCase(); return /^2XL$/.test(u) ? 'XXL' : /^3XL$/.test(u) ? 'XXXL' : u; };
+  const norm = (x) => { const u = x.toUpperCase(); return { '2XL': 'XXL', '3XL': 'XXXL', XXXXL: '4XL', XXXXXL: '5XL', '6XL': '6XL' }[u] || u; };
   if (t.length >= 2 && RE_TAM.test(t[t.length - 1])) return { cor: t.slice(0, -1).join(' '), tam: norm(t[t.length - 1]) };
   if (t.length >= 2 && RE_TAM.test(t[0])) return { cor: t.slice(1).join(' '), tam: norm(t[0]) };
   if (t.length === 1 && RE_TAM.test(t[0])) return { cor: '', tam: norm(t[0]) };
@@ -593,4 +593,35 @@ export async function subirFotoProduto(env, { id, dados, tipo, principal }) {
   const novo = ce?.media?.[0]?.id;
   if (principal && novo) await fotoPrincipal(env, { id, mediaId: novo });
   return { ok: true };
+}
+
+
+// ---- Vigia da CJ: tira da loja o que a CJ não vende mais ----
+export async function vigiarCj(env) {
+  const q = await consultar(env, '{ products(first: 100, query: "status:active") { nodes { id title tags } } }');
+  if (q.erro) return q;
+  const resultado = { vistos: 0, tirados: [], incertos: 0 };
+  for (const p of q.dados?.products?.nodes || []) {
+    const pid = (p.tags || []).find((t) => t.startsWith('cj-'))?.slice(3);
+    if (!pid) continue;
+    resultado.vistos++;
+    const e = await existeNaCj(env, pid);
+    await espera(1100);
+    if (e.existe === null) { resultado.incertos++; continue; }
+    if (e.existe === false) {
+      const u = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: p.id, status: 'DRAFT' } });
+      if (!u.erro && !u.dados?.productUpdate?.userErrors?.length) {
+        resultado.tirados.push({ id: gidNum(p.id), titulo: p.title, motivo: e.motivo });
+        await env.DB.prepare('INSERT INTO vigia_cj (pid, titulo, motivo, em) VALUES (?, ?, ?, ?) ON CONFLICT(pid) DO UPDATE SET titulo=excluded.titulo, motivo=excluded.motivo, em=excluded.em')
+          .bind(String(pid), p.title, e.motivo || '', new Date().toISOString()).run();
+      }
+    }
+  }
+  await env.DB.prepare("INSERT INTO vigia_cj (pid, titulo, motivo, em) VALUES ('_ultima', ?, ?, ?) ON CONFLICT(pid) DO UPDATE SET titulo=excluded.titulo, motivo=excluded.motivo, em=excluded.em")
+    .bind(`${resultado.vistos} vistos`, `${resultado.tirados.length} tirados, ${resultado.incertos} sem resposta`, new Date().toISOString()).run();
+  return { ok: true, ...resultado };
+}
+export async function lerVigia(env) {
+  const r = await env.DB.prepare('SELECT pid, titulo, motivo, em FROM vigia_cj ORDER BY em DESC LIMIT 30').all();
+  return { itens: r.results || [] };
 }

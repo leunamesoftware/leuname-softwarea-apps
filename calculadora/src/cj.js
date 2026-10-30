@@ -175,3 +175,23 @@ export async function guardarDetalhes(env, pids) {
   }
   return { ok: true, guardados };
 }
+
+/** A CJ ainda vende este produto? { existe: true|false|null } (null = não deu para saber, nada deve ser mexido). */
+export async function existeNaCj(env, pid) {
+  if (!/^[A-Za-z0-9-]{6,60}$/.test(String(pid || ''))) return { existe: null };
+  let token = await tokenValido(env);
+  if (!token) return { existe: null };
+  const url = `${BASE}/product/query?pid=${encodeURIComponent(pid)}`;
+  let r = await chamar(url, { token });
+  if (r.j?.code === 1600001 || r.http === 401) { await espera(1100); token = await tokenValido(env, true); if (!token) return { existe: null }; r = await chamar(url, { token }); }
+  if (r.http === 429 || r.j?.code === 1600200) return { existe: null };
+  if (r.j?.code === 200) {
+    const d = r.j.data;
+    if (!d || (!d.pid && !d.productNameEn)) return { existe: false, motivo: 'sumiu' };
+    const vars = normalizarVariantes(d);
+    if (!vars.length) return { existe: false, motivo: 'sem_variantes' };
+    return { existe: true, variantes: vars.length };
+  }
+  if (/not\s*found|not\s*exist|off.?shelf|removed|invalid/i.test(String(r.j?.message || ''))) return { existe: false, motivo: 'nao_existe' };
+  return { existe: null };
+}

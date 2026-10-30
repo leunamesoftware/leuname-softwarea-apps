@@ -199,3 +199,9 @@ test('estruturaOpcoes escolhe Cor e Tamanho', () => {
   assert.equal(estruturaOpcoes(p(['S', 'M', 'L'])), 'tam');
   assert.equal(estruturaOpcoes(p(['Rosa XL', 'Rosa XL'])), null);
 });
+
+test('parseCorTam padroniza tamanhos grandes', () => {
+  assert.equal(parseCorTam('Azul XXXXL').tam, '4XL');
+  assert.equal(parseCorTam('Azul 4XL').tam, '4XL');
+  assert.equal(parseCorTam('Azul 3XL').tam, 'XXXL');
+});

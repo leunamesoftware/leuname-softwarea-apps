@@ -800,7 +800,7 @@ function lojaDesenhar() {
     <p class="nota"><a href="#" id="lj-trocar">Trocar a chave da loja</a></p></div>
   <div class="card" id="lj-lista"><h3>Produtos na loja <span class="selo n">${lojaLista.itens.length} no total</span> <span class="selo v">${lojaLista.itens.filter((p) => p.status === 'ACTIVE').length} publicados</span> <span class="selo a">${lojaLista.itens.filter((p) => p.status === 'DRAFT').length} rascunhos</span></h3>
     ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><button class="btn peq sec lj-ed" data-id="${esc(p.id)}" style="margin:0">✏️ Editar</button></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px"><button class="btn sec peq" id="lj-atualizar" style="width:100%;margin:0">↻ Atualizar</button><button class="btn peq" id="lj-variantes" style="width:100%;margin:0">🎨 Cores e tamanhos</button><button class="btn peq" id="lj-lucro" style="width:100%;margin:0">💶 Conferir lucro</button><button class="btn peq" id="lj-preparar" style="width:100%;margin:0">✨ Preparar rascunhos</button><button class="btn peq" id="lj-publicar" style="width:100%;margin:0">🚀 Publicar prontos</button></div><div id="lj-var-msg"></div></div>`;
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px"><button class="btn sec peq" id="lj-atualizar" style="width:100%;margin:0">↻ Atualizar</button><button class="btn peq" id="lj-variantes" style="width:100%;margin:0">🎨 Cores e tamanhos</button><button class="btn peq" id="lj-lucro" style="width:100%;margin:0">💶 Conferir lucro</button><button class="btn peq" id="lj-preparar" style="width:100%;margin:0">✨ Preparar rascunhos</button><button class="btn peq" id="lj-publicar" style="width:100%;margin:0">🚀 Publicar prontos</button><button class="btn peq sec" id="lj-vigiar" style="width:100%;margin:0">🔎 Vigiar CJ agora</button></div><div id="lj-var-msg"></div></div>`;
   el.querySelectorAll('.lj-ed').forEach((b) => b.addEventListener('click', () => lojaAbrirEdicao(b.dataset.id)));
   $('#lj-atalho-prod').addEventListener('click', (e) => { e.preventDefault(); $('#lj-lista').scrollIntoView({ behavior: 'smooth' }); });
   $('#lj-atualizar').addEventListener('click', lojaCarregarLista);
@@ -808,6 +808,12 @@ function lojaDesenhar() {
   $('#lj-lucro').addEventListener('click', lojaConferirLucro);
   $('#lj-preparar').addEventListener('click', () => lojaEmLote('preparar'));
   $('#lj-publicar').addEventListener('click', () => lojaEmLote('publicar-pronto'));
+  $('#lj-vigiar').addEventListener('click', async () => {
+    const b = $('#lj-vigiar'), m = $('#lj-var-msg'); b.disabled = true; m.innerHTML = '<div class="aviso" style="margin:8px 0">Conferindo com a CJ… pode levar 1 minuto. <b>Não saia desta tela.</b></div>';
+    const r = await api('shopify/vigiar', {}).catch(() => null); b.disabled = false;
+    m.innerHTML = r?.ok ? `<div class="aviso" style="margin:8px 0">✅ ${r.j.vistos} produtos vistos. ${r.j.tirados.length ? '<b>Tirei da loja (a CJ não vende mais): ' + r.j.tirados.map((x) => esc(x.titulo)).join(', ') + '</b>' : 'Todos continuam na CJ.'}${r.j.incertos ? ` (${r.j.incertos} a CJ não respondeu; não mexi)` : ''}</div>` : '<div class="erro" style="margin:8px 0">Não deu agora. Tente de novo.</div>';
+    if (r?.ok && r.j.tirados.length) lojaCarregarLista();
+  });
   $('#lj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('shopify/remover', {}).catch(() => {}); lojaEstado = { ligada: false }; lojaLista = { carregando: false, itens: [], msg: '' }; lojaDesenhar(); } });
 }
 

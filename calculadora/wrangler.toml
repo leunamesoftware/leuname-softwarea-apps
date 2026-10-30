@@ -11,6 +11,10 @@ routes = [
   { pattern = "calculadora.leunamesoftware.com.br", custom_domain = true },
 ]
 
+# Vigia diário da CJ (6h de Brasília): tira da loja o que a CJ não vende mais.
+[triggers]
+crons = ["0 9 * * *"]
+
 [assets]
 directory = "public"
 binding = "ASSETS"
