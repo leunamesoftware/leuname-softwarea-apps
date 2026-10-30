@@ -155,3 +155,41 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo }) {
   } else avisos.push('colecao');
   return { ok: true, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(prodId)}`, fotos: det.fotos.length, avisos };
 }
+
+/** Todas as fotos dos produtos da loja (até 50 produtos, 30 fotos cada), para a galeria do app. */
+export async function listarFotos(env) {
+  const r = await consultar(env, '{ products(first: 50, sortKey: UPDATED_AT, reverse: true) { nodes { id title status media(first: 30) { nodes { ... on MediaImage { id image { url } } } } } } }');
+  if (r.erro) return r;
+  const fotos = [];
+  for (const p of r.dados?.products?.nodes || []) {
+    for (const m of p.media?.nodes || []) {
+      if (m?.id && m.image?.url) fotos.push({ produto: p.id, titulo: p.title, status: p.status, media: m.id, url: m.image.url });
+    }
+  }
+  return { fotos };
+}
+
+const GID_PRODUTO = /^gid:\/\/shopify\/Product\/\d+$/;
+const GID_MEDIA = /^gid:\/\/shopify\/MediaImage\/\d+$/;
+
+/** Apaga fotos de produtos. itens = [{ produto, media }]. Devolve quantas foram apagadas e quantas falharam. */
+export async function apagarFotos(env, itens) {
+  if (!Array.isArray(itens) || !itens.length || itens.length > 200) return { erro: 'dados', status: 400 };
+  const porProduto = new Map();
+  for (const i of itens) {
+    if (!GID_PRODUTO.test(i?.produto) || !GID_MEDIA.test(i?.media)) return { erro: 'dados', status: 400 };
+    if (!porProduto.has(i.produto)) porProduto.set(i.produto, []);
+    porProduto.get(i.produto).push(i.media);
+  }
+  let apagadas = 0, falhas = 0;
+  for (const [produto, ids] of porProduto) {
+    for (let k = 0; k < ids.length; k += 20) {
+      const lote = ids.slice(k, k + 20);
+      const r = await consultar(env, 'mutation($p: ID!, $m: [ID!]!) { productDeleteMedia(productId: $p, mediaIds: $m) { deletedMediaIds mediaUserErrors { message } } }', { p: produto, m: lote });
+      if (r.erro) { if (r.erro === 'sem_permissao' || r.erro === 'shopify_recusou' || r.erro === 'sem_loja') return r; falhas += lote.length; continue; }
+      const feitas = r.dados?.productDeleteMedia?.deletedMediaIds?.length || 0;
+      apagadas += feitas; falhas += lote.length - feitas;
+    }
+  }
+  return { ok: true, apagadas, falhas };
+}

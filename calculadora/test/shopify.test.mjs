@@ -100,3 +100,25 @@ test('listar produtos e erro de permissão', async () => {
     assert.equal((await listarProdutos(env)).erro, 'sem_permissao');
   } finally { globalThis.fetch = original; }
 });
+
+test('fotos: lista de todos os produtos e apaga em lote só ids válidos', async () => {
+  const { listarFotos, apagarFotos } = await import('../src/shopify.js');
+  const original = globalThis.fetch; const env = banco(); const apagados = [];
+  globalThis.fetch = async (u, o) => {
+    const { query, variables } = JSON.parse(o.body);
+    if (query.includes('shop {')) return res({ data: { shop: { name: 'L' } } });
+    if (query.includes('media(first: 30)')) return res({ data: { products: { nodes: [{ id: 'gid://shopify/Product/1', title: 'Cama', status: 'DRAFT', media: { nodes: [{ id: 'gid://shopify/MediaImage/10', image: { url: 'https://cdn/a.jpg' } }, {}] } }] } } });
+    if (query.includes('productDeleteMedia')) { apagados.push(...variables.m); return res({ data: { productDeleteMedia: { deletedMediaIds: variables.m, mediaUserErrors: [] } } }); }
+    throw new Error('inesperada');
+  };
+  try {
+    await guardarLoja(env, { loja: 'bfstxp-0s.myshopify.com', token: 'shpat_0123456789abcdef0123' });
+    const f = await listarFotos(env);
+    assert.deepEqual(f.fotos, [{ produto: 'gid://shopify/Product/1', titulo: 'Cama', status: 'DRAFT', media: 'gid://shopify/MediaImage/10', url: 'https://cdn/a.jpg' }]);
+    const r = await apagarFotos(env, [{ produto: 'gid://shopify/Product/1', media: 'gid://shopify/MediaImage/10' }, { produto: 'gid://shopify/Product/1', media: 'gid://shopify/MediaImage/11' }]);
+    assert.deepEqual(r, { ok: true, apagadas: 2, falhas: 0 });
+    assert.deepEqual(apagados, ['gid://shopify/MediaImage/10', 'gid://shopify/MediaImage/11']);
+    assert.equal((await apagarFotos(env, [{ produto: 'x', media: 'y' }])).erro, 'dados');
+    assert.equal((await apagarFotos(env, [])).erro, 'dados');
+  } finally { globalThis.fetch = original; }
+});
