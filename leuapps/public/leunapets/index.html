@@ -157,7 +157,7 @@ const arred = (x) => Math.round(x * 100) / 100;
 
 // ---------- dados (ficam neste navegador; dá para exportar e importar) ----------
 const CHAVE = 'leunapets_app_v1';
-const VAZIO = () => ({ lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25, multiplo: 2.5, teto: 45 } });
+const VAZIO = () => ({ enviados: {}, lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25, multiplo: 2.5, teto: 45 } });
 let D = VAZIO();
 try { const g = JSON.parse(localStorage.getItem(CHAVE) || 'null'); if (g && typeof g === 'object') D = { ...VAZIO(), ...g, cfg: { ...VAZIO().cfg, ...(g.cfg || {}) } }; } catch {}
 const salvar = () => { try { localStorage.setItem(CHAVE, JSON.stringify(D)); } catch {} };
@@ -501,6 +501,7 @@ async function cjRanquear() {
     cjRankDesenhar();
   }
   cjRank.rodando = false; cjRank.parar = false; cjDesenhar();
+  lojaMarcarEnviados();
 }
 function cjRankDesenhar() {
   const el = $('#cj-rank'); if (!el) return;
@@ -514,7 +515,7 @@ function cjRankDesenhar() {
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
     ${R.itens.map((it, i) => `<tr><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}</span></div></td>
       <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
-      <td><span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small></td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> <button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button></td></tr>`).join('')}</table></div>
+      <td><span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small></td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> ${D.enviados[it.pid] ? `<a class="btn peq sec" href="${esc(D.enviados[it.pid])}" target="_blank" rel="noopener" title="Já está na loja. Abrir para editar">✅ Enviado</a>` : `<button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button>`}</td></tr>`).join('')}</table></div>
     <p class="nota">* Lucro por venda antes dos anúncios, já descontando IVA, taxa IOSS e pagamento. Os anúncios custam à parte.</p></div>`;
   document.querySelectorAll('[data-rank-enviar]').forEach((b) => b.addEventListener('click', () => enviarParaLoja(R.itens.find((x) => x.pid === b.dataset.rankEnviar))));
   document.querySelectorAll('[data-rank-calc]').forEach((b) => b.addEventListener('click', () => {
@@ -564,6 +565,15 @@ LIGAR.fornecedor = async () => {
   cjDesenhar();
 };
 
+
+// Marca como enviados os produtos que já estão na loja (pela etiqueta cj-<id> que o app põe ao enviar).
+async function lojaMarcarEnviados() {
+  const r = await api('shopify/listar', {}).catch(() => null);
+  if (!r?.ok) return;
+  let mudou = false;
+  for (const p of r.j.produtos) if (p.cj && !D.enviados[p.cj]) { D.enviados[p.cj] = p.admin; mudou = true; }
+  if (mudou) { salvar(); if (vista === 'fornecedor') cjRankDesenhar(); }
+}
 
 // ----- Minha loja (Shopify) -----
 let lojaEstado = null, lojaLista = { carregando: false, itens: [], msg: '' }, lojaMsg = '', lojaOcupado = false, lojaModoSegredo = false;
@@ -649,11 +659,12 @@ async function enviarParaLoja(it) {
       dlg.innerHTML = `<h3 style="margin:0 0 8px">✅ Enviado como rascunho</h3><p>${r.j.fotos} foto(s) enviada(s).${av.includes('preco') ? ' <b>Atenção:</b> confira o preço na Shopify.' : ''}${av.includes('colecao') ? ' Não achei a coleção, coloque na mão.' : ''}</p>
         <div class="linha"><a class="btn fixo" href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir na loja ↗</a><button class="btn sec fixo" id="en-fim">Fechar</button></div>`;
       $('#en-fim').addEventListener('click', () => dlg.close());
+      D.enviados[it.pid] = r.j.admin; salvar(); if (vista === 'fornecedor') cjRankDesenhar();
       if (!D.meus.some((m) => m.pid === it.pid)) { D.meus.push({ id: novoId(), pid: it.pid, titulo: it.nome, foto: it.foto || '', precoVenda: String(it.preco), custo: String(it.custo), frete: String(it.frete), status: 'Na loja', nota: 'Rascunho enviado à Shopify', link: '', loja: 'CJ', cjLink: '' }); salvar(); }
       return;
     }
     b.disabled = false; b.textContent = 'Enviar';
-    if (r?.j?.erro === 'ja_enviado') $('#en-erro').innerHTML = `Este produto já está na loja. <a href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir ↗</a>`;
+    if (r?.j?.erro === 'ja_enviado') { D.enviados[it.pid] = r.j.admin; salvar(); cjRankDesenhar(); $('#en-erro').innerHTML = `Este produto já está na loja. <a href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir ↗</a>`; }
     else $('#en-erro').textContent = lojaErros[r?.j?.erro] || 'Não deu para enviar agora.';
   });
 }
