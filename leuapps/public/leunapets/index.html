@@ -156,7 +156,7 @@ const arred = (x) => Math.round(x * 100) / 100;
 
 // ---------- dados (ficam neste navegador; dá para exportar e importar) ----------
 const CHAVE = 'leunapets_app_v1';
-const VAZIO = () => ({ lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25, multiplo: 2.5 } });
+const VAZIO = () => ({ lojas: [], cache: [], meus: [], camp: [], feito: {}, cfg: { iva: 23, ioss: 3, stripe: 1.5, stripeFixo: 0.25, multiplo: 2.5, teto: 45 } });
 let D = VAZIO();
 try { const g = JSON.parse(localStorage.getItem(CHAVE) || 'null'); if (g && typeof g === 'object') D = { ...VAZIO(), ...g, cfg: { ...VAZIO().cfg, ...(g.cfg || {}) } }; } catch {}
 const salvar = () => { try { localStorage.setItem(CHAVE, JSON.stringify(D)); } catch {} };
@@ -472,10 +472,10 @@ const PRAZO_LOJA = 18; // a loja promete entrega em 8 a 18 dias úteis
 function pontuar(it) {
   const f = fatorLojas(it.lojas), prazo = it.prazo && it.prazo > 20 ? 0.85 : 1;
   it.score = arred(Math.min(it.lucroAntes, 30) * f * prazo);
-  it.veredito = it.lucroAntes < 6 || (it.lojas > 1000 && it.lucroAntes < 12) ? 'x' : it.lucroAntes >= 10 && f >= 0.9 ? 'v' : 'a';
-  it.motivo = it.lucroAntes < 6 ? 'lucro baixo' : it.veredito === 'x' ? 'concorrência enorme e lucro médio' : it.lojas < 10 ? 'poucas lojas: sem prova de venda' : it.lojas > 1000 ? 'concorrência enorme' : it.lojas > 300 ? 'muita concorrência' : f >= 0.9 && it.lucroAntes >= 10 ? 'bom lucro e concorrência saudável' : 'lucro médio';
+  it.veredito = it.lucroAntes < 6 || (it.lojas > 1000 && it.lucroAntes < 12) ? 'x' : it.lucroAntes >= 10 && f >= 0.9 && it.margem >= 28 ? 'v' : 'a';
+  it.motivo = it.lucroAntes < 6 ? 'lucro baixo' : it.veredito === 'x' ? 'concorrência enorme e lucro médio' : it.lojas < 10 ? 'poucas lojas: sem prova de venda' : it.lojas > 1000 ? 'concorrência enorme' : it.lojas > 300 ? 'muita concorrência' : f >= 0.9 && it.lucroAntes >= 10 && it.margem >= 28 ? 'bom lucro e concorrência saudável' : it.margem < 28 ? 'margem apertada no preço realista' : 'lucro médio';
   if (it.prazo && it.prazo > PRAZO_LOJA) { it.veredito = 'x'; it.motivo = `entrega em até ${it.prazo} dias: passa da promessa da loja (${PRAZO_LOJA})`; }
-  else if (it.preco > 80) { it.veredito = 'x'; it.motivo = 'preço de venda alto demais para começar'; }
+  else if (it.precoBruto > 80) { it.veredito = 'x'; it.motivo = 'preço de venda alto demais para começar'; }
   if (it.veredito === 'x') it.score = arred(it.score / 4);
   return it;
 }
@@ -492,9 +492,9 @@ async function cjRanquear() {
     const a = r?.ok ? r.j : null, v = a?.variantes?.[0], o = (a?.envio || []).find((e) => prazoMax(e.prazo) && prazoMax(e.prazo) <= PRAZO_LOJA) || a?.envio?.[0];
     if (!v || !o) cjRank.falhas++;
     else {
-      const custo = arred(v.precoUsd * c), frete = arred(o.precoUsd * c), P = Math.ceil((custo + frete) * D.cfg.multiplo) - 0.1;
+      const custo = arred(v.precoUsd * c), frete = arred(o.precoUsd * c), bruto = Math.ceil((custo + frete) * D.cfg.multiplo) - 0.1, P = Math.min(bruto, D.cfg.teto - 0.1);
       const l = lucro({ preco: P, custo, frete });
-      cjRank.itens.push(pontuar({ pid: p.pid, nome: a.nome || p.nome, foto: a.foto || p.foto, lojas: p.lojas, custo, frete, envio: o.nome, prazo: prazoMax(o.prazo), pesoG: a.pesoG, preco: arred(P), lucroAntes: l.antes, margem: arred(l.antes / P * 100) }));
+      cjRank.itens.push(pontuar({ pid: p.pid, nome: a.nome || p.nome, foto: a.foto || p.foto, lojas: p.lojas, custo, frete, envio: o.nome, prazo: prazoMax(o.prazo), pesoG: a.pesoG, preco: arred(P), precoBruto: arred(bruto), limitado: bruto > P, lucroAntes: l.antes, margem: arred(l.antes / P * 100) }));
       cjRank.itens.sort((x, y) => y.score - x.score);
     }
     cjRankDesenhar();
@@ -509,10 +509,10 @@ function cjRankDesenhar() {
   el.innerHTML = `<div class="card"><h3>🤖 Ranking dos melhores para nós</h3>
     ${R.msg ? `<div class="erro">${esc(R.msg)}</div>` : ''}
     ${R.rodando ? `<p class="nota">Analisando ${R.feito} de ${R.total}… (a CJ aceita 1 pedido por segundo, leva uns 2 minutos)</p><div class="barra"><i style="width:${R.feito / R.total * 100}%"></i></div>` : R.total ? `<p class="nota">${R.itens.length} analisados${R.falhas ? `, ${R.falhas} sem preço de frete para Portugal (ignorados)` : ''}.</p>` : ''}
-    <div class="aviso">O preço de venda é uma <b>sugestão</b>: custo + frete × ${D.cfg.multiplo}. Antes de decidir, <b>confira o preço que as lojas concorrentes cobram</b>. O robô ordena por lucro e concorrência, mas não adivinha se o produto vai vender.</div>
+    <div class="aviso">O preço de venda é uma <b>sugestão</b>: custo + frete × ${D.cfg.multiplo}, limitada a ${eur(D.cfg.teto - 0.1)}. Antes de decidir, <b>confira o preço que as lojas concorrentes cobram</b>. O robô ordena por lucro e concorrência, mas não adivinha se o produto vai vender.</div>
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
     ${R.itens.map((it, i) => `<tr><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}</span></div></td>
-      <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
+      <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
       <td><span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small></td><td><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button></td></tr>`).join('')}</table></div>
     <p class="nota">* Lucro por venda antes dos anúncios, já descontando IVA, taxa IOSS e pagamento. Os anúncios custam à parte.</p></div>`;
   document.querySelectorAll('[data-rank-calc]').forEach((b) => b.addEventListener('click', () => {
