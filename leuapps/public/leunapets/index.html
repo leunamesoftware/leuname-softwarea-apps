@@ -754,6 +754,11 @@ LIGAR.loja = async () => {
 };
 
 // Botão "Enviar para a loja" do ranking da CJ.
+/** Cães, Gatos ou os dois: só fala de gato = Gatos; só fala de cão = Cães; neutro ou os dois = Cães e Gatos. */
+function tipoDoProduto(nome) {
+  const gato = /\b(cat|cats|kitten|kitty|feline)\b/i.test(nome), cao = /\b(dog|dogs|puppy|puppies|canine)\b/i.test(nome);
+  return gato && !cao ? 'Gatos' : cao && !gato ? 'Cães' : 'Ambos';
+}
 /** Envia vários produtos de uma vez como rascunho, tirando sozinho as fotos com letras. */
 async function enviarLote(lista) {
   if (!lista.length) return;
@@ -767,8 +772,7 @@ async function enviarLote(lista) {
   for (let i = 0; i < lista.length; i++) {
     const it = lista[i];
     msg(`Enviando ${i + 1} de ${lista.length}: ${esc(it.nome.slice(0, 50))}…`);
-    const gato = /\b(cat|cats|kitten|kitty)\b/i.test(it.nome) && !/\b(dog|puppy)\b/i.test(it.nome);
-    const corpo = { pid: it.pid, titulo: it.nome.slice(0, 120), preco: it.preco, tipo: gato ? 'Gatos' : 'Cães' };
+    const corpo = { pid: it.pid, titulo: it.nome.slice(0, 120), preco: it.preco, tipo: tipoDoProduto(it.nome) };
     if (prontas) {
       let f = await api('cj/fotos', { pid: it.pid }).catch(() => null);
       if (f?.status === 429) { await espera(6000); f = await api('cj/fotos', { pid: it.pid }).catch(() => null); }
@@ -796,13 +800,13 @@ async function enviarParaLoja(it) {
   if (!it) return;
   if (!lojaEstado) await lojaCarregarEstado();
   if (!lojaEstado.ligada) { alert('Primeiro ligue a sua loja: menu “Minha loja”.'); return ir('loja'); }
-  const gato = /\b(cat|cats|kitten|kitty)\b/i.test(it.nome) && !/\bdog\b/i.test(it.nome);
+  const tipoAuto = tipoDoProduto(it.nome);
   let dlg = $('#dlg-enviar'); if (dlg) dlg.remove();
   dlg = document.createElement('dialog'); dlg.id = 'dlg-enviar'; dlg.style.cssText = 'border:0;border-radius:14px;padding:18px;max-width:440px;width:92%';
   dlg.innerHTML = `<h3 style="margin:0 0 8px">🛍 Enviar para a loja</h3><p class="nota">Vai como <b>rascunho</b>: ninguém vê até você publicar. As fotos vêm da CJ. O texto em português eu ajusto depois.</p>
     <label>Título</label><input id="en-tit" value="${esc(it.nome.slice(0, 120))}">
     <label>Preço de venda (€, com IVA)</label><input id="en-preco" inputmode="decimal" value="${esc(String(it.preco))}">
-    <label>Coleção</label><select id="en-tipo"><option ${gato ? '' : 'selected'}>Cães</option><option ${gato ? 'selected' : ''}>Gatos</option></select>
+    <label>Coleção</label><select id="en-tipo"><option value="Cães" ${tipoAuto === 'Cães' ? 'selected' : ''}>Cães</option><option value="Gatos" ${tipoAuto === 'Gatos' ? 'selected' : ''}>Gatos</option><option value="Ambos" ${tipoAuto === 'Ambos' ? 'selected' : ''}>Cães e Gatos</option></select>
     <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500;margin-top:8px"><input id="en-ocr" type="checkbox" checked style="width:auto;margin-top:3px"> <span>🤖 Tirar sozinho as fotos que têm letras<br><small class="nota">Demora um pouco mais, mas a loja fica só com fotos limpas.</small></span></label>
     <div class="erro" id="en-erro"></div><div class="linha" style="margin-top:8px"><button class="btn fixo" id="en-ok">Enviar</button><button class="btn sec fixo" id="en-x">Cancelar</button></div>`;
   document.body.appendChild(dlg); dlg.showModal();

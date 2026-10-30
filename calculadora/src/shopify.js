@@ -123,7 +123,8 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
   const t = String(titulo || '').trim().slice(0, 150);
   const p = Math.round(Number(preco) * 100) / 100;
   if (!t || !(p > 0 && p < 1000)) return { erro: 'dados', status: 400 };
-  const tp = tipo === 'Gatos' ? 'Gatos' : 'Cães';
+  const tp = tipo === 'Gatos' ? 'Gatos' : tipo === 'Ambos' ? 'Ambos' : 'Cães';
+  const tipos = tp === 'Ambos' ? ['Cães', 'Gatos'] : [tp];
   const tag = `cj-${String(pid || '').trim()}`;
   if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
   // Não duplicar: se já existe um produto com esta etiqueta, devolve o link dele.
@@ -139,7 +140,7 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
   const media = escolhidas.map((u) => ({ originalSource: u, mediaContentType: 'IMAGE', alt: t }));
   const cri = await consultar(env, `mutation($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
     productCreate(product: $product, media: $media) { product { id variants(first: 1) { nodes { id } } } userErrors { field message } } }`,
-  { product: { title: t, status: 'DRAFT', vendor: 'LeunaPets', productType: tp === 'Gatos' ? 'Gatos' : 'Cães', tags: [tag, tp] }, media });
+  { product: { title: t, status: 'DRAFT', vendor: 'LeunaPets', productType: tp === 'Ambos' ? 'Cães e Gatos' : tp, tags: [tag, ...tipos] }, media });
   if (cri.erro) return cri;
   const pc = cri.dados?.productCreate;
   if (pc?.userErrors?.length || !pc?.product) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(pc?.userErrors || []).slice(0, 300) };
@@ -150,11 +151,13 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
       { pid: prodId, variants: [{ id: varId, price: p.toFixed(2), inventoryItem: { tracked: false, requiresShipping: true } }] });
     if (v.erro || v.dados?.productVariantsBulkUpdate?.userErrors?.length) avisos.push('preco');
   } else avisos.push('preco');
-  const col = await acharColecao(env, tp);
-  if (col) {
-    const a = await consultar(env, 'mutation($id: ID!, $ids: [ID!]!) { collectionAddProducts(id: $id, productIds: $ids) { userErrors { message } } }', { id: col, ids: [prodId] });
-    if (a.erro || a.dados?.collectionAddProducts?.userErrors?.length) avisos.push('colecao');
-  } else avisos.push('colecao');
+  for (const t1 of tipos) {
+    const col = await acharColecao(env, t1);
+    if (col) {
+      const a = await consultar(env, 'mutation($id: ID!, $ids: [ID!]!) { collectionAddProducts(id: $id, productIds: $ids) { userErrors { message } } }', { id: col, ids: [prodId] });
+      if (a.erro || a.dados?.collectionAddProducts?.userErrors?.length) avisos.push('colecao');
+    } else avisos.push('colecao');
+  }
   return { ok: true, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(prodId)}`, fotos: escolhidas.length, avisos };
 }
 
