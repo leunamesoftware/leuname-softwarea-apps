@@ -79,7 +79,7 @@ async function credenciais(env, forcar = false) {
 }
 
 /** Chama o Shopify; se recusar o token (cliente+segredo), renova uma vez. Erros do GraphQL viram { erro }. */
-async function consultar(env, query, variaveis) {
+export async function consultar(env, query, variaveis) {
   let c = await credenciais(env);
   if (!c) return { erro: 'sem_loja', status: 409 };
   let r = await graphql(c.loja, c.token, query, variaveis).catch(() => null);

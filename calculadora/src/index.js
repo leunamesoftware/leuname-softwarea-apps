@@ -7,6 +7,7 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmai
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
 import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj, detalharCj, guardarDetalhes } from './cj.js';
+import { estadoAlertas, guardarWhatsapp, removerWhatsapp, testarWhatsapp, avisarVendas, enviarWhats } from './alertas.js';
 import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos, baixarFoto, ativarVariantes, lerProduto, salvarProduto, descartarProduto, restaurarProduto, vigiarCj, lerVigia, apagarFotoProduto, subirFotoProduto, fotoPrincipal, conferirLucro, prepararProduto, publicarPronto } from './shopify.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
@@ -79,7 +80,13 @@ async function registrarRendimento(env, chave, d) {
 }
 
 export default {
-  async scheduled(_ev, env, ctx) { ctx.waitUntil(vigiarCj(env).catch(() => {})); },
+  async scheduled(ev, env, ctx) {
+    if (ev.cron === '*/10 * * * *') { ctx.waitUntil(avisarVendas(env).catch(() => {})); return; }
+    ctx.waitUntil((async () => {
+      const r = await vigiarCj(env).catch(() => null);
+      if (r?.tirados?.length) await enviarWhats(env, `⚠️ A CJ parou de vender e eu escondi da loja: ${r.tirados.map((x) => x.titulo).join(', ')}`).catch(() => {});
+    })());
+  },
   async fetch(req, env) {
     const url = new URL(req.url);
     if (url.hostname === 'calculadora.leunamesoftware.com.br' && url.pathname !== '/api/mp/aviso') {
@@ -416,6 +423,19 @@ export default {
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+      // Avisos no WhatsApp do dono (só o dono).
+      if (pathname.startsWith('/api/dono/alertas/')) {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (pathname === '/api/dono/alertas/estado' && m === 'GET') return json(await estadoAlertas(env));
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const d = await corpo(req);
+        const acao = { '/api/dono/alertas/guardar': () => guardarWhatsapp(env, d || {}), '/api/dono/alertas/remover': () => removerWhatsapp(env), '/api/dono/alertas/testar': () => testarWhatsapp(env), '/api/dono/alertas/vendas': () => avisarVendas(env) }[pathname];
+        if (!acao) return json({ erro: 'nao_encontrado' }, 404);
+        const r = await acao();
+        return r.erro ? json({ erro: r.erro, detalhe: r.detalhe }, r.status || 400) : json(r);
       }
       // Loja Shopify dentro do app LeunaPets (só o dono): envia produtos como rascunho e lista a loja.
       if (pathname.startsWith('/api/dono/shopify/')) {
