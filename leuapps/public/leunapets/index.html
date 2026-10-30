@@ -517,7 +517,7 @@ async function cjRanquear() {
   api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjRank.itens }).catch(() => {});
   lojaMarcarEnviados();
 }
-const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'pet grooming glove', 'dog raincoat', 'pet travel bag', 'pet feeder bowl', 'dog winter coat', 'dog sweater'];
+const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'dog collar', 'dog raincoat', 'pet travel bag', 'pet feeder bowl', 'dog winter coat', 'dog sweater'];
 /** Analisa um produto da CJ e devolve a linha do ranking (ou null se não tem frete para Portugal). */
 async function cjAnalisarItem(p, c) {
   let r = await api('cj/analisar', { pid: p.pid }).catch(() => null);
