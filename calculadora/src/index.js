@@ -6,6 +6,7 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmai
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
 import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj } from './cj.js';
+import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto } from './shopify.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { conferirLicenca, zipDoPedido } from './templates.js';
@@ -402,6 +403,20 @@ export default {
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
+      }
+      // Loja Shopify dentro do app LeunaPets (só o dono): envia produtos como rascunho e lista a loja.
+      if (pathname.startsWith('/api/dono/shopify/')) {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (pathname === '/api/dono/shopify/estado' && m === 'GET') return json(await estadoShopify(env));
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const d = await corpo(req);
+        const acao = { '/api/dono/shopify/ligar': () => guardarLoja(env, d || {}), '/api/dono/shopify/remover': () => removerLoja(env),
+          '/api/dono/shopify/listar': () => listarProdutos(env), '/api/dono/shopify/enviar': () => enviarProduto(env, d || {}) }[pathname];
+        if (!acao) return json({ erro: 'nao_encontrado' }, 404);
+        const r = await acao();
+        return r.erro ? json({ erro: r.erro, admin: r.admin, detalhe: r.detalhe }, r.status) : json(r);
       }
       // Radar de Produtos (só o dono): lê o catálogo público de uma loja Shopify concorrente.
       if (pathname === '/api/dono/radar/loja' && m === 'POST') {

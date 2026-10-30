@@ -137,3 +137,16 @@ export async function analisarCj(env, pid) {
     cambio: await cambioUsdEur(),
   };
 }
+
+/** Fotos e dados de um produto da CJ, para criar o produto na loja. */
+export async function detalharCj(env, pid) {
+  if (!/^[A-Za-z0-9-]{6,60}$/.test(String(pid || ''))) return { erro: 'pid', status: 400 };
+  const det = await comToken(env, `${BASE}/product/query?pid=${encodeURIComponent(pid)}`);
+  if (det.erro) return det;
+  const d = det.dados || {};
+  let fotos = [];
+  try { const x = typeof d.productImage === 'string' ? JSON.parse(d.productImage) : d.productImage; if (Array.isArray(x)) fotos = x; } catch {}
+  if (d.bigImage) fotos.unshift(d.bigImage);
+  fotos = [...new Set(fotos.filter((u) => typeof u === 'string' && /^https:\/\//.test(u)))].slice(0, 8);
+  return { pid: String(d.pid || pid), nome: String(d.productNameEn || '').slice(0, 160), fotos, pesoG: Number(d.productWeight) || null };
+}

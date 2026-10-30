@@ -137,6 +137,7 @@ td.n,th.n{text-align:right}
     <button data-v="fornecedor">📦 Fornecedor (CJ)</button>
     <button data-v="calc">🧮 Calculadora</button>
     <button data-v="meus">⭐ Meus produtos</button>
+    <button data-v="loja">🛍 Minha loja</button>
     <div class="grupo">Tráfego pago</div>
     <button data-v="meta">📘 Facebook e Instagram</button>
     <button data-v="tiktok">🎵 TikTok</button>
@@ -513,8 +514,9 @@ function cjRankDesenhar() {
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
     ${R.itens.map((it, i) => `<tr><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}</span></div></td>
       <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
-      <td><span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small></td><td><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button></td></tr>`).join('')}</table></div>
+      <td><span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small></td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> <button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button></td></tr>`).join('')}</table></div>
     <p class="nota">* Lucro por venda antes dos anúncios, já descontando IVA, taxa IOSS e pagamento. Os anúncios custam à parte.</p></div>`;
+  document.querySelectorAll('[data-rank-enviar]').forEach((b) => b.addEventListener('click', () => enviarParaLoja(R.itens.find((x) => x.pid === b.dataset.rankEnviar))));
   document.querySelectorAll('[data-rank-calc]').forEach((b) => b.addEventListener('click', () => {
     const it = R.itens.find((x) => x.pid === b.dataset.rankCalc);
     calcEntrada = { titulo: it.nome, preco: String(it.preco), custo: String(it.custo), frete: String(it.frete), anuncio: '', foto: it.foto || '', link: '', loja: 'CJ' };
@@ -561,6 +563,100 @@ LIGAR.fornecedor = async () => {
   if (cjEstado === null) { const r = await api('cj/estado').catch(() => null); cjEstado = r?.ok ? Boolean(r.j.ligada) : null; }
   cjDesenhar();
 };
+
+
+// ----- Minha loja (Shopify) -----
+let lojaEstado = null, lojaLista = { carregando: false, itens: [], msg: '' }, lojaMsg = '', lojaOcupado = false, lojaModoSegredo = false;
+const lojaErros = { loja_invalida: 'O endereço precisa terminar em .myshopify.com (ex.: bfstxp-0s.myshopify.com).', chave_invalida: 'Essa chave não parece certa. Copie de novo, sem espaços.',
+  shopify_recusou: 'A Shopify não aceitou essa chave. Confira se o app tem permissão de produtos e está instalado na loja.', shopify_nao_respondeu: 'A Shopify não respondeu. Tente de novo.',
+  sem_loja: 'A loja ainda não está ligada. Vá em Minha loja.', sem_permissao: 'A chave não tem permissão de produtos. No Shopify, dê "ler e escrever produtos" ao app e instale de novo.',
+  shopify_erro: 'A Shopify recusou o pedido.', muitas_chamadas: 'Muitos pedidos. Espere um minuto.', dados: 'Confira o título e o preço.', so_o_dono: 'Entre de novo na sua conta.' };
+async function lojaCarregarEstado() { const r = await api('shopify/estado').catch(() => null); lojaEstado = r?.ok ? r.j : { ligada: false, erroLer: true }; }
+async function lojaCarregarLista() {
+  lojaLista = { carregando: true, itens: [], msg: '' }; lojaDesenhar();
+  const r = await api('shopify/listar', {}).catch(() => null);
+  lojaLista = r?.ok ? { carregando: false, itens: r.j.produtos, msg: '' } : { carregando: false, itens: [], msg: lojaErros[r?.j?.erro] || 'Não deu para ler a loja agora.' };
+  lojaDesenhar();
+}
+TELAS.loja = () => `<h2>🛍 Minha loja</h2><p class="sub">Sua loja Shopify ligada ao app. Daqui você envia produtos como rascunho e abre a loja para editar.</p><div id="loja-area"><div class="card"><p class="nota">Carregando…</p></div></div>`;
+function lojaDesenhar() {
+  const el = $('#loja-area'); if (!el) return;
+  if (!lojaEstado) return (el.innerHTML = '<div class="card"><p class="nota">Carregando…</p></div>');
+  if (!lojaEstado.ligada) {
+    el.innerHTML = `<div class="card"><h3>Ligar a Shopify</h3>
+      <p>Para o app enviar produtos, ele precisa de uma chave da sua loja. Ela é testada, guardada no servidor e nunca aparece de novo.</p>
+      <label>Endereço da loja na Shopify</label><input id="lj-loja" value="bfstxp-0s.myshopify.com" autocomplete="off">
+      ${lojaModoSegredo ? `<label>ID do cliente</label><input id="lj-cid" type="password" autocomplete="off"><label>Segredo do cliente</label><input id="lj-csec" type="password" autocomplete="off">`
+        : `<label>Token de acesso da Admin API (começa com shpat_)</label><input id="lj-token" type="password" autocomplete="off" placeholder="cole aqui o token copiado da Shopify">`}
+      <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input id="lj-ver" type="checkbox" style="width:auto"> 👁 Mostrar</label>
+      <div class="erro" id="lj-erro">${esc(lojaMsg)}</div>
+      <div class="linha"><button class="btn fixo" id="lj-ligar" ${lojaOcupado ? 'disabled' : ''}>${lojaOcupado ? 'Testando…' : 'Ligar à Shopify'}</button></div>
+      <p class="nota"><a href="#" id="lj-modo">${lojaModoSegredo ? 'Tenho um token (shpat_…)' : 'Meu app só mostra ID do cliente e segredo'}</a></p></div>`;
+    $('#lj-ver').addEventListener('change', (e) => { el.querySelectorAll('input[type=password],input[data-v]').forEach((i) => { i.type = e.target.checked ? 'text' : 'password'; i.dataset.v = '1'; }); });
+    $('#lj-modo').addEventListener('click', (e) => { e.preventDefault(); lojaModoSegredo = !lojaModoSegredo; lojaMsg = ''; lojaDesenhar(); });
+    $('#lj-ligar').addEventListener('click', async () => {
+      const corpo = { loja: $('#lj-loja').value.trim() };
+      if (lojaModoSegredo) { corpo.clientId = $('#lj-cid').value.trim(); corpo.clientSecret = $('#lj-csec').value.trim(); } else corpo.token = $('#lj-token').value.trim();
+      lojaOcupado = true; lojaMsg = ''; lojaDesenhar();
+      const r = await api('shopify/ligar', corpo).catch(() => null);
+      lojaOcupado = false;
+      if (r?.ok) { await lojaCarregarEstado(); lojaMsg = ''; lojaDesenhar(); lojaCarregarLista(); return; }
+      lojaMsg = lojaErros[r?.j?.erro] || 'Não deu para ligar agora. Tente de novo.'; lojaDesenhar();
+    });
+    return;
+  }
+  const L = lojaEstado;
+  el.innerHTML = `<div class="card"><h3>Loja ligada <span class="selo v">${esc(L.loja)}</span></h3>
+    <div class="atalhos">
+      <a class="atalho" href="${esc(L.vitrine)}" target="_blank" rel="noopener">👀 Ver minha loja<small>Como o cliente vê (hoje ainda com senha)</small></a>
+      <a class="atalho" href="${esc(L.produtosAdmin)}" target="_blank" rel="noopener">✏️ Editar produtos<small>Abre os produtos no painel da Shopify</small></a>
+      <a class="atalho" href="${esc(L.admin)}/themes" target="_blank" rel="noopener">🎨 Tema e banners<small>Editar a aparência da loja</small></a>
+      <a class="atalho" href="${esc(L.admin)}/orders" target="_blank" rel="noopener">📦 Pedidos<small>Vendas e envios</small></a>
+    </div>
+    <p class="nota"><a href="#" id="lj-trocar">Trocar a chave da loja</a></p></div>
+  <div class="card"><h3>Produtos na loja</h3>
+    ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><a class="btn peq sec" href="${esc(p.admin)}" target="_blank" rel="noopener">Editar ↗</a></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
+    <div class="linha" style="margin-top:8px"><button class="btn sec fixo" id="lj-atualizar">↻ Atualizar</button></div></div>`;
+  $('#lj-atualizar').addEventListener('click', lojaCarregarLista);
+  $('#lj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('shopify/remover', {}).catch(() => {}); lojaEstado = { ligada: false }; lojaLista = { carregando: false, itens: [], msg: '' }; lojaDesenhar(); } });
+}
+LIGAR.loja = async () => {
+  lojaDesenhar();
+  await lojaCarregarEstado(); lojaDesenhar();
+  if (lojaEstado.ligada) lojaCarregarLista();
+};
+
+// Botão "Enviar para a loja" do ranking da CJ.
+async function enviarParaLoja(it) {
+  if (!it) return;
+  if (!lojaEstado) await lojaCarregarEstado();
+  if (!lojaEstado.ligada) { alert('Primeiro ligue a sua loja: menu “Minha loja”.'); return ir('loja'); }
+  const gato = /\b(cat|cats|kitten|kitty)\b/i.test(it.nome) && !/\bdog\b/i.test(it.nome);
+  let dlg = $('#dlg-enviar'); if (dlg) dlg.remove();
+  dlg = document.createElement('dialog'); dlg.id = 'dlg-enviar'; dlg.style.cssText = 'border:0;border-radius:14px;padding:18px;max-width:440px;width:92%';
+  dlg.innerHTML = `<h3 style="margin:0 0 8px">🛍 Enviar para a loja</h3><p class="nota">Vai como <b>rascunho</b>: ninguém vê até você publicar. As fotos vêm da CJ. O texto em português eu ajusto depois.</p>
+    <label>Título</label><input id="en-tit" value="${esc(it.nome.slice(0, 120))}">
+    <label>Preço de venda (€, com IVA)</label><input id="en-preco" inputmode="decimal" value="${esc(String(it.preco))}">
+    <label>Coleção</label><select id="en-tipo"><option ${gato ? '' : 'selected'}>Cães</option><option ${gato ? 'selected' : ''}>Gatos</option></select>
+    <div class="erro" id="en-erro"></div><div class="linha" style="margin-top:8px"><button class="btn fixo" id="en-ok">Enviar</button><button class="btn sec fixo" id="en-x">Cancelar</button></div>`;
+  document.body.appendChild(dlg); dlg.showModal();
+  $('#en-x').addEventListener('click', () => dlg.close());
+  $('#en-ok').addEventListener('click', async () => {
+    const b = $('#en-ok'); b.disabled = true; b.textContent = 'Enviando…'; $('#en-erro').textContent = '';
+    const r = await api('shopify/enviar', { pid: it.pid, titulo: $('#en-tit').value.trim(), preco: num($('#en-preco').value), tipo: $('#en-tipo').value }).catch(() => null);
+    if (r?.ok) {
+      const av = r.j.avisos || [];
+      dlg.innerHTML = `<h3 style="margin:0 0 8px">✅ Enviado como rascunho</h3><p>${r.j.fotos} foto(s) enviada(s).${av.includes('preco') ? ' <b>Atenção:</b> confira o preço na Shopify.' : ''}${av.includes('colecao') ? ' Não achei a coleção, coloque na mão.' : ''}</p>
+        <div class="linha"><a class="btn fixo" href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir na loja ↗</a><button class="btn sec fixo" id="en-fim">Fechar</button></div>`;
+      $('#en-fim').addEventListener('click', () => dlg.close());
+      if (!D.meus.some((m) => m.pid === it.pid)) { D.meus.push({ id: novoId(), pid: it.pid, titulo: it.nome, foto: it.foto || '', precoVenda: String(it.preco), custo: String(it.custo), frete: String(it.frete), status: 'Na loja', nota: 'Rascunho enviado à Shopify', link: '', loja: 'CJ', cjLink: '' }); salvar(); }
+      return;
+    }
+    b.disabled = false; b.textContent = 'Enviar';
+    if (r?.j?.erro === 'ja_enviado') $('#en-erro').innerHTML = `Este produto já está na loja. <a href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir ↗</a>`;
+    else $('#en-erro').textContent = lojaErros[r?.j?.erro] || 'Não deu para enviar agora.';
+  });
+}
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----
 const PLAT = {
