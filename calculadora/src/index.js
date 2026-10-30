@@ -1,3 +1,4 @@
+import { guardarRanking } from './cjranking.js';
 import { listarAvaliacoes, avaliar, votarUtil, excluirAvaliacao, denunciarAvaliacao, avaliacoesDoDono, esconderAvaliacao, responderAvaliacao } from './avaliacoes.js';
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
@@ -406,7 +407,7 @@ export default {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const d = await corpo(req);
         const acao = { '/api/dono/cj/chave': () => guardarChave(env, d?.chave), '/api/dono/cj/remover': () => removerChave(env),
-          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid) }[pathname];
+          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid), '/api/dono/cj/ranking': () => guardarRanking(env, d) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);

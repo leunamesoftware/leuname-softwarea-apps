@@ -454,6 +454,7 @@ function cjDesenhar() {
   el.innerHTML = `<h3>Buscar na CJ <span class="selo v">ligada</span></h3>
     <div class="linha"><div><label>O que procurar (em inglês funciona melhor)</label><input id="cj-q" value="${esc(cjBusca.q)}" placeholder="dog collar, cat water fountain…"></div><button class="btn fixo" id="cj-buscar" ${cjOcupado ? 'disabled' : ''}>${cjOcupado ? 'Buscando…' : '🔎 Buscar'}</button></div>
     <div class="erro">${esc(cjBusca.msg)}</div>
+    ${cjBusca.produtos.length ? `<p class="nota"><b>${cjBusca.produtos.length} produtos encontrados</b> para “${esc(cjBusca.q)}”.</p>` : ''}
     ${c ? `<p class="nota">Preços da CJ em dólar, convertidos a 1 US$ = ${c.toFixed(4)} €.</p>` : ''}
     ${cjBusca.produtos.length ? `<div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-rank-btn" ${cjRank.rodando ? 'disabled' : ''}>🤖 Analisar todos e ordenar do melhor</button>${cjRank.rodando ? '<button class="btn sec fixo" id="cj-rank-parar">Parar</button>' : ''}</div>` : ''}
     <div id="cj-rank"></div>
@@ -510,6 +511,7 @@ async function cjRanquear() {
     cjRankDesenhar();
   }
   cjRank.rodando = false; cjRank.parar = false; cjDesenhar();
+  api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjRank.itens }).catch(() => {});
   lojaMarcarEnviados();
 }
 function cjRankDesenhar() {
@@ -542,6 +544,7 @@ async function cjBuscar() {
   if (r?.ok) { cjBusca.produtos = r.j.produtos; cjBusca.cambio = r.j.cambio; if (!r.j.produtos.length) cjBusca.msg = 'Nada encontrado. Tente outra palavra em inglês.'; }
   else cjBusca.msg = cjErros[r?.j?.erro] || 'Não deu para buscar agora.';
   cjDesenhar();
+  if (cjBusca.produtos.length) api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjBusca.produtos.map((p) => ({ pid: p.pid, nome: p.nome, lojas: p.lojas, custo: p.precoUsd && cjBusca.cambio ? usd(p.precoUsd, cjBusca.cambio) : null, foto: p.foto })) }).catch(() => {});
 }
 async function cjAnalisar(pid) {
   cjAnalise = { carregando: true }; cjAnaliseDesenhar();
