@@ -4,6 +4,7 @@ import DICAS from './dicas.json';
 import { listarCanal, marcarEnvio } from './canal.js';
 import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmail, listarBrindesApps, darBrindeApp, tirarBrindeApp } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
+import { lerLoja } from './radar.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { conferirLicenca, zipDoPedido } from './templates.js';
@@ -386,6 +387,14 @@ export default {
         }
         const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, dados);
         return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
+      }
+      // Radar de Produtos (só o dono): lê o catálogo público de uma loja Shopify concorrente.
+      if (pathname === '/api/dono/radar/loja' && m === 'POST') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const r = await lerLoja((await corpo(req))?.url);
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
       }
       if (pathname.startsWith('/api/dono/') && m === 'POST') {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
