@@ -85,11 +85,16 @@ export async function cambioUsdEur() {
   } catch { return null; }
 }
 
+/** Produtos adultos/impróprios que a CJ mistura nas buscas de "dog" (nunca entram no app nem na loja). */
+const IMPROPRIO = /\b(penis|sheath|dildo|vibrat\w*|sex\w*|erotic\w*|adult|bdsm|fetish|anal|butt\s*plug|cock\w*|masturbat\w*|condom|lingerie|stimulat\w*|vagina\w*|nipple|bondage|thong|g-?spot|prostate|latex\s*mask|cosplay\s*porn)\b|for men with|realistic dog hanging/i;
+export const improprio = (nome) => IMPROPRIO.test(String(nome || ''));
+
 export function normalizarBusca(dados) {
   const lista = [];
   for (const bloco of dados?.content || []) {
     for (const p of bloco?.productList || []) {
       const preco = primeiroNumero(p.nowPrice ?? p.sellPrice);
+      if (improprio(p.nameEn)) continue;
       lista.push({
         pid: String(p.id), nome: String(p.nameEn || '').slice(0, 160), sku: p.sku || '', foto: p.bigImage || null,
         precoUsd: preco, lojas: Number(p.listedNum) || 0, categoriaId: p.categoryId || null,

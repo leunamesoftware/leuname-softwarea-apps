@@ -1,7 +1,7 @@
 // Ligação do app LeunaPets com a loja Shopify (só o dono).
 // Envia o produto escolhido como RASCUNHO (não aparece para os clientes) e lista o que já está na loja.
 // A chave fica na tabela shopify_config (D1) e nunca volta para o navegador.
-import { detalharCj, cambioUsdEur, analisarCj } from './cj.js';
+import { detalharCj, cambioUsdEur, analisarCj, improprio } from './cj.js';
 
 const VERSAO = '2025-07';
 const COLECOES = { 'Cães': ['Cães', 'Caes', 'Cães e Gatos'], 'Gatos': ['Gatos'] };
@@ -123,6 +123,7 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
   const t = String(titulo || '').trim().slice(0, 150);
   const p = Math.round(Number(preco) * 100) / 100;
   if (!t || !(p > 0 && p < 1000)) return { erro: 'dados', status: 400 };
+  if (improprio(t)) return { erro: 'improprio', status: 422 };
   const tp = tipo === 'Gatos' ? 'Gatos' : tipo === 'Ambos' ? 'Ambos' : 'Cães';
   const tipos = tp === 'Ambos' ? ['Cães', 'Gatos'] : [tp];
   const tag = `cj-${String(pid || '').trim()}`;

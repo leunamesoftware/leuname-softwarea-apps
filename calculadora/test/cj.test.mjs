@@ -78,3 +78,13 @@ test('chave recusada pela CJ não é guardada', async () => {
   try { assert.equal((await guardarChave(env, 'CJ1234567@api@abcdef0123456789')).erro, 'cj_recusou'); assert.equal(env.ler(), null); }
   finally { globalThis.fetch = original; }
 });
+
+import { improprio, normalizarBusca as nb } from '../src/cj.js';
+test('produtos adultos misturados na busca de "dog" são bloqueados', () => {
+  assert.ok(improprio('Dog Harness For Men With Realistic Dog Hanging Harness'));
+  assert.ok(improprio('Hollow Penis Sheath'));
+  assert.ok(!improprio('Reflective Dog Harness'));
+  assert.ok(!improprio('Dog Collar Waterproof'));
+  const r = nb({ content: [{ productList: [{ id: '1', nameEn: 'Hollow Penis Sheath', nowPrice: 2 }, { id: '2', nameEn: 'Reflective Dog Harness', nowPrice: 1 }] }] });
+  assert.deepEqual(r.produtos.map((x) => x.pid), ['2']);
+});
