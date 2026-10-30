@@ -2,6 +2,7 @@
 // Envia o produto escolhido como RASCUNHO (não aparece para os clientes) e lista o que já está na loja.
 // A chave fica na tabela shopify_config (D1) e nunca volta para o navegador.
 import { detalharCj, cambioUsdEur, analisarCj, improprio } from './cj.js';
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const VERSAO = '2025-07';
 const COLECOES = { 'Cães': ['Cães', 'Caes', 'Cães e Gatos'], 'Gatos': ['Gatos'] };
@@ -297,6 +298,106 @@ export async function conferirLucro(env, { pid }) {
   await env.DB.prepare('INSERT INTO precos_analise (pid, json, atualizado_em) VALUES (?, ?, ?) ON CONFLICT(pid) DO UPDATE SET json=excluded.json, atualizado_em=excluded.atualizado_em')
     .bind(String(pid), JSON.stringify(r), new Date().toISOString()).run();
   return { ok: true, ...r };
+}
+
+// ---- Texto em português (por regras, só com o que a CJ confirma) ----
+const TIPOS = [
+  [/\b(raincoat|rain coat)\b/i, 'Capa de Chuva'], [/\b(sweater|knitted)\b/i, 'Camisola'], [/\b(coat|jacket|hoodie|clothes|clothing|apparel|vest)\b(?![^.]*harness)/i, 'Casaco'],
+  [/\bharness\b/i, 'Peitoral'], [/\b(leash|lead)\b/i, 'Trela'], [/\bcollar\b/i, 'Coleira'], [/\b(fountain|waterer)\b/i, 'Fonte de Água'],
+  [/\b(bowl|feeder)\b/i, 'Comedouro'], [/\b(scratch\w*|scratcher)\b/i, 'Arranhador'], [/\b(backpack)\b/i, 'Mochila de Transporte'], [/\b(carrier|travel bag|pet bag|cage)\b/i, 'Mala de Transporte'],
+  [/\b(bed|mat|sofa|nest|cushion|kennel)\b/i, 'Cama'], [/\btoy\b/i, 'Brinquedo'], [/\b(brush|comb|glove)\b/i, 'Escova'],
+];
+const QUALIF = [
+  [/\bwinter\b/i, 'de Inverno'], [/\b(padded|cotton)\b/i, 'Acolchoado'], [/\bfleece\b/i, 'Forrado a Pelo'], [/\bwaterproof\b/i, 'Impermeável'], [/\breflective\b/i, 'Refletor'],
+  [/\badjustable\b/i, 'Ajustável'], [/\b(foldable|folding|collapsible)\b/i, 'Dobrável'], [/\b(led|luminous|flashing)\b/i, 'com Luz LED'], [/\bretractable\b/i, 'Retrátil'], [/\bwarm\b/i, 'Quentinho'],
+];
+const MATERIAIS = { polyester: 'Poliéster', cotton: 'Algodão', nylon: 'Nylon', cloth: 'Tecido', plush: 'Pelúcia', oxford: 'Tecido Oxford', silicone: 'Silicone', eva: 'EVA', wood: 'Madeira', sisal: 'Sisal', 'stainless steel': 'Aço inoxidável', fleece: 'Pelo sintético', leather: 'Couro sintético', pu: 'Couro sintético', rubber: 'Borracha', tpr: 'Borracha TPR', plastic: 'Plástico', velvet: 'Veludo', wool: 'Lã', mesh: 'Malha respirável' };
+
+/** Título em português a partir do nome da CJ. Devolve null se não souber o que é o produto. */
+export function ptTitulo(nome, tipos) {
+  const n = String(nome || '');
+  const t = TIPOS.find(([re]) => re.test(n)); if (!t) return null;
+  const q = QUALIF.filter(([re]) => re.test(n)).map(([, p]) => p);
+  const quals = [...new Set(q)].filter((x) => !(t[1] === 'Casaco' && x === 'Quentinho' && q.includes('de Inverno'))).slice(0, 2);
+  const alvo = tipos.includes('Cães') && tipos.includes('Gatos') ? 'Cães e Gatos' : tipos.includes('Gatos') ? 'Gatos' : 'Cães';
+  const de = quals.filter((x) => x.startsWith('de ')), resto = quals.filter((x) => !x.startsWith('de '));
+  return [t[1], ...resto, ...de, 'para', alvo].join(' ').replace(/\s+/g, ' ').slice(0, 90);
+}
+
+/** Descrição em HTML só com fatos da CJ (material, tamanhos, estação). Devolve { html, fatos }. */
+export function ptDescricao(det, tipos, titulo) {
+  const txt = `${det.descricao || ''} ${det.material || ''}`.toLowerCase(), bul = [];
+  const mats = Object.entries(MATERIAIS).filter(([k]) => new RegExp(`\\b${k}\\b`, 'i').test(txt)).map(([, v]) => v);
+  if (mats.length) bul.push(`Material: ${[...new Set(mats)].slice(0, 3).join(', ')}`);
+  const tam = [...new Set((det.variantes || []).map((v) => (String(v.nome).match(/\b(XXXL|XXL|XL|XS|S|M|L)\b/) || [])[1]).filter(Boolean))];
+  if (tam.length > 1) bul.push(`Tamanhos disponíveis: ${tam.join(', ')}`);
+  if (/all seasons?/.test(txt)) bul.push('Para todas as estações do ano');
+  if (/adjustable/.test(txt)) bul.push('Ajustável');
+  if (/(waterproof)/.test(txt)) bul.push('Resistente à água');
+  if (/(reflective)/.test(txt)) bul.push('Com faixas refletoras para passear à noite');
+  const kg = [...String(det.descricao || '').matchAll(/\b([SMLX]{1,3})\b[^()\d]{0,12}\(?[^()]*?(\d+\s*-\s*\d+\s*kg)\)?/gi)].slice(0, 5).map((m) => `${m[1].toUpperCase()} (${m[2].replace(/\s+/g, ' ')})`);
+  if (kg.length >= 2) bul.push(`Peso recomendado: ${kg.join(', ')}`);
+  const alvo = tipos.includes('Cães') && tipos.includes('Gatos') ? 'cães e gatos' : tipos.includes('Gatos') ? 'gatos' : 'cães';
+  const intro = `${titulo || 'Este produto'}: pensado para o dia a dia do seu ${alvo === 'gatos' ? 'gato' : alvo === 'cães' ? 'cão' : 'animal de estimação'}, com preço justo e entrega em Portugal.`;
+  const html = `<p>${intro}</p>${bul.length ? `<ul>${bul.map((b) => `<li>${b}</li>`).join('')}</ul>` : ''}<p>Entrega em Portugal em 8 a 18 dias úteis.</p>`;
+  return { html, fatos: bul.length };
+}
+
+/** Deixa um rascunho pronto: título e texto em português, cores/tamanhos, lucro conferido. */
+export async function prepararProduto(env, { pid }) {
+  const tag = `cj-${String(pid || '').trim()}`;
+  if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title status tags } } }`, { q: `tag:'${tag}'` });
+  if (q.erro) return q;
+  const prod = q.dados?.products?.nodes?.[0];
+  if (!prod) return { erro: 'nao_achei', status: 404 };
+  const tipos = (prod.tags || []).filter((t) => t === 'Cães' || t === 'Gatos');
+  const det = await detalharCj(env, pid);
+  if (det.erro) return det;
+  const avisos = [];
+  const ingles = /[a-z]{3,}/i.test(prod.title) && /\b(the|and|for|dog|cat|pet|winter|with|coat|harness)\b/i.test(prod.title);
+  if (ingles && prod.status === 'DRAFT') {
+    const titulo = ptTitulo(det.nome, tipos);
+    if (titulo) {
+      const d = ptDescricao(det, tipos, titulo);
+      const u = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: prod.id, title: titulo, descriptionHtml: d.html } });
+      if (u.erro || u.dados?.productUpdate?.userErrors?.length) avisos.push('texto_falhou'); else if (d.fatos < 2) avisos.push('texto_curto');
+    } else avisos.push('titulo_revisar');
+  }
+  await esperar(1100);
+  const v = await ativarVariantes(env, { pid });
+  if (v.erro) avisos.push('variantes_falhou'); else if (v.criadas) avisos.push('opcoes_criadas');
+  await esperar(1100);
+  const l = await conferirLucro(env, { pid });
+  let lucroMin = null;
+  if (l.ok) lucroMin = Math.min(...l.linhas.map((x) => x.lucro)); else avisos.push('lucro_nao_conferido');
+  if (lucroMin !== null && lucroMin < 5) avisos.push('lucro_baixo');
+  return { ok: true, avisos, lucroMin, variantes: v.criadas || 0, fotosCores: v.fotos || 0 };
+}
+
+/** Publica um rascunho só se estiver realmente pronto (texto em português, fotos, opções, lucro). */
+export async function publicarPronto(env, { pid }) {
+  const tag = `cj-${String(pid || '').trim()}`;
+  if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title status mediaCount { count } descriptionHtml } } }`, { q: `tag:'${tag}'` });
+  if (q.erro) return q;
+  const prod = q.dados?.products?.nodes?.[0];
+  if (!prod) return { erro: 'nao_achei', status: 404 };
+  if (prod.status !== 'DRAFT') return { ok: true, publicado: false, motivo: 'ja_publicado' };
+  const motivos = [];
+  if (/\b(the|and|for|dog|cat|pet|winter|with)\b/i.test(prod.title)) motivos.push('titulo_em_ingles');
+  if ((prod.mediaCount?.count || 0) < 3) motivos.push('poucas_fotos');
+  if (!/Entrega em Portugal/.test(prod.descriptionHtml || '')) motivos.push('sem_descricao');
+  const r = await env.DB.prepare('SELECT json FROM precos_analise WHERE pid = ?').bind(String(pid)).first();
+  let lucroMin = null; try { lucroMin = Math.min(...JSON.parse(r.json).linhas.map((x) => x.lucro)); } catch {}
+  if (lucroMin === null) motivos.push('lucro_nao_conferido'); else if (lucroMin < 5) motivos.push('lucro_baixo');
+  if (motivos.length) return { ok: true, publicado: false, motivos };
+  const pub = await consultar(env, '{ publications(first: 10) { nodes { id name } } }');
+  const loja = pub.dados?.publications?.nodes?.find((x) => /online store/i.test(x.name));
+  const a = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: prod.id, status: 'ACTIVE' } });
+  if (a.erro || a.dados?.productUpdate?.userErrors?.length) return { erro: 'shopify_erro', status: 422 };
+  if (loja) await consultar(env, `mutation($id: ID!, $i: [PublicationInput!]!) { publishablePublish(id: $id, input: $i) { userErrors { message } } }`, { id: prod.id, i: [{ publicationId: loja.id }] });
+  return { ok: true, publicado: true, lucroMin };
 }
 
 /** Todas as fotos dos produtos da loja (até 50 produtos, 30 fotos cada), para a galeria do app. */

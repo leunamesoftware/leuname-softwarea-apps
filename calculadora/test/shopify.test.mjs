@@ -174,3 +174,14 @@ test('lucro: preço mínimo deixa pelo menos o lucro pedido e termina em ,90', (
   assert.equal(Number((p % 1).toFixed(2)), 0.9);
   assert.ok(lucroDe(14.9, 12) < 0);
 });
+
+import { ptTitulo, ptDescricao } from '../src/shopify.js';
+test('texto em português: título pelo tipo e descrição só com fatos', () => {
+  assert.equal(ptTitulo('Small Pet Puppies Casual Winter Dog Padded Coat', ['Cães']), 'Casaco Acolchoado de Inverno para Cães');
+  assert.equal(ptTitulo('Lace Flower Pet Cat And Dog Harness', ['Cães', 'Gatos']), 'Peitoral para Cães e Gatos');
+  assert.equal(ptTitulo('Reflective Dog Harness', ['Cães']), 'Peitoral Refletor para Cães');
+  assert.equal(ptTitulo('Mystery Thing', ['Cães']), null);
+  const d = ptDescricao({ descricao: 'Material: Polyester Suitable for the season: All seasons', material: '', variantes: [{ nome: 'x S' }, { nome: 'x M' }, { nome: 'x L' }] }, ['Cães'], 'Casaco para Cães');
+  assert.ok(d.html.includes('Poliéster') && d.html.includes('S, M, L') && d.html.includes('todas as estações'));
+  assert.ok(!/impermeável|refletor/i.test(d.html));
+});
