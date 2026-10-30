@@ -586,7 +586,7 @@ async function lojaMarcarEnviados() {
 
 
 // ----- Leitor de letras nas fotos (OCR, roda neste computador) -----
-const OCR_CACHE = 'leunapets_ocr_v1';
+const OCR_CACHE = 'leunapets_ocr_v2';
 let ocrCache = {}; try { ocrCache = JSON.parse(localStorage.getItem(OCR_CACHE) || '{}') || {}; } catch {}
 const ocrSalvar = () => { try { const k = Object.keys(ocrCache); if (k.length > 3000) k.slice(0, 1000).forEach((x) => delete ocrCache[x]); localStorage.setItem(OCR_CACHE, JSON.stringify(ocrCache)); } catch {} };
 let ocrWorker = null, ocrCarregando = null;
@@ -611,10 +611,11 @@ async function ocrPreparar(aviso) {
 }
 /** Decide se o resultado da leitura parece ter letras de verdade (descarta ruído de textura e de tecido). */
 function ocrTemLetras(dados) {
-  const palavras = (dados?.words || []).filter((w) => (w.confidence ?? 0) >= 65);
-  const latinas = palavras.filter((w) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(String(w.text || '').trim())).length;
-  const chinesas = palavras.reduce((n, w) => n + (String(w.text || '').match(/[㐀-鿿]/g) || []).length, 0);
-  return latinas >= 2 || chinesas >= 3;
+  const palavras = (dados?.words || []).filter((w) => (w.confidence ?? 0) >= 55);
+  const latinas = palavras.filter((w) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(String(w.text || '').trim()));
+  const fortes = latinas.filter((w) => (w.confidence ?? 0) >= 75 && String(w.text).trim().length >= 4);
+  const chinesas = palavras.reduce((n, w) => n + (String(w.text || '').match(/[\u3400-\u9fff]/g) || []).length, 0);
+  return latinas.length >= 2 || fortes.length >= 1 || chinesas >= 2;
 }
 /** true = tem letras, false = limpa, null = não deu para ler a foto. Guarda o resultado para não ler de novo. */
 async function fotoTemLetras(url, chave) {
@@ -764,22 +765,23 @@ async function fotosCarregar() {
 function fotosDesenhar() {
   const el = $('#fotos-area'); if (!el) return;
   const E = fotosEstado;
-  const com = E.itens.filter((f) => ocrCache[fotoChave(f)] === true), sem = E.itens.filter((f) => ocrCache[fotoChave(f)] === false), nao = E.itens.filter((f) => !(fotoChave(f) in ocrCache) || ocrCache[fotoChave(f)] === null);
+  const marcadas = E.itens.filter((f) => E.marcadas.has(f.media)), outras = E.itens.filter((f) => !E.marcadas.has(f.media));
+  const lidas = E.itens.filter((f) => fotoChave(f) in ocrCache && ocrCache[fotoChave(f)] !== null).length;
   const grade = (l) => `<div class="fotos-grade">${l.map((f) => `<label class="foto-card${E.marcadas.has(f.media) ? ' marcada' : ''}"><img src="${esc(f.url)}&width=300" loading="lazy" alt=""><input type="checkbox" data-foto="${esc(f.media)}" ${E.marcadas.has(f.media) ? 'checked' : ''}><small>${esc(f.titulo.slice(0, 28))}${f.status === 'DRAFT' ? ' · rascunho' : ''}</small></label>`).join('')}</div>`;
   el.innerHTML = `<div class="card">
-    ${E.carregando ? '<p class="nota">Lendo a loja…</p>' : E.msg ? `<div class="erro">${esc(E.msg)}</div>` : `<p><b>${E.itens.length}</b> foto(s) na loja · <b>${com.length}</b> com letras · <b>${sem.length}</b> limpas · <b>${nao.length}</b> ainda não lidas</p>`}
-    <div class="linha"><button class="btn fixo" id="fo-ler" ${E.lendo || !E.itens.length ? 'disabled' : ''}>${E.lendo ? `Lendo ${E.feito} de ${E.total}…` : '🤖 Procurar fotos com letras'}</button>${E.lendo ? '<button class="btn sec fixo" id="fo-parar">Parar</button>' : ''}<button class="btn sec fixo" id="fo-atualizar">↻ Recarregar</button></div>
+    ${E.carregando ? '<p class="nota">Lendo a loja…</p>' : E.msg ? `<div class="erro">${esc(E.msg)}</div>` : `<p><b>${E.itens.length}</b> foto(s) na loja · <b>${lidas}</b> já lidas pelo robô · <b>${marcadas.length}</b> marcadas para apagar</p>`}
+    <div class="linha"><button class="btn fixo" id="fo-ler" ${E.lendo || !E.itens.length ? 'disabled' : ''}>${E.lendo ? `Lendo ${E.feito} de ${E.total}…` : '🤖 Procurar fotos com letras'}</button>${E.lendo ? '<button class="btn sec fixo" id="fo-parar">Parar</button>' : ''}<button class="btn sec fixo" id="fo-de-novo" ${E.lendo || !E.itens.length ? 'disabled' : ''}>Ler tudo de novo</button><button class="btn sec fixo" id="fo-atualizar">↻ Recarregar</button></div>
     <div class="erro" id="fo-erro"></div>
     ${E.lendo ? `<div class="barra"><i style="width:${E.total ? E.feito / E.total * 100 : 0}%"></i></div>` : ''}
   </div>
-  ${E.itens.length ? `<div class="card"><h3>Com letras (${com.length})</h3>${com.length ? `<p class="nota">Já vêm marcadas. Desmarque as que quiser manter.</p>${grade(com)}` : '<p class="nota">Nenhuma encontrada.</p>'}
-    <div class="linha" style="margin-top:10px"><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !E.marcadas.size ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${E.marcadas.size})`}</button></div></div>
-  <div class="card"><h3>Limpas (${sem.length})</h3><p class="nota">Toque numa foto para marcar na mão, se achar que tem letras.</p>${grade(sem)}</div>
-  ${nao.length ? `<div class="card"><h3>Ainda não lidas (${nao.length})</h3>${grade(nao)}</div>` : ''}` : ''}`;
+  ${E.itens.length ? `<div class="card" style="border-color:var(--verm)"><h3>🗑 Marcadas para apagar (${marcadas.length})</h3>${marcadas.length ? `<p class="nota">O robô marca as que têm letras. Desmarque as que quiser manter.</p>${grade(marcadas)}` : '<p class="nota">Nenhuma marcada. Toque numa foto lá embaixo para marcar na mão.</p>'}
+    <div class="linha" style="margin-top:10px"><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !marcadas.length ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${marcadas.length})`}</button></div></div>
+  <div class="card"><h3>Outras fotos (${outras.length})</h3><p class="nota">Toque numa foto para marcar na mão se achar que tem letras. Ela sobe para o quadro de cima.</p>${grade(outras)}</div>` : ''}`;
   el.querySelectorAll('[data-foto]').forEach((c) => c.addEventListener('change', () => { c.checked ? E.marcadas.add(c.dataset.foto) : E.marcadas.delete(c.dataset.foto); fotosDesenhar(); }));
   $('#fo-atualizar')?.addEventListener('click', fotosCarregar);
   $('#fo-parar')?.addEventListener('click', () => { E.parar = true; });
   $('#fo-ler')?.addEventListener('click', fotosLer);
+  $('#fo-de-novo')?.addEventListener('click', () => { E.itens.forEach((f) => delete ocrCache[fotoChave(f)]); ocrSalvar(); fotosLer(); });
   $('#fo-apagar')?.addEventListener('click', fotosApagar);
 }
 async function fotosLer() {
