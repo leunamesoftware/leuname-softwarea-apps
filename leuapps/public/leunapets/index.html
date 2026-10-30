@@ -561,12 +561,17 @@ function cjRankDesenhar() {
     ${R.msg ? `<div class="erro">${esc(R.msg)}</div>` : ''}
     ${R.rodando ? `<p class="nota">Analisando ${R.feito} de ${R.total}${R.multi ? ' categorias' : ''}… (a CJ aceita 1 pedido por segundo, leva uns ${R.multi ? '3 a 5' : '2'} minutos)</p><div class="barra"><i style="width:${R.feito / R.total * 100}%"></i></div>` : R.total ? `<p class="nota">${R.itens.length} analisados${R.falhas ? `, ${R.falhas} sem preço de frete para Portugal (ignorados)` : ''}.</p>` : ''}
     <div class="aviso">O preço de venda é uma <b>sugestão</b>: custo + frete × ${D.cfg.multiplo}, limitada a ${eur(D.cfg.teto - 0.1)}. Antes de decidir, <b>confira o preço que as lojas concorrentes cobram</b>. O robô ordena por lucro e concorrência, mas não adivinha se o produto vai vender.</div>
+    ${R.itens.length && !R.rodando ? `<div class="linha" style="margin:8px 0;flex-wrap:wrap"><button class="btn sec fixo" id="rank-marcar">☑ Marcar os 20 melhores</button><button class="btn fixo" id="rank-lote" ${cjRank.sel?.size ? '' : 'disabled'}>🛍 Enviar os marcados (${cjRank.sel?.size || 0})</button></div>` : ''}
+    <div id="lote-msg"></div>
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
-    ${(() => { const t = [...R.itens.filter((x) => !D.enviados[x.pid]), ...R.itens.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="opacity:.6"' : ''}><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}${it.cat ? `<br><small class="nota">${esc(it.cat)}</small>` : ''}</span></div></td>
+    ${(() => { const t = [...R.itens.filter((x) => !D.enviados[x.pid]), ...R.itens.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="opacity:.6"' : ''}><td>${D.enviados[it.pid] ? '' : `<input type="checkbox" data-rank-sel="${esc(it.pid)}" ${cjRank.sel?.has(it.pid) ? 'checked' : ''} style="width:auto"><br>`}${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}${it.cat ? `<br><small class="nota">${esc(it.cat)}</small>` : ''}</span></div></td>
       <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
       <td>${D.enviados[it.pid] ? '<span class="selo n">✅ Já na loja</span><br><small class="nota">enviado como rascunho</small>' : `<span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small>`}</td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> ${D.enviados[it.pid] ? `<a class="btn peq sec" href="${esc(D.enviados[it.pid])}" target="_blank" rel="noopener" title="Já está na loja. Abrir para editar">✅ Enviado</a>` : `<button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button>`}</td></tr>`).join('')}</table></div>
     ${!R.rodando && R.itens.length > 4 ? `<div class="linha" style="margin:8px 0"><button class="btn sec fixo" id="rank-todos">${R.todos ? 'Mostrar só os 4 melhores' : `Ver todos os ${R.itens.length}`}</button></div>` : ''}
     <p class="nota">* Lucro por venda antes dos anúncios, já descontando IVA, taxa IOSS e pagamento. Os anúncios custam à parte.</p></div>`;
+  document.querySelectorAll('[data-rank-sel]').forEach((c) => c.addEventListener('change', () => { cjRank.sel = cjRank.sel || new Set(); c.checked ? cjRank.sel.add(c.dataset.rankSel) : cjRank.sel.delete(c.dataset.rankSel); const b = $('#rank-lote'); if (b) { b.disabled = !cjRank.sel.size; b.textContent = `🛍 Enviar os marcados (${cjRank.sel.size})`; } }));
+  $('#rank-marcar')?.addEventListener('click', () => { cjRank.sel = new Set(R.itens.filter((x) => !D.enviados[x.pid] && x.veredito !== 'x').slice(0, 20).map((x) => x.pid)); cjRank.todos = true; cjRankDesenhar(); });
+  $('#rank-lote')?.addEventListener('click', () => enviarLote(R.itens.filter((x) => cjRank.sel?.has(x.pid) && !D.enviados[x.pid])));
   $('#rank-todos')?.addEventListener('click', () => { cjRank.todos = !cjRank.todos; cjRankDesenhar(); });
   document.querySelectorAll('[data-rank-enviar]').forEach((b) => b.addEventListener('click', () => enviarParaLoja(R.itens.find((x) => x.pid === b.dataset.rankEnviar))));
   document.querySelectorAll('[data-rank-calc]').forEach((b) => b.addEventListener('click', () => {
@@ -615,6 +620,12 @@ LIGAR.fornecedor = async () => {
   document.querySelectorAll('[data-cjlink]').forEach((i) => i.addEventListener('change', () => { D.meus.find((m) => m.id === i.dataset.cjlink).cjLink = i.value.trim(); salvar(); }));
   if (cjEstado === null) { const r = await api('cj/estado').catch(() => null); cjEstado = r?.ok ? Boolean(r.j.ligada) : null; }
   cjDesenhar();
+  // Recupera o último ranking guardado no servidor (não se perde ao atualizar o app).
+  if (!cjRank.itens.length && !cjRank.rodando) {
+    const g = await api('cj/ranking').catch(() => null);
+    const salvos = g?.ok ? (g.j.itens || []).filter((x) => x.veredito && x.preco != null) : [];
+    if (salvos.length) { cjRank = { ...cjRank, itens: salvos.map((x) => ({ ...x, lucroAntes: x.lucro })), total: salvos.length, feito: salvos.length, todos: true, msg: '' }; cjRankDesenhar(); }
+  }
 };
 
 
@@ -743,6 +754,43 @@ LIGAR.loja = async () => {
 };
 
 // Botão "Enviar para a loja" do ranking da CJ.
+/** Envia vários produtos de uma vez como rascunho, tirando sozinho as fotos com letras. */
+async function enviarLote(lista) {
+  if (!lista.length) return;
+  const el = () => $('#lote-msg'), msg = (t, ok) => { if (el()) el().innerHTML = `<div class="${ok ? 'aviso' : 'nota'}" style="margin:8px 0">${t}</div>`; };
+  if (!lojaEstado) await lojaCarregarEstado();
+  if (!lojaEstado.ligada) { alert('Primeiro ligue a sua loja: menu “Minha loja”.'); return ir('loja'); }
+  const b = $('#rank-lote'); if (b) b.disabled = true;
+  msg('Preparando o leitor de letras (só na primeira vez, pode levar 1 minuto)…');
+  const prontas = await ocrPreparar();
+  let certos = 0, falhas = 0, semFoto = 0, descartadasTotal = 0;
+  for (let i = 0; i < lista.length; i++) {
+    const it = lista[i];
+    msg(`Enviando ${i + 1} de ${lista.length}: ${esc(it.nome.slice(0, 50))}…`);
+    const gato = /\b(cat|cats|kitten|kitty)\b/i.test(it.nome) && !/\b(dog|puppy)\b/i.test(it.nome);
+    const corpo = { pid: it.pid, titulo: it.nome.slice(0, 120), preco: it.preco, tipo: gato ? 'Gatos' : 'Cães' };
+    if (prontas) {
+      let f = await api('cj/fotos', { pid: it.pid }).catch(() => null);
+      if (f?.status === 429) { await espera(6000); f = await api('cj/fotos', { pid: it.pid }).catch(() => null); }
+      if (f?.ok) {
+        const limpas = [];
+        for (const u of f.j.fotos) { const t = await fotoTemLetras(u, 'cj:' + u); if (t === true) descartadasTotal++; else limpas.push(u); }
+        corpo.fotos = limpas;
+      }
+    }
+    let r = await api('shopify/enviar', corpo).catch(() => null);
+    if (r?.status === 429) { await espera(6000); r = await api('shopify/enviar', corpo).catch(() => null); }
+    if (r?.ok) {
+      certos++; if (!r.j.fotos) semFoto++;
+      D.enviados[it.pid] = r.j.admin;
+      if (!D.meus.some((m) => m.pid === it.pid)) D.meus.push({ id: novoId(), pid: it.pid, titulo: it.nome, foto: it.foto || '', precoVenda: String(it.preco), custo: String(it.custo), frete: String(it.frete), status: 'Na loja', nota: 'Rascunho enviado à Shopify', link: '', loja: 'CJ', cjLink: '' });
+      salvar();
+    } else if (r?.j?.erro === 'ja_enviado') { D.enviados[it.pid] = r.j.admin; salvar(); } else falhas++;
+    await espera(800);
+  }
+  cjRank.sel = new Set(); cjRankDesenhar();
+  msg(`✅ ${certos} enviados como rascunho${descartadasTotal ? `, ${descartadasTotal} fotos com letras descartadas` : ''}${semFoto ? `, <b>${semFoto} sem nenhuma foto</b>` : ''}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.`, true);
+}
 async function enviarParaLoja(it) {
   if (!it) return;
   if (!lojaEstado) await lojaCarregarEstado();

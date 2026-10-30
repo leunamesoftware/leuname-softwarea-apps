@@ -6,9 +6,16 @@ export async function guardarRanking(env, d) {
   const lista = Array.isArray(d?.itens) ? d.itens.slice(0, 200) : [];
   const itens = lista.map((i) => ({
     pid: txt(i.pid, 80), nome: txt(i.nome, 120), lojas: num(i.lojas), custo: num(i.custo), frete: num(i.frete), preco: num(i.preco),
-    lucro: num(i.lucroAntes ?? i.lucro), margem: num(i.margem), prazo: num(i.prazo), veredito: txt(i.veredito, 2), motivo: txt(i.motivo, 120), score: num(i.score), foto: txt(i.foto, 300),
+    lucro: num(i.lucroAntes ?? i.lucro), margem: num(i.margem), prazo: num(i.prazo), veredito: txt(i.veredito, 2), motivo: txt(i.motivo, 120), score: num(i.score), foto: txt(i.foto, 300), cat: txt(i.cat, 40),
   }));
   await env.DB.prepare('INSERT INTO cj_ranking (id, consulta, total, itens, atualizado_em) VALUES (1, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET consulta=excluded.consulta, total=excluded.total, itens=excluded.itens, atualizado_em=excluded.atualizado_em')
     .bind(txt(d?.consulta, 120), Math.min(Math.max(Number(d?.total) || itens.length, 0), 1000), JSON.stringify(itens), new Date().toISOString()).run();
   return { ok: true, guardados: itens.length };
+}
+
+export async function lerRanking(env) {
+  const r = await env.DB.prepare('SELECT consulta, total, itens, atualizado_em FROM cj_ranking WHERE id = 1').first();
+  if (!r) return { itens: [] };
+  let itens = []; try { itens = JSON.parse(r.itens); } catch {}
+  return { consulta: r.consulta, atualizadoEm: r.atualizado_em, itens };
 }

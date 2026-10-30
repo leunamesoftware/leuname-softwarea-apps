@@ -1,4 +1,4 @@
-import { guardarRanking } from './cjranking.js';
+import { guardarRanking, lerRanking } from './cjranking.js';
 import { listarAvaliacoes, avaliar, votarUtil, excluirAvaliacao, denunciarAvaliacao, avaliacoesDoDono, esconderAvaliacao, responderAvaliacao } from './avaliacoes.js';
 import RECEITAS from './receitas.json';
 import DICAS from './dicas.json';
@@ -403,6 +403,7 @@ export default {
         const conta = await contaDaSessao(env, req);
         if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
         if (pathname === '/api/dono/cj/estado' && m === 'GET') return json(await estadoCj(env));
+        if (pathname === '/api/dono/cj/ranking' && m === 'GET') return json(await lerRanking(env));
         if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const d = await corpo(req, pathname === '/api/dono/cj/ranking' ? 200000 : 4096);
