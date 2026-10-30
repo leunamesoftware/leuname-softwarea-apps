@@ -97,7 +97,7 @@ const gidNum = (gid) => String(gid || '').split('/').pop();
 
 /** Produtos que já estão na loja (para o app mostrar "Na minha loja"). */
 export async function listarProdutos(env) {
-  const r = await consultar(env, '{ products(first: 30, sortKey: UPDATED_AT, reverse: true) { nodes { id title status handle tags featuredMedia { preview { image { url } } } priceRangeV2 { minVariantPrice { amount } } } } }');
+  const r = await consultar(env, '{ products(first: 100, sortKey: UPDATED_AT, reverse: true, query: "-status:archived") { nodes { id title status handle tags featuredMedia { preview { image { url } } } priceRangeV2 { minVariantPrice { amount } } } } }');
   if (r.erro) return r;
   const h = nomeLoja(r.loja);
   return { produtos: (r.dados?.products?.nodes || []).map((p) => ({
