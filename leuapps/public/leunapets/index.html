@@ -619,7 +619,7 @@ function cjRankDesenhar() {
     ${R.itens.length && !R.rodando ? `<div class="linha" style="margin:8px 0;flex-wrap:wrap"><button class="btn sec fixo" id="rank-marcar">☑ Marcar os 20 melhores</button><button class="btn fixo" id="rank-lote" ${cjRank.sel?.size ? '' : 'disabled'}>🛍 Enviar os marcados (${cjRank.sel?.size || 0})</button></div>` : ''}
     <div id="lote-msg"></div>
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
-    ${(() => { const t = [...R.itens.filter((x) => !D.enviados[x.pid]), ...R.itens.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="background:#e8f7ee;opacity:.8"' : ''}><td>${D.enviados[it.pid] ? '' : `<input type="checkbox" data-rank-sel="${esc(it.pid)}" ${cjRank.sel?.has(it.pid) ? 'checked' : ''} style="width:auto"><br>`}${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}${it.cat ? `<br><small class="nota">${esc(it.cat)}</small>` : ''}</span></div></td>
+    ${(() => { const livres = R.itens.filter((x) => !(D.descartados || []).includes(x.pid)); const t = [...livres.filter((x) => !D.enviados[x.pid]), ...livres.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="background:#e8f7ee;opacity:.8"' : ''}><td>${D.enviados[it.pid] ? '' : `<input type="checkbox" data-rank-sel="${esc(it.pid)}" ${cjRank.sel?.has(it.pid) ? 'checked' : ''} style="width:auto"><br>`}${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}${it.cat ? `<br><small class="nota">${esc(it.cat)}</small>` : ''}</span></div></td>
       <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
       <td>${D.enviados[it.pid] ? '<span class="selo n">✅ Já na loja</span><br><small class="nota">enviado como rascunho</small>' : `<span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small>`}</td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> ${D.enviados[it.pid] ? `<a class="btn peq sec" href="${esc(D.enviados[it.pid])}" target="_blank" rel="noopener" title="Já está na loja. Abrir para editar">✅ Enviado</a>` : `<button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button>`}</td></tr>`).join('')}</table></div>
     ${!R.rodando && R.itens.length > 4 ? `<div class="linha" style="margin:8px 0"><button class="btn sec fixo" id="rank-todos">${R.todos ? 'Mostrar só os 4 melhores' : `Ver todos os ${R.itens.length}`}</button></div>` : ''}
@@ -690,6 +690,7 @@ async function lojaMarcarEnviados() {
   const r = await api('shopify/listar', {}).catch(() => null);
   if (!r?.ok) return;
   let mudou = false;
+  D.descartados = (r.j.descartados || []).map((x) => x.cj).filter(Boolean); mudou = true;
   for (const p of r.j.produtos) if (p.cj && !D.enviados[p.cj]) { D.enviados[p.cj] = p.admin; mudou = true; }
   if (mudou) { salvar(); if (vista === 'fornecedor') cjRankDesenhar(); }
   // Guarda no servidor o texto técnico da CJ dos produtos enviados, para o Claude escrever a descrição sem print.
@@ -757,7 +758,7 @@ async function lojaCarregarEstado() { const r = await api('shopify/estado').catc
 async function lojaCarregarLista() {
   lojaLista = { carregando: true, itens: [], msg: '' }; lojaDesenhar();
   const r = await api('shopify/listar', {}).catch(() => null);
-  lojaLista = r?.ok ? { carregando: false, itens: r.j.produtos, msg: '' } : { carregando: false, itens: [], msg: lojaErros[r?.j?.erro] || 'Não deu para ler a loja agora.' };
+  lojaLista = r?.ok ? { carregando: false, itens: r.j.produtos, descartados: r.j.descartados || [], msg: '' } : { carregando: false, itens: [], msg: lojaErros[r?.j?.erro] || 'Não deu para ler a loja agora.' };
   lojaDesenhar();
   if (r?.ok) lojaMarcarEnviados();
 }
@@ -800,9 +801,10 @@ function lojaDesenhar() {
     <p class="nota"><a href="#" id="lj-trocar">Trocar a chave da loja</a></p></div>
   <div class="card" id="lj-lista"><h3>Produtos na loja <span class="selo n">${lojaLista.itens.length} no total</span> <span class="selo v">${lojaLista.itens.filter((p) => p.status === 'ACTIVE').length} publicados</span> <span class="selo a">${lojaLista.itens.filter((p) => p.status === 'DRAFT').length} rascunhos</span></h3>
     ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><button class="btn peq sec lj-ed" data-id="${esc(p.id)}" style="margin:0">✏️ Editar</button></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px"><button class="btn sec peq" id="lj-atualizar" style="width:100%;margin:0">↻ Atualizar</button><button class="btn peq" id="lj-variantes" style="width:100%;margin:0">🎨 Cores e tamanhos</button><button class="btn peq" id="lj-lucro" style="width:100%;margin:0">💶 Conferir lucro</button><button class="btn peq" id="lj-preparar" style="width:100%;margin:0">✨ Preparar rascunhos</button><button class="btn peq" id="lj-publicar" style="width:100%;margin:0">🚀 Publicar prontos</button><button class="btn peq sec" id="lj-vigiar" style="width:100%;margin:0">🔎 Vigiar CJ agora</button></div><div id="lj-var-msg"></div></div>`;
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px"><button class="btn sec peq" id="lj-atualizar" style="width:100%;margin:0">↻ Atualizar</button><button class="btn peq" id="lj-variantes" style="width:100%;margin:0">🎨 Cores e tamanhos</button><button class="btn peq" id="lj-lucro" style="width:100%;margin:0">💶 Conferir lucro</button><button class="btn peq" id="lj-preparar" style="width:100%;margin:0">✨ Preparar rascunhos</button><button class="btn peq" id="lj-publicar" style="width:100%;margin:0">🚀 Publicar prontos</button><button class="btn peq sec" id="lj-vigiar" style="width:100%;margin:0">🔎 Vigiar CJ agora</button></div><div id="lj-var-msg"></div></div>${(lojaLista.descartados || []).length ? `<div class="card"><h3>🚫 Descartados <span class="selo n">${lojaLista.descartados.length}</span></h3><p class="nota">Já foram testados na loja e não deram resultado. O robô não traz estes de novo da CJ.</p>${lojaLista.descartados.map((p) => `<div class="item"><div style="display:flex;gap:8px;align-items:center"><div style="flex:1" class="t">${esc(p.titulo)}</div><button class="btn peq sec lj-rest" data-id="${esc(p.id)}" style="margin:0">↩ Voltar</button></div></div>`).join('')}</div>` : ''}`;
   el.querySelectorAll('.lj-ed').forEach((b) => b.addEventListener('click', () => lojaAbrirEdicao(b.dataset.id)));
   $('#lj-atalho-prod').addEventListener('click', (e) => { e.preventDefault(); $('#lj-lista').scrollIntoView({ behavior: 'smooth' }); });
+  el.querySelectorAll('.lj-rest').forEach((b) => b.addEventListener('click', async () => { if (!confirm('Trazer este produto de volta como rascunho?')) return; b.disabled = true; await api('shopify/restaurar', { id: b.dataset.id }).catch(() => null); lojaCarregarLista(); }));
   $('#lj-atualizar').addEventListener('click', lojaCarregarLista);
   $('#lj-variantes').addEventListener('click', lojaAtivarVariantes);
   $('#lj-lucro').addEventListener('click', lojaConferirLucro);
@@ -862,7 +864,8 @@ function lojaDesenharEdicao(el) {
     ${d.variantes.map((v) => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="flex:1;font-size:13px">${v.nome === 'Default Title' ? 'Preço' : esc(v.nome)}</span><input class="ed-preco" data-v="${esc(v.id)}" value="${esc(Number(v.preco).toFixed(2))}" inputmode="decimal" style="width:90px"> €</div>`).join('')}
     <label>Estado</label><select id="ed-status"><option value="ACTIVE" ${d.status === 'ACTIVE' ? 'selected' : ''}>🟢 Publicado</option><option value="DRAFT" ${d.status !== 'ACTIVE' ? 'selected' : ''}>📝 Rascunho (escondido)</option></select>
     <div class="erro" id="ed-erro">${esc(E.msg)}</div>
-    <div class="linha"><button class="btn fixo" id="ed-salvar">💾 Salvar na loja</button></div></div>`;
+    <div class="linha"><button class="btn fixo" id="ed-salvar">💾 Salvar na loja</button></div>
+    <p class="nota" style="margin-top:14px"><a href="#" id="ed-descartar">🚫 Descartar este produto (testado, sem resultado)</a></p></div>`;
   $('#ed-voltar').addEventListener('click', () => { lojaEdit = null; lojaDesenhar(); lojaCarregarLista(); });
   el.querySelectorAll('.ed-del').forEach((b) => b.addEventListener('click', async () => {
     if (!confirm('Excluir esta foto do produto na loja?')) return; b.disabled = true;
@@ -889,6 +892,12 @@ function lojaDesenharEdicao(el) {
       $('#ed-erro').textContent = 'Não consegui subir a foto: ' + (r?.j?.detalhe || r?.j?.erro || 'tente de novo');
     } catch { $('#ed-erro').textContent = 'Não consegui ler essa imagem.'; }
     bt.disabled = false; bt.textContent = '⬆ Subir outra foto';
+  });
+  $('#ed-descartar').addEventListener('click', async (ev) => {
+    ev.preventDefault();
+    if (!confirm('Descartar este produto? Ele sai da loja e fica guardado na lista de descartados. O robô não vai trazer de novo da CJ.')) return;
+    const r = await api('shopify/descartar', { id: E.id }).catch(() => null);
+    if (r?.ok) { lojaEdit = null; lojaCarregarLista(); } else $('#ed-erro').textContent = 'Não consegui descartar. Tente de novo.';
   });
   $('#ed-salvar').addEventListener('click', async () => {
     const b = $('#ed-salvar'); b.disabled = true; b.textContent = 'Salvando…';

@@ -101,7 +101,9 @@ export async function listarProdutos(env) {
   const r = await consultar(env, '{ products(first: 100, sortKey: UPDATED_AT, reverse: true, query: "-status:archived") { nodes { id title status handle tags featuredMedia { preview { image { url } } } priceRangeV2 { minVariantPrice { amount } } } } }');
   if (r.erro) return r;
   const h = nomeLoja(r.loja);
-  return { produtos: (r.dados?.products?.nodes || []).map((p) => ({
+  const d = await consultar(env, '{ products(first: 100, query: "tag:descartado") { nodes { id title tags } } }');
+  const descartados = (d.dados?.products?.nodes || []).map((p) => ({ id: gidNum(p.id), titulo: p.title, cj: (p.tags || []).find((t) => t.startsWith('cj-'))?.slice(3) || null }));
+  return { descartados, produtos: (r.dados?.products?.nodes || []).map((p) => ({
     id: gidNum(p.id), titulo: p.title, status: p.status, foto: p.featuredMedia?.preview?.image?.url || null,
     preco: Number(p.priceRangeV2?.minVariantPrice?.amount) || null, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(p.id)}`,
     cj: (p.tags || []).find((t) => t.startsWith('cj-'))?.slice(3) || null,
@@ -130,10 +132,11 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
   const tag = `cj-${String(pid || '').trim()}`;
   if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
   // Não duplicar: se já existe um produto com esta etiqueta, devolve o link dele.
-  const ja = await consultar(env, 'query($q: String!) { products(first: 1, query: $q) { nodes { id title status } } }', { q: `tag:'${tag}'` });
+  const ja = await consultar(env, 'query($q: String!) { products(first: 1, query: $q) { nodes { id title status tags } } }', { q: `tag:'${tag}'` });
   if (ja.erro) return ja;
   const h = nomeLoja(ja.loja);
   const existente = ja.dados?.products?.nodes?.[0];
+  if (existente && (existente.tags || []).includes('descartado')) return { erro: 'ja_descartado', status: 409 };
   if (existente) return { erro: 'ja_enviado', status: 409, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(existente.id)}` };
   const det = await detalharCj(env, pid);
   if (det.erro) return det;
@@ -631,4 +634,23 @@ export async function vigiarCj(env) {
 export async function lerVigia(env) {
   const r = await env.DB.prepare('SELECT pid, titulo, motivo, em FROM vigia_cj ORDER BY em DESC LIMIT 30').all();
   return { itens: r.results || [] };
+}
+
+/** Descartar: o produto não some. Fica arquivado com a etiqueta "descartado", e o robô nunca mais o traz da CJ. */
+export async function descartarProduto(env, { id }) {
+  if (!/^\d{6,20}$/.test(String(id || ''))) return { erro: 'id', status: 400 };
+  const gid = `gid://shopify/Product/${id}`;
+  const t = await consultar(env, `mutation($id: ID!, $t: [String!]!) { tagsAdd(id: $id, tags: $t) { userErrors { message } } }`, { id: gid, t: ['descartado'] });
+  if (t.erro || t.dados?.tagsAdd?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(t.dados?.tagsAdd?.userErrors || t).slice(0, 300) };
+  const u = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: gid, status: 'ARCHIVED' } });
+  if (u.erro || u.dados?.productUpdate?.userErrors?.length) return { erro: 'shopify_erro', status: 422 };
+  return { ok: true };
+}
+/** Traz de volta um produto descartado (como rascunho). */
+export async function restaurarProduto(env, { id }) {
+  if (!/^\d{6,20}$/.test(String(id || ''))) return { erro: 'id', status: 400 };
+  const gid = `gid://shopify/Product/${id}`;
+  await consultar(env, `mutation($id: ID!, $t: [String!]!) { tagsRemove(id: $id, tags: $t) { userErrors { message } } }`, { id: gid, t: ['descartado'] });
+  const u = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: gid, status: 'DRAFT' } });
+  return u.erro || u.dados?.productUpdate?.userErrors?.length ? { erro: 'shopify_erro', status: 422 } : { ok: true };
 }
