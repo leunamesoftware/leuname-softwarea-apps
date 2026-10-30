@@ -119,7 +119,7 @@ async function acharColecao(env, tipo) {
  * Cria o produto como rascunho. Dados: pid da CJ, titulo, preco (€ com IVA), tipo ('Cães' | 'Gatos').
  * Fotos vêm da CJ. O texto fica em branco de propósito: é ajustado depois, em português de Portugal.
  */
-export async function enviarProduto(env, { pid, titulo, preco, tipo }) {
+export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
   const t = String(titulo || '').trim().slice(0, 150);
   const p = Math.round(Number(preco) * 100) / 100;
   if (!t || !(p > 0 && p < 1000)) return { erro: 'dados', status: 400 };
@@ -134,7 +134,9 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo }) {
   if (existente) return { erro: 'ja_enviado', status: 409, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(existente.id)}` };
   const det = await detalharCj(env, pid);
   if (det.erro) return det;
-  const media = det.fotos.map((u) => ({ originalSource: u, mediaContentType: 'IMAGE', alt: t }));
+  // `fotos` (opcional): só estas, e só se forem mesmo da CJ (o app descarta as que têm letras antes de enviar).
+  const escolhidas = Array.isArray(fotos) ? det.fotos.filter((u) => fotos.includes(u)) : det.fotos;
+  const media = escolhidas.map((u) => ({ originalSource: u, mediaContentType: 'IMAGE', alt: t }));
   const cri = await consultar(env, `mutation($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
     productCreate(product: $product, media: $media) { product { id variants(first: 1) { nodes { id } } } userErrors { field message } } }`,
   { product: { title: t, status: 'DRAFT', vendor: 'LeunaPets', productType: tp === 'Gatos' ? 'Gatos' : 'Cães', tags: [tag, tp] }, media });
@@ -153,7 +155,7 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo }) {
     const a = await consultar(env, 'mutation($id: ID!, $ids: [ID!]!) { collectionAddProducts(id: $id, productIds: $ids) { userErrors { message } } }', { id: col, ids: [prodId] });
     if (a.erro || a.dados?.collectionAddProducts?.userErrors?.length) avisos.push('colecao');
   } else avisos.push('colecao');
-  return { ok: true, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(prodId)}`, fotos: det.fotos.length, avisos };
+  return { ok: true, admin: `https://admin.shopify.com/store/${h}/products/${gidNum(prodId)}`, fotos: escolhidas.length, avisos };
 }
 
 /** Todas as fotos dos produtos da loja (até 50 produtos, 30 fotos cada), para a galeria do app. */
@@ -192,4 +194,22 @@ export async function apagarFotos(env, itens) {
     }
   }
   return { ok: true, apagadas, falhas };
+}
+
+const HOSTS_FOTO = /(^|\.)(cjdropshipping\.com|cjdropshipping\.cn|cjcdn\.com|cdn\.shopify\.com)$/;
+
+/** Baixa uma foto da CJ ou da Shopify para o app ler as letras (o navegador sozinho não consegue por causa de CORS). */
+export async function baixarFoto(url) {
+  let u;
+  try { u = new URL(String(url || '')); } catch { return { erro: 'url', status: 400 }; }
+  if (u.protocol !== 'https:' || !HOSTS_FOTO.test(u.hostname)) return { erro: 'url', status: 400 };
+  try {
+    const r = await fetch(u.toString(), { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LeunaPets/1.0)' }, redirect: 'follow' });
+    if (!r.ok) return { erro: 'foto_indisponivel', status: 502 };
+    const tipo = r.headers.get('Content-Type') || '';
+    if (!/^image\/(jpeg|png|webp|gif)/.test(tipo)) return { erro: 'foto_indisponivel', status: 415 };
+    const buf = await r.arrayBuffer();
+    if (buf.byteLength > 8 * 1024 * 1024) return { erro: 'foto_grande', status: 413 };
+    return { corpo: buf, tipo };
+  } catch { return { erro: 'foto_indisponivel', status: 502 }; }
 }

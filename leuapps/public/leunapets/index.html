@@ -108,6 +108,7 @@ td.n,th.n{text-align:right}
   #topo{display:flex;align-items:center;justify-content:space-between;background:var(--azul);padding:8px 14px}
   #topo img{height:30px}
 }
+.fotos-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:8px}.foto-card{position:relative;display:block;border:2px solid var(--linha);border-radius:10px;overflow:hidden;cursor:pointer;background:#fff}.foto-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.foto-card input{position:absolute;top:6px;left:6px;width:20px;height:20px}.foto-card small{display:block;padding:4px 6px;font-size:11px;color:#555}.foto-card.marcada{border-color:var(--verm,#d33);box-shadow:0 0 0 2px #d3333355}
 </style>
 </head>
 <body>
@@ -138,6 +139,7 @@ td.n,th.n{text-align:right}
     <button data-v="calc">🧮 Calculadora</button>
     <button data-v="meus">⭐ Meus produtos</button>
     <button data-v="loja">🛍 Minha loja</button>
+    <button data-v="fotos">🖼 Fotos</button>
     <div class="grupo">Tráfego pago</div>
     <button data-v="meta">📘 Facebook e Instagram</button>
     <button data-v="tiktok">🎵 TikTok</button>
@@ -582,6 +584,51 @@ async function lojaMarcarEnviados() {
   if (mudou) { salvar(); if (vista === 'fornecedor') cjRankDesenhar(); }
 }
 
+
+// ----- Leitor de letras nas fotos (OCR, roda neste computador) -----
+const OCR_CACHE = 'leunapets_ocr_v1';
+let ocrCache = {}; try { ocrCache = JSON.parse(localStorage.getItem(OCR_CACHE) || '{}') || {}; } catch {}
+const ocrSalvar = () => { try { const k = Object.keys(ocrCache); if (k.length > 3000) k.slice(0, 1000).forEach((x) => delete ocrCache[x]); localStorage.setItem(OCR_CACHE, JSON.stringify(ocrCache)); } catch {} };
+let ocrWorker = null, ocrCarregando = null;
+function ocrScript() {
+  return new Promise((ok, falha) => {
+    if (window.Tesseract) return ok();
+    const t = document.createElement('script'); t.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+    t.onload = () => ok(); t.onerror = () => falha(new Error('script')); document.head.appendChild(t);
+  });
+}
+/** Prepara o leitor (baixa uma vez e fica guardado no navegador). Devolve true/false. */
+async function ocrPreparar(aviso) {
+  if (ocrWorker) return true;
+  if (!ocrCarregando) ocrCarregando = (async () => {
+    await ocrScript();
+    try { ocrWorker = await window.Tesseract.createWorker(['eng', 'chi_sim']); }
+    catch { ocrWorker = await window.Tesseract.createWorker('eng'); }
+    return true;
+  })().catch(() => { ocrCarregando = null; return false; });
+  if (aviso) aviso('Preparando o leitor de letras (só na primeira vez, pode levar 1 minuto)…');
+  return ocrCarregando;
+}
+/** Decide se o resultado da leitura parece ter letras de verdade (descarta ruído de textura e de tecido). */
+function ocrTemLetras(dados) {
+  const palavras = (dados?.words || []).filter((w) => (w.confidence ?? 0) >= 65);
+  const latinas = palavras.filter((w) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(String(w.text || '').trim())).length;
+  const chinesas = palavras.reduce((n, w) => n + (String(w.text || '').match(/[㐀-鿿]/g) || []).length, 0);
+  return latinas >= 2 || chinesas >= 3;
+}
+/** true = tem letras, false = limpa, null = não deu para ler a foto. Guarda o resultado para não ler de novo. */
+async function fotoTemLetras(url, chave) {
+  if (chave && chave in ocrCache) return ocrCache[chave];
+  try {
+    const r = await fetch('/loja-api/dono/foto?u=' + encodeURIComponent(url), { credentials: 'same-origin' });
+    if (!r.ok) return null;
+    const { data } = await ocrWorker.recognize(await r.blob());
+    const v = ocrTemLetras(data);
+    if (chave) { ocrCache[chave] = v; ocrSalvar(); }
+    return v;
+  } catch { return null; }
+}
+
 // ----- Minha loja (Shopify) -----
 let lojaEstado = null, lojaLista = { carregando: false, itens: [], msg: '' }, lojaMsg = '', lojaOcupado = false, lojaModoSegredo = false;
 const lojaErros = { loja_invalida: 'O endereço precisa terminar em .myshopify.com (ex.: bfstxp-0s.myshopify.com).', chave_invalida: 'Essa chave não parece certa. Copie de novo, sem espaços.',
@@ -655,15 +702,36 @@ async function enviarParaLoja(it) {
     <label>Título</label><input id="en-tit" value="${esc(it.nome.slice(0, 120))}">
     <label>Preço de venda (€, com IVA)</label><input id="en-preco" inputmode="decimal" value="${esc(String(it.preco))}">
     <label>Coleção</label><select id="en-tipo"><option ${gato ? '' : 'selected'}>Cães</option><option ${gato ? 'selected' : ''}>Gatos</option></select>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500;margin-top:8px"><input id="en-ocr" type="checkbox" checked style="width:auto;margin-top:3px"> <span>🤖 Tirar sozinho as fotos que têm letras<br><small class="nota">Demora um pouco mais, mas a loja fica só com fotos limpas.</small></span></label>
     <div class="erro" id="en-erro"></div><div class="linha" style="margin-top:8px"><button class="btn fixo" id="en-ok">Enviar</button><button class="btn sec fixo" id="en-x">Cancelar</button></div>`;
   document.body.appendChild(dlg); dlg.showModal();
   $('#en-x').addEventListener('click', () => dlg.close());
   $('#en-ok').addEventListener('click', async () => {
     const b = $('#en-ok'); b.disabled = true; b.textContent = 'Enviando…'; $('#en-erro').textContent = '';
-    const r = await api('shopify/enviar', { pid: it.pid, titulo: $('#en-tit').value.trim(), preco: num($('#en-preco').value), tipo: $('#en-tipo').value }).catch(() => null);
+    const corpo = { pid: it.pid, titulo: $('#en-tit').value.trim(), preco: num($('#en-preco').value), tipo: $('#en-tipo').value };
+    let descartadas = 0;
+    if ($('#en-ocr').checked) {
+      const msg = (t) => { b.textContent = t.length > 40 ? 'Preparando…' : t; $('#en-erro').style.color = 'var(--cinza,#555)'; $('#en-erro').textContent = t; };
+      const lista = await api('cj/fotos', { pid: it.pid }).catch(() => null);
+      const prontas = await ocrPreparar(msg);
+      if (!lista?.ok || !prontas) {
+        $('#en-erro').style.color = ''; b.disabled = false; b.textContent = 'Enviar';
+        if (!confirm('Não consegui ler as letras das fotos agora. Enviar todas as fotos mesmo assim? (Depois você pode limpar em 🖼 Fotos.)')) { $('#en-erro').textContent = ''; return; }
+        b.disabled = true; b.textContent = 'Enviando…';
+      } else {
+        const limpas = [];
+        for (let i = 0; i < lista.j.fotos.length; i++) {
+          msg(`Lendo a foto ${i + 1} de ${lista.j.fotos.length}…`);
+          const t = await fotoTemLetras(lista.j.fotos[i], 'cj:' + lista.j.fotos[i]);
+          if (t === true) descartadas++; else limpas.push(lista.j.fotos[i]);
+        }
+        corpo.fotos = limpas; b.textContent = 'Enviando…'; $('#en-erro').style.color = ''; $('#en-erro').textContent = '';
+      }
+    }
+    const r = await api('shopify/enviar', corpo).catch(() => null);
     if (r?.ok) {
       const av = r.j.avisos || [];
-      dlg.innerHTML = `<h3 style="margin:0 0 8px">✅ Enviado como rascunho</h3><p>${r.j.fotos} foto(s) enviada(s).${av.includes('preco') ? ' <b>Atenção:</b> confira o preço na Shopify.' : ''}${av.includes('colecao') ? ' Não achei a coleção, coloque na mão.' : ''}</p>
+      dlg.innerHTML = `<h3 style="margin:0 0 8px">✅ Enviado como rascunho</h3><p>${r.j.fotos} foto(s) enviada(s)${descartadas ? `, ${descartadas} com letras descartada(s)` : ''}.${r.j.fotos === 0 ? ' <b>Atenção:</b> nenhuma foto passou. Ponha as fotos na mão na Shopify.' : ''}${av.includes('preco') ? ' <b>Atenção:</b> confira o preço na Shopify.' : ''}${av.includes('colecao') ? ' Não achei a coleção, coloque na mão.' : ''}</p>
         <div class="linha"><a class="btn fixo" href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir na loja ↗</a><button class="btn sec fixo" id="en-fim">Fechar</button></div>`;
       $('#en-fim').addEventListener('click', () => dlg.close());
       D.enviados[it.pid] = r.j.admin; salvar(); if (vista === 'fornecedor') cjRankDesenhar();
@@ -674,6 +742,73 @@ async function enviarParaLoja(it) {
     if (r?.j?.erro === 'ja_enviado') { D.enviados[it.pid] = r.j.admin; salvar(); cjRankDesenhar(); $('#en-erro').innerHTML = `Este produto já está na loja. <a href="${esc(r.j.admin)}" target="_blank" rel="noopener">Abrir ↗</a>`; }
     else $('#en-erro').textContent = lojaErros[r?.j?.erro] || 'Não deu para enviar agora.';
   });
+}
+
+
+// ----- Fotos (galeria de todas as fotos da loja) -----
+let fotosEstado = { carregando: false, itens: [], msg: '', lendo: false, parar: false, feito: 0, total: 0, marcadas: new Set(), apagando: false };
+const fotoChave = (f) => 'sh:' + f.media;
+TELAS.fotos = () => `<h2>🖼 Fotos</h2><p class="sub">Todas as fotos dos produtos da sua loja. O robô separa as que têm letras e você apaga todas de uma vez.</p><div id="fotos-area"><div class="card"><p class="nota">Carregando…</p></div></div>`;
+LIGAR.fotos = async () => {
+  if (!lojaEstado) await lojaCarregarEstado();
+  if (!lojaEstado.ligada) { $('#fotos-area').innerHTML = '<div class="card"><p>A loja ainda não está ligada. Vá em <b>🛍 Minha loja</b>.</p></div>'; return; }
+  await fotosCarregar();
+};
+async function fotosCarregar() {
+  fotosEstado = { ...fotosEstado, carregando: true, msg: '' }; fotosDesenhar();
+  const r = await api('shopify/fotos', {}).catch(() => null);
+  if (r?.ok) { fotosEstado.itens = r.j.fotos; fotosEstado.msg = ''; fotosEstado.marcadas = new Set(r.j.fotos.filter((f) => ocrCache[fotoChave(f)] === true).map((f) => f.media)); }
+  else fotosEstado.msg = lojaErros[r?.j?.erro] || 'Não deu para ler as fotos agora.';
+  fotosEstado.carregando = false; fotosDesenhar();
+}
+function fotosDesenhar() {
+  const el = $('#fotos-area'); if (!el) return;
+  const E = fotosEstado;
+  const com = E.itens.filter((f) => ocrCache[fotoChave(f)] === true), sem = E.itens.filter((f) => ocrCache[fotoChave(f)] === false), nao = E.itens.filter((f) => !(fotoChave(f) in ocrCache) || ocrCache[fotoChave(f)] === null);
+  const grade = (l) => `<div class="fotos-grade">${l.map((f) => `<label class="foto-card${E.marcadas.has(f.media) ? ' marcada' : ''}"><img src="${esc(f.url)}&width=300" loading="lazy" alt=""><input type="checkbox" data-foto="${esc(f.media)}" ${E.marcadas.has(f.media) ? 'checked' : ''}><small>${esc(f.titulo.slice(0, 28))}${f.status === 'DRAFT' ? ' · rascunho' : ''}</small></label>`).join('')}</div>`;
+  el.innerHTML = `<div class="card">
+    ${E.carregando ? '<p class="nota">Lendo a loja…</p>' : E.msg ? `<div class="erro">${esc(E.msg)}</div>` : `<p><b>${E.itens.length}</b> foto(s) na loja · <b>${com.length}</b> com letras · <b>${sem.length}</b> limpas · <b>${nao.length}</b> ainda não lidas</p>`}
+    <div class="linha"><button class="btn fixo" id="fo-ler" ${E.lendo || !E.itens.length ? 'disabled' : ''}>${E.lendo ? `Lendo ${E.feito} de ${E.total}…` : '🤖 Procurar fotos com letras'}</button>${E.lendo ? '<button class="btn sec fixo" id="fo-parar">Parar</button>' : ''}<button class="btn sec fixo" id="fo-atualizar">↻ Recarregar</button></div>
+    <div class="erro" id="fo-erro"></div>
+    ${E.lendo ? `<div class="barra"><i style="width:${E.total ? E.feito / E.total * 100 : 0}%"></i></div>` : ''}
+  </div>
+  ${E.itens.length ? `<div class="card"><h3>Com letras (${com.length})</h3>${com.length ? `<p class="nota">Já vêm marcadas. Desmarque as que quiser manter.</p>${grade(com)}` : '<p class="nota">Nenhuma encontrada.</p>'}
+    <div class="linha" style="margin-top:10px"><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !E.marcadas.size ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${E.marcadas.size})`}</button></div></div>
+  <div class="card"><h3>Limpas (${sem.length})</h3><p class="nota">Toque numa foto para marcar na mão, se achar que tem letras.</p>${grade(sem)}</div>
+  ${nao.length ? `<div class="card"><h3>Ainda não lidas (${nao.length})</h3>${grade(nao)}</div>` : ''}` : ''}`;
+  el.querySelectorAll('[data-foto]').forEach((c) => c.addEventListener('change', () => { c.checked ? E.marcadas.add(c.dataset.foto) : E.marcadas.delete(c.dataset.foto); fotosDesenhar(); }));
+  $('#fo-atualizar')?.addEventListener('click', fotosCarregar);
+  $('#fo-parar')?.addEventListener('click', () => { E.parar = true; });
+  $('#fo-ler')?.addEventListener('click', fotosLer);
+  $('#fo-apagar')?.addEventListener('click', fotosApagar);
+}
+async function fotosLer() {
+  const E = fotosEstado, erro = (t) => { const e = $('#fo-erro'); if (e) e.textContent = t; };
+  const alvo = E.itens.filter((f) => !(fotoChave(f) in ocrCache) || ocrCache[fotoChave(f)] === null);
+  if (!alvo.length) return erro('Todas as fotos já foram lidas.');
+  E.lendo = true; E.parar = false; E.feito = 0; E.total = alvo.length; fotosDesenhar(); erro('Preparando o leitor de letras (só na primeira vez, pode levar 1 minuto)…');
+  if (!(await ocrPreparar())) { E.lendo = false; fotosDesenhar(); return erro('Não consegui carregar o leitor de letras. Confira a internet e tente de novo. Você ainda pode marcar as fotos na mão.'); }
+  erro('');
+  for (const f of alvo) {
+    if (E.parar) break;
+    const t = await fotoTemLetras(f.url, fotoChave(f));
+    if (t === true) E.marcadas.add(f.media);
+    E.feito++; if (E.feito % 2 === 0 || E.feito === E.total) fotosDesenhar();
+  }
+  E.lendo = false; fotosDesenhar();
+}
+async function fotosApagar() {
+  const E = fotosEstado; const sel = E.itens.filter((f) => E.marcadas.has(f.media));
+  if (!sel.length || !confirm(`Apagar ${sel.length} foto(s) da loja? Isso não pode ser desfeito.`)) return;
+  E.apagando = true; fotosDesenhar();
+  let apagadas = 0, falhas = 0, erroGeral = '';
+  for (let i = 0; i < sel.length; i += 100) {
+    const r = await api('shopify/fotos-apagar', { itens: sel.slice(i, i + 100).map((f) => ({ produto: f.produto, media: f.media })) }).catch(() => null);
+    if (r?.ok) { apagadas += r.j.apagadas; falhas += r.j.falhas; } else { erroGeral = lojaErros[r?.j?.erro] || 'Não deu para apagar agora.'; break; }
+  }
+  E.apagando = false;
+  await fotosCarregar();
+  const e = $('#fo-erro'); if (e) { e.style.color = erroGeral ? '' : 'var(--verde,#157347)'; e.textContent = erroGeral || `${apagadas} foto(s) apagada(s)${falhas ? `, ${falhas} não deu` : ''}.`; }
 }
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----

@@ -122,3 +122,30 @@ test('fotos: lista de todos os produtos e apaga em lote só ids válidos', async
     assert.equal((await apagarFotos(env, [])).erro, 'dados');
   } finally { globalThis.fetch = original; }
 });
+
+test('foto: só baixa de hosts da CJ e da Shopify; enviar usa só as fotos escolhidas', async () => {
+  const { baixarFoto } = await import('../src/shopify.js');
+  for (const ruim of ['', 'http://cf.cjdropshipping.com/a.jpg', 'https://evil.com/a.jpg', 'https://cdn.shopify.com.evil.com/a.jpg', 'https://127.0.0.1/a.jpg']) assert.equal((await baixarFoto(ruim)).erro, 'url', ruim);
+  const original = globalThis.fetch; const env = banco(); let media = null;
+  globalThis.fetch = async (u, o) => {
+    u = String(u);
+    if (u.includes('cf.cjdropshipping.com')) return new Response(new Uint8Array([1, 2, 3]), { headers: { 'Content-Type': 'image/jpeg' } });
+    if (u.includes('cjdropshipping.com/api')) return res({ code: 200, data: { pid: 'PID123456', productNameEn: 'Bed', bigImage: 'https://cf.cjdropshipping.com/a.jpg', productImage: JSON.stringify(['https://cf.cjdropshipping.com/b.jpg', 'https://cf.cjdropshipping.com/c.jpg']) } });
+    const { query, variables } = JSON.parse(o.body);
+    if (query.includes('shop {')) return res({ data: { shop: { name: 'L' } } });
+    if (query.includes('products(first: 1')) return res({ data: { products: { nodes: [] } } });
+    if (query.includes('productCreate')) { media = variables.media; return res({ data: { productCreate: { product: { id: 'gid://shopify/Product/5', variants: { nodes: [] } }, userErrors: [] } } }); }
+    if (query.includes('collections(')) return res({ data: { collections: { nodes: [] } } });
+    throw new Error('inesperada ' + query);
+  };
+  try {
+    const f = await baixarFoto('https://cf.cjdropshipping.com/a.jpg');
+    assert.equal(f.tipo, 'image/jpeg'); assert.equal(f.corpo.byteLength, 3);
+    await guardarLoja(env, { loja: 'bfstxp-0s.myshopify.com', token: 'shpat_0123456789abcdef0123' });
+    const r = await enviarProduto(env, { pid: 'PID123456', titulo: 'Cama', preco: 30, tipo: 'Cães', fotos: ['https://cf.cjdropshipping.com/b.jpg', 'https://outro.com/x.jpg'] });
+    assert.equal(r.fotos, 1);
+    assert.deepEqual(media.map((m) => m.originalSource), ['https://cf.cjdropshipping.com/b.jpg']);
+    const r2 = await enviarProduto(env, { pid: 'PID123457', titulo: 'Cama 2', preco: 30, tipo: 'Cães', fotos: [] });
+    assert.equal(r2.fotos, 0); assert.deepEqual(media, []);
+  } finally { globalThis.fetch = original; }
+});

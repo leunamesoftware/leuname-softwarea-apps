@@ -5,8 +5,8 @@ import { listarCanal, marcarEnvio } from './canal.js';
 import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmail, listarBrindesApps, darBrindeApp, tirarBrindeApp } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
-import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj } from './cj.js';
-import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos } from './shopify.js';
+import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj, detalharCj } from './cj.js';
+import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos, baixarFoto } from './shopify.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { conferirLicenca, zipDoPedido } from './templates.js';
@@ -390,6 +390,13 @@ export default {
         const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, dados);
         return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
       }
+      // Foto da CJ ou da Shopify, baixada pelo servidor para o app ler as letras (só o dono).
+      if (pathname === '/api/dono/foto' && m === 'GET') {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        const f = await baixarFoto(new URL(req.url).searchParams.get('u'));
+        return f.erro ? json({ erro: f.erro }, f.status) : new Response(f.corpo, { headers: { 'Content-Type': f.tipo, 'Cache-Control': 'private, max-age=3600' } });
+      }
       // CJ Dropshipping dentro do app LeunaPets (só o dono): a chave fica guardada no servidor.
       if (pathname.startsWith('/api/dono/cj/')) {
         const conta = await contaDaSessao(env, req);
@@ -399,7 +406,7 @@ export default {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const d = await corpo(req);
         const acao = { '/api/dono/cj/chave': () => guardarChave(env, d?.chave), '/api/dono/cj/remover': () => removerChave(env),
-          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid) }[pathname];
+          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro }, r.status) : json(r);
