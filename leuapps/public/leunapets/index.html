@@ -416,11 +416,86 @@ TELAS.fornecedor = () => {
     ${prontos.map((m) => `<div class="item"><div class="t">${esc(m.titulo)}</div><div class="m">${m.precoVenda ? 'venda ' + eur(num(m.precoVenda)) : ''}${m.custo ? ' · custo ' + eur(num(m.custo)) : ''}${m.frete ? ' · frete ' + eur(num(m.frete)) : ''}</div>
       <label>Link do produto na CJ</label><input data-cjlink="${m.id}" value="${esc(m.cjLink || '')}" placeholder="cole aqui o endereço do produto na CJ"></div>`).join('') || '<p class="nota">Nenhum produto “Aprovado” ainda. Em Meus produtos, mude o estado para Aprovado.</p>'}
     <p class="nota">Depois me diga no chat: eu confiro a CJ (custo, frete e prazo para Portugal) e crio o produto na loja, com texto em português de Portugal.</p></div>
-  <div class="card"><h3>Ligação automática com a CJ</h3>
-    <p>A CJ tem uma ligação para programas (API), grátis para quem tem conta. Com ela o app puxa sozinho o preço, o custo e o frete de cada produto, sem você digitar.</p>
-    <p class="nota">Para ativar: na CJ, em Minha conta → Authorization/API, gerar a chave. A chave não vai neste chat: fica guardada como segredo no servidor e eu explico o passo quando você chegar nessa tela.</p></div>`;
+  <div class="card" id="cj-area"><h3>Ligação automática com a CJ</h3><p class="nota">Carregando…</p></div>`;
 };
-LIGAR.fornecedor = () => document.querySelectorAll('[data-cjlink]').forEach((i) => i.addEventListener('change', () => { D.meus.find((m) => m.id === i.dataset.cjlink).cjLink = i.value.trim(); salvar(); }));
+let cjEstado = null, cjBusca = { q: '', produtos: [], cambio: null, msg: '' }, cjAnalise = null, cjOcupado = false;
+const usd = (n, c) => (c ? arred(n * c) : null);
+function cjDesenhar() {
+  const el = $('#cj-area'); if (!el) return;
+  if (cjEstado === null) return (el.innerHTML = '<h3>Ligação automática com a CJ</h3><p class="nota">Carregando…</p>');
+  if (!cjEstado) {
+    el.innerHTML = `<h3>Ligar a CJ</h3><p>Com a chave de API da CJ, o app busca produtos e calcula o frete para Portugal sozinho.</p>
+      <label>Chave de API da CJ</label><input id="cj-chave" type="password" autocomplete="off" placeholder="cole aqui a chave copiada da CJ">
+      <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input id="cj-ver" type="checkbox" style="width:auto"> 👁 Mostrar</label>
+      <div class="erro" id="cj-erro">${esc(cjBusca.msg)}</div><button class="btn" id="cj-ligar" ${cjOcupado ? 'disabled' : ''}>${cjOcupado ? 'Testando…' : 'Ligar à CJ'}</button>
+      <p class="nota">A chave é testada com a CJ e guardada no servidor. Ela nunca fica neste computador nem aparece de novo.</p>`;
+    $('#cj-ver').addEventListener('change', (e) => { $('#cj-chave').type = e.target.checked ? 'text' : 'password'; });
+    $('#cj-ligar').addEventListener('click', async () => {
+      const chave = $('#cj-chave').value.trim(); if (!chave) return;
+      cjOcupado = true; cjBusca.msg = ''; cjDesenhar();
+      const r = await api('cj/chave', { chave }).catch(() => null);
+      cjOcupado = false;
+      if (r?.ok) { cjEstado = true; cjBusca.msg = ''; } else cjBusca.msg = r?.j?.erro === 'chave_invalida' ? 'Essa chave não parece certa. Copie de novo, sem espaços.' : r?.j?.erro === 'cj_recusou' ? 'A CJ não aceitou essa chave. Confira se é do tipo API Key e está ativada.' : 'Não deu para ligar agora. Tente de novo.';
+      cjDesenhar();
+    });
+    return;
+  }
+  const c = cjBusca.cambio;
+  el.innerHTML = `<h3>Buscar na CJ <span class="selo v">ligada</span></h3>
+    <div class="linha"><div><label>O que procurar (em inglês funciona melhor)</label><input id="cj-q" value="${esc(cjBusca.q)}" placeholder="dog collar, cat water fountain…"></div><button class="btn fixo" id="cj-buscar" ${cjOcupado ? 'disabled' : ''}>${cjOcupado ? 'Buscando…' : '🔎 Buscar'}</button></div>
+    <div class="erro">${esc(cjBusca.msg)}</div>
+    ${c ? `<p class="nota">Preços da CJ em dólar, convertidos a 1 US$ = ${c.toFixed(4)} €.</p>` : ''}
+    <div class="prods">${cjBusca.produtos.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')">${p.lojas ? `<span class="pos">${p.lojas} lojas</span>` : ''}</div>
+      <div class="corpo"><div class="tit">${esc(p.nome)}</div><div class="preco">${p.precoUsd ? (c ? eur(usd(p.precoUsd, c)) : p.precoUsd.toFixed(2) + ' US$') : '—'}</div>
+      <div class="acoes"><button class="btn peq" data-cj-analisar="${esc(p.pid)}">📦 Frete para Portugal</button></div></div></div>`).join('')}</div>
+    <div id="cj-analise"></div>
+    <p class="nota"><a href="#" id="cj-trocar">Trocar a chave da CJ</a></p>`;
+  $('#cj-buscar').addEventListener('click', cjBuscar);
+  $('#cj-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') cjBuscar(); });
+  document.querySelectorAll('[data-cj-analisar]').forEach((b) => b.addEventListener('click', () => cjAnalisar(b.dataset.cjAnalisar)));
+  $('#cj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('cj/remover', {}).catch(() => {}); cjEstado = false; cjBusca = { q: '', produtos: [], cambio: null, msg: '' }; cjDesenhar(); } });
+  cjAnaliseDesenhar();
+}
+const cjErros = { sem_chave: 'A chave da CJ não está guardada.', muitas_chamadas: 'A CJ pediu para ir mais devagar. Espere um minuto.', busca_curta: 'Escreva pelo menos 2 letras.', cj_erro: 'A CJ não respondeu bem. Tente de novo.', sem_variantes: 'Esse produto não tem variantes com preço.', so_o_dono: 'Entre de novo na sua conta.' };
+async function cjBuscar() {
+  cjBusca.q = $('#cj-q').value.trim(); if (!cjBusca.q) return;
+  cjOcupado = true; cjBusca.msg = ''; cjAnalise = null; cjDesenhar();
+  const r = await api('cj/buscar', { q: cjBusca.q }).catch(() => null);
+  cjOcupado = false;
+  if (r?.ok) { cjBusca.produtos = r.j.produtos; cjBusca.cambio = r.j.cambio; if (!r.j.produtos.length) cjBusca.msg = 'Nada encontrado. Tente outra palavra em inglês.'; }
+  else cjBusca.msg = cjErros[r?.j?.erro] || 'Não deu para buscar agora.';
+  cjDesenhar();
+}
+async function cjAnalisar(pid) {
+  cjAnalise = { carregando: true }; cjAnaliseDesenhar();
+  const r = await api('cj/analisar', { pid }).catch(() => null);
+  cjAnalise = r?.ok ? r.j : { erro: cjErros[r?.j?.erro] || 'Não deu para ver esse produto agora.' };
+  cjAnaliseDesenhar(); $('#cj-analise')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function cjAnaliseDesenhar() {
+  const el = $('#cj-analise'); if (!el || !cjAnalise) return;
+  if (cjAnalise.carregando) return (el.innerHTML = '<div class="card" style="margin-top:14px">Buscando o preço e o frete na CJ…</div>');
+  if (cjAnalise.erro) return (el.innerHTML = `<div class="card" style="margin-top:14px"><div class="erro">${esc(cjAnalise.erro)}</div></div>`);
+  const a = cjAnalise, c = a.cambio || cjBusca.cambio;
+  const v = a.variantes[0];
+  el.innerHTML = `<div class="card" style="margin-top:14px"><h3>${esc(a.nome)}</h3>
+    <p>Variante mais barata: <b>${esc(v.nome || v.sku)}</b> — custo <b>${c ? eur(usd(v.precoUsd, c)) : v.precoUsd + ' US$'}</b>${a.pesoG ? ` · peso ${a.pesoG} g` : ''}</p>
+    ${a.envio.length ? `<label>Envio da China para Portugal</label><select id="cj-envio">${a.envio.map((o, i) => `<option value="${i}">${esc(o.nome)} — ${c ? eur(usd(o.precoUsd, c)) : o.precoUsd + ' US$'}${o.prazo ? ' · ' + esc(o.prazo) + ' dias' : ''}</option>`).join('')}</select>
+      ${a.envio.some((o) => o.ivaCjUsd) ? '<p class="nota">A CJ informou um valor de IVA à parte em algumas opções. A calculadora já inclui o IVA de 23% sobre o preço de venda, por isso ele não é somado ao frete.</p>' : ''}`
+      : `<div class="aviso">Não consegui o frete para Portugal agora (${esc(a.envioErro || 'sem opções')}). Veja na CJ e digite na calculadora.</div>`}
+    <div class="linha" style="margin-top:10px"><button class="btn fixo" id="cj-usar">🧮 Levar para a calculadora</button></div>
+    ${a.variantes.length > 1 ? `<p class="nota">Este produto tem ${a.variantes.length} variantes (preços de ${eur(usd(a.variantes[0].precoUsd, c) || 0)} a ${eur(usd(a.variantes[a.variantes.length - 1].precoUsd, c) || 0)}). O custo acima é da mais barata.</p>` : ''}</div>`;
+  $('#cj-usar').addEventListener('click', () => {
+    const o = a.envio[Number($('#cj-envio')?.value || 0)];
+    calcEntrada = { titulo: a.nome, preco: '', custo: c ? String(usd(v.precoUsd, c)) : '', frete: o && c ? String(usd(o.precoUsd, c)) : '', anuncio: '', foto: a.foto || '', link: '', loja: 'CJ' };
+    ir('calc');
+  });
+}
+LIGAR.fornecedor = async () => {
+  document.querySelectorAll('[data-cjlink]').forEach((i) => i.addEventListener('change', () => { D.meus.find((m) => m.id === i.dataset.cjlink).cjLink = i.value.trim(); salvar(); }));
+  if (cjEstado === null) { const r = await api('cj/estado').catch(() => null); cjEstado = r?.ok ? Boolean(r.j.ligada) : null; }
+  cjDesenhar();
+};
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----
 const PLAT = {
