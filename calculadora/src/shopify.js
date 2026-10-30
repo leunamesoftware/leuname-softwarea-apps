@@ -508,12 +508,12 @@ export const slugPt = slug;
 export async function lerProduto(env, { id }) {
   if (!/^\d{6,20}$/.test(String(id || ''))) return { erro: 'id', status: 400 };
   const r = await consultar(env, `query($id: ID!) { product(id: $id) { id title descriptionHtml status handle tags options { name }
-    media(first: 20) { nodes { ... on MediaImage { id image { url } } } }
+    media(first: 20) { nodes { id status preview { image { url } } ... on MediaImage { image { url } } } }
     variants(first: 60) { nodes { id title price compareAtPrice } } } }`, { id: `gid://shopify/Product/${id}` });
   if (r.erro) return r;
   const p = r.dados?.product; if (!p) return { erro: 'nao_achei', status: 404 };
   return { id: String(id), titulo: p.title, descricao: p.descriptionHtml || '', status: p.status, handle: p.handle,
-    opcoes: (p.options || []).map((o) => o.name), fotos: (p.media?.nodes || []).filter((m) => m?.id && m.image?.url).map((m) => ({ id: m.id, url: m.image.url })),
+    opcoes: (p.options || []).map((o) => o.name), fotos: (p.media?.nodes || []).filter((m) => m?.id && /^gid:\/\/shopify\/MediaImage\//.test(m.id)).map((m) => ({ id: m.id, url: m.image?.url || m.preview?.image?.url || null, processando: m.status !== 'READY' })),
     variantes: (p.variants?.nodes || []).map((v) => ({ id: v.id, nome: v.title, preco: v.price, comparar: v.compareAtPrice })) };
 }
 
@@ -591,7 +591,14 @@ export async function subirFotoProduto(env, { id, dados, tipo, principal }) {
   const ce = c.dados?.productCreateMedia;
   if (c.erro || ce?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(ce?.userErrors || c).slice(0, 300) };
   const novo = ce?.media?.[0]?.id;
-  if (principal && novo) await fotoPrincipal(env, { id, mediaId: novo });
+  if (principal && novo) { // espera a Shopify terminar de processar a foto, senão ela não deixa mudar a ordem
+    for (let i = 0; i < 12; i++) {
+      await esperar(1000);
+      const t = await consultar(env, `query($id: ID!) { node(id: $id) { ... on MediaImage { status } } }`, { id: novo });
+      if (t.dados?.node?.status === 'READY') break;
+    }
+    await fotoPrincipal(env, { id, mediaId: novo });
+  }
   return { ok: true };
 }
 
