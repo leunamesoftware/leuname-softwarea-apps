@@ -118,9 +118,10 @@ td.n,th.n{text-align:right}
     <h1>LeunaPets</h1>
     <p id="e-sub">Entre com a sua conta de dono.</p>
     <label for="e-email">E-mail</label><input id="e-email" type="email" autocomplete="username" required>
-    <label for="e-senha">Senha da Área do Dono</label><input id="e-senha" type="password" autocomplete="current-password" required>
+    <label for="e-senha" id="e-l-senha">Senha da Área do Dono</label><input id="e-senha" type="password" autocomplete="current-password" required>
+    <div id="e-rep" class="oculto"><label for="e-senha2">Repita a senha</label><input id="e-senha2" type="password" autocomplete="new-password"></div>
     <div class="erro" id="e-erro"></div>
-    <button class="btn" type="submit">Entrar</button>
+    <button class="btn" type="submit" id="e-btn">Entrar</button>
   </form>
 </div>
 
@@ -167,20 +168,31 @@ async function api(caminho, corpo) {
   let j = null; try { j = await r.json(); } catch {}
   return { ok: r.ok, status: r.status, j };
 }
+let criando = false;
 async function iniciar() {
   let est = null;
   try { est = (await api('estado')).j; } catch {}
   if (est?.logado) return abrirApp();
   $('#entrada').classList.remove('oculto');
-  if (est && !est.temSenha) $('#e-sub').textContent = 'Antes, crie a sua senha de dono na Área do Dono (dono.leunamesoftware.com.br).';
+  if (est && !est.temSenha) {
+    criando = true;
+    $('#e-sub').textContent = 'Primeiro acesso: crie a sua senha de dono (mínimo 6 letras ou números). Use o e-mail do dono.';
+    $('#e-l-senha').textContent = 'Crie a sua senha';
+    $('#e-senha').autocomplete = 'new-password';
+    $('#e-rep').classList.remove('oculto'); $('#e-senha2').required = true;
+    $('#e-btn').textContent = 'Criar senha e entrar';
+  }
   if (!est) $('#e-erro').textContent = 'Sem internet agora. Tente de novo.';
 }
 $('#f-entrar').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('#e-erro').textContent = '';
-  const r = await api('entrar', { email: $('#e-email').value.trim(), senha: $('#e-senha').value }).catch(() => null);
+  if (criando && $('#e-senha').value !== $('#e-senha2').value) return ($('#e-erro').textContent = 'As duas senhas não são iguais.');
+  const r = await api(criando ? 'criar' : 'entrar', { email: $('#e-email').value.trim(), senha: $('#e-senha').value }).catch(() => null);
   if (r?.ok) { $('#entrada').classList.add('oculto'); return abrirApp(); }
-  $('#e-erro').textContent = r?.j?.erro === 'email' ? 'Este não é o e-mail do dono.' : r?.status === 429 ? 'Muitas tentativas. Espere um pouco.' : 'E-mail ou senha incorretos.';
+  const c = r?.j?.erro;
+  $('#e-erro').textContent = c === 'email' ? 'Este não é o e-mail do dono. Confira se é leunamesoftware@gmail.com.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 letras ou números.'
+    : c === 'ja_existe' ? 'A senha já foi criada. Feche e abra o app para entrar.' : r?.status === 429 ? 'Muitas tentativas. Espere um pouco.' : 'E-mail ou senha incorretos.';
 });
 $('#sair').addEventListener('click', async () => { await api('sair', {}).catch(() => {}); location.reload(); });
 
