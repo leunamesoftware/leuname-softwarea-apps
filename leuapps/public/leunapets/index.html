@@ -785,24 +785,64 @@ function lojaDesenhar() {
     });
     return;
   }
+  if (lojaEdit) return lojaDesenharEdicao(el);
   const L = lojaEstado;
   el.innerHTML = `<div class="card"><h3>Loja ligada <span class="selo v">${esc(L.loja)}</span></h3>
     <div class="atalhos">
       <a class="atalho" href="${esc(L.vitrine)}" target="_blank" rel="noopener">👀 Ver minha loja<small>Como o cliente vê (hoje ainda com senha)</small></a>
-      <a class="atalho" href="${esc(L.produtosAdmin)}" target="_blank" rel="noopener">✏️ Editar produtos<small>Abre os produtos no painel da Shopify</small></a>
+      <a class="atalho" href="#lj-lista" id="lj-atalho-prod">✏️ Editar produtos<small>Aqui mesmo, na lista abaixo</small></a>
       <a class="atalho" href="${esc(L.admin)}/themes" target="_blank" rel="noopener">🎨 Tema e banners<small>Editar a aparência da loja</small></a>
       <a class="atalho" href="${esc(L.admin)}/orders" target="_blank" rel="noopener">📦 Pedidos<small>Vendas e envios</small></a>
     </div>
     <p class="nota"><a href="#" id="lj-trocar">Trocar a chave da loja</a></p></div>
-  <div class="card"><h3>Produtos na loja <span class="selo n">${lojaLista.itens.length} no total</span> <span class="selo v">${lojaLista.itens.filter((p) => p.status === 'ACTIVE').length} publicados</span> <span class="selo a">${lojaLista.itens.filter((p) => p.status === 'DRAFT').length} rascunhos</span></h3>
-    ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><a class="btn peq sec" href="${esc(p.admin)}" target="_blank" rel="noopener">Editar ↗</a></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
+  <div class="card" id="lj-lista"><h3>Produtos na loja <span class="selo n">${lojaLista.itens.length} no total</span> <span class="selo v">${lojaLista.itens.filter((p) => p.status === 'ACTIVE').length} publicados</span> <span class="selo a">${lojaLista.itens.filter((p) => p.status === 'DRAFT').length} rascunhos</span></h3>
+    ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><button class="btn peq sec lj-ed" data-id="${esc(p.id)}" style="margin:0">✏️ Editar</button></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px"><button class="btn sec peq" id="lj-atualizar" style="width:100%;margin:0">↻ Atualizar</button><button class="btn peq" id="lj-variantes" style="width:100%;margin:0">🎨 Cores e tamanhos</button><button class="btn peq" id="lj-lucro" style="width:100%;margin:0">💶 Conferir lucro</button><button class="btn peq" id="lj-preparar" style="width:100%;margin:0">✨ Preparar rascunhos</button><button class="btn peq" id="lj-publicar" style="width:100%;margin:0">🚀 Publicar prontos</button></div><div id="lj-var-msg"></div></div>`;
+  el.querySelectorAll('.lj-ed').forEach((b) => b.addEventListener('click', () => lojaAbrirEdicao(b.dataset.id)));
+  $('#lj-atalho-prod').addEventListener('click', (e) => { e.preventDefault(); $('#lj-lista').scrollIntoView({ behavior: 'smooth' }); });
   $('#lj-atualizar').addEventListener('click', lojaCarregarLista);
   $('#lj-variantes').addEventListener('click', lojaAtivarVariantes);
   $('#lj-lucro').addEventListener('click', lojaConferirLucro);
   $('#lj-preparar').addEventListener('click', () => lojaEmLote('preparar'));
   $('#lj-publicar').addEventListener('click', () => lojaEmLote('publicar-pronto'));
   $('#lj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('shopify/remover', {}).catch(() => {}); lojaEstado = { ligada: false }; lojaLista = { carregando: false, itens: [], msg: '' }; lojaDesenhar(); } });
+}
+
+// ---- Editar produto dentro do app (grava na Shopify) ----
+let lojaEdit = null;
+async function lojaAbrirEdicao(id) {
+  lojaEdit = { id, carregando: true, msg: '' }; lojaDesenhar();
+  const r = await api('shopify/produto-ler', { id }).catch(() => null);
+  lojaEdit = r?.ok ? { id, carregando: false, d: r.j, msg: '' } : { id, carregando: false, d: null, msg: 'Não deu para abrir o produto agora.' };
+  lojaDesenhar();
+}
+function lojaDesenharEdicao(el) {
+  const E = lojaEdit;
+  if (E.carregando) { el.innerHTML = '<div class="card"><p class="nota">Abrindo o produto…</p></div>'; return; }
+  if (!E.d) { el.innerHTML = `<div class="card"><div class="erro">${esc(E.msg)}</div><button class="btn sec" id="ed-voltar">← Voltar</button></div>`; $('#ed-voltar').addEventListener('click', () => { lojaEdit = null; lojaDesenhar(); }); return; }
+  const d = E.d;
+  el.innerHTML = `<div class="card"><button class="btn sec peq" id="ed-voltar" style="margin:0 0 8px">← Voltar à lista</button>
+    <h3>✏️ Editar produto</h3>
+    <div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:8px">${d.fotos.slice(0, 6).map((u) => `<img src="${esc(u)}" alt="" style="width:64px;height:64px;border-radius:8px;object-fit:cover">`).join('')}</div>
+    <label>Título</label><input id="ed-titulo" value="${esc(d.titulo)}" maxlength="150">
+    <label>Descrição (pode usar HTML simples)</label><textarea id="ed-desc" rows="9" style="width:100%">${esc(d.descricao)}</textarea>
+    <label>Endereço na loja (parte final do link)</label><input id="ed-handle" value="${esc(d.handle)}">
+    <label>Preços${d.opcoes.length ? ` (${esc(d.opcoes.join(' / '))})` : ''}</label>
+    ${d.variantes.map((v) => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="flex:1;font-size:13px">${v.nome === 'Default Title' ? 'Preço' : esc(v.nome)}</span><input class="ed-preco" data-v="${esc(v.id)}" value="${esc(Number(v.preco).toFixed(2))}" inputmode="decimal" style="width:90px"> €</div>`).join('')}
+    <label>Estado</label><select id="ed-status"><option value="ACTIVE" ${d.status === 'ACTIVE' ? 'selected' : ''}>🟢 Publicado</option><option value="DRAFT" ${d.status !== 'ACTIVE' ? 'selected' : ''}>📝 Rascunho (escondido)</option></select>
+    <div class="erro" id="ed-erro">${esc(E.msg)}</div>
+    <div class="linha"><button class="btn fixo" id="ed-salvar">💾 Salvar na loja</button></div></div>`;
+  $('#ed-voltar').addEventListener('click', () => { lojaEdit = null; lojaDesenhar(); lojaCarregarLista(); });
+  $('#ed-salvar').addEventListener('click', async () => {
+    const b = $('#ed-salvar'); b.disabled = true; b.textContent = 'Salvando…';
+    const variantes = [...el.querySelectorAll('.ed-preco')].map((i) => ({ id: i.dataset.v, preco: Number(String(i.value).replace(',', '.')) }));
+    const corpo = { id: E.id, titulo: $('#ed-titulo').value, descricao: $('#ed-desc').value, status: $('#ed-status').value, variantes };
+    const h = $('#ed-handle').value.trim(); if (h && h !== d.handle) corpo.handle = h;
+    const r = await api('shopify/produto-salvar', corpo).catch(() => null);
+    b.disabled = false; b.textContent = '💾 Salvar na loja';
+    if (r?.ok) { E.msg = ''; $('#ed-erro').style.color = '#0a7d3b'; $('#ed-erro').textContent = r.j.aviso ? '✅ Salvo, mas não consegui publicar na loja online (' + r.j.aviso + ').' : '✅ Salvo na Shopify.'; d.titulo = corpo.titulo; d.handle = corpo.handle || d.handle; }
+    else { $('#ed-erro').style.color = ''; $('#ed-erro').textContent = 'Não consegui salvar: ' + (r?.j?.detalhe || r?.j?.erro || 'tente de novo'); }
+  });
 }
 /** Cria as opções de cor/tamanho da CJ em cada produto da loja e põe a foto de cada cor. Pode repetir sem problema. */
 async function lojaAtivarVariantes() {

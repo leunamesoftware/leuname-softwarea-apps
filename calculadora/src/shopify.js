@@ -499,3 +499,59 @@ export async function baixarFoto(url) {
     return { corpo: buf, tipo };
   } catch { return { erro: 'foto_indisponivel', status: 502 }; }
 }
+
+
+// ---- Editar produto dentro do app (lê e grava na Shopify) ----
+const slug = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+export const slugPt = slug;
+
+export async function lerProduto(env, { id }) {
+  if (!/^\d{6,20}$/.test(String(id || ''))) return { erro: 'id', status: 400 };
+  const r = await consultar(env, `query($id: ID!) { product(id: $id) { id title descriptionHtml status handle tags options { name }
+    media(first: 12) { nodes { ... on MediaImage { image { url } } } }
+    variants(first: 60) { nodes { id title price compareAtPrice } } } }`, { id: `gid://shopify/Product/${id}` });
+  if (r.erro) return r;
+  const p = r.dados?.product; if (!p) return { erro: 'nao_achei', status: 404 };
+  return { id: String(id), titulo: p.title, descricao: p.descriptionHtml || '', status: p.status, handle: p.handle,
+    opcoes: (p.options || []).map((o) => o.name), fotos: (p.media?.nodes || []).map((m) => m.image?.url).filter(Boolean),
+    variantes: (p.variants?.nodes || []).map((v) => ({ id: v.id, nome: v.title, preco: v.price, comparar: v.compareAtPrice })) };
+}
+
+/** Grava título, texto, endereço (handle), estado e preços. Só muda o que veio no pedido. */
+export async function salvarProduto(env, { id, titulo, descricao, status, handle, variantes, preco }) {
+  if (!/^\d{6,20}$/.test(String(id || ''))) return { erro: 'id', status: 400 };
+  const gid = `gid://shopify/Product/${id}`;
+  const input = { id: gid };
+  if (typeof titulo === 'string') { const t = titulo.trim().slice(0, 150); if (!t) return { erro: 'titulo', status: 400 }; input.title = t; }
+  if (typeof descricao === 'string') input.descriptionHtml = descricao.slice(0, 20000);
+  if (typeof handle === 'string' && handle.trim()) { input.handle = slug(handle); input.redirectNewHandle = true; }
+  if (status === 'DRAFT' || status === 'ACTIVE') input.status = status;
+  if (Object.keys(input).length > 1) {
+    const u = await consultar(env, `mutation($in: ProductUpdateInput!) { productUpdate(product: $in) { userErrors { message } } }`, { in: input });
+    const ue = u.dados?.productUpdate?.userErrors;
+    if (u.erro || ue?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(ue || u).slice(0, 300) };
+  }
+  let lista = Array.isArray(variantes) ? variantes : [];
+  if (!lista.length && Number(preco) > 0) { // um preço só para todas as variantes
+    const q = await consultar(env, `query($id: ID!) { product(id: $id) { variants(first: 60) { nodes { id } } } }`, { id: gid });
+    lista = (q.dados?.product?.variants?.nodes || []).map((v) => ({ id: v.id, preco }));
+  }
+  const vv = lista.filter((v) => /^gid:\/\/shopify\/ProductVariant\/\d+$/.test(String(v.id)) && Number(v.preco) > 0 && Number(v.preco) < 1000)
+    .map((v) => ({ id: v.id, price: Number(v.preco).toFixed(2) }));
+  if (vv.length) {
+    const b = await consultar(env, `mutation($pid: ID!, $v: [ProductVariantsBulkInput!]!) { productVariantsBulkUpdate(productId: $pid, variants: $v) { userErrors { message } } }`, { pid: gid, v: vv });
+    const be = b.dados?.productVariantsBulkUpdate?.userErrors;
+    if (b.erro || be?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(be || b).slice(0, 300) };
+  }
+  let aviso = null;
+  if (status === 'ACTIVE') { // garante que aparece na loja online
+    const pub = await consultar(env, `{ publications(first: 20) { nodes { id name } } }`);
+    const loja = pub.dados?.publications?.nodes?.find((x) => /online store|loja online/i.test(x.name || ''));
+    if (!loja) aviso = 'canal_nao_achado';
+    else {
+      const pb = await consultar(env, `mutation($id: ID!, $i: [PublicationInput!]!) { publishablePublish(id: $id, input: $i) { userErrors { message } } }`, { id: gid, i: [{ publicationId: loja.id }] });
+      if (pb.erro || pb.dados?.publishablePublish?.userErrors?.length) aviso = 'canal_falhou';
+    }
+  }
+  return { ok: true, aviso };
+}
