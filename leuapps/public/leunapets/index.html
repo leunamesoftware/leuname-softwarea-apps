@@ -316,7 +316,7 @@ TELAS.radar = () => {
     <div class="chips">${D.lojas.map((l) => `<span class="chip">${esc(l.dominio)} <small>${l.n} prod.</small><button title="Tirar" data-tirar="${esc(l.dominio)}">×</button></span>`).join('') || '<span class="nota">Nenhuma loja ainda.</span>'}</div>
     <p class="nota">“Mais vendidos” só aparece quando a loja deixa ler essa ordem; senão mostramos o catálogo na ordem normal. Preço é o que o cliente paga lá.</p></div>
   ${D.cache.length ? `<div class="card"><div class="linha">
-    <div><label>Buscar</label><input id="f-q" value="${esc(filtro.q)}" placeholder="coleira, fonte, cama…"><div class="chips" style="margin-top:6px">${SUGESTOES.map((x) => `<button class="chip" type="button" data-sug-radar="${esc(x.pt)}" style="cursor:pointer;${filtro.q === x.pt ? 'background:var(--cor,#F0306E);color:#fff' : ''}">${x.e} ${esc(x.pt)}</button>`).join('')}${filtro.q ? '<button class="chip" type="button" data-sug-radar="" style="cursor:pointer">✕ limpar</button>' : ''}</div></div>
+    <div><label>Buscar</label><input id="f-q" value="${esc(filtro.q)}" placeholder="coleira, fonte, cama…"><div class="chips" style="margin-top:6px">${SUGESTOES.map((x) => { const n = D.cache.filter((p) => (!filtro.loja || p.loja === filtro.loja) && casaBusca(p.titulo, x.pt)).length; return `<button class="chip" type="button" data-sug-radar="${esc(x.pt)}" style="cursor:pointer;${filtro.q === x.pt ? 'background:var(--cor,#F0306E);color:#fff;' : ''}${n ? '' : 'opacity:.4'}">${x.e} ${esc(x.pt)} <small>${n}</small></button>`; }).join('')}${filtro.q ? '<button class="chip" type="button" data-sug-radar="" style="cursor:pointer">✕ limpar</button>' : ''}</div></div>
     <div><label>Loja</label><select id="f-loja"><option value="">Todas</option>${D.lojas.map((l) => `<option ${filtro.loja === l.dominio ? 'selected' : ''}>${esc(l.dominio)}</option>`).join('')}</select></div>
     <div><label>Preço de (€)</label><input id="f-min" value="${esc(filtro.min)}" inputmode="decimal"></div>
     <div><label>até (€)</label><input id="f-max" value="${esc(filtro.max)}" inputmode="decimal"></div>
@@ -539,8 +539,10 @@ var SUGESTOES = [
 ];
 const semAcento = (t) => String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 function casaBusca(titulo, q) {
-  const t = semAcento(titulo), s = SUGESTOES.find((x) => x.pt === q);
-  return s ? s.ws.some((w) => t.includes(semAcento(w))) : t.includes(semAcento(q));
+  // Palavra inteira (ou começo de palavra, se tiver 4 letras ou mais): "bed" não casa com "bebedouro".
+  const toks = semAcento(titulo).split(/[^a-z0-9]+/).filter(Boolean), s = SUGESTOES.find((x) => x.pt === q);
+  const acha = (w) => { const k = semAcento(w); return k.length >= 4 ? toks.some((t) => t.startsWith(k)) : toks.includes(k); };
+  return s ? s.ws.some(acha) : semAcento(titulo).includes(semAcento(q));
 }
 
 /** "Campeão provável": está entre os primeiros da lista "mais vendidos" da loja (só quando a loja deixa ler essa ordem). Não é venda confirmada. */
