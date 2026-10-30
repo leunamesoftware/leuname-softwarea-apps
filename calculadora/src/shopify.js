@@ -165,7 +165,9 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
 // ---- Cores e tamanhos (variantes) ----
 const CORES = { pink: 'Rosa', red: 'Vermelho', green: 'Verde', blue: 'Azul', 'light blue': 'Azul claro', grey: 'Cinzento', gray: 'Cinzento', black: 'Preto', white: 'Branco',
   brown: 'Castanho', coffee: 'Café', beige: 'Bege', yellow: 'Amarelo', purple: 'Roxo', orange: 'Laranja', khaki: 'Caqui', cream: 'Creme', camel: 'Camelo', apricot: 'Alperce',
-  navy: 'Azul-marinho', rose: 'Rosa', silver: 'Prateado', gold: 'Dourado', 'dark grey': 'Cinzento escuro', 'light grey': 'Cinzento claro' };
+  navy: 'Azul-marinho', rose: 'Rosa', silver: 'Prateado', gold: 'Dourado', 'dark grey': 'Cinzento escuro', 'light grey': 'Cinzento claro',
+  'cherry blossom powder': 'Rosa claro', 'cherry blossom': 'Rosa claro', 'starry sky grey': 'Cinzento', 'starry sky gray': 'Cinzento', 'starry sky': 'Cinzento', 'smog green': 'Verde', smog: 'Verde', 'cream yellow': 'Creme', 'cream': 'Creme' };
+const RE_CORES = new RegExp('\\b(' + Object.keys(CORES).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'gi');
 
 /** Tira o nome do produto da frente do nome da variante da CJ e põe as cores em português. */
 export function nomeOpcao(nomeVar, nomeProd) {
@@ -179,7 +181,7 @@ export function nomeOpcao(nomeVar, nomeProd) {
   }
   n = n.replace(/^[\s\-–:,.]+|[\s\-–:,.]+$/g, '').replace(/\s+/g, ' ');
   if (!n || n.length < 1) return '';
-  n = n.replace(/\b(light blue|dark grey|light grey|[a-z]+)\b/gi, (w) => CORES[w.toLowerCase()] || w);
+  n = n.replace(RE_CORES, (w) => CORES[w.toLowerCase()] || w);
   return n.slice(0, 60);
 }
 
