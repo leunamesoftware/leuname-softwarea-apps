@@ -119,6 +119,7 @@ td.n,th.n{text-align:right}
     <p id="e-sub">Entre com a sua conta de dono.</p>
     <label for="e-email">E-mail</label><input id="e-email" type="email" autocomplete="username" required>
     <label for="e-senha" id="e-l-senha">Senha da Área do Dono</label><input id="e-senha" type="password" autocomplete="current-password" required>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:500;cursor:pointer"><input id="e-ver" type="checkbox" style="width:auto"> 👁 Mostrar a senha</label>
     <div id="e-rep" class="oculto"><label for="e-senha2">Repita a senha</label><input id="e-senha2" type="password" autocomplete="new-password"></div>
     <div class="erro" id="e-erro"></div>
     <button class="btn" type="submit" id="e-btn">Entrar</button>
@@ -169,6 +170,7 @@ async function api(caminho, corpo) {
   return { ok: r.ok, status: r.status, j };
 }
 let criando = false;
+$('#e-ver').addEventListener('change', (e) => { $('#e-senha').type = e.target.checked ? 'text' : 'password'; $('#e-senha2').type = e.target.checked ? 'text' : 'password'; });
 async function iniciar() {
   let est = null;
   try { est = (await api('estado')).j; } catch {}
