@@ -142,7 +142,8 @@ td.n,th.n{text-align:right}
     <button data-v="meta">📘 Facebook e Instagram</button>
     <button data-v="tiktok">🎵 TikTok</button>
     <button data-v="google">🔍 Google</button>
-    <button class="sair" id="sair">Sair</button>
+    <button id="atualizar-app" class="sair" title="Recarrega o app com a versão mais nova">↻ Atualizar o app</button>
+    <button class="sair" id="sair" style="margin-top:2px">Sair</button>
   </nav>
   <main id="tela"></main>
 </div>
@@ -197,6 +198,7 @@ $('#f-entrar').addEventListener('submit', async (e) => {
   $('#e-erro').textContent = c === 'email' ? 'Este não é o e-mail do dono. Confira se é leunamesoftware@gmail.com.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 letras ou números.'
     : c === 'ja_existe' ? 'A senha já foi criada. Feche e abra o app para entrar.' : r?.status === 429 ? 'Muitas tentativas. Espere um pouco.' : 'E-mail ou senha incorretos.';
 });
+$('#atualizar-app').addEventListener('click', () => location.reload());
 $('#sair').addEventListener('click', async () => { await api('sair', {}).catch(() => {}); location.reload(); });
 
 // ---------- navegação ----------
