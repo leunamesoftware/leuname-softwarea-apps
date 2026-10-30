@@ -654,6 +654,7 @@ async function lojaCarregarLista() {
   const r = await api('shopify/listar', {}).catch(() => null);
   lojaLista = r?.ok ? { carregando: false, itens: r.j.produtos, msg: '' } : { carregando: false, itens: [], msg: lojaErros[r?.j?.erro] || 'Não deu para ler a loja agora.' };
   lojaDesenhar();
+  if (r?.ok) lojaMarcarEnviados();
 }
 TELAS.loja = () => `<h2>🛍 Minha loja</h2><p class="sub">Sua loja Shopify ligada ao app. Daqui você envia produtos como rascunho e abre a loja para editar.</p><div id="loja-area"><div class="card"><p class="nota">Carregando…</p></div></div>`;
 function lojaDesenhar() {
