@@ -165,3 +165,12 @@ test('variantes: nome limpo, cor em português, preço sobe com o custo e respei
   const iguais = planoVariantes([{ vid: '1', nome: 'EVA bag', precoUsd: 5 }, { vid: '2', nome: 'EVA bag', precoUsd: 5 }], 'Outro', 10, 0.9);
   assert.equal(iguais.length, 2); assert.notEqual(iguais[0].nome, iguais[1].nome);
 });
+
+import { lucroDe, precoMinimo } from '../src/shopify.js';
+test('lucro: preço mínimo deixa pelo menos o lucro pedido e termina em ,90', () => {
+  const custo = 12;
+  const p = precoMinimo(custo, 3);
+  assert.ok(lucroDe(p, custo) >= 3 - 0.01);
+  assert.equal(Number((p % 1).toFixed(2)), 0.9);
+  assert.ok(lucroDe(14.9, 12) < 0);
+});

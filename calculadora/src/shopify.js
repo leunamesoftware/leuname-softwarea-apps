@@ -1,7 +1,7 @@
 // Ligação do app LeunaPets com a loja Shopify (só o dono).
 // Envia o produto escolhido como RASCUNHO (não aparece para os clientes) e lista o que já está na loja.
 // A chave fica na tabela shopify_config (D1) e nunca volta para o navegador.
-import { detalharCj, cambioUsdEur } from './cj.js';
+import { detalharCj, cambioUsdEur, analisarCj } from './cj.js';
 
 const VERSAO = '2025-07';
 const COLECOES = { 'Cães': ['Cães', 'Caes', 'Cães e Gatos'], 'Gatos': ['Gatos'] };
@@ -260,6 +260,42 @@ export async function ativarVariantes(env, { pid }) {
     if (a.erro || a.dados?.productVariantAppendMedia?.userErrors?.length) semFoto++; else fotos++;
   }
   return { ok: true, criadas, fotos, semFoto, avisos, titulo: prod.title };
+}
+
+
+// ---- Lucro de cada produto ----
+const IVA = 0.23, IOSS = 0.03, TAXA_PAG = 0.025, TAXA_FIXA = 0.25;
+/** Lucro em € de uma venda a `preco` (com IVA) quando o produto + envio custam `custo` €. */
+export const lucroDe = (preco, custo) => Math.round((preco / (1 + IVA) - preco * IOSS - preco * TAXA_PAG - TAXA_FIXA - custo) * 100) / 100;
+/** Menor preço (terminando em ,90) que deixa pelo menos `alvo` € de lucro. */
+export function precoMinimo(custo, alvo = 3) {
+  const p = (custo + TAXA_FIXA + alvo) / (1 / (1 + IVA) - IOSS - TAXA_PAG);
+  return Math.ceil(p) - 0.1;
+}
+
+/** Confere custo, frete e lucro de um produto da loja e guarda o resultado (o Claude lê no servidor). */
+export async function conferirLucro(env, { pid }) {
+  const tag = `cj-${String(pid || '').trim()}`;
+  if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title status variants(first: 60) { nodes { title price } } } } }`, { q: `tag:'${tag}'` });
+  if (q.erro) return q;
+  const prod = q.dados?.products?.nodes?.[0];
+  if (!prod) return { erro: 'nao_achei', status: 404 };
+  const a = await analisarCj(env, pid);
+  if (a.erro) return a;
+  if (!a.cambio || !a.envio?.length) return { erro: 'sem_frete', status: 422 };
+  const frete = a.envio[0].precoUsd * a.cambio;
+  const vs = prod.variants.nodes, cj = a.variantes;
+  const linhas = vs.map((v, i) => {
+    const c = cj.length === vs.length ? cj[i] : cj[0];
+    const custo = Math.round((c.precoUsd * a.cambio + frete) * 100) / 100;
+    const preco = Number(v.price);
+    return { opcao: v.title, preco, custo, lucro: lucroDe(preco, custo), minimo: precoMinimo(custo), prazo: a.envio[0].prazo };
+  });
+  const r = { pid: String(pid), titulo: prod.title, status: prod.status, freteEur: Math.round(frete * 100) / 100, envio: a.envio[0].nome, linhas };
+  await env.DB.prepare('INSERT INTO precos_analise (pid, json, atualizado_em) VALUES (?, ?, ?) ON CONFLICT(pid) DO UPDATE SET json=excluded.json, atualizado_em=excluded.atualizado_em')
+    .bind(String(pid), JSON.stringify(r), new Date().toISOString()).run();
+  return { ok: true, ...r };
 }
 
 /** Todas as fotos dos produtos da loja (até 50 produtos, 30 fotos cada), para a galeria do app. */

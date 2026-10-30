@@ -743,9 +743,10 @@ function lojaDesenhar() {
     <p class="nota"><a href="#" id="lj-trocar">Trocar a chave da loja</a></p></div>
   <div class="card"><h3>Produtos na loja <span class="selo n">${lojaLista.itens.length} no total</span> <span class="selo v">${lojaLista.itens.filter((p) => p.status === 'ACTIVE').length} publicados</span> <span class="selo a">${lojaLista.itens.filter((p) => p.status === 'DRAFT').length} rascunhos</span></h3>
     ${lojaLista.carregando ? '<p class="nota">Lendo a loja…</p>' : lojaLista.msg ? `<div class="erro">${esc(lojaLista.msg)}</div>` : lojaLista.itens.length ? lojaLista.itens.map((p) => `<div class="item"><div class="m" style="display:flex;gap:10px;align-items:center">${p.foto ? `<img src="${esc(p.foto)}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover">` : ''}<div style="flex:1"><div class="t">${esc(p.titulo)}</div><div class="nota">${p.preco ? eur(p.preco) + ' · ' : ''}${p.status === 'ACTIVE' ? '🟢 Publicado' : p.status === 'DRAFT' ? '📝 Rascunho' : esc(p.status)}</div></div><a class="btn peq sec" href="${esc(p.admin)}" target="_blank" rel="noopener">Editar ↗</a></div></div>`).join('') : '<p class="nota">Nenhum produto ainda. Em Fornecedor (CJ), use o botão “🛍 Enviar” no ranking.</p>'}
-    <div class="linha" style="margin-top:8px"><button class="btn sec fixo" id="lj-atualizar">↻ Atualizar</button><button class="btn fixo" id="lj-variantes">🎨 Ativar cores e tamanhos</button></div><div id="lj-var-msg"></div></div>`;
+    <div class="linha" style="margin-top:8px"><button class="btn sec fixo" id="lj-atualizar">↻ Atualizar</button><button class="btn fixo" id="lj-variantes">🎨 Ativar cores e tamanhos</button><button class="btn fixo" id="lj-lucro">💶 Conferir lucro</button></div><div id="lj-var-msg"></div></div>`;
   $('#lj-atualizar').addEventListener('click', lojaCarregarLista);
   $('#lj-variantes').addEventListener('click', lojaAtivarVariantes);
+  $('#lj-lucro').addEventListener('click', lojaConferirLucro);
   $('#lj-trocar').addEventListener('click', async (e) => { e.preventDefault(); if (confirm('Apagar a chave guardada e colocar outra?')) { await api('shopify/remover', {}).catch(() => {}); lojaEstado = { ligada: false }; lojaLista = { carregando: false, itens: [], msg: '' }; lojaDesenhar(); } });
 }
 /** Cria as opções de cor/tamanho da CJ em cada produto da loja e põe a foto de cada cor. Pode repetir sem problema. */
@@ -763,6 +764,21 @@ async function lojaAtivarVariantes() {
   b.disabled = false;
   m.innerHTML = `<div class="aviso" style="margin:8px 0">✅ ${novas} produtos ganharam opções, ${fotos} fotos de cores ligadas${semOpcao ? `, ${semOpcao} não têm opções na CJ` : ''}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.</div>`;
   lojaCarregarLista();
+}
+/** Para cada produto da loja: custo + frete reais da CJ e o lucro por venda. O Claude lê o resultado no servidor. */
+async function lojaConferirLucro() {
+  const b = $('#lj-lucro'), m = $('#lj-var-msg'); if (!b) return;
+  const lista = lojaLista.itens.filter((p) => p.cj); if (!lista.length) return;
+  b.disabled = true; let ok = 0, perdas = 0, falhas = 0;
+  for (let i = 0; i < lista.length; i++) {
+    m.innerHTML = `<div class="aviso" style="margin:8px 0">Conferindo ${i + 1} de ${lista.length}: ${esc(lista[i].titulo.slice(0, 40))}… <b>Não saia desta tela.</b></div>`;
+    let r = await api('shopify/lucro', { pid: lista[i].cj }).catch(() => null);
+    if (r?.status === 429) { await espera(6000); r = await api('shopify/lucro', { pid: lista[i].cj }).catch(() => null); }
+    if (r?.ok) { ok++; if (r.j.linhas.some((l) => l.lucro < 0)) perdas++; } else falhas++;
+    await espera(1300);
+  }
+  b.disabled = false;
+  m.innerHTML = `<div class="aviso" style="margin:8px 0">✅ ${ok} conferidos${perdas ? `, <b>${perdas} dando prejuízo</b>` : ', nenhum dando prejuízo'}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.</div>`;
 }
 LIGAR.loja = async () => {
   lojaDesenhar();
