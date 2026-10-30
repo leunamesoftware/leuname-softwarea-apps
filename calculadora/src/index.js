@@ -31,8 +31,8 @@ async function sha256(texto) {
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function corpo(req) {
-  if (Number(req.headers.get('Content-Length') || 0) > 4096) return null;
+async function corpo(req, max = 4096) {
+  if (Number(req.headers.get('Content-Length') || 0) > max) return null;
   try { return await req.json(); } catch { return null; }
 }
 
@@ -405,7 +405,7 @@ export default {
         if (pathname === '/api/dono/cj/estado' && m === 'GET') return json(await estadoCj(env));
         if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
-        const d = await corpo(req);
+        const d = await corpo(req, pathname === '/api/dono/cj/ranking' ? 200000 : 4096);
         const acao = { '/api/dono/cj/chave': () => guardarChave(env, d?.chave), '/api/dono/cj/remover': () => removerChave(env),
           '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid), '/api/dono/cj/fotos': () => detalharCj(env, d?.pid), '/api/dono/cj/ranking': () => guardarRanking(env, d) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
