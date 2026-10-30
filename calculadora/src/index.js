@@ -5,6 +5,7 @@ import { listarCanal, marcarEnvio } from './canal.js';
 import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmail, listarBrindesApps, darBrindeApp, tirarBrindeApp } from './brindes.js';
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
+import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj } from './cj.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { conferirLicenca, zipDoPedido } from './templates.js';
@@ -387,6 +388,20 @@ export default {
         }
         const r = await (pathname === '/api/dono/brindes' ? darBrinde : tirarBrinde)(env, dados);
         return r.erro ? json({ erro: r.erro }, r.status) : json({ ok: true });
+      }
+      // CJ Dropshipping dentro do app LeunaPets (só o dono): a chave fica guardada no servidor.
+      if (pathname.startsWith('/api/dono/cj/')) {
+        const conta = await contaDaSessao(env, req);
+        if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
+        if (pathname === '/api/dono/cj/estado' && m === 'GET') return json(await estadoCj(env));
+        if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
+        if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
+        const d = await corpo(req);
+        const acao = { '/api/dono/cj/chave': () => guardarChave(env, d?.chave), '/api/dono/cj/remover': () => removerChave(env),
+          '/api/dono/cj/buscar': () => buscarCj(env, d || {}), '/api/dono/cj/analisar': () => analisarCj(env, d?.pid) }[pathname];
+        if (!acao) return json({ erro: 'nao_encontrado' }, 404);
+        const r = await acao();
+        return r.erro ? json({ erro: r.erro }, r.status) : json(r);
       }
       // Radar de Produtos (só o dono): lê o catálogo público de uma loja Shopify concorrente.
       if (pathname === '/api/dono/radar/loja' && m === 'POST') {
