@@ -468,11 +468,15 @@ const prazoMax = (s) => { const n = String(s || '').match(/\d+/g); return n ? Ma
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 // Concorrência: poucas lojas = sem prova de venda; muitas = guerra de preço. O meio-termo vale mais.
 function fatorLojas(n) { return n < 10 ? 0.6 : n < 40 ? 0.9 : n <= 300 ? 1 : n <= 1000 ? 0.75 : 0.5; }
+const PRAZO_LOJA = 18; // a loja promete entrega em 8 a 18 dias úteis
 function pontuar(it) {
   const f = fatorLojas(it.lojas), prazo = it.prazo && it.prazo > 20 ? 0.85 : 1;
   it.score = arred(Math.min(it.lucroAntes, 30) * f * prazo);
   it.veredito = it.lucroAntes < 6 || (it.lojas > 1000 && it.lucroAntes < 12) ? 'x' : it.lucroAntes >= 10 && f >= 0.9 ? 'v' : 'a';
   it.motivo = it.lucroAntes < 6 ? 'lucro baixo' : it.veredito === 'x' ? 'concorrência enorme e lucro médio' : it.lojas < 10 ? 'poucas lojas: sem prova de venda' : it.lojas > 1000 ? 'concorrência enorme' : it.lojas > 300 ? 'muita concorrência' : f >= 0.9 && it.lucroAntes >= 10 ? 'bom lucro e concorrência saudável' : 'lucro médio';
+  if (it.prazo && it.prazo > PRAZO_LOJA) { it.veredito = 'x'; it.motivo = `entrega em até ${it.prazo} dias: passa da promessa da loja (${PRAZO_LOJA})`; }
+  else if (it.preco > 80) { it.veredito = 'x'; it.motivo = 'preço de venda alto demais para começar'; }
+  if (it.veredito === 'x') it.score = arred(it.score / 4);
   return it;
 }
 async function cjRanquear() {
@@ -485,7 +489,7 @@ async function cjRanquear() {
     let r = await api('cj/analisar', { pid: p.pid }).catch(() => null);
     if (r?.status === 429) { await espera(6000); r = await api('cj/analisar', { pid: p.pid }).catch(() => null); }
     cjRank.feito++;
-    const a = r?.ok ? r.j : null, v = a?.variantes?.[0], o = a?.envio?.[0];
+    const a = r?.ok ? r.j : null, v = a?.variantes?.[0], o = (a?.envio || []).find((e) => prazoMax(e.prazo) && prazoMax(e.prazo) <= PRAZO_LOJA) || a?.envio?.[0];
     if (!v || !o) cjRank.falhas++;
     else {
       const custo = arred(v.precoUsd * c), frete = arred(o.precoUsd * c), P = Math.ceil((custo + frete) * D.cfg.multiplo) - 0.1;
