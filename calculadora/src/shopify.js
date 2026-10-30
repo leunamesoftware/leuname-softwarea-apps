@@ -424,7 +424,7 @@ export async function publicarPronto(env, { pid }) {
   if ((prod.mediaCount?.count || 0) < 3) motivos.push('poucas_fotos');
   if (!/Entrega em Portugal/.test(prod.descriptionHtml || '')) motivos.push('sem_descricao');
   const vs = prod.variants?.nodes || [];
-  if (vs.some((v) => /\b(style|capless|grid|wine|and|with|without|color|size|new|big|small)\b/i.test(v.title))) motivos.push('opcoes_em_ingles');
+  if (vs.some((v) => /\b(style|capless|grid|wine|and|with|without|color|size|new|big|small|inner|jacket|included|including|light|bright|fruit|purple|green|blue|pink|red|black|white|yellow|grey|gray|bule)\b|[a-z]B\b/.test(v.title) || /\b(style|capless|grid|wine|and|with|without|color|size|new|big|small|inner|jacket|included|including|light|bright|fruit|purple|green|blue|pink|red|black|white|yellow|grey|gray|bule)\b/i.test(v.title))) motivos.push('opcoes_em_ingles');
   const precos = vs.map((v) => Number(v.price)).filter((x) => x > 0);
   if (precos.length > 1 && Math.max(...precos) / Math.min(...precos) > 1.45) motivos.push('precos_muito_diferentes');
   const r = await env.DB.prepare('SELECT json FROM precos_analise WHERE pid = ?').bind(String(pid)).first();
