@@ -823,7 +823,9 @@ function lojaDesenharEdicao(el) {
   const d = E.d;
   el.innerHTML = `<div class="card"><button class="btn sec peq" id="ed-voltar" style="margin:0 0 8px">← Voltar à lista</button>
     <h3>✏️ Editar produto</h3>
-    <div style="display:flex;gap:6px;overflow-x:auto;margin-bottom:8px">${d.fotos.slice(0, 6).map((u) => `<img src="${esc(u)}" alt="" style="width:64px;height:64px;border-radius:8px;object-fit:cover">`).join('')}</div>
+    <label>Fotos (a 1ª é a principal)</label>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:8px">${d.fotos.map((f, i) => `<div style="border:1px solid #ddd;border-radius:8px;padding:4px;text-align:center"><img src="${esc(f.url)}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px"><div style="display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap"><a class="btn peq sec" style="margin:0;padding:4px 8px" href="/loja-api/dono/foto?u=${encodeURIComponent(f.url)}&baixar=1" download>⬇</a>${i ? `<button class="btn peq sec ed-prin" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Tornar principal">★</button>` : ''}<button class="btn peq sec ed-del" data-m="${esc(f.id)}" style="margin:0;padding:4px 8px" title="Excluir">🗑</button></div></div>`).join('')}</div>
+    <input type="file" id="ed-arq" accept="image/*" style="display:none"><button class="btn sec peq" id="ed-subir" style="margin:0 0 8px">⬆ Subir outra foto</button> <label style="display:inline-flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="ed-prin2" style="width:auto"> como principal</label>
     <label>Título</label><input id="ed-titulo" value="${esc(d.titulo)}" maxlength="150">
     <label>Descrição (pode usar HTML simples)</label><textarea id="ed-desc" rows="9" style="width:100%">${esc(d.descricao)}</textarea>
     <label>Endereço na loja (parte final do link)</label><input id="ed-handle" value="${esc(d.handle)}">
@@ -833,6 +835,29 @@ function lojaDesenharEdicao(el) {
     <div class="erro" id="ed-erro">${esc(E.msg)}</div>
     <div class="linha"><button class="btn fixo" id="ed-salvar">💾 Salvar na loja</button></div></div>`;
   $('#ed-voltar').addEventListener('click', () => { lojaEdit = null; lojaDesenhar(); lojaCarregarLista(); });
+  el.querySelectorAll('.ed-del').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('Excluir esta foto do produto na loja?')) return; b.disabled = true;
+    const r = await api('shopify/foto-apagar', { id: E.id, mediaId: b.dataset.m }).catch(() => null);
+    if (r?.ok) lojaAbrirEdicao(E.id); else { b.disabled = false; $('#ed-erro').textContent = 'Não consegui excluir a foto.'; }
+  }));
+  el.querySelectorAll('.ed-prin').forEach((b) => b.addEventListener('click', async () => {
+    b.disabled = true; const r = await api('shopify/foto-principal', { id: E.id, mediaId: b.dataset.m }).catch(() => null);
+    if (r?.ok) lojaAbrirEdicao(E.id); else { b.disabled = false; $('#ed-erro').textContent = 'Não consegui mudar a principal.'; }
+  }));
+  $('#ed-subir').addEventListener('click', () => $('#ed-arq').click());
+  $('#ed-arq').addEventListener('change', async (ev) => {
+    const arq = ev.target.files[0]; if (!arq) return; const bt = $('#ed-subir'); bt.disabled = true; bt.textContent = 'Subindo…';
+    try {
+      const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(arq); });
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const dados = c.toDataURL('image/jpeg', 0.88).split(',')[1];
+      const r = await api('shopify/foto-subir', { id: E.id, dados, tipo: 'image/jpeg', principal: $('#ed-prin2').checked }).catch(() => null);
+      if (r?.ok) return lojaAbrirEdicao(E.id);
+      $('#ed-erro').textContent = 'Não consegui subir a foto: ' + (r?.j?.detalhe || r?.j?.erro || 'tente de novo');
+    } catch { $('#ed-erro').textContent = 'Não consegui ler essa imagem.'; }
+    bt.disabled = false; bt.textContent = '⬆ Subir outra foto';
+  });
   $('#ed-salvar').addEventListener('click', async () => {
     const b = $('#ed-salvar'); b.disabled = true; b.textContent = 'Salvando…';
     const variantes = [...el.querySelectorAll('.ed-preco')].map((i) => ({ id: i.dataset.v, preco: Number(String(i.value).replace(',', '.')) }));

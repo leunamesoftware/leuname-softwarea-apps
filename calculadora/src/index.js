@@ -7,7 +7,7 @@ import { brindeDoEmail, listarBrindes, darBrinde, tirarBrinde, brindesAppsDoEmai
 import { donoLogado, estadoDono, criarSenhaDono, entrarDono, trocarSenhaDono, sairDono, senhaDonoConfere } from './dono.js';
 import { lerLoja } from './radar.js';
 import { guardarChave, removerChave, estadoCj, buscarCj, analisarCj, detalharCj, guardarDetalhes } from './cj.js';
-import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos, baixarFoto, ativarVariantes, lerProduto, salvarProduto, conferirLucro, prepararProduto, publicarPronto } from './shopify.js';
+import { guardarLoja, removerLoja, estadoShopify, listarProdutos, enviarProduto, listarFotos, apagarFotos, baixarFoto, ativarVariantes, lerProduto, salvarProduto, apagarFotoProduto, subirFotoProduto, fotoPrincipal, conferirLucro, prepararProduto, publicarPronto } from './shopify.js';
 import { estatisticaRendimento, rendimentoPlausivel } from './rendimento.js';
 import { licencaAtiva } from './licencas.js';
 import { conferirLicenca, zipDoPedido } from './templates.js';
@@ -395,8 +395,11 @@ export default {
       if (pathname === '/api/dono/foto' && m === 'GET') {
         const conta = await contaDaSessao(env, req);
         if (!(await donoLogado(env, req)) && !(conta && eDono(env, conta.email))) return json({ erro: 'so_o_dono' }, 403);
-        const f = await baixarFoto(new URL(req.url).searchParams.get('u'));
-        return f.erro ? json({ erro: f.erro }, f.status) : new Response(f.corpo, { headers: { 'Content-Type': f.tipo, 'Cache-Control': 'private, max-age=3600' } });
+        const qs = new URL(req.url).searchParams;
+        const f = await baixarFoto(qs.get('u'));
+        if (f.erro) return json({ erro: f.erro }, f.status);
+        const ext = /png/.test(f.tipo) ? 'png' : /webp/.test(f.tipo) ? 'webp' : 'jpg';
+        return new Response(f.corpo, { headers: { 'Content-Type': f.tipo, 'Cache-Control': 'private, max-age=3600', ...(qs.get('baixar') ? { 'Content-Disposition': `attachment; filename="foto-leunapets.${ext}"` } : {}) } });
       }
       // CJ Dropshipping dentro do app LeunaPets (só o dono): a chave fica guardada no servidor.
       if (pathname.startsWith('/api/dono/cj/')) {
@@ -422,7 +425,7 @@ export default {
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
         const d = await corpo(req);
         const acao = { '/api/dono/shopify/ligar': () => guardarLoja(env, d || {}), '/api/dono/shopify/remover': () => removerLoja(env),
-          '/api/dono/shopify/listar': () => listarProdutos(env), '/api/dono/shopify/enviar': () => enviarProduto(env, d || {}), '/api/dono/shopify/fotos': () => listarFotos(env), '/api/dono/shopify/variantes': () => ativarVariantes(env, d || {}), '/api/dono/shopify/lucro': () => conferirLucro(env, d || {}), '/api/dono/shopify/preparar': () => prepararProduto(env, d || {}), '/api/dono/shopify/publicar-pronto': () => publicarPronto(env, d || {}), '/api/dono/shopify/produto-ler': () => lerProduto(env, d || {}), '/api/dono/shopify/produto-salvar': () => salvarProduto(env, d || {}), '/api/dono/shopify/fotos-apagar': () => apagarFotos(env, d?.itens) }[pathname];
+          '/api/dono/shopify/listar': () => listarProdutos(env), '/api/dono/shopify/enviar': () => enviarProduto(env, d || {}), '/api/dono/shopify/fotos': () => listarFotos(env), '/api/dono/shopify/variantes': () => ativarVariantes(env, d || {}), '/api/dono/shopify/lucro': () => conferirLucro(env, d || {}), '/api/dono/shopify/preparar': () => prepararProduto(env, d || {}), '/api/dono/shopify/publicar-pronto': () => publicarPronto(env, d || {}), '/api/dono/shopify/produto-ler': () => lerProduto(env, d || {}), '/api/dono/shopify/foto-apagar': () => apagarFotoProduto(env, d || {}), '/api/dono/shopify/foto-subir': () => subirFotoProduto(env, d || {}), '/api/dono/shopify/foto-principal': () => fotoPrincipal(env, d || {}), '/api/dono/shopify/produto-salvar': () => salvarProduto(env, d || {}), '/api/dono/shopify/fotos-apagar': () => apagarFotos(env, d?.itens) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
         const r = await acao();
         return r.erro ? json({ erro: r.erro, admin: r.admin, detalhe: r.detalhe }, r.status) : json(r);
