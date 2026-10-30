@@ -836,7 +836,7 @@ async function lojaConferirLucro() {
   m.innerHTML = `<div class="aviso" style="margin:8px 0">✅ ${ok} conferidos${perdas ? `, <b>${perdas} dando prejuízo</b>` : ', nenhum dando prejuízo'}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.</div>`;
 }
 
-const MOTIVOS = { titulo_em_ingles: 'título ainda em inglês', opcoes_em_ingles: 'opções ainda em inglês', precos_muito_diferentes: 'preços das opções muito diferentes', poucas_fotos: 'menos de 3 fotos', sem_descricao: 'sem descrição', lucro_baixo: 'lucro abaixo de 5 €', lucro_nao_conferido: 'lucro não conferido', titulo_revisar: 'não entendi o que é o produto', texto_curto: 'descrição curta', texto_falhou: 'não consegui salvar o texto', variantes_falhou: 'não criei as opções', lucro_baixo_aviso: 'lucro baixo' };
+const MOTIVOS = { titulo_em_ingles: 'título ainda em inglês', opcoes_em_ingles: 'opções ainda em inglês', precos_muito_diferentes: 'preços das opções muito diferentes', poucas_fotos: 'menos de 3 fotos', sem_descricao: 'sem descrição', lucro_baixo: 'lucro abaixo de 5 €', canal_falhou: 'não consegui pôr na loja online', canal_nao_achado: 'canal da loja online não achado', lucro_nao_conferido: 'lucro não conferido', titulo_revisar: 'não entendi o que é o produto', texto_curto: 'descrição curta', texto_falhou: 'não consegui salvar o texto', variantes_falhou: 'não criei as opções', lucro_baixo_aviso: 'lucro baixo' };
 /** Roda "preparar" (título/descrição em português, cores e tamanhos, lucro) ou "publicar-pronto" em todos os rascunhos da loja, um por vez. */
 async function lojaEmLote(acao) {
   const m = $('#lj-var-msg'); if (!m) return;

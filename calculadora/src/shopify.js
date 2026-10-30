@@ -379,7 +379,7 @@ export async function prepararProduto(env, { pid }) {
 export async function publicarPronto(env, { pid }) {
   const tag = `cj-${String(pid || '').trim()}`;
   if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
-  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title status mediaCount { count } descriptionHtml } } }`, { q: `tag:'${tag}'` });
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title status mediaCount { count } descriptionHtml variants(first: 60) { nodes { title price } } } } }`, { q: `tag:'${tag}'` });
   if (q.erro) return q;
   const prod = q.dados?.products?.nodes?.[0];
   if (!prod) return { erro: 'nao_achei', status: 404 };
@@ -397,10 +397,15 @@ export async function publicarPronto(env, { pid }) {
   if (lucroMin === null) motivos.push('lucro_nao_conferido'); else if (lucroMin < 5) motivos.push('lucro_baixo');
   if (motivos.length) return { ok: true, publicado: false, motivos };
   const pub = await consultar(env, '{ publications(first: 10) { nodes { id name } } }');
-  const loja = pub.dados?.publications?.nodes?.find((x) => /online store/i.test(x.name));
+  const loja = pub.dados?.publications?.nodes?.find((x) => /online store|loja online/i.test(x.name || ''));
+  if (!loja) return { ok: true, publicado: false, motivos: ['canal_nao_achado'] };
   const a = await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: prod.id, status: 'ACTIVE' } });
   if (a.erro || a.dados?.productUpdate?.userErrors?.length) return { erro: 'shopify_erro', status: 422 };
-  if (loja) await consultar(env, `mutation($id: ID!, $i: [PublicationInput!]!) { publishablePublish(id: $id, input: $i) { userErrors { message } } }`, { id: prod.id, i: [{ publicationId: loja.id }] });
+  const pb = await consultar(env, `mutation($id: ID!, $i: [PublicationInput!]!) { publishablePublish(id: $id, input: $i) { userErrors { message } } }`, { id: prod.id, i: [{ publicationId: loja.id }] });
+  if (pb.erro || pb.dados?.publishablePublish?.userErrors?.length) {
+    await consultar(env, `mutation($p: ProductUpdateInput!) { productUpdate(product: $p) { userErrors { message } } }`, { p: { id: prod.id, status: 'DRAFT' } });
+    return { ok: true, publicado: false, motivos: ['canal_falhou'] };
+  }
   return { ok: true, publicado: true, lucroMin };
 }
 
