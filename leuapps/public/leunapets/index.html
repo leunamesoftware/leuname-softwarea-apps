@@ -586,7 +586,7 @@ async function lojaMarcarEnviados() {
 
 
 // ----- Leitor de letras nas fotos (OCR, roda neste computador) -----
-const OCR_CACHE = 'leunapets_ocr_v2';
+const OCR_CACHE = 'leunapets_ocr_v3';
 let ocrCache = {}; try { ocrCache = JSON.parse(localStorage.getItem(OCR_CACHE) || '{}') || {}; } catch {}
 const ocrSalvar = () => { try { const k = Object.keys(ocrCache); if (k.length > 3000) k.slice(0, 1000).forEach((x) => delete ocrCache[x]); localStorage.setItem(OCR_CACHE, JSON.stringify(ocrCache)); } catch {} };
 let ocrWorker = null, ocrCarregando = null;
@@ -611,11 +611,12 @@ async function ocrPreparar(aviso) {
 }
 /** Decide se o resultado da leitura parece ter letras de verdade (descarta ruído de textura e de tecido). */
 function ocrTemLetras(dados) {
-  const palavras = (dados?.words || []).filter((w) => (w.confidence ?? 0) >= 55);
-  const latinas = palavras.filter((w) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(String(w.text || '').trim()));
-  const fortes = latinas.filter((w) => (w.confidence ?? 0) >= 75 && String(w.text).trim().length >= 4);
+  // Só conta palavra que parece palavra de verdade: bem lida, só letras, com vogal e sem letra repetida 3 vezes (descarta ruído de tecido).
+  const parece = (t) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(t) && /[aeiouáéíóúãõâêôAEIOU]/.test(t) && !/(.)\1\1/i.test(t);
+  const palavras = (dados?.words || []).filter((w) => (w.confidence ?? 0) >= 70);
+  const latinas = palavras.filter((w) => parece(String(w.text || '').trim()));
   const chinesas = palavras.reduce((n, w) => n + (String(w.text || '').match(/[\u3400-\u9fff]/g) || []).length, 0);
-  return latinas.length >= 2 || fortes.length >= 1 || chinesas >= 2;
+  return latinas.length >= 2 || chinesas >= 3;
 }
 /** true = tem letras, false = limpa, null = não deu para ler a foto. Guarda o resultado para não ler de novo. */
 async function fotoTemLetras(url, chave) {
@@ -777,7 +778,7 @@ function fotosDesenhar() {
   ${E.itens.length ? `<div class="card" style="border-color:var(--verm)"><h3>🗑 Marcadas para apagar (${marcadas.length})</h3>${marcadas.length ? `<p class="nota">O robô marca as que têm letras. Desmarque as que quiser manter.</p>${grade(marcadas)}` : '<p class="nota">Nenhuma marcada. Toque numa foto lá embaixo para marcar na mão.</p>'}
     <div class="linha" style="margin-top:10px"><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !marcadas.length ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${marcadas.length})`}</button></div></div>
   <div class="card"><h3>Outras fotos (${outras.length})</h3><p class="nota">Toque numa foto para marcar na mão se achar que tem letras. Ela sobe para o quadro de cima.</p>${grade(outras)}</div>` : ''}`;
-  el.querySelectorAll('[data-foto]').forEach((c) => c.addEventListener('change', () => { c.checked ? E.marcadas.add(c.dataset.foto) : E.marcadas.delete(c.dataset.foto); fotosDesenhar(); }));
+  el.querySelectorAll('[data-foto]').forEach((c) => c.addEventListener('change', () => { c.checked ? E.marcadas.add(c.dataset.foto) : E.marcadas.delete(c.dataset.foto); const f = E.itens.find((x) => x.media === c.dataset.foto); if (f) { ocrCache[fotoChave(f)] = c.checked; ocrSalvar(); } fotosDesenhar(); }));
   $('#fo-atualizar')?.addEventListener('click', fotosCarregar);
   $('#fo-parar')?.addEventListener('click', () => { E.parar = true; });
   $('#fo-ler')?.addEventListener('click', fotosLer);
