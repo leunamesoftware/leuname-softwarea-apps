@@ -187,6 +187,32 @@ export function nomeOpcao(nomeVar, nomeProd) {
   return n.slice(0, 60);
 }
 
+const RE_TAM = /^(XXXL|XXL|XL|XS|S|M|L|[2-6]XL)$/i;
+/** Separa "Rosa XL" / "XL Rosa" em cor e tamanho. Sem tamanho reconhecido, tudo vira cor. */
+export function parseCorTam(nome) {
+  const t = String(nome || '').trim().split(/[\s/,-]+/).filter(Boolean);
+  const norm = (x) => { const u = x.toUpperCase(); return /^2XL$/.test(u) ? 'XXL' : /^3XL$/.test(u) ? 'XXXL' : u; };
+  if (t.length >= 2 && RE_TAM.test(t[t.length - 1])) return { cor: t.slice(0, -1).join(' '), tam: norm(t[t.length - 1]) };
+  if (t.length >= 2 && RE_TAM.test(t[0])) return { cor: t.slice(1).join(' '), tam: norm(t[0]) };
+  if (t.length === 1 && RE_TAM.test(t[0])) return { cor: '', tam: norm(t[0]) };
+  return { cor: String(nome || '').trim(), tam: '' };
+}
+
+/** Decide as opções do produto: Cor + Tamanho, só Cor, só Tamanho, ou null (fica "Opção"). */
+export function estruturaOpcoes(plano) {
+  if (!plano?.length) return null;
+  const cors = [...new Set(plano.map((x) => x.cor))]; const tams = [...new Set(plano.map((x) => x.tam))];
+  const pares = new Set(plano.map((x) => `${x.cor}|${x.tam}`));
+  if (pares.size !== plano.length) return null;
+  const comCor = plano.every((x) => x.cor), comTam = plano.every((x) => x.tam);
+  if (comCor && comTam && cors.length >= 2 && tams.length >= 2) return 'duas';
+  if (comCor && comTam && cors.length < 2) return 'tam';
+  if (comCor && comTam && tams.length < 2) return 'cor';
+  if (!comTam && comCor && cors.length >= 2) return 'cor';
+  if (!comCor && comTam && tams.length >= 2) return 'tam';
+  return null;
+}
+
 /**
  * Plano das variantes: nome único, preço (o do produto + a diferença de custo ×2,5, no máximo 44,90) e foto da CJ.
  * `base` = preço do produto (variante mais barata). Devolve [] se não houver o que escolher.
@@ -202,7 +228,8 @@ export function planoVariantes(variantes, nomeProd, base, cambio, teto = 44.9) {
     if (n > 1) nome = `${nome} (${n})`;
     const extra = cambio ? Math.max(0, (v.precoUsd - minimo) * cambio * 2.5) : 0;
     const preco = Math.min(teto, Math.round((base + Math.ceil(extra)) * 100) / 100);
-    plano.push({ vid: v.vid, nome, preco: Math.max(preco, base).toFixed(2), foto: v.foto || null });
+    const ct = parseCorTam(nome);
+    plano.push({ vid: v.vid, nome, cor: ct.cor, tam: ct.tam, preco: Math.max(preco, base).toFixed(2), foto: v.foto || null });
   }
   if (new Set(plano.map((x) => x.nome.toLowerCase())).size < 2) return [];
   return plano;
@@ -217,7 +244,7 @@ const baseFoto = (u) => String(u || '').split('?')[0].split('/').pop().toLowerCa
 export async function ativarVariantes(env, { pid }) {
   const tag = `cj-${String(pid || '').trim()}`;
   if (!/^cj-[A-Za-z0-9-]{6,60}$/.test(tag)) return { erro: 'pid', status: 400 };
-  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title media(first: 40) { nodes { ... on MediaImage { id image { url } } } }
+  const q = await consultar(env, `query($q: String!) { products(first: 1, query: $q) { nodes { id title options { name } media(first: 40) { nodes { ... on MediaImage { id image { url } } } }
     variants(first: 60) { nodes { id title price selectedOptions { name value } media(first: 1) { nodes { id } } } } } } }`, { q: `tag:'${tag}'` });
   if (q.erro) return q;
   const prod = q.dados?.products?.nodes?.[0];
@@ -228,20 +255,27 @@ export async function ativarVariantes(env, { pid }) {
   const cambio = await cambioUsdEur();
   const base = Number(vs[0]?.price) || 0;
   let criadas = 0, avisos = [];
-  if (vs.length === 1) {
-    const plano = planoVariantes(det.variantes, det.nome, base, cambio);
-    if (!plano.length) return { ok: true, criadas: 0, fotos: 0, sem_opcoes: true, avisos };
-    const o = await consultar(env, `mutation($id: ID!, $opts: [OptionCreateInput!]!) { productOptionsCreate(productId: $id, options: $opts) { userErrors { message } product { variants(first: 5) { nodes { id } } } } }`,
-      { id: prod.id, opts: [{ name: 'Opção', values: [{ name: plano[0].nome }] }] });
-    const oe = o.dados?.productOptionsCreate;
+  const opcoesAtuais = (prod.options || []).map((o) => o.name);
+  const precoAtual = new Map(vs.map((v) => [String(v.title).toLowerCase(), v.price]));
+  const minAtual = vs.length ? Math.min(...vs.map((v) => Number(v.price) || 9999)) : base;
+  const planoNovo = planoVariantes(det.variantes, det.nome, minAtual < 9999 ? minAtual : base, cambio);
+  const estr = estruturaOpcoes(planoNovo);
+  const precisa = planoNovo.length && (vs.length === 1 || (opcoesAtuais.length === 1 && opcoesAtuais[0] === 'Opção' && estr));
+  const rotulo = (x) => (estr === 'duas' ? `${x.cor} / ${x.tam}` : estr === 'cor' ? x.cor : estr === 'tam' ? x.tam : x.nome);
+  if (precisa) {
+    const nomesOp = estr === 'duas' ? ['Cor', 'Tamanho'] : estr === 'cor' ? ['Cor'] : estr === 'tam' ? ['Tamanho'] : ['Opção'];
+    const valores = (i) => [...new Set(planoNovo.map((x) => (estr === 'duas' ? (i === 0 ? x.cor : x.tam) : rotulo(x))))].map((name) => ({ name }));
+    const productOptions = nomesOp.map((name, i) => ({ name, values: valores(i) }));
+    const variants = planoNovo.map((x) => ({
+      optionValues: estr === 'duas' ? [{ optionName: 'Cor', name: x.cor }, { optionName: 'Tamanho', name: x.tam }] : [{ optionName: nomesOp[0], name: rotulo(x) }],
+      price: precoAtual.get(x.nome.toLowerCase()) || x.preco, inventoryItem: { tracked: false, requiresShipping: true },
+    }));
+    const o = await consultar(env, `mutation($in: ProductSetInput!) { productSet(input: $in, synchronous: true) { userErrors { message } product { id } } }`,
+      { in: { id: prod.id, productOptions, variants } });
+    const oe = o.dados?.productSet;
     if (o.erro || oe?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(oe?.userErrors || o).slice(0, 300) };
-    const resto = plano.slice(1).map((x) => ({ optionValues: [{ optionName: 'Opção', name: x.nome }], price: x.preco, inventoryItem: { tracked: false, requiresShipping: true } }));
-    const b = await consultar(env, `mutation($id: ID!, $v: [ProductVariantsBulkInput!]!) { productVariantsBulkCreate(productId: $id, variants: $v, strategy: DEFAULT) { userErrors { message } } }`, { id: prod.id, v: resto });
-    const be = b.dados?.productVariantsBulkCreate;
-    if (b.erro || be?.userErrors?.length) return { erro: 'shopify_erro', status: 422, detalhe: JSON.stringify(be?.userErrors || b).slice(0, 300) };
-    criadas = plano.length;
-    avisos.push('opcoes_criadas');
-    // O preço da primeira não muda; confere o que ficou.
+    criadas = planoNovo.length;
+    avisos.push(estr === 'duas' ? 'cor_e_tamanho' : 'opcoes_criadas');
   }
   // Fotos: acha a foto de cada cor entre as fotos que o produto já tem (pelo nome do arquivo).
   const r2 = await consultar(env, `query($id: ID!) { product(id: $id) { media(first: 40) { nodes { ... on MediaImage { id image { url } } } }
@@ -249,7 +283,8 @@ export async function ativarVariantes(env, { pid }) {
   const midias = (r2.dados?.product?.media?.nodes || []).filter((m) => m?.id && m.image?.url).map((m) => ({ id: m.id, b: baseFoto(m.image.url) }));
   const variantesNow = r2.dados?.product?.variants?.nodes || [];
   const plano2 = planoVariantes(det.variantes, det.nome, base || 1, null);
-  const porNome = new Map(plano2.map((x) => [x.nome.toLowerCase(), x]));
+  const porNome = new Map();
+  for (const x of plano2) { porNome.set(x.nome.toLowerCase(), x); porNome.set(`${x.cor} / ${x.tam}`.toLowerCase(), x); if (!x.tam) porNome.set(x.cor.toLowerCase(), x); if (!x.cor) porNome.set(x.tam.toLowerCase(), x); }
   let fotos = 0, semFoto = 0;
   for (const v of variantesNow) {
     if (v.media?.nodes?.length) continue;

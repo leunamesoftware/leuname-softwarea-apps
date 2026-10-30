@@ -1,6 +1,6 @@
-import { test } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
-import { lojaValida, chaveValida, guardarLoja, estadoShopify, enviarProduto, listarProdutos } from '../src/shopify.js';
+import { parseCorTam, estruturaOpcoes, lojaValida, chaveValida, guardarLoja, estadoShopify, enviarProduto, listarProdutos } from '../src/shopify.js';
 
 function banco() {
   let linha = null;
@@ -184,4 +184,18 @@ test('texto em português: título pelo tipo e descrição só com fatos', () =>
   const d = ptDescricao({ descricao: 'Material: Polyester Suitable for the season: All seasons', material: '', variantes: [{ nome: 'x S' }, { nome: 'x M' }, { nome: 'x L' }] }, ['Cães'], 'Casaco para Cães');
   assert.ok(d.html.includes('Poliéster') && d.html.includes('S, M, L') && d.html.includes('todas as estações'));
   assert.ok(!/impermeável|refletor/i.test(d.html));
+});
+
+test('parseCorTam separa cor e tamanho', () => {
+  assert.deepEqual(parseCorTam('Rosa XL'), { cor: 'Rosa', tam: 'XL' });
+  assert.deepEqual(parseCorTam('XXL Azul claro'), { cor: 'Azul claro', tam: 'XXL' });
+  assert.deepEqual(parseCorTam('Verde'), { cor: 'Verde', tam: '' });
+  assert.equal(parseCorTam('Rosa 2XL').tam, 'XXL');
+});
+test('estruturaOpcoes escolhe Cor e Tamanho', () => {
+  const p = (l) => l.map((n) => ({ ...parseCorTam(n) }));
+  assert.equal(estruturaOpcoes(p(['Rosa XL', 'Rosa XXL', 'Azul XL', 'Azul XXL'])), 'duas');
+  assert.equal(estruturaOpcoes(p(['Rosa', 'Azul'])), 'cor');
+  assert.equal(estruturaOpcoes(p(['S', 'M', 'L'])), 'tam');
+  assert.equal(estruturaOpcoes(p(['Rosa XL', 'Rosa XL'])), null);
 });
