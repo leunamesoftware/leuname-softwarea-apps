@@ -456,6 +456,7 @@ function cjDesenhar() {
     <div class="erro">${esc(cjBusca.msg)}</div>
     ${cjBusca.produtos.length ? `<p class="nota"><b>${cjBusca.produtos.length} produtos encontrados</b> para “${esc(cjBusca.q)}”.</p>` : ''}
     ${c ? `<p class="nota">Preços da CJ em dólar, convertidos a 1 US$ = ${c.toFixed(4)} €.</p>` : ''}
+    <div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-multi" ${cjRank.rodando ? 'disabled' : ''}>🚀 Buscar 10 categorias de uma vez</button>${cjRank.rodando && cjRank.multi ? '<button class="btn sec fixo" id="cj-rank-parar2">Parar</button>' : ''}</div>
     ${cjBusca.produtos.length ? `<div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-rank-btn" ${cjRank.rodando ? 'disabled' : ''}>🤖 Analisar todos e ordenar do melhor</button>${cjRank.rodando ? '<button class="btn sec fixo" id="cj-rank-parar">Parar</button>' : ''}</div>` : ''}
     <div id="cj-rank"></div>
     <div class="prods">${cjBusca.produtos.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')">${p.lojas ? `<span class="pos">${p.lojas} lojas</span>` : ''}</div>
@@ -465,6 +466,8 @@ function cjDesenhar() {
     <p class="nota"><a href="#" id="cj-trocar">Trocar a chave da CJ</a></p>`;
   $('#cj-buscar').addEventListener('click', cjBuscar);
   $('#cj-rank-btn')?.addEventListener('click', cjRanquear);
+  $('#cj-multi')?.addEventListener('click', cjMulti);
+  $('#cj-rank-parar2')?.addEventListener('click', () => { cjRank.parar = true; });
   $('#cj-rank-parar')?.addEventListener('click', () => { cjRank.parar = true; });
   cjRankDesenhar();
   $('#cj-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') cjBuscar(); });
@@ -514,6 +517,41 @@ async function cjRanquear() {
   api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjRank.itens }).catch(() => {});
   lojaMarcarEnviados();
 }
+const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'pet grooming glove', 'dog raincoat', 'pet travel bag', 'pet feeder bowl'];
+/** Analisa um produto da CJ e devolve a linha do ranking (ou null se não tem frete para Portugal). */
+async function cjAnalisarItem(p, c) {
+  let r = await api('cj/analisar', { pid: p.pid }).catch(() => null);
+  if (r?.status === 429) { await espera(6000); r = await api('cj/analisar', { pid: p.pid }).catch(() => null); }
+  const a = r?.ok ? r.j : null, v = a?.variantes?.[0], o = (a?.envio || []).find((e) => prazoMax(e.prazo) && prazoMax(e.prazo) <= PRAZO_LOJA) || a?.envio?.[0];
+  if (!v || !o) return null;
+  const custo = arred(v.precoUsd * c), frete = arred(o.precoUsd * c), bruto = Math.ceil((custo + frete) * D.cfg.multiplo) - 0.1, P = Math.min(bruto, D.cfg.teto - 0.1);
+  const l = lucro({ preco: P, custo, frete });
+  return pontuar({ pid: p.pid, nome: a.nome || p.nome, foto: a.foto || p.foto, lojas: p.lojas, custo, frete, envio: o.nome, prazo: prazoMax(o.prazo), pesoG: a.pesoG, preco: arred(P), precoBruto: arred(bruto), limitado: bruto > P, lucroAntes: l.antes, margem: arred(l.antes / P * 100) });
+}
+/** Busca várias categorias, analisa e deixa só os 4 melhores de cada uma no ranking. */
+async function cjMulti() {
+  cjRank = { itens: [], rodando: true, parar: false, feito: 0, total: CATEGORIAS.length, falhas: 0, msg: '', todos: true, multi: true };
+  cjDesenhar();
+  for (const q of CATEGORIAS) {
+    if (cjRank.parar) break;
+    const b = await api('cj/buscar', { q }).catch(() => null);
+    if (b?.ok && b.j.cambio) {
+      cjBusca.cambio = b.j.cambio; const bons = [];
+      for (const p of b.j.produtos.slice(0, 12)) {
+        if (cjRank.parar) break;
+        if (D.enviados[p.pid] || cjRank.itens.some((x) => x.pid === p.pid)) continue;
+        const it = await cjAnalisarItem(p, b.j.cambio);
+        if (it && it.veredito !== 'x') { it.cat = q; bons.push(it); } else if (!it) cjRank.falhas++;
+      }
+      bons.sort((x, y) => y.score - x.score); cjRank.itens.push(...bons.slice(0, 4));
+      cjRank.itens.sort((x, y) => y.score - x.score);
+    }
+    cjRank.feito++; cjRankDesenhar();
+  }
+  cjRank.rodando = false; cjRank.parar = false; cjRank.multi = false; cjDesenhar();
+  api('cj/ranking', { consulta: 'varias categorias', total: cjRank.itens.length, itens: cjRank.itens }).catch(() => {});
+  lojaMarcarEnviados();
+}
 function cjRankDesenhar() {
   const el = $('#cj-rank'); if (!el) return;
   const R = cjRank;
@@ -521,10 +559,10 @@ function cjRankDesenhar() {
   const rot = { v: ['v', '✅ Recomendado'], a: ['a', '🟡 Talvez'], x: ['x', '❌ Evitar'] };
   el.innerHTML = `<div class="card"><h3>🤖 Ranking dos melhores para nós</h3>
     ${R.msg ? `<div class="erro">${esc(R.msg)}</div>` : ''}
-    ${R.rodando ? `<p class="nota">Analisando ${R.feito} de ${R.total}… (a CJ aceita 1 pedido por segundo, leva uns 2 minutos)</p><div class="barra"><i style="width:${R.feito / R.total * 100}%"></i></div>` : R.total ? `<p class="nota">${R.itens.length} analisados${R.falhas ? `, ${R.falhas} sem preço de frete para Portugal (ignorados)` : ''}.</p>` : ''}
+    ${R.rodando ? `<p class="nota">Analisando ${R.feito} de ${R.total}${R.multi ? ' categorias' : ''}… (a CJ aceita 1 pedido por segundo, leva uns ${R.multi ? '3 a 5' : '2'} minutos)</p><div class="barra"><i style="width:${R.feito / R.total * 100}%"></i></div>` : R.total ? `<p class="nota">${R.itens.length} analisados${R.falhas ? `, ${R.falhas} sem preço de frete para Portugal (ignorados)` : ''}.</p>` : ''}
     <div class="aviso">O preço de venda é uma <b>sugestão</b>: custo + frete × ${D.cfg.multiplo}, limitada a ${eur(D.cfg.teto - 0.1)}. Antes de decidir, <b>confira o preço que as lojas concorrentes cobram</b>. O robô ordena por lucro e concorrência, mas não adivinha se o produto vai vender.</div>
     <div class="tabela"><table><tr><th>#</th><th>Produto</th><th class="n">Custo</th><th class="n">Frete</th><th class="n">Venda sugerida</th><th class="n">Lucro*</th><th class="n">Lojas</th><th>Veredito</th><th></th></tr>
-    ${(() => { const t = [...R.itens.filter((x) => !D.enviados[x.pid]), ...R.itens.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="opacity:.6"' : ''}><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}</span></div></td>
+    ${(() => { const t = [...R.itens.filter((x) => !D.enviados[x.pid]), ...R.itens.filter((x) => D.enviados[x.pid])]; return cjRank.todos || R.rodando ? t : t.slice(0, 4); })().map((it, i) => `<tr${D.enviados[it.pid] ? ' style="opacity:.6"' : ''}><td>${i + 1}</td><td style="min-width:200px"><div class="m" style="display:flex;gap:8px;align-items:center">${it.foto ? `<img src="${esc(it.foto)}" alt="" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : ''}<span>${esc(it.nome.slice(0, 60))}${it.cat ? `<br><small class="nota">${esc(it.cat)}</small>` : ''}</span></div></td>
       <td class="n">${eur(it.custo)}</td><td class="n">${eur(it.frete)}${it.prazo ? `<br><small class="nota">${it.prazo} dias</small>` : ''}</td><td class="n">${eur(it.preco)}${it.limitado ? '<br><small class="nota">limitado ao teto</small>' : ''}</td><td class="n"><b>${eur(it.lucroAntes)}</b><br><small class="nota">${it.margem}%</small></td><td class="n">${it.lojas}</td>
       <td>${D.enviados[it.pid] ? '<span class="selo n">✅ Já na loja</span><br><small class="nota">enviado como rascunho</small>' : `<span class="selo ${rot[it.veredito][0]}">${rot[it.veredito][1]}</span><br><small class="nota">${esc(it.motivo)}</small>`}</td><td style="white-space:nowrap"><button class="btn peq" data-rank-calc="${esc(it.pid)}">🧮</button> ${D.enviados[it.pid] ? `<a class="btn peq sec" href="${esc(D.enviados[it.pid])}" target="_blank" rel="noopener" title="Já está na loja. Abrir para editar">✅ Enviado</a>` : `<button class="btn peq" data-rank-enviar="${esc(it.pid)}" title="Enviar para a loja como rascunho">🛍 Enviar</button>`}</td></tr>`).join('')}</table></div>
     ${!R.rodando && R.itens.length > 4 ? `<div class="linha" style="margin:8px 0"><button class="btn sec fixo" id="rank-todos">${R.todos ? 'Mostrar só os 4 melhores' : `Ver todos os ${R.itens.length}`}</button></div>` : ''}
