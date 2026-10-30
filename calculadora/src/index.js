@@ -424,7 +424,7 @@ export default {
         if (pathname === '/api/dono/shopify/estado' && m === 'GET') return json(await estadoShopify(env));
         if (m !== 'POST') return json({ erro: 'nao_encontrado' }, 404);
         if (!mesmaOrigem(req)) return json({ erro: 'origem' }, 403);
-        const d = await corpo(req);
+        const d = await corpo(req, pathname.endsWith('/foto-subir') ? 9_000_000 : 4096);
         const acao = { '/api/dono/shopify/ligar': () => guardarLoja(env, d || {}), '/api/dono/shopify/remover': () => removerLoja(env),
           '/api/dono/shopify/listar': () => listarProdutos(env), '/api/dono/shopify/enviar': () => enviarProduto(env, d || {}), '/api/dono/shopify/fotos': () => listarFotos(env), '/api/dono/shopify/variantes': () => ativarVariantes(env, d || {}), '/api/dono/shopify/lucro': () => conferirLucro(env, d || {}), '/api/dono/shopify/preparar': () => prepararProduto(env, d || {}), '/api/dono/shopify/publicar-pronto': () => publicarPronto(env, d || {}), '/api/dono/shopify/vigiar': () => vigiarCj(env), '/api/dono/shopify/vigia': () => lerVigia(env), '/api/dono/shopify/produto-ler': () => lerProduto(env, d || {}), '/api/dono/shopify/foto-apagar': () => apagarFotoProduto(env, d || {}), '/api/dono/shopify/foto-subir': () => subirFotoProduto(env, d || {}), '/api/dono/shopify/foto-principal': () => fotoPrincipal(env, d || {}), '/api/dono/shopify/produto-salvar': () => salvarProduto(env, d || {}), '/api/dono/shopify/fotos-apagar': () => apagarFotos(env, d?.itens) }[pathname];
         if (!acao) return json({ erro: 'nao_encontrado' }, 404);
