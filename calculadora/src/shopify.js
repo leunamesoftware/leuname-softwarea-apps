@@ -168,7 +168,7 @@ export async function enviarProduto(env, { pid, titulo, preco, tipo, fotos }) {
 const CORES = { pink: 'Rosa', red: 'Vermelho', green: 'Verde', blue: 'Azul', 'light blue': 'Azul claro', grey: 'Cinzento', gray: 'Cinzento', black: 'Preto', white: 'Branco',
   brown: 'Castanho', coffee: 'Café', beige: 'Bege', yellow: 'Amarelo', purple: 'Roxo', orange: 'Laranja', khaki: 'Caqui', cream: 'Creme', camel: 'Camelo', apricot: 'Alperce',
   navy: 'Azul-marinho', rose: 'Rosa', silver: 'Prateado', gold: 'Dourado', 'dark grey': 'Cinzento escuro', 'light grey': 'Cinzento claro',
-  'cherry blossom powder': 'Rosa claro', 'cherry blossom': 'Rosa claro', 'starry sky grey': 'Cinzento', 'starry sky gray': 'Cinzento', 'starry sky': 'Cinzento', 'smog green': 'Verde', smog: 'Verde', 'cream yellow': 'Creme', 'cream': 'Creme' };
+  'cherry blossom powder': 'Rosa claro', 'cherry blossom': 'Rosa claro', 'starry sky grey': 'Cinzento', 'starry sky gray': 'Cinzento', 'starry sky': 'Cinzento', 'smog green': 'Verde', smog: 'Verde', 'cream yellow': 'Creme', 'cream': 'Creme', 'wine red': 'Vinho', wine: 'Vinho', capless: 'sem capuz', hooded: 'com capuz', hood: 'com capuz', grid: 'xadrez', and: 'e', style: 'Modelo', 'rose red': 'Rosa Vermelho', 'light pink': 'Rosa claro', 'dark blue': 'Azul escuro', 'sky blue': 'Azul claro', 'army green': 'Verde militar', leopard: 'Leopardo', stripe: 'Riscas', striped: 'Riscas', plaid: 'Xadrez' };
 const RE_CORES = new RegExp('\\b(' + Object.keys(CORES).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'gi');
 
 /** Tira o nome do produto da frente do nome da variante da CJ e põe as cores em português. */
@@ -388,6 +388,10 @@ export async function publicarPronto(env, { pid }) {
   if (/\b(the|and|for|dog|cat|pet|winter|with)\b/i.test(prod.title)) motivos.push('titulo_em_ingles');
   if ((prod.mediaCount?.count || 0) < 3) motivos.push('poucas_fotos');
   if (!/Entrega em Portugal/.test(prod.descriptionHtml || '')) motivos.push('sem_descricao');
+  const vs = prod.variants?.nodes || [];
+  if (vs.some((v) => /\b(style|capless|grid|wine|and|with|without|color|size|new|big|small)\b/i.test(v.title))) motivos.push('opcoes_em_ingles');
+  const precos = vs.map((v) => Number(v.price)).filter((x) => x > 0);
+  if (precos.length > 1 && Math.max(...precos) / Math.min(...precos) > 1.45) motivos.push('precos_muito_diferentes');
   const r = await env.DB.prepare('SELECT json FROM precos_analise WHERE pid = ?').bind(String(pid)).first();
   let lucroMin = null; try { lucroMin = Math.min(...JSON.parse(r.json).linhas.map((x) => x.lucro)); } catch {}
   if (lucroMin === null) motivos.push('lucro_nao_conferido'); else if (lucroMin < 5) motivos.push('lucro_baixo');
