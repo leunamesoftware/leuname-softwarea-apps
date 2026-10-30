@@ -456,7 +456,7 @@ function cjDesenhar() {
     <div class="erro">${esc(cjBusca.msg)}</div>
     ${cjBusca.produtos.length ? `<p class="nota"><b>${cjBusca.produtos.length} produtos encontrados</b> para “${esc(cjBusca.q)}”.</p>` : ''}
     ${c ? `<p class="nota">Preços da CJ em dólar, convertidos a 1 US$ = ${c.toFixed(4)} €.</p>` : ''}
-    <div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-multi" ${cjRank.rodando ? 'disabled' : ''}>🚀 Buscar 10 categorias de uma vez</button>${cjRank.rodando && cjRank.multi ? '<button class="btn sec fixo" id="cj-rank-parar2">Parar</button>' : ''}</div>
+    <div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-multi" ${cjRank.rodando ? 'disabled' : ''}>🚀 Buscar 12 categorias de uma vez</button>${cjRank.rodando && cjRank.multi ? '<button class="btn sec fixo" id="cj-rank-parar2">Parar</button>' : ''}</div>
     ${cjBusca.produtos.length ? `<div class="linha" style="margin:8px 0"><button class="btn fixo" id="cj-rank-btn" ${cjRank.rodando ? 'disabled' : ''}>🤖 Analisar todos e ordenar do melhor</button>${cjRank.rodando ? '<button class="btn sec fixo" id="cj-rank-parar">Parar</button>' : ''}</div>` : ''}
     <div id="cj-rank"></div>
     <div class="prods">${cjBusca.produtos.map((p) => `<div class="prod"><div class="foto" style="background-image:url('${esc(p.foto || '')}')">${p.lojas ? `<span class="pos">${p.lojas} lojas</span>` : ''}</div>
@@ -517,7 +517,7 @@ async function cjRanquear() {
   api('cj/ranking', { consulta: cjBusca.q, total: cjBusca.produtos.length, itens: cjRank.itens }).catch(() => {});
   lojaMarcarEnviados();
 }
-const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'pet grooming glove', 'dog raincoat', 'pet travel bag', 'pet feeder bowl'];
+const CATEGORIAS = ['dog harness', 'dog leash', 'dog toy', 'pet water fountain', 'cat toy', 'cat scratching post', 'pet grooming glove', 'dog raincoat', 'pet travel bag', 'pet feeder bowl', 'dog winter coat', 'dog sweater'];
 /** Analisa um produto da CJ e devolve a linha do ranking (ou null se não tem frete para Portugal). */
 async function cjAnalisarItem(p, c) {
   let r = await api('cj/analisar', { pid: p.pid }).catch(() => null);
