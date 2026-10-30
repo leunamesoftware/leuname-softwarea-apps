@@ -297,9 +297,10 @@ export async function ativarVariantes(env, { pid }) {
       { pid: prod.id, v: [{ variantId, mediaIds: [mediaId] }] });
     return !(a.erro || a.dados?.productVariantAppendMedia?.userErrors?.length);
   };
-  for (const v of variantesNow) {
+  for (const [idx, v] of variantesNow.entries()) {
     if (v.media?.nodes?.length) continue;
-    const x = porNome.get(String(v.title).toLowerCase()) || porChave.get(chave(v.title));
+    // Pelo nome; se o dono ou o robô renomeou a cor, cai na posição (as variantes foram criadas na mesma ordem da CJ).
+    const x = porNome.get(String(v.title).toLowerCase()) || porChave.get(chave(v.title)) || (variantesNow.length === plano2.length ? plano2[idx] : null);
     const alvo = x?.foto ? baseFoto(x.foto) : '';
     const m = alvo && midias.find((mm) => mm.b && (mm.b === alvo || mm.b.includes(alvo) || alvo.includes(mm.b)));
     if (m) { if (await anexar(v.id, m.id)) fotos++; else semFoto++; continue; }
