@@ -763,7 +763,7 @@ async function enviarLote(lista) {
   const b = $('#rank-lote'); if (b) b.disabled = true;
   msg('Preparando o leitor de letras (só na primeira vez, pode levar 1 minuto)…');
   const prontas = await ocrPreparar();
-  let certos = 0, falhas = 0, semFoto = 0, descartadasTotal = 0;
+  let certos = 0, falhas = 0, semFoto = 0, descartadasTotal = 0, puladas = 0;
   for (let i = 0; i < lista.length; i++) {
     const it = lista[i];
     msg(`Enviando ${i + 1} de ${lista.length}: ${esc(it.nome.slice(0, 50))}…`);
@@ -778,6 +778,7 @@ async function enviarLote(lista) {
         corpo.fotos = limpas;
       }
     }
+    if (Array.isArray(corpo.fotos) && !corpo.fotos.length) { puladas++; continue; }
     let r = await api('shopify/enviar', corpo).catch(() => null);
     if (r?.status === 429) { await espera(6000); r = await api('shopify/enviar', corpo).catch(() => null); }
     if (r?.ok) {
@@ -789,7 +790,7 @@ async function enviarLote(lista) {
     await espera(800);
   }
   cjRank.sel = new Set(); cjRankDesenhar();
-  msg(`✅ ${certos} enviados como rascunho${descartadasTotal ? `, ${descartadasTotal} fotos com letras descartadas` : ''}${semFoto ? `, <b>${semFoto} sem nenhuma foto</b>` : ''}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.`, true);
+  msg(`✅ ${certos} enviados como rascunho${descartadasTotal ? `, ${descartadasTotal} fotos com letras descartadas` : ''}${puladas ? `, <b>${puladas} pulados porque ficaram sem nenhuma foto limpa</b>` : ''}${semFoto ? `, <b>${semFoto} sem nenhuma foto</b>` : ''}${falhas ? `, <b>${falhas} falharam</b>` : ''}. Diga ao Claude: terminou.`, true);
 }
 async function enviarParaLoja(it) {
   if (!it) return;
@@ -828,6 +829,7 @@ async function enviarParaLoja(it) {
         corpo.fotos = limpas; b.textContent = 'Enviando…'; $('#en-erro').style.color = ''; $('#en-erro').textContent = '';
       }
     }
+    if (Array.isArray(corpo.fotos) && !corpo.fotos.length) { $('#en-erro').style.color = ''; $('#en-erro').textContent = 'Todas as fotos têm letras, então não enviei. Procure outro produto.'; const bb = $('#en-ok'); bb.disabled = false; bb.textContent = 'Enviar'; return; }
     const r = await api('shopify/enviar', corpo).catch(() => null);
     if (r?.ok) {
       const av = r.j.avisos || [];
