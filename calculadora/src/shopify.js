@@ -626,7 +626,7 @@ export async function subirFotoProduto(env, { id, dados, tipo, principal }) {
     }
     await fotoPrincipal(env, { id, mediaId: novo });
   }
-  return { ok: true };
+  return { ok: true, mediaId: novo };
 }
 
 

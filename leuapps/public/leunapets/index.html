@@ -1105,7 +1105,8 @@ async function fotosCarregar() {
 function fotosDesenhar() {
   const el = $('#fotos-area'); if (!el) return;
   const E = fotosEstado;
-  const marcadas = E.itens.filter((f) => E.marcadas.has(f.media)), outras = E.itens.filter((f) => !E.marcadas.has(f.media));
+  const emPar = new Set(pares.flatMap((p) => [p.antiga, p.nova]));
+  const marcadas = E.itens.filter((f) => E.marcadas.has(f.media) && !emPar.has(f.media)), outras = E.itens.filter((f) => !E.marcadas.has(f.media) && !emPar.has(f.media));
   const lidas = E.itens.filter((f) => fotoChave(f) in ocrCache && ocrCache[fotoChave(f)] !== null).length;
   const grade = (l) => `<div class="fotos-grade">${l.map((f) => `<label class="foto-card${E.marcadas.has(f.media) ? ' marcada' : ''}"><img src="${esc(f.url)}&width=300" loading="lazy" alt=""><input type="checkbox" data-foto="${esc(f.media)}" ${E.marcadas.has(f.media) ? 'checked' : ''}><small>${esc(f.titulo.slice(0, 28))}${f.status === 'DRAFT' ? ' · rascunho' : ''}</small></label>`).join('')}</div>`;
   el.innerHTML = `<div class="card">
@@ -1114,6 +1115,7 @@ function fotosDesenhar() {
     <div class="erro" id="fo-erro"></div>
     ${E.lendo ? `<div class="barra"><i style="width:${E.total ? E.feito / E.total * 100 : 0}%"></i></div>` : ''}
   </div>
+  ${paresHtml(E)}
   ${E.itens.length ? `<div class="card" style="border-color:var(--verm)"><h3>🗑 Marcadas para apagar (${marcadas.length})</h3>${marcadas.length ? `<p class="nota">O robô marca as que têm letras. Desmarque as que quiser manter.</p>${grade(marcadas)}` : '<p class="nota">Nenhuma marcada. Toque numa foto lá embaixo para marcar na mão.</p>'}
     <div class="linha" style="margin-top:10px"><button class="btn fixo" id="fo-limpar" ${E.limpando || E.apagando || !marcadas.length ? 'disabled' : ''}>${E.limpando ? esc(E.limpandoTxt || 'Limpando…') : `🧼 Tirar as letras das marcadas (${marcadas.length})`}</button><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !marcadas.length ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${marcadas.length})`}</button></div></div>
   <div class="card"><h3>Outras fotos (${outras.length})</h3><p class="nota">Toque numa foto para marcar na mão se achar que tem letras. Ela sobe para o quadro de cima.</p>${grade(outras)}</div>` : ''}`;
@@ -1124,6 +1126,10 @@ function fotosDesenhar() {
   $('#fo-de-novo')?.addEventListener('click', () => { E.itens.forEach((f) => delete ocrCache[fotoChave(f)]); ocrSalvar(); fotosLer(); });
   $('#fo-apagar')?.addEventListener('click', fotosApagar);
   $('#fo-limpar')?.addEventListener('click', fotosLimpar);
+  const ativos = pares.filter((p) => E.itens.some((f) => f.media === p.nova) && E.itens.some((f) => f.media === p.antiga));
+  $('#pa-todas')?.addEventListener('click', () => { if (confirm(`Aprovar ${ativos.length} foto(s)? As originais serão apagadas da loja.`)) paresDecidir(ativos, true); });
+  el.querySelectorAll('[data-pa-bom]').forEach((b) => b.addEventListener('click', () => paresDecidir([ativos[+b.dataset.paBom]], true)));
+  el.querySelectorAll('[data-pa-ruim]').forEach((b) => b.addEventListener('click', () => paresDecidir([ativos[+b.dataset.paRuim]], false)));
 }
 async function fotosLer() {
   const E = fotosEstado, erro = (t) => { const e = $('#fo-erro'); if (e) e.textContent = t; };
@@ -1157,6 +1163,31 @@ async function fotosApagar() {
 // ----- Tirar as letras das fotos marcadas -----
 // Fundo liso: apaga só as letras (preenche com a cor em volta). Fundo complicado: tira o fundo e põe branco (as letras do fundo somem junto).
 // Tabela de medidas: não mexe. Foto sem letras de verdade: só desmarca.
+// ----- Conferir antes e depois (a foto original só é apagada quando você aprova) -----
+let pares = []; try { pares = JSON.parse(localStorage.getItem('lp_pares') || '[]'); } catch { pares = []; }
+const paresSalvar = () => { try { localStorage.setItem('lp_pares', JSON.stringify(pares)); } catch {} };
+const paresAdd = (p) => { pares = pares.filter((x) => x.antiga !== p.antiga); pares.push(p); paresSalvar(); };
+async function paresDecidir(lista, bom) {
+  const E = fotosEstado, e = $('#fo-erro'); E.conferindo = true; fotosDesenhar();
+  for (const p of lista) {
+    // bom: apaga a antiga e fica a nova. ruim: apaga a nova e a antiga volta (e volta a ser a principal, se era).
+    const r = await api('shopify/foto-apagar', { id: p.id, mediaId: bom ? p.antiga : p.nova }).catch(() => null);
+    if (!r?.ok) { if (e) e.textContent = 'Não deu para apagar uma das fotos. Tente de novo.'; continue; }
+    if (!bom && p.principal) await api('shopify/foto-principal', { id: p.id, mediaId: p.antiga }).catch(() => null);
+    pares = pares.filter((x) => x.antiga !== p.antiga || x.nova !== p.nova); paresSalvar();
+  }
+  E.conferindo = false; await fotosCarregar();
+}
+function paresHtml(E) {
+  const ativos = pares.filter((p) => E.itens.some((f) => f.media === p.nova) && E.itens.some((f) => f.media === p.antiga));
+  if (!ativos.length) return '';
+  const url = (m) => (E.itens.find((f) => f.media === m) || {}).url || '';
+  return `<div class="card" style="border-color:var(--verde,#157347)"><h3>🔍 Conferir antes e depois (${ativos.length})</h3><p class="nota">A foto original ainda está na loja. Olhe o depois: se ficou boa, aprove (a antiga some). Se ficou ruim, rejeite (a nova some e a original continua).</p>
+    <div class="linha" style="margin-bottom:10px"><button class="btn fixo" id="pa-todas" ${E.conferindo ? 'disabled' : ''}>✅ Aprovar todas (${ativos.length})</button></div>
+    ${ativos.map((p, i) => `<div style="border:1px solid #ddd;border-radius:10px;padding:8px;margin-bottom:8px"><small>${esc((p.titulo || '').slice(0, 40))}</small>
+      <div style="display:flex;gap:8px;margin:6px 0"><div style="flex:1;text-align:center"><img src="${esc(url(p.antiga))}&width=300" style="width:100%;border-radius:8px"><small>Antes</small></div><div style="flex:1;text-align:center"><img src="${esc(url(p.nova))}&width=300" style="width:100%;border-radius:8px"><small>Depois</small></div></div>
+      <div class="linha"><button class="btn fixo" data-pa-bom="${i}" ${E.conferindo ? 'disabled' : ''}>✅ Ficou boa</button><button class="btn verm fixo" data-pa-ruim="${i}" ${E.conferindo ? 'disabled' : ''}>↩ Ficou ruim, manter a original</button></div></div>`).join('')}</div>`;
+}
 let bgLib = null;
 const bgPreparar = () => (bgLib ||= import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm').then((m) => m.removeBackground || m.default));
 const noBlob = (cv, tipo, q) => new Promise((ok) => cv.toBlob(ok, tipo, q));
@@ -1252,12 +1283,12 @@ async function fotosLimpar() {
     const id = f.produto.split('/').pop(), primeira = E.itens.find((x) => x.produto === f.produto)?.media === f.media;
     const up = await api('shopify/foto-subir', { id, dados: await paraB64(r.blob), tipo: 'image/jpeg', principal: primeira }).catch(() => null);
     if (!up?.ok) { cont.falhou++; continue; }
-    const ap = await api('shopify/foto-apagar', { id, mediaId: f.media }).catch(() => null);
-    if (!ap?.ok) { cont.falhou++; continue; }
-    cont[r.modo]++; E.marcadas.delete(f.media);
+    // Não apaga a original: guarda o par (antes/depois) para você conferir e aprovar na tela "Conferir".
+    paresAdd({ id, antiga: f.media, antigaUrl: f.url, nova: up.j.mediaId, titulo: f.titulo, principal: primeira });
+    cont[r.modo]++; E.marcadas.delete(f.media); ocrCache[fotoChave(f)] = false; ocrSalvar();
   }
   E.limpando = false; await fotosCarregar();
-  erro(`Pronto: ${cont.apagou} com letras apagadas, ${cont.fundo} com fundo trocado, ${cont.limpa} já estavam sem letras (só desmarquei)` + (cont.tabela ? `, ${cont.tabela} tabela(s) de medidas (não mexi, continuam marcadas)` : '') + (cont.falhou ? `, ${cont.falhou} não deu (continuam marcadas)` : '') + '.', true);
+  erro(`Confira abaixo em "Conferir antes e depois" (as originais ainda estão na loja). Pronto: ${cont.apagou} com letras apagadas, ${cont.fundo} com fundo trocado, ${cont.limpa} já estavam sem letras (só desmarquei)` + (cont.tabela ? `, ${cont.tabela} tabela(s) de medidas (não mexi, continuam marcadas)` : '') + (cont.falhou ? `, ${cont.falhou} não deu (continuam marcadas)` : '') + '.', true);
 }
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----
