@@ -1113,7 +1113,7 @@ function fotosDesenhar() {
     ${E.lendo ? `<div class="barra"><i style="width:${E.total ? E.feito / E.total * 100 : 0}%"></i></div>` : ''}
   </div>
   ${E.itens.length ? `<div class="card" style="border-color:var(--verm)"><h3>🗑 Marcadas para apagar (${marcadas.length})</h3>${marcadas.length ? `<p class="nota">O robô marca as que têm letras. Desmarque as que quiser manter.</p>${grade(marcadas)}` : '<p class="nota">Nenhuma marcada. Toque numa foto lá embaixo para marcar na mão.</p>'}
-    <div class="linha" style="margin-top:10px"><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !marcadas.length ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${marcadas.length})`}</button></div></div>
+    <div class="linha" style="margin-top:10px"><button class="btn fixo" id="fo-limpar" ${E.limpando || E.apagando || !marcadas.length ? 'disabled' : ''}>${E.limpando ? esc(E.limpandoTxt || 'Limpando…') : `🧼 Tirar as letras das marcadas (${marcadas.length})`}</button><button class="btn verm fixo" id="fo-apagar" ${E.apagando || !marcadas.length ? 'disabled' : ''}>${E.apagando ? 'Apagando…' : `🗑 Apagar marcadas (${marcadas.length})`}</button></div></div>
   <div class="card"><h3>Outras fotos (${outras.length})</h3><p class="nota">Toque numa foto para marcar na mão se achar que tem letras. Ela sobe para o quadro de cima.</p>${grade(outras)}</div>` : ''}`;
   el.querySelectorAll('[data-foto]').forEach((c) => c.addEventListener('change', () => { c.checked ? E.marcadas.add(c.dataset.foto) : E.marcadas.delete(c.dataset.foto); const f = E.itens.find((x) => x.media === c.dataset.foto); if (f) { ocrCache[fotoChave(f)] = c.checked; ocrSalvar(); } fotosDesenhar(); }));
   $('#fo-atualizar')?.addEventListener('click', fotosCarregar);
@@ -1121,6 +1121,7 @@ function fotosDesenhar() {
   $('#fo-ler')?.addEventListener('click', fotosLer);
   $('#fo-de-novo')?.addEventListener('click', () => { E.itens.forEach((f) => delete ocrCache[fotoChave(f)]); ocrSalvar(); fotosLer(); });
   $('#fo-apagar')?.addEventListener('click', fotosApagar);
+  $('#fo-limpar')?.addEventListener('click', fotosLimpar);
 }
 async function fotosLer() {
   const E = fotosEstado, erro = (t) => { const e = $('#fo-erro'); if (e) e.textContent = t; };
@@ -1149,6 +1150,78 @@ async function fotosApagar() {
   E.apagando = false;
   await fotosCarregar();
   const e = $('#fo-erro'); if (e) { e.style.color = erroGeral ? '' : 'var(--verde,#157347)'; e.textContent = erroGeral || `${apagadas} foto(s) apagada(s)${falhas ? `, ${falhas} não deu` : ''}.`; }
+}
+
+// ----- Tirar as letras das fotos marcadas -----
+// Fundo liso: apaga só as letras (preenche com a cor em volta). Fundo complicado: tira o fundo e põe branco (as letras do fundo somem junto).
+// Tabela de medidas: não mexe. Foto sem letras de verdade: só desmarca.
+let bgLib = null;
+const bgPreparar = () => (bgLib ||= import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm').then((m) => m.removeBackground || m.default));
+const noBlob = (cv, tipo, q) => new Promise((ok) => cv.toBlob(ok, tipo, q));
+const paraB64 = (b) => new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.readAsDataURL(b); });
+async function limparFoto(f) {
+  const r = await fetch('/loja-api/dono/foto?u=' + encodeURIComponent(f.url), { credentials: 'same-origin' });
+  if (!r.ok) return { st: 'erro' };
+  const bmp = await createImageBitmap(await r.blob());
+  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height)), W = Math.round(bmp.width * k), H = Math.round(bmp.height * k);
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const cx = cv.getContext('2d', { willReadFrequently: true }); cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H); cx.drawImage(bmp, 0, 0, W, H);
+  const { data } = await ocrWorker.recognize(cv);
+  if (!ocrTemLetras(data)) return { st: 'limpa' };
+  const parece = (t) => /^[A-Za-zÀ-ÿ]{3,}[.,!?:;]?$/.test(t) && /[aeiouáéíóúãõâêôAEIOU]/.test(t) && !/(.)\1\1/i.test(t);
+  const reais = (data.words || []).filter((w) => (w.confidence ?? 0) >= 60 && (parece(String(w.text || '').trim()) || /[㐀-鿿]/.test(w.text)));
+  const numeros = (data.words || []).filter((w) => /\d/.test(w.text) && (w.confidence ?? 0) >= 60).length;
+  const medidas = ((data.text || '').match(/\d+(\.\d+)?\s?(cm|mm|kg|g)\b/gi) || []).length;
+  if (reais.length >= 18 || numeros >= 6 || medidas >= 3) return { st: 'tabela' };
+  const pad = 8, caixas = reais.map((w) => ({ x0: Math.max(0, w.bbox.x0 - pad), y0: Math.max(0, w.bbox.y0 - pad), x1: Math.min(W, w.bbox.x1 + pad), y1: Math.min(H, w.bbox.y1 + pad) }));
+  const img = cx.getImageData(0, 0, W, H), px = img.data;
+  const at = (x, y) => { const xx = Math.min(W - 1, Math.max(0, x)), yy = Math.min(H - 1, Math.max(0, y)), i = (yy * W + xx) * 4; return [px[i], px[i + 1], px[i + 2]]; };
+  const anel = (c) => { const s = [], b = 5; for (let x = c.x0; x < c.x1; x += 3) { if (c.y0 - b >= 0) s.push(at(x, c.y0 - b)); if (c.y1 + b < H) s.push(at(x, c.y1 + b)); } for (let y = c.y0; y < c.y1; y += 3) { if (c.x0 - b >= 0) s.push(at(c.x0 - b, y)); if (c.x1 + b < W) s.push(at(c.x1 + b, y)); } return s; };
+  const desvio = (s) => { if (s.length < 4) return 999; let m = [0, 0, 0]; s.forEach((p) => { for (let i = 0; i < 3; i++) m[i] += p[i]; }); m = m.map((v) => v / s.length); let v = 0; s.forEach((p) => { for (let i = 0; i < 3; i++) v += (p[i] - m[i]) ** 2; }); return Math.sqrt(v / s.length / 3); };
+  let final, modo;
+  if (caixas.every((c) => desvio(anel(c)) <= 22)) {
+    for (const c of caixas) for (let y = c.y0; y < c.y1; y++) for (let x = c.x0; x < c.x1; x++) {
+      const wl = c.x1 - x, wr = x - c.x0 + 1, wt = c.y1 - y, wb = y - c.y0 + 1, L = at(c.x0 - 5, y), R = at(c.x1 + 5, y), T = at(x, c.y0 - 5), B = at(x, c.y1 + 5), i = (y * W + x) * 4;
+      for (let j = 0; j < 3; j++) px[i + j] = ((L[j] * wl + R[j] * wr) / (wl + wr) + (T[j] * wt + B[j] * wb) / (wt + wb)) / 2;
+    }
+    cx.putImageData(img, 0, 0); final = cv; modo = 'apagou';
+  } else {
+    const rm = await bgPreparar();
+    const out = await rm(await noBlob(cv, 'image/png'), { output: { format: 'image/png' } });
+    const sb = await createImageBitmap(out), c2 = document.createElement('canvas'); c2.width = W; c2.height = H;
+    const x2 = c2.getContext('2d', { willReadFrequently: true }); x2.drawImage(sb, 0, 0, W, H);
+    const al = x2.getImageData(0, 0, W, H).data; let n = 0; for (let i = 3; i < al.length; i += 4) if (al[i] > 128) n++;
+    const fr = n / (W * H); if (fr < 0.04 || fr > 0.97) return { st: 'falhou' };
+    const c3 = document.createElement('canvas'); c3.width = W; c3.height = H; const x3 = c3.getContext('2d'); x3.fillStyle = '#fff'; x3.fillRect(0, 0, W, H); x3.drawImage(c2, 0, 0);
+    final = c3; modo = 'fundo';
+  }
+  const { data: d2 } = await ocrWorker.recognize(final);
+  if (ocrTemLetras(d2)) return { st: 'ainda' };
+  return { st: 'ok', modo, blob: await noBlob(final, 'image/jpeg', 0.9) };
+}
+async function fotosLimpar() {
+  const E = fotosEstado, sel = E.itens.filter((f) => E.marcadas.has(f.media));
+  if (!sel.length || !confirm(`Tirar as letras de ${sel.length} foto(s)? As fotos trocadas substituem as antigas na loja.`)) return;
+  const erro = (t, ok) => { const e = $('#fo-erro'); if (e) { e.style.color = ok ? 'var(--verde,#157347)' : ''; e.textContent = t; } };
+  E.limpando = true; E.limpandoTxt = 'Preparando o leitor…'; fotosDesenhar();
+  if (!(await ocrPreparar())) { E.limpando = false; fotosDesenhar(); return erro('Não consegui carregar o leitor de letras.'); }
+  const cont = { apagou: 0, fundo: 0, limpa: 0, tabela: 0, falhou: 0 };
+  let feito = 0;
+  for (const f of sel) {
+    E.limpandoTxt = `Limpando ${++feito} de ${sel.length}…`; fotosDesenhar();
+    let r; try { r = await limparFoto(f); } catch { r = { st: 'falhou' }; }
+    if (r.st === 'limpa') { cont.limpa++; E.marcadas.delete(f.media); ocrCache[fotoChave(f)] = false; ocrSalvar(); continue; }
+    if (r.st === 'tabela') { cont.tabela++; continue; }
+    if (r.st !== 'ok') { cont.falhou++; continue; }
+    const id = f.produto.split('/').pop(), primeira = E.itens.find((x) => x.produto === f.produto)?.media === f.media;
+    const up = await api('shopify/foto-subir', { id, dados: await paraB64(r.blob), tipo: 'image/jpeg', principal: primeira }).catch(() => null);
+    if (!up?.ok) { cont.falhou++; continue; }
+    const ap = await api('shopify/foto-apagar', { id, mediaId: f.media }).catch(() => null);
+    if (!ap?.ok) { cont.falhou++; continue; }
+    cont[r.modo]++; E.marcadas.delete(f.media);
+  }
+  E.limpando = false; await fotosCarregar();
+  erro(`Pronto: ${cont.apagou} com letras apagadas, ${cont.fundo} com fundo trocado, ${cont.limpa} já estavam sem letras (só desmarquei)` + (cont.tabela ? `, ${cont.tabela} tabela(s) de medidas (não mexi, continuam marcadas)` : '') + (cont.falhou ? `, ${cont.falhou} não deu (continuam marcadas)` : '') + '.', true);
 }
 
 // ----- Tráfego pago (uma tela para cada plataforma) -----
