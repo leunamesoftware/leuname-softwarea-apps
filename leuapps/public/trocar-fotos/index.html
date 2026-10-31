@@ -1,0 +1,19 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Fotos para trocar</title>
+<style>body{font-family:system-ui,sans-serif;margin:0;padding:16px;background:#f6f6f6;max-width:560px;margin:auto}h1{font-size:20px}h2{font-size:17px;margin:22px 0 8px}.f{background:#fff;border-radius:12px;padding:10px;margin:10px 0;box-shadow:0 1px 3px #0002}.f img{width:100%;border-radius:8px;display:block}.f b{display:block;margin:8px 0}button,a.b{display:block;width:100%;box-sizing:border-box;text-align:center;background:#16a34a;color:#fff;border:0;border-radius:10px;padding:14px;font-size:16px;font-weight:600;margin-top:8px;text-decoration:none}p{color:#555;font-size:14px}</style></head><body>
+<h1>Fotos para trocar</h1>
+<p>Toque em <b>Baixar</b> em cada foto (ou em "Baixar todas"). Dê ao ChatGPT: <i>"Refaça esta foto igual, sem nenhum texto, em português ou sem texto."</i></p>
+<div id="app"></div>
+<script>
+const B='https://cdn.shopify.com/s/files/1/0779/2413/9175/files/';
+const P=[{n:'Comedouro Lento de Cerâmica',s:'comedouro',f:[
+['2','Comida variada (texto: Suitable for Varies Food)','713efe5c-51f4-46aa-94e2-f226ed4529ba.jpg?v=1793406381'],
+['3','Comparação do tempo (texto: Feeding Time)','0857b537-c577-4f14-9c73-92f6bf3dab6c.jpg?v=1793406381'],
+['8','Cães médios (texto: Better for Medium Dogs)','75bef8c0-ea3f-4014-b72d-6ea8653ac653.jpg?v=1793413325'],
+['9','Fácil de limpar (texto: Easy to Clean)','b4465fb5-0dc5-4f21-a3bf-7ca3f5e5bc35.jpg?v=1793413325'],
+['10','Antiderrapante (texto: Non-slip design)','bbdc3da1-b913-4466-adbc-f06884ab531b.jpg?v=1793413325']]}];
+async function baixar(u,nome){try{const r=await fetch(u);const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nome;document.body.appendChild(a);a.click();a.remove()}catch(e){window.open(u,'_blank')}}
+const app=document.getElementById('app');
+P.forEach(p=>{const h=document.createElement('h2');h.textContent=p.n;app.appendChild(h);
+const all=document.createElement('button');all.textContent='⬇ Baixar todas ('+p.f.length+')';all.onclick=async()=>{for(const x of p.f){await baixar(B+x[2],p.s+'-'+x[0]+'.jpg');await new Promise(r=>setTimeout(r,700))}};app.appendChild(all);
+p.f.forEach(x=>{const d=document.createElement('div');d.className='f';d.innerHTML='<img loading="lazy" src="'+B+x[2]+'&width=800"><b>Foto '+x[0]+' — '+x[1]+'</b>';const bt=document.createElement('button');bt.textContent='Baixar foto '+x[0];bt.onclick=()=>baixar(B+x[2],p.s+'-'+x[0]+'.jpg');d.appendChild(bt);app.appendChild(d)})});
+</script></body></html>
