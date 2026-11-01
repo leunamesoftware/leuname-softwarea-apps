@@ -65,6 +65,8 @@ svg{width:100%;height:auto;display:block}
     <div><label>Carrinhos</label><input id="car" type="number"></div>
     <div><label>Compras</label><input id="com" type="number"></div>
     <div><label>Cotação €1 = R$</label><input id="cot" type="number" step="0.01"></div>
+    <div><label>👍 Reações boas (curtir, amei…)</label><input id="rp" type="number"></div>
+    <div><label>👎 Reações ruins (grr, comentário ruim…)</label><input id="rn" type="number"></div>
   </div>
   <p style="margin:12px 0 0"><button id="salvar">Salvar leitura de hoje</button> <button class="s" id="limpar">Apagar histórico</button></p>
   <p class="note" id="ultima"></p>
@@ -131,11 +133,15 @@ Foto: gato ou cão dentro da gruta, cor creme.</pre></div>
 
 <script>
 var K='leunapets_painel_v1';
-var DEF={gasto:17.53,imp:293,alc:236,cli:0,car:0,com:0,cot:6.3,hist:[]};
+var DEF={gasto:17.53,imp:293,alc:236,cli:0,car:0,com:0,cot:6.3,rp:0,rn:0,hist:[]};
 var S=load();
 function load(){try{var v=localStorage.getItem(K);if(v){return Object.assign({},DEF,JSON.parse(v))}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
 function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
-var F=['gasto','imp','alc','cli','car','com','cot'];
+
+var AC=null,ANT=null;
+function som(tipo){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var f=tipo==='bom'?[660,880]:[300,200];f.forEach(function(hz,i){var o=AC.createOscillator(),g=AC.createGain();o.frequency.value=hz;o.type='sine';g.gain.value=.15;o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+i*.18);o.stop(AC.currentTime+i*.18+.16)})}catch(e){}}
+function avisaReacao(){var a=ANT;ANT={rp:S.rp,rn:S.rn,car:S.car,com:S.com};if(!a)return;if(S.rn>a.rn)som('ruim');else if(S.rp>a.rp||S.car>a.car||S.com>a.com)som('bom')}
+var F=['gasto','imp','alc','cli','car','com','cot','rp','rn'];
 function $(i){return document.getElementById(i)}
 function num(i){var v=parseFloat($(i).value);return isNaN(v)?0:v}
 function fill(){F.forEach(function(f){$(f).value=S[f]})}
@@ -144,10 +150,10 @@ function brl(v){return 'R$ '+v.toFixed(2).replace('.',',')}
 function pct(v){return v.toFixed(2).replace('.',',')+'%'}
 
 function render(){
-  read();
+  read();avisaReacao();
   var g=S.gasto,imp=S.imp,cli=S.cli,car=S.car,com=S.com;
   var ctr=imp?cli/imp*100:0, cpc=cli?g/cli:0, cpcar=car?g/car:0, cpa=com?g/com:0, freq=S.alc?imp/S.alc:0;
-  var k=[['Gasto',brl(g)],['Impressões',imp],['Alcance',S.alc],['Frequência',freq.toFixed(2).replace('.',',')],['Cliques',cli],['CTR (cliques/impressões)',pct(ctr)],['Custo por clique',cli?brl(cpc):'—'],['Carrinhos',car],['Custo por carrinho',car?brl(cpcar):'—'],['Compras',com],['Custo por compra',com?brl(cpa):'—']];
+  var k=[['Gasto',brl(g)],['Impressões',imp],['Alcance',S.alc],['Frequência',freq.toFixed(2).replace('.',',')],['Cliques',cli],['CTR (cliques/impressões)',pct(ctr)],['Custo por clique',cli?brl(cpc):'—'],['Carrinhos',car],['Custo por carrinho',car?brl(cpcar):'—'],['Compras',com],['👍 Reações boas',S.rp],['👎 Reações ruins',S.rn],['Custo por compra',com?brl(cpa):'—']];
   $('kpis').innerHTML=k.map(function(x){return '<div class="kpi"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join('');
 
   var pros=[],con=[],cor,tag,tit,acao;
@@ -220,11 +226,11 @@ $('salvar').onclick=function(){
 };
 $('limpar').onclick=function(){S.hist=[];save();render()};
 F.forEach(function(f){$(f).addEventListener('input',function(){read();save();render()})});
-fill();render();
+fill();ANT={rp:S.rp,rn:S.rn,car:S.car,com:S.com};render();
+addEventListener('storage',function(e){if(e.key===K){S=load();fill();render()}});
 </script>
 <button id="instalar" style="display:none;position:fixed;right:16px;bottom:16px;z-index:9;background:#e8742b;color:#fff;border:0;border-radius:12px;padding:14px 20px;font:600 16px system-ui;box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:pointer">⬇ Instalar no computador</button>
 <script>
-if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations&&0.catch(function(){});
 var ev=null,b=document.getElementById('instalar');var dentro=(window.top!==window);
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;if(!dentro)b.style.display='block'});
 b.onclick=function(){if(ev){ev.prompt();ev.userChoice.then(function(){b.style.display='none';ev=null})}};
