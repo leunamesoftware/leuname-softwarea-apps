@@ -72,6 +72,13 @@ svg{width:100%;height:auto;display:block}
   <p class="note" id="ultima"></p>
 </div>
 
+<div class="card" id="robo">
+  <h2>🤖 Robô: o que mudou</h2>
+  <p class="note" id="roboleitura"></p>
+  <div id="robodiag"></div>
+  <ul id="robolog" style="padding-left:18px;margin:8px 0 0"></ul>
+</div>
+
 <div class="card">
   <h2>2. Indicadores</h2>
   <div class="grid" id="kpis"></div>
@@ -141,6 +148,26 @@ function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
 var AC=null,ANT=null;
 function som(tipo){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var f=tipo==='bom'?[660,880]:[300,200];f.forEach(function(hz,i){var o=AC.createOscillator(),g=AC.createGain();o.frequency.value=hz;o.type='sine';g.gain.value=.15;o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+i*.18);o.stop(AC.currentTime+i*.18+.16)})}catch(e){}}
 function avisaReacao(){var a=ANT;ANT={rp:S.rp,rn:S.rn,car:S.car,com:S.com};if(!a)return;if(S.rn>a.rn)som('ruim');else if(S.rp>a.rp||S.car>a.car||S.com>a.com)som('bom')}
+
+var NOMES={gasto:['Gasto','R$ ',false],imp:['Impressões','',true],alc:['Alcance','',true],cli:['Cliques','',true],car:['Carrinhos','',true],com:['Compras','',true],rp:['Reações boas','',true],rn:['Reações ruins','',false]};
+var PODE=false;
+function diario(){
+  S.log=S.log||[];var A=PODE||!S.ult?(S.ult||null):null,agora=new Date(),hh=('0'+agora.getHours()).slice(-2)+':'+('0'+agora.getMinutes()).slice(-2)+' '+('0'+agora.getDate()).slice(-2)+'/'+('0'+(agora.getMonth()+1)).slice(-2);
+  if(A){Object.keys(NOMES).forEach(function(k){var a=+A[k]||0,b=+S[k]||0;if(a===b)return;var n=NOMES[k],bom=n[2]?b>a:b<a;
+    if(k==='gasto')bom=null;S.log.unshift({h:hh,t:n[0]+(b>a?' subiu':' caiu')+' de '+n[1]+a+' para '+n[1]+b,b:bom})})}
+  if(PODE||!S.ult)S.ult={gasto:S.gasto,imp:S.imp,alc:S.alc,cli:S.cli,car:S.car,com:S.com,rp:S.rp,rn:S.rn};S.log=S.log.slice(0,30);
+  var d=[];
+  if(S.rp>0&&S.cli===0&&S.car===0)d.push(['r','Tem '+S.rp+' reação(ões) boa(s), mas 0 cliques no link. A foto agrada, mas ninguém vai para a loja. Troque o texto/botão (chame para clicar em "Comprar agora") e confira se o link do anúncio abre leunapets.com.']);
+  if(S.cli>0&&S.car===0)d.push(['a','Já clicaram '+S.cli+' vez(es), mas ninguém pôs no carrinho. Olhe preço, frete grátis em destaque e a página do produto.']);
+  if(S.car>0&&S.com===0)d.push(['g','Tem carrinho! Falta só a compra. Reforce o frete grátis e a devolução em 14 dias.']);
+  if(S.com>0)d.push(['g','Vendeu! Pague o pedido na CJ e não aumente o orçamento antes de 2 a 3 vendas.']);
+  if(S.rn>S.rp&&S.rn>0)d.push(['r','Mais reações ruins do que boas: pause e troque a foto.']);
+  if(!d.length)d.push(['a','Sem novidades que mudem a decisão. Continue coletando dados.']);
+  $('robodiag').innerHTML=d.map(function(x){return '<p style="margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--'+(x[0]==='g'?'gb':x[0]==='r'?'rb':'yb')+')">'+(x[0]==='g'?'✅ ':x[0]==='r'?'⚠️ ':'🟡 ')+x[1]+'</p>'}).join('');
+  $('robolog').innerHTML=S.log.length?S.log.map(function(l){return '<li>'+l.h+' — '+(l.b===true?'🟢 melhor: ':l.b===false?'🔴 pior: ':'')+l.t+'</li>'}).join(''):'<li>Nada mudou ainda. Quando um número mudar, aparece aqui.</li>';
+  $('roboleitura').textContent='O robô confere a cada 15 minutos. Última conferência: '+hh+'. (Os números vêm do que você digita aqui; com a chave da Meta, o robô preenche sozinho.)';
+}
+setInterval(function(){S=load();fill();PODE=true;render();PODE=false},15*60*1000);
 var F=['gasto','imp','alc','cli','car','com','cot','rp','rn'];
 function $(i){return document.getElementById(i)}
 function num(i){var v=parseFloat($(i).value);return isNaN(v)?0:v}
@@ -190,7 +217,7 @@ function render(){
 
   var ult=S.hist.length?S.hist[S.hist.length-1].d:null;
   $('ultima').textContent=ult?'Última leitura salva: '+ult:'Nenhuma leitura salva ainda (os números acima são da última conferência feita no Meta).';
-  graf();margens();
+  graf();margens();diario();save();
 }
 function graf(){
   var h=S.hist;
@@ -225,7 +252,7 @@ $('salvar').onclick=function(){
   save();render();
 };
 $('limpar').onclick=function(){S.hist=[];save();render()};
-F.forEach(function(f){$(f).addEventListener('input',function(){read();save();render()})});
+F.forEach(function(f){$(f).addEventListener('input',function(){read();save();render()});$(f).addEventListener('change',function(){PODE=true;render();PODE=false})});
 fill();ANT={rp:S.rp,rn:S.rn,car:S.car,com:S.com};render();
 addEventListener('storage',function(e){if(e.key===K){S=load();fill();render()}});
 </script>
