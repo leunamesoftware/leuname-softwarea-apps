@@ -144,6 +144,9 @@ td.n,th.n{text-align:right}
     <button data-v="meta">📘 Facebook e Instagram</button>
     <button data-v="tiktok">🎵 TikTok</button>
     <button data-v="google">🔍 Google</button>
+    <div class="grupo">Conta</div>
+    <button data-v="vigia">🐾 Vigia dos anúncios</button>
+    <button data-v="senha">🔑 Trocar senha</button>
     <button id="atualizar-app" class="sair" title="Recarrega o app com a versão mais nova">↻ Atualizar o app</button>
     <button class="sair" id="sair" style="margin-top:2px">Sair</button>
   </nav>
@@ -1085,6 +1088,34 @@ async function enviarParaLoja(it) {
   });
 }
 
+
+
+// ----- Trocar senha (dentro do app) -----
+TELAS.senha = () => `<h2>🔑 Trocar senha</h2><p class="sub">Coloque a senha nova aqui. Vale na hora, sem sair do app.</p>
+  <div class="card" style="max-width:460px"><form id="f-senha">
+    <label for="s-atual">Senha de agora</label><input id="s-atual" type="password" autocomplete="current-password" required>
+    <label for="s-nova">Senha nova (mínimo 6 letras ou números)</label><input id="s-nova" type="password" autocomplete="new-password" required>
+    <label for="s-nova2">Repita a senha nova</label><input id="s-nova2" type="password" autocomplete="new-password" required>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:500;cursor:pointer"><input id="s-ver" type="checkbox" style="width:auto"> 👁 Mostrar as senhas</label>
+    <div class="erro" id="s-msg"></div>
+    <button class="btn" type="submit" style="margin-top:8px">Salvar senha nova</button>
+  </form></div>`;
+LIGAR.senha = () => {
+  $('#s-ver').addEventListener('change', (e) => { ['#s-atual', '#s-nova', '#s-nova2'].forEach((i) => { $(i).type = e.target.checked ? 'text' : 'password'; }); });
+  $('#f-senha').addEventListener('submit', async (e) => {
+    e.preventDefault(); const m = $('#s-msg'); m.style.color = ''; m.textContent = '';
+    if ($('#s-nova').value !== $('#s-nova2').value) return (m.textContent = 'As duas senhas novas não são iguais.');
+    const r = await api('senha', { atual: $('#s-atual').value, nova: $('#s-nova').value }).catch(() => null);
+    if (r?.ok) { m.style.color = '#1a9d58'; m.textContent = '✅ Senha trocada. Já vale.'; $('#f-senha').reset(); return; }
+    const c = r?.j?.erro;
+    m.textContent = c === 'senha_atual' ? 'A senha de agora está errada.' : c === 'senha_curta' ? 'A senha nova precisa ter pelo menos 6 letras ou números.' : c === 'sem_sessao' ? 'Sessão acabou. Feche e abra o app.' : 'Não deu certo. Tente de novo.';
+  });
+};
+
+// ----- Vigia dos anúncios -----
+TELAS.vigia = () => `<h2>🐾 Vigia dos anúncios</h2><p class="sub">Semáforo do anúncio da Bolsa Quentinha: gasto, carrinhos, compras e o que fazer.</p>
+  <div class="card"><a class="btn" href="https://pets.leuname.com/painel/vigia.html" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Abrir o Vigia</a>
+  <p class="nota" style="margin-top:10px">Abre numa janela própria. Meta do teste: se gastar uns R$ 80 sem nenhum carrinho, pausar e trocar a foto ou o produto.</p></div>`;
 
 // ----- Fotos (galeria de todas as fotos da loja) -----
 let fotosEstado = { carregando: false, itens: [], msg: '', lendo: false, parar: false, feito: 0, total: 0, marcadas: new Set(), apagando: false };
