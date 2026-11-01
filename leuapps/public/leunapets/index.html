@@ -259,24 +259,66 @@ const LANCAMENTO = [
   ['teste', 'Combinar o valor do teste de anúncios (o dono aprova o gasto)'],
 ];
 
+
+// ---------- anúncios: todas as campanhas (digitadas + a leitura automática do Vigia) ----------
+function campTodas() {
+  const l = D.camp.map((c) => ({ ...c, pais: c.pais || 'Portugal' }));
+  try {
+    const v = JSON.parse(localStorage.getItem('leunapets_painel_v1') || 'null');
+    if (v && !l.some((c) => c.plataforma === 'meta') && (num(v.gasto) > 0 || num(v.com) > 0)) {
+      const cot = num(v.cot) || 6.3, vendas = num(v.com);
+      l.push({ id: 'vigia', plataforma: 'meta', pais: 'Portugal', data: new Date().toISOString().slice(0, 10), gasto: num(v.gasto) / cot, vendas, receita: vendas * 34.9, nota: 'Bolsa Quentinha (do Vigia, automático)', auto: true });
+    }
+  } catch {}
+  return l;
+}
+const PIZZA_CORES = ['#E62E73', '#2F3E8F', '#12875A', '#E9A04A', '#8A5BD6', '#2AA7C9'];
+function svgPizza(itens) {
+  const tot = itens.reduce((s, x) => s + x.v, 0);
+  if (tot <= 0) return '<p class="nota">Sem gasto registrado ainda.</p>';
+  let a0 = -Math.PI / 2, p = '';
+  itens.forEach((x, i) => {
+    const a = x.v / tot * Math.PI * 2, a1 = a0 + a, g = a > Math.PI ? 1 : 0, c = PIZZA_CORES[i % PIZZA_CORES.length];
+    if (itens.length === 1) p += `<circle cx="90" cy="90" r="80" fill="${c}"/>`;
+    else p += `<path d="M90 90 L${90 + 80 * Math.cos(a0)} ${90 + 80 * Math.sin(a0)} A80 80 0 ${g} 1 ${90 + 80 * Math.cos(a1)} ${90 + 80 * Math.sin(a1)} Z" fill="${c}"/>`;
+    a0 = a1;
+  });
+  const leg = itens.map((x, i) => `<div style="display:flex;gap:8px;align-items:center;margin:4px 0"><i style="width:12px;height:12px;border-radius:3px;background:${PIZZA_CORES[i % PIZZA_CORES.length]}"></i><span>${esc(x.nome)}: <b>${eur(x.v)}</b> (${Math.round(x.v / tot * 100)}%)</span></div>`).join('');
+  return `<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 180 180" width="170" height="170">${p}</svg><div>${leg}</div></div>`;
+}
+function graficoPaises(l) {
+  const ps = {}; l.forEach((c) => { const k = c.pais || 'Portugal'; (ps[k] = ps[k] || { g: 0, r: 0 }); ps[k].g += num(c.gasto); ps[k].r += num(c.receita); });
+  const ks = Object.keys(ps); if (!ks.length) return '<p class="nota">Registre o gasto e a receita (aba de cada plataforma) para ver aqui onde o dinheiro vai e volta.</p>';
+  const mx = Math.max(...ks.map((k) => Math.max(ps[k].g, ps[k].r)), 1);
+  return ks.map((k) => { const x = ps[k], res = x.r - x.g, ok = res >= 0;
+    return `<div style="margin:12px 0"><b>${esc(k)}</b> <span style="color:${ok ? '#12875A' : '#C21E56'};font-weight:700">${x.g === 0 && x.r === 0 ? '' : ok ? '▲ lucro de ' + eur(res) : '▼ prejuízo de ' + eur(-res)}</span>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px"><small style="width:62px">Gastou</small><div style="height:14px;border-radius:7px;background:#E62E73;width:${Math.max(2, x.g / mx * 100)}%"></div><small>${eur(x.g)}</small></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:3px"><small style="width:62px">Voltou</small><div style="height:14px;border-radius:7px;background:#12875A;width:${Math.max(2, x.r / mx * 100)}%"></div><small>${eur(x.r)}</small></div></div>`; }).join('');
+}
+
 TELAS.painel = () => {
-  const gasto = D.camp.reduce((s, c) => s + num(c.gasto), 0), receita = D.camp.reduce((s, c) => s + num(c.receita), 0), vendas = D.camp.reduce((s, c) => s + num(c.vendas), 0);
+  const CAMP = campTodas(), gasto = CAMP.reduce((s, c) => s + num(c.gasto), 0), receita = CAMP.reduce((s, c) => s + num(c.receita), 0), vendas = CAMP.reduce((s, c) => s + num(c.vendas), 0);
   const roas = gasto > 0 ? arred(receita / gasto) : 0;
   const por = (e) => D.meus.filter((m) => m.status === e).length;
   const pubLoja = lojaLista.itens.filter((p) => p.status === 'ACTIVE').length, temLoja = lojaEstado?.ligada && lojaLista.itens.length > 0;
   const okItem = (k) => D.feito[k] || (k === 'prod10' && pubLoja >= 10);
   const feitos = LANCAMENTO.filter(([k]) => okItem(k)).length;
   const plat = ['meta', 'tiktok', 'google'].map((p) => {
-    const l = D.camp.filter((c) => c.plataforma === p), g = l.reduce((s, c) => s + num(c.gasto), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
+    const l = CAMP.filter((c) => c.plataforma === p), g = l.reduce((s, c) => s + num(c.gasto), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
     return { p, g, r, v: l.reduce((s, c) => s + num(c.vendas), 0) };
   });
   const nomes = { meta: 'Facebook e Instagram', tiktok: 'TikTok', google: 'Google' };
   return `<h2>Painel</h2><p class="sub">Tudo da LeunaPets num só lugar.</p>
   <div class="grade g4">
-    <div class="kpi"><small>Produtos em teste</small><b>${por('Ideia') + por('Aprovado')}</b></div>
+    <div class="kpi"><small>Produtos em teste</small><b>${Math.max(por('Ideia') + por('Aprovado'), new Set(CAMP.map((c) => c.nota)).size)}</b></div>
     <div class="kpi r"><small>Na loja (publicados)</small><b>${temLoja ? pubLoja : por('Na loja')}</b></div>
     <div class="kpi"><small>Gasto em anúncios</small><b>${eur(gasto)}</b></div>
     <div class="kpi v"><small>Retorno (ROAS)</small><b>${roas ? roas.toFixed(2) + '×' : '—'}</b></div>
+  </div>
+  <p class="nota" style="margin-top:8px">🔄 Atualiza sozinho a cada 15 minutos · última leitura ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}. Gasto total = tudo que já foi gasto em anúncios, desde o começo.</p>
+  <div class="grade g2" style="margin-top:16px">
+    <div class="card"><h3>🥧 Para onde vai o dinheiro (por plataforma)</h3>${svgPizza(plat.filter((x) => x.g > 0).map((x) => ({ nome: nomes[x.p], v: x.g })))}</div>
+    <div class="card"><h3>📊 Gastou × voltou, por país e origem</h3>${graficoPaises(CAMP)}</div>
   </div>
   <div class="grade g2" style="margin-top:16px">
     <div class="card"><h3>Tráfego pago por plataforma</h3>
@@ -1335,7 +1377,7 @@ const PLAT = {
 };
 for (const k of Object.keys(PLAT)) {
   TELAS[k] = () => {
-    const P = PLAT[k], l = D.camp.filter((c) => c.plataforma === k).sort((a, b) => b.data.localeCompare(a.data));
+    const P = PLAT[k], l = campTodas().filter((c) => c.plataforma === k).sort((a, b) => b.data.localeCompare(a.data));
     const g = l.reduce((s, c) => s + num(c.gasto), 0), v = l.reduce((s, c) => s + num(c.vendas), 0), r = l.reduce((s, c) => s + num(c.receita), 0);
     const aprov = D.meus.filter((m) => m.status !== 'Descartado' && m.precoVenda && m.custo);
     const media = aprov.length ? aprov.reduce((s, m) => s + lucro({ preco: m.precoVenda, custo: m.custo, frete: m.frete }).antes, 0) / aprov.length : 0;
@@ -1345,22 +1387,25 @@ for (const k of Object.keys(PLAT)) {
     ${v && media ? `<div class="veredito ${cpa <= media ? 'v' : 'x'}" style="margin-top:14px">${cpa <= media ? '✅' : '⚠️'} Cada venda custa ${eur(cpa)} em anúncio; o lucro médio dos seus produtos antes de anúncios é ${eur(media)}.</div>` : ''}
     <div class="card" style="margin-top:16px"><h3>Pesquisar e abrir</h3><div class="atalhos">${P.atalhos.map(([t, s, u]) => `<a class="atalho" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}<small>${esc(s)}</small></a>`).join('')}</div></div>
     <div class="card"><h3>Registrar resultados</h3><div class="linha"><div><label>Dia</label><input type="date" id="p-data" value="${new Date().toISOString().slice(0, 10)}"></div>
+      <div><label>País / origem</label><select id="p-pais"><option>Portugal</option><option>Espanha</option><option>Google grátis</option><option>Outro</option></select></div>
       <div><label>Gasto (€)</label><input id="p-gasto" inputmode="decimal"></div><div><label>Vendas</label><input id="p-vendas" inputmode="numeric"></div><div><label>Receita (€)</label><input id="p-receita" inputmode="decimal"></div>
       <div style="flex:2 1 200px"><label>Nota (produto, vídeo…)</label><input id="p-nota"></div><button class="btn fixo" id="p-add">Registrar</button></div>
       <div class="tabela" style="margin-top:10px"><table><tr><th>Dia</th><th class="n">Gasto</th><th class="n">Vendas</th><th class="n">Receita</th><th>Nota</th><th></th></tr>
-      ${l.map((c) => `<tr><td>${esc(c.data)}</td><td class="n">${eur(num(c.gasto))}</td><td class="n">${num(c.vendas)}</td><td class="n">${eur(num(c.receita))}</td><td>${esc(c.nota)}</td><td><button class="btn peq verm" data-rm="${c.id}">×</button></td></tr>`).join('') || '<tr><td colspan="6" class="nota">Nada registrado ainda.</td></tr>'}</table></div>
+      ${l.map((c) => `<tr><td>${esc(c.data)}</td><td class="n">${eur(num(c.gasto))}</td><td class="n">${num(c.vendas)}</td><td class="n">${eur(num(c.receita))}</td><td>${esc(c.nota)}</td><td>${c.auto ? '<small>auto</small>' : `<button class="btn peq verm" data-rm="${c.id}">×</button>`}</td></tr>`).join('') || '<tr><td colspan="6" class="nota">Nada registrado ainda.</td></tr>'}</table></div>
       <p class="nota">Por enquanto você digita os números do painel de cada plataforma. A leitura automática dessas contas fica para a próxima versão.</p></div>`;
   };
   LIGAR[k] = () => {
     $('#p-add').addEventListener('click', () => {
       if (!$('#p-gasto').value && !$('#p-vendas').value) return;
-      D.camp.push({ id: novoId(), plataforma: k, data: $('#p-data').value, gasto: num($('#p-gasto').value), vendas: num($('#p-vendas').value), receita: num($('#p-receita').value), nota: $('#p-nota').value.slice(0, 120) });
+      D.camp.push({ id: novoId(), plataforma: k, pais: $('#p-pais').value, data: $('#p-data').value, gasto: num($('#p-gasto').value), vendas: num($('#p-vendas').value), receita: num($('#p-receita').value), nota: $('#p-nota').value.slice(0, 120) });
       salvar(); refazer();
     });
     document.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', () => { D.camp = D.camp.filter((c) => c.id !== b.dataset.rm); salvar(); refazer(); }));
   };
 }
 
+setInterval(() => { if (vista === 'painel' && !document.hidden) refazer(); }, 15 * 60 * 1000);
+addEventListener('storage', (e) => { if (e.key === 'leunapets_painel_v1' && vista === 'painel') refazer(); });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/leunapets/sw.js').catch(() => {});
 iniciar();
 </script>
