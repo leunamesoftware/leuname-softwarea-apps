@@ -1114,8 +1114,7 @@ LIGAR.senha = () => {
 
 // ----- Vigia dos anúncios -----
 TELAS.vigia = () => `<h2>🐾 Vigia dos anúncios</h2><p class="sub">Semáforo do anúncio da Bolsa Quentinha: gasto, carrinhos, compras e o que fazer.</p>
-  <div class="card"><a class="btn" href="https://pets.leuname.com/painel/vigia.html" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Abrir o Vigia</a>
-  <p class="nota" style="margin-top:10px">Abre numa janela própria. Meta do teste: se gastar uns R$ 80 sem nenhum carrinho, pausar e trocar a foto ou o produto.</p></div>`;
+  <iframe src="/leunapets/vigia.html" title="Vigia dos anúncios" style="width:100%;height:calc(100vh - 170px);min-height:620px;border:1px solid var(--linha);border-radius:14px;background:#fff"></iframe>`;
 
 // ----- Fotos (galeria de todas as fotos da loja) -----
 let fotosEstado = { carregando: false, itens: [], msg: '', lendo: false, parar: false, feito: 0, total: 0, marcadas: new Set(), apagando: false };
