@@ -18,7 +18,9 @@ COMO PUBLICAR SEU SITE (3 passos)
 
 3. PUBLICAR
    Envie TODO o conteúdo desta pasta para a sua hospedagem
-   (Hostinger, HostGator, cPanel, Netlify…).
+   (Hostinger, HostGator, Locaweb, cPanel, Netlify…).
+   Grátis: arraste a pasta para app.netlify.com/drop.
+   Não funciona em Shopify, Nuvemshop, Wix ou como tema de WordPress.
    O arquivo principal precisa se chamar "index.html".
 
 ═══════════════════════════════════════════════
